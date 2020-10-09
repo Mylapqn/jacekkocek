@@ -93,7 +93,7 @@ client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
 
-  console.log('I am ready!');
+  console.log('I am ready! NEW');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   //console.log(client.user);
   startDate = new Date();
