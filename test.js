@@ -256,11 +256,15 @@ client.on('message', message => {
           break;
         case "s":
           console.log("SEARCH!");
-          StartGoogleSearch(argument,message,true);
+          StartGoogleSearch(argument, message, 1);
+          break;
+        case "film":
+          console.log("SEARCH!");
+          StartGoogleSearch(argument, message, 2);
           break;
 
         case "zobrazit":
-          StartGoogleSearch(argument,message,false);
+          StartGoogleSearch(argument, message, 0);
 
           break;
         case "nuke":
@@ -405,18 +409,23 @@ function findCommand(name) {
   return null;
 }
 
-function StartGoogleSearch(argument, message, searchForArgument) {
+function StartGoogleSearch(argument, message, type) {
 
   var cx;
   var index = 0;
   var searchTerm;
 
-  if (searchForArgument) {
+  if (type == 2) {
+    cx = "513b4641b78f8096a";
+    searchTerm = argument;
+    googleSearch(cx, searchTerm, message);
+  }
+  if (type == 1) {
     cx = "003836403838224750691:axl53a8emck";
     searchTerm = argument;
     googleSearch(cx, searchTerm, message);
   }
-  else {
+  else if (type == 0) {
     var previousMessage;
     message.channel.messages.fetch({ limit: 2 }).then(messages => {
 
@@ -475,13 +484,15 @@ function googleSearch(cx, searchTerm, message) {
     res.on("end", function () {
       var parsed = JSON.parse(body.substring(9, body.length));
       var resultsList = parsed.items;
-      lastSearchResults = resultsList;
-      console.log(resultsList);
-      console.log(parsed.queries);
-      if (resultsList != null)
-        message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
-      else
-        message.channel.send("No results :disappointed:", { tts: true });
+      if (resultsList != null) {
+        lastSearchResults = resultsList;
+        console.log(resultsList);
+        console.log(parsed.queries);
+        if (resultsList != null)
+          message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
+        else
+          message.channel.send("No results :disappointed:", { tts: true });
+      }
     });
   });
 }
