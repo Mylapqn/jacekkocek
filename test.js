@@ -479,7 +479,7 @@ function googleSearch(cx, searchTerm, message) {
       console.log(resultsList);
       console.log(parsed.queries);
       if (resultsList != null)
-        message.channel.send(resultsList[index].title + "\n" + resultsList[index].snippet + "\n" + resultsList[index].link, { tts: false });
+        message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
       else
         message.channel.send("No results :disappointed:", { tts: true });
     });
