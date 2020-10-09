@@ -484,15 +484,18 @@ function googleSearch(cx, searchTerm, message) {
     res.on("end", function () {
       var parsed = JSON.parse(body.substring(9, body.length));
       var resultsList = parsed.items;
+
+
       if (resultsList != null) {
         lastSearchResults = resultsList;
         console.log(resultsList);
         console.log(parsed.queries);
-        if (resultsList != null)
-          message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
-        else
-          message.channel.send("No results :disappointed:", { tts: true });
+
+        message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
       }
+      else
+        message.channel.send("No results :disappointed:", { tts: true });
+
     });
   });
 }
