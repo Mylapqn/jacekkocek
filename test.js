@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const Http = require('https');
 const { url } = require('inspector');
 //const { env } = require('process');
-Dotenv.config();
+//Dotenv.config();
 
 const client = new Discord.Client();
 
