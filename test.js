@@ -42,6 +42,12 @@ var helpCommands = [
     description: "Zobrazit hledaný dotaz",
   },
   {
+    name: "film",
+    prefix: true,
+    arguments: "název filmu",
+    description: "Zobrazit hledaný film",
+  },
+  {
     name: "hit",
     prefix: true,
     arguments: "",
