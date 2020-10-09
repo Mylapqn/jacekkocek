@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
-const Dotenv = require('dotenv');
+//const Dotenv = require('dotenv');
 const Http = require('https');
 const { url } = require('inspector');
-const { env } = require('process');
+//const { env } = require('process');
 Dotenv.config();
 
 const client = new Discord.Client();
@@ -94,7 +94,7 @@ client.login(process.env.DISCORD_API_KEY);
 client.on('ready', () => {
 
   console.log('I am ready!');
-  client.user.setActivity({ name: prefix+"help", type: "LISTENING" });
+  client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   //console.log(client.user);
   startDate = new Date();
 });
@@ -220,10 +220,10 @@ client.on('message', message => {
               embed: {
                 title: "Help", description: "Type `" + prefix + "help <command>` to get further info on a command", fields: [
                   {
-                    name: "Basic commands", value:helpBasic
+                    name: "Basic commands", value: helpBasic
                   },
                   {
-                    name: "Admin commands", value:helpAdmin
+                    name: "Admin commands", value: helpAdmin
                   },
 
                 ]
@@ -256,101 +256,11 @@ client.on('message', message => {
           break;
         case "s":
           console.log("SEARCH!");
-          var options = {
-            host: "https://www.googleapis.com",
-            path: "/customsearch/v1?key=" + env.SEARCH_API_KEY + "&cx=003836403838224750691:wcw78s5sqwm" + "&q=test",
-            method: "GET",
-
-          };
-          console.log(options);
-          /*Http.request(options, function (res) {
-            console.log("SEARCH RES!");
-            console.log(res);
-          });*/
-          console.log("IJ");
-          Http.get("https://www.googleapis.com/customsearch/v1?key=AIzaSyBmL2RtAHmlDbAzUUcUK27SFq9byJWTAyc&cx=003836403838224750691:wcw78s5sqwm&q=" + argument, function (res) {
-            console.log(res.statusCode);
-            var body;
-            res.on("data", function (data) {
-              body += data;
-            });
-            res.on("end", function () {
-              var resultsList = JSON.parse(body.substring(9, body.length)).items;
-              console.log(resultsList[0].title);
-              message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link)
-            });
-          });
-          console.log("SEARCH END!");
+          StartGoogleSearch(argument,message,true);
           break;
 
         case "zobrazit":
-          message.channel.messages.fetch({ limit: 2 }).then(messages => {
-
-            var previousMessage = messages.array()[1];
-
-            var cx;
-            var index = 0;
-
-            if (argument == null) {
-              cx = "003836403838224750691:wcw78s5sqwm";
-            }
-            else if (argument == "vše") {
-              cx = "003836403838224750691:axl53a8emck";
-              console.log("AKKKKKKKKKK");
-            }
-            else if (argument == "více") {
-              cx = "003836403838224750691:axl53a8emck";
-              index = 1;
-              console.log("AKKKKKKKKKK");
-            }
-            else if (argument.startsWith("ještě")) {
-              tempArg = argument;
-              while (tempArg.startsWith("ještě")) {
-                tempArg = tempArg.slice("ještě ".length);
-                index++;
-              }
-              if (tempArg == "více") {
-                index++;
-              }
-              else {
-                message.channel.send(argument + " is not a valid argument! :angry:", { tts: true });
-                return;
-              }
-            }
-            else {
-              message.channel.send(argument + " is not a valid argument! :angry:", { tts: true });
-              return;
-            }
-
-
-            if (index == 0) {
-              Http.get("https://www.googleapis.com/customsearch/v1?key=AIzaSyBmL2RtAHmlDbAzUUcUK27SFq9byJWTAyc&cx=" + cx + "&q=" + previousMessage.content, function (res) {
-                console.log(res.statusCode);
-                var body;
-                res.on("data", function (data) {
-                  body += data;
-                });
-                res.on("end", function () {
-                  var parsed = JSON.parse(body.substring(9, body.length));
-                  var resultsList = parsed.items;
-                  lastSearchResults = resultsList;
-                  console.log(resultsList);
-                  console.log(parsed.queries);
-                  if (resultsList != null)
-                    message.channel.send(resultsList[index].title + "\n" + resultsList[index].snippet + "\n" + resultsList[index].link, { tts: false });
-                  else
-                    message.channel.send("No results :disappointed:", { tts: true });
-                });
-              });
-            }
-            else {
-              if (lastSearchResults != null && lastSearchResults[index] != null)
-                message.channel.send(lastSearchResults[index].title + "\n" + lastSearchResults[index].snippet + "\n" + lastSearchResults[index].link, { tts: false });
-              else
-                message.channel.send("No results :disappointed:", { tts: true });
-
-            }
-          });
+          StartGoogleSearch(argument,message,false);
 
           break;
         case "nuke":
@@ -407,7 +317,7 @@ client.on('message', message => {
           message.channel.send("cringe");
           addCringe(message.member);
           break;
-          
+
         default:
           message.channel.send("Unknown command :disappointed:");
 
@@ -493,4 +403,85 @@ function findCommand(name) {
     if (helpCommands[i].name == name) return helpCommands[i];
   }
   return null;
+}
+
+function StartGoogleSearch(argument, message, searchForArgument) {
+
+  var cx;
+  var index = 0;
+  var searchTerm;
+
+  if (searchForArgument) {
+    cx = "003836403838224750691:axl53a8emck";
+    searchTerm = argument;
+    googleSearch(cx, searchTerm, message);
+  }
+  else {
+    var previousMessage;
+    message.channel.messages.fetch({ limit: 2 }).then(messages => {
+
+      previousMessage = messages.array()[1];
+
+      searchTerm = previousMessage.content;
+      if (argument == null) {
+        cx = "003836403838224750691:wcw78s5sqwm";
+      }
+      else if (argument == "vše") {
+        cx = "003836403838224750691:axl53a8emck";
+        console.log("AKKKKKKKKKK");
+      }
+      else if (argument == "více") {
+        cx = "003836403838224750691:axl53a8emck";
+        index = 1;
+        console.log("AKKKKKKKKKK");
+      }
+      else if (argument.startsWith("ještě")) {
+        tempArg = argument;
+        while (tempArg.startsWith("ještě")) {
+          tempArg = tempArg.slice("ještě ".length);
+          index++;
+        }
+        if (tempArg == "více") {
+          index++;
+        }
+        else {
+          message.channel.send(argument + " is not a valid argument! :angry:", { tts: true });
+          return;
+        }
+      }
+      else {
+        message.channel.send(argument + " is not a valid argument! :angry:", { tts: true });
+        return;
+      }
+      if (index == 0) {
+        googleSearch(cx, searchTerm, message);
+      }
+      else {
+        if (lastSearchResults != null && lastSearchResults[index] != null)
+          message.channel.send(lastSearchResults[index].title + "\n" + lastSearchResults[index].snippet + "\n" + lastSearchResults[index].link, { tts: false });
+        else
+          message.channel.send("No results :disappointed:", { tts: true });
+      }
+    });
+  }
+}
+function googleSearch(cx, searchTerm, message) {
+  Http.get("https://www.googleapis.com/customsearch/v1?key=AIzaSyBmL2RtAHmlDbAzUUcUK27SFq9byJWTAyc&cx=" + cx + "&q=" + searchTerm, function (res) {
+    console.log(res.statusCode);
+    var body;
+    res.on("data", function (data) {
+      body += data;
+    });
+    res.on("end", function () {
+      var parsed = JSON.parse(body.substring(9, body.length));
+      var resultsList = parsed.items;
+      lastSearchResults = resultsList;
+      console.log(resultsList);
+      console.log(parsed.queries);
+      if (resultsList != null)
+        message.channel.send(resultsList[index].title + "\n" + resultsList[index].snippet + "\n" + resultsList[index].link, { tts: false });
+      else
+        message.channel.send("No results :disappointed:", { tts: true });
+    });
+  });
 }
