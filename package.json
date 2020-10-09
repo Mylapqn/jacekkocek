@@ -1,0 +1,19 @@
+{
+  "name": "discordbotkocek",
+  "version": "1.0.0",
+  "description": "Discord Bot",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mylapqn",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "https": "^1.0.0",
+    "inspector": "^0.5.0",
+    "process": "^0.11.10"
+  },
+  "devDependencies": {}
+}
