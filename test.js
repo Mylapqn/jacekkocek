@@ -78,6 +78,12 @@ var helpCommands = [
     arguments: "",
     description: "Send animated emoji",
   },
+  {
+    name: "kino",
+    prefix: true,
+    arguments: "film",
+    description: "Start vote on kino",
+  },
 ];
 var helpAdminCommands = [
   {
@@ -262,15 +268,15 @@ client.on('message', message => {
           break;
         case "s":
           console.log("SEARCH!");
-          StartGoogleSearch(argument, message, 1);
+          startGoogleSearch(argument, message, 1);
           break;
         case "film":
           console.log("SEARCH!");
-          StartGoogleSearch(argument, message, 2);
+          startGoogleSearch(argument, message, 2);
           break;
 
         case "zobrazit":
-          StartGoogleSearch(argument, message, 0);
+          startGoogleSearch(argument, message, 0);
 
           break;
         case "nuke":
@@ -326,6 +332,17 @@ client.on('message', message => {
         case "hit":
           message.channel.send("cringe");
           addCringe(message.member);
+          break;
+
+        case "kino":
+          startGoogleSearch(argument, message, 2);
+          message.channel.send("Bude " + argument + "?").then((m) => {
+            for (let i = 1; i < 10; i++) {
+              //message.channel.send(argument.charAt(i));
+              m.react(letterEmoji[""+i]);
+            }
+          });
+          message.delete();
           break;
 
         default:
@@ -415,7 +432,7 @@ function findCommand(name) {
   return null;
 }
 
-function StartGoogleSearch(argument, message, type) {
+function startGoogleSearch(argument, message, type) {
 
   var cx;
   var index = 0;
