@@ -335,14 +335,17 @@ client.on('message', message => {
           break;
 
         case "kino":
-          startGoogleSearch(argument, message, 2);
-          message.channel.send("Bude " + argument + "?").then((m) => {
-            for (let i = 1; i < 10; i++) {
-              //message.channel.send(argument.charAt(i));
-              m.react(letterEmoji[""+i]);
-            }
-          });
           message.delete();
+          startGoogleSearch(argument, message, 2);
+          setTimeout(function(){
+            message.channel.send("Bude " + argument + "?").then((m) => {
+              for (let i = 1; i < 10; i++) {
+                //message.channel.send(argument.charAt(i));
+                m.react(letterEmoji[""+i]);
+              }
+            });
+          },1000);
+          
           break;
 
         default:
