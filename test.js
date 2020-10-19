@@ -338,12 +338,14 @@ client.on('message', message => {
           message.delete();
           startGoogleSearch(argument, message, 2);
           let weekDays = "   po        út         st         čt         pá        so        ne";
+          
           message.channel.send("Bude " + argument + "?\n"+weekDays).then((m) => {
-            for (let i = 1; i <= 7; i++) {
+            /*for (let i = 1; i <= 7; i++) {
               //message.channel.send(argument.charAt(i));
               m.react(letterEmoji["" + i]);
-            }
+            }*/
           });
+          m.react(client.emojis.cache.get("767898127511846973").toString());
 
           break;
 
