@@ -337,8 +337,9 @@ client.on('message', message => {
         case "kino":
           message.delete();
           startGoogleSearch(argument, message, 2);
-          message.channel.send("Bude " + argument + "?").then((m) => {
-            for (let i = 1; i < 10; i++) {
+          let weekDays = "   po        út         st         čt         pá        so        ne";
+          message.channel.send("Bude " + argument + "?\n"+weekDays).then((m) => {
+            for (let i = 1; i <= 7; i++) {
               //message.channel.send(argument.charAt(i));
               m.react(letterEmoji["" + i]);
             }
