@@ -344,8 +344,8 @@ client.on('message', message => {
               //message.channel.send(argument.charAt(i));
               m.react(letterEmoji["" + i]);
             }*/
+            m.react(client.emojis.cache.get("767898127511846973").toString());
           });
-          m.react(client.emojis.cache.get("767898127511846973").toString());
 
           break;
 
