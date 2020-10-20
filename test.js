@@ -353,10 +353,10 @@ client.on('message', message => {
           });
           console.log(m);
           Object.keys(m).forEach(u => {
+            if (m[u].response == 0) mentionUsers = mentionUsers + "❓ ";
+            if (m[u].response == 1) mentionUsers = mentionUsers + "✅ ";
+            if (m[u].response == 2) mentionUsers = mentionUsers + "<:white_cross:767907092907687956> ";
             mentionUsers = mentionUsers + m[u].mention;
-            if (m[u].response == 0) mentionUsers = mentionUsers + " ❓";
-            if (m[u].response == 1) mentionUsers = mentionUsers + " ✅";
-            if (m[u].response == 2) mentionUsers = mentionUsers + " <:white_cross:767907092907687956>";
             mentionUsers = mentionUsers + "\n";
           });
           kinoMessageUsers.push({users:m,film:argument});
@@ -410,10 +410,10 @@ client.on("messageReactionAdd", (messageReaction) => {
       let mentionUsers = "";
       Object.keys(kinoMessageUsers[ind].users).forEach(uName => {
         let u = kinoMessageUsers[ind].users[uName];
+        if (u.response == 0) mentionUsers = mentionUsers + "❓ ";
+        if (u.response == 1) mentionUsers = mentionUsers + "✅ ";
+        if (u.response == 2) mentionUsers = mentionUsers + "<:white_cross:767907092907687956> ";
         mentionUsers = mentionUsers + u.mention;
-        if (u.response == 0) mentionUsers = mentionUsers + " ❓";
-        if (u.response == 1) mentionUsers = mentionUsers + " ✅";
-        if (u.response == 2) mentionUsers = mentionUsers + " <:white_cross:767907092907687956>";
         mentionUsers = mentionUsers + "\n";
       });
       reactionMessage.edit("Bude **" + kinoMessageUsers[ind].film + "**?\n" + mentionUsers);
