@@ -370,7 +370,7 @@ client.on('message', message => {
 });
 
 client.on("messageReactionAdd",(messageReaction)=>{
-  if(kinoMessages.indexOf(messageReaction.message)!= -1 && messageReaction.count > 1){
+  if(kinoMessages.indexOf(messageReaction.message)!= -1){
     if(weekDayNames.indexOf(messageReaction.emoji.identifier)!=-1){
       messageReaction.message.channel.send(messageReaction.users.cache.last()+": Yes");
     }
