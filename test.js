@@ -348,18 +348,18 @@ client.on('message', message => {
           message.channel.members.each(u => {
             if (u.user != client.user) {
               console.log(u.user.username);
-              m[u.user.username] = 0;
+              m[u.user.username] = {response:0,mention:u.toString()};
             }
           });
           console.log(m);
           Object.keys(m).forEach(u => {
-            mentionUsers = mentionUsers + "@" + u;
-            if (m[u] == 0) mentionUsers = mentionUsers + " ❓";
-            if (m[u] == 1) mentionUsers = mentionUsers + " ✅";
-            if (m[u] == 2) mentionUsers = mentionUsers + " <:white_cross:767907092907687956>";
+            mentionUsers = mentionUsers + m[u].mention;
+            if (m[u].response == 0) mentionUsers = mentionUsers + " ❓";
+            if (m[u].response == 1) mentionUsers = mentionUsers + " ✅";
+            if (m[u].response == 2) mentionUsers = mentionUsers + " <:white_cross:767907092907687956>";
             mentionUsers = mentionUsers + "\n";
           });
-          kinoMessageUsers.push(m);
+          kinoMessageUsers.push({users:m,film:argument});
           message.channel.send("Bude **" + argument + "**?\n" + mentionUsers).then((m) => {
             /*for (let i = 1; i <= 7; i++) {
               //message.channel.send(argument.charAt(i));
@@ -408,15 +408,14 @@ client.on("messageReactionAdd", (messageReaction) => {
         kinoMessageUsers[reactionUser.username] = 2;
       }
       let mentionUsers = "";
-      Object.keys(kinoMessageUsers[ind]).forEach(u => {
-        mentionUsers = mentionUsers + "@" + u;
-        if (kinoMessageUsers[u] == 0) mentionUsers = mentionUsers + " ❓";
-        if (kinoMessageUsers[u] == 1) mentionUsers = mentionUsers + " ✅";
-        if (kinoMessageUsers[u] == 2) mentionUsers = mentionUsers + " <:white_cross:767907092907687956>";
-        console.log(u + ": " + kinoMessageUsers[u])
+      Object.keys(kinoMessageUsers[ind].users).forEach(u => {
+        mentionUsers = mentionUsers + u.mention;
+        if (u.response == 0) mentionUsers = mentionUsers + " ❓";
+        if (u.response == 1) mentionUsers = mentionUsers + " ✅";
+        if (u.response == 2) mentionUsers = mentionUsers + " <:white_cross:767907092907687956>";
         mentionUsers = mentionUsers + "\n";
       });
-      reactionMessage.edit(mentionUsers);
+      reactionMessage.edit("Bude **" + kinoMessageUsers[ind].film + "**?\n" + mentionUsers);
     }
   }
 });
