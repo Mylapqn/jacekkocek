@@ -354,7 +354,7 @@ client.on('message', message => {
             m.react("767907093222916126");
             m.react("767907093352153118");
             m.react("767907092907687956");
-            kinoMessages.add(m);
+            kinoMessages.push(m);
           });
 
 
