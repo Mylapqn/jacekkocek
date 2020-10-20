@@ -408,7 +408,7 @@ client.on("messageReactionAdd", (messageReaction) => {
         kinoMessageUsers[reactionUser.username] = 2;
       }
       let mentionUsers = "";
-      Object.keys(kinoMessageUsers[ind].users).forEach(u => {
+      kinoMessageUsers[ind].users.forEach(u => {
         mentionUsers = mentionUsers + u.mention;
         if (u.response == 0) mentionUsers = mentionUsers + " ❓";
         if (u.response == 1) mentionUsers = mentionUsers + " ✅";
