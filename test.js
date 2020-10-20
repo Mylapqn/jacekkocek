@@ -101,6 +101,7 @@ var letterEmoji = {
 };
 
 var kinoMessages = [];
+var weekDayNames = ["po","ut","st","ct","pa","so","ne"];
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 client.login(process.env.DISCORD_API_KEY);
@@ -369,9 +370,12 @@ client.on('message', message => {
 });
 
 client.on("messageReactionAdd",(messageReaction)=>{
-  if(kinoMessages.indexOf(messageReaction.message)!= -1){
-    if(messageReaction.emoji.identifier!="white_cross"){
-      messageReaction.message.channel.send("Yes");
+  if(kinoMessages.indexOf(messageReaction.message)!= -1 && !messageReaction.me){
+    if(weekDayNames.indexOf(messageReaction.emoji.identifier)!=-1){
+      messageReaction.message.channel.send(": Yes");
+    }
+    if(messageReaction.emoji.identifier=="white_cross"){
+      messageReaction.message.channel.send(": No");
     }
   }
 });
