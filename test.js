@@ -343,9 +343,18 @@ client.on('message', message => {
           //let weekDays = "   po        út         st         čt         pá        so        ne";
           
           let mentionUsers = "";
+          let m = {};
           message.channel.members.each(u => {
-            mentionUsers=mentionUsers+u.toString()+"\n";
+            m[u.username] = 0;
           });
+          m.keys.forEach(u => {
+            mentionUsers = mentionUsers + "@" + u;
+            if(m[u]==0)mentionUsers = mentionUsers + "?";
+            if(m[u]==1)mentionUsers = mentionUsers + "Yes";
+            if(m[u]==2)mentionUsers = mentionUsers + "No";
+            mentionUsers = mentionUsers + "\n";
+          });
+          kinoMessageUsers.push(m);
           message.channel.send("Bude **" + argument + "**?\n"+mentionUsers).then((m) => {
             /*for (let i = 1; i <= 7; i++) {
               //message.channel.send(argument.charAt(i));
@@ -375,17 +384,33 @@ client.on('message', message => {
 
 client.on("messageReactionAdd",(messageReaction)=>{
   if(kinoMessages.indexOf(messageReaction.message)!= -1){
-    console.log("Reaction "+ messageReaction.emoji.name);
-    if(weekDayNames.indexOf(messageReaction.emoji.name)!=-1){
+
+    let emojiName = messageReaction.emoji.name;
+    let reactionUser = messageReaction.users.cache.last();
+    let reactionMessage = messageReaction.message;
+
+    console.log("Reaction "+ emojiName);
+    if(weekDayNames.indexOf(emojiName)!=-1){
       console.log("Yes");
-      console.log(messageReaction.users.cache.last());
-      messageReaction.message.channel.send(messageReaction.users.cache.last().username+": Yes");
+      console.log(reactionUser);
+      reactionMessage.channel.send(reactionUser.username+": Yes");
+      kinoMessageUsers[reactionUser.username]=1;
     }
-    if(messageReaction.emoji.name=="white_cross"){
+    if(emojiName=="white_cross"){
       console.log("No");
-      console.log(messageReaction.users.cache.last());
-      messageReaction.message.channel.send(messageReaction.users.cache.last().username+": No");
+      console.log(reactionUser);
+      reactionMessage.channel.send(reactionUser.username+": No");
+      kinoMessageUsers[reactionUser.username]=2;
     }
+    let mentionUsers = "";
+    kinoMessageUsers.keys.forEach(u => {
+      mentionUsers = mentionUsers + "@" + u;
+      if(m[u]==0)mentionUsers = mentionUsers + "?";
+      if(m[u]==1)mentionUsers = mentionUsers + "Yes";
+      if(m[u]==2)mentionUsers = mentionUsers + "No";
+      mentionUsers = mentionUsers + "\n";
+    });
+    reactionMessage.edit(mentionUsers);
   }
 });
 
