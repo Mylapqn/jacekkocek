@@ -344,7 +344,7 @@ client.on('message', message => {
               //message.channel.send(argument.charAt(i));
               m.react(letterEmoji["" + i]);
             }*/
-            if(argument == 1)m.react(client.emojis.cache.get("767898127511846973").toString());
+            m.channel.send(client.emojis.cache.get("767898127511846973").toString());
             if(argument == 2)m.react("767898127511846973");
             if(argument == 3)m.react(client.emojis.cache.get("767898127511846973"));
             if(argument == 4)m.react("<Po:767898127511846973>");
