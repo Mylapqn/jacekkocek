@@ -348,7 +348,7 @@ client.on('message', message => {
           message.channel.members.each(u => {
             m[u.username] = 0;
           });
-          console.log("MMMM: "+m);
+          console.log(m);
           Object.keys(m).forEach(u => {
             mentionUsers = mentionUsers + "@" + u;
             if (m[u] == 0) mentionUsers = mentionUsers + "?";
@@ -575,8 +575,8 @@ function googleSearch(cx, searchTerm, message) {
 
       if (resultsList != null) {
         lastSearchResults = resultsList;
-        console.log(resultsList);
-        console.log(parsed.queries);
+        //console.log(resultsList);
+        //console.log(parsed.queries);
 
         message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
       }
