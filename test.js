@@ -337,18 +337,20 @@ client.on('message', message => {
         case "kino":
           message.delete();
           startGoogleSearch(argument, message, 2);
-          let weekDays = "   po        út         st         čt         pá        so        ne";
+          //let weekDays = "   po        út         st         čt         pá        so        ne";
           
-          message.channel.send("Bude " + argument + "?\n"+weekDays).then((m) => {
+          message.channel.send("Bude **" + argument + "**?").then((m) => {
             /*for (let i = 1; i <= 7; i++) {
               //message.channel.send(argument.charAt(i));
               m.react(letterEmoji["" + i]);
             }*/
-            m.channel.send(client.emojis.cache.get("767898127511846973").toString());
-            if(argument == 2)m.react("767898127511846973");
-            if(argument == 3)m.react(client.emojis.cache.get("767898127511846973"));
-            if(argument == 4)m.react("<Po:767898127511846973>");
-            if(argument == 5)m.react("<767898127511846973>");
+            m.react("767898127511846973");
+            m.react("767898126685831189");
+            m.react("767898127301869578");
+            m.react("767898127943860294");
+            m.react("767898128916414504");
+            m.react("767898128904224789");
+            m.react("767898129071865866");
 
           });
 
