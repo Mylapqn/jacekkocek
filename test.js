@@ -400,15 +400,16 @@ client.on("messageReactionAdd", (messageReaction) => {
       if (weekDayNames.indexOf(emojiName) != -1) {
         console.log("Yes");
         reactionMessage.channel.send(reactionUser.username + ": Yes");
-        kinoMessageUsers[reactionUser.username] = 1;
+        kinoMessageUsers[ind].users[reactionUser.username].response = 1;
       }
       if (emojiName == "white_cross") {
         console.log("No");
         reactionMessage.channel.send(reactionUser.username + ": No");
-        kinoMessageUsers[reactionUser.username] = 2;
+        kinoMessageUsers[ind].users[reactionUser.username].response = 2;
       }
       let mentionUsers = "";
-      kinoMessageUsers[ind].users.forEach(u => {
+      Object.keys(kinoMessageUsers[ind].users).forEach(uName => {
+        let u = kinoMessageUsers[ind].users[uName];
         mentionUsers = mentionUsers + u.mention;
         if (u.response == 0) mentionUsers = mentionUsers + " ❓";
         if (u.response == 1) mentionUsers = mentionUsers + " ✅";
