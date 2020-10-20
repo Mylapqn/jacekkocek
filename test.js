@@ -347,7 +347,7 @@ client.on('message', message => {
           let m = {};
           message.channel.members.each(u => {
             console.log(u.user.username);
-            m[u.user.usarname] = 0;
+            m[u.user.username] = 0;
           });
           console.log(m);
           Object.keys(m).forEach(u => {
