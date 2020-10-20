@@ -352,7 +352,9 @@ client.on('message', message => {
             m.react("767907093222916126");
             m.react("767907093352153118");
             m.react("767907092907687956");
+            kinoMessages.add(m);
           });
+
 
           break;
 
@@ -360,6 +362,14 @@ client.on('message', message => {
           message.channel.send("Unknown command :disappointed:");
 
       }
+    }
+  }
+});
+
+client.on("messageReactionAdd",(messageReaction)=>{
+  if(kinoMessages.indexOf(messageReaction.message)!= -1){
+    if(messageReaction.emoji.identifier!="white_cross"){
+      messageReaction.message.channel.send("Yes");
     }
   }
 });
