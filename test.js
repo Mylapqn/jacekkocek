@@ -399,12 +399,12 @@ client.on("messageReactionAdd", (messageReaction) => {
       console.log("Reaction " + emojiName);
       if (weekDayNames.indexOf(emojiName) != -1) {
         console.log("Yes");
-        reactionMessage.channel.send(reactionUser.username + ": Yes");
+        //reactionMessage.channel.send(reactionUser.username + ": Yes");
         kinoMessageUsers[ind].users[reactionUser.username].response = 1;
       }
       if (emojiName == "white_cross") {
         console.log("No");
-        reactionMessage.channel.send(reactionUser.username + ": No");
+        //reactionMessage.channel.send(reactionUser.username + ": No");
         kinoMessageUsers[ind].users[reactionUser.username].response = 2;
       }
       let mentionUsers = "";
