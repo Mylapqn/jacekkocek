@@ -384,7 +384,8 @@ client.on('message', message => {
 });
 
 client.on("messageReactionAdd", (messageReaction) => {
-  if (kinoMessages.indexOf(messageReaction.message) != -1) {
+  let ind = kinoMessages.indexOf(messageReaction.message);
+  if (ind != -1) {
 
     let emojiName = messageReaction.emoji.name;
     let reactionUser = messageReaction.users.cache.last();
@@ -405,11 +406,11 @@ client.on("messageReactionAdd", (messageReaction) => {
         kinoMessageUsers[reactionUser.username] = 2;
       }
       let mentionUsers = "";
-      Object.keys(kinoMessageUsers).forEach(u => {
+      Object.keys(kinoMessageUsers[ind]).forEach(u => {
         mentionUsers = mentionUsers + "@" + u;
-        if (m[u] == 0) mentionUsers = mentionUsers + "?";
-        if (m[u] == 1) mentionUsers = mentionUsers + "Yes";
-        if (m[u] == 2) mentionUsers = mentionUsers + "No";
+        if (kinoMessageUsers[u] == 0) mentionUsers = mentionUsers + "?";
+        if (kinoMessageUsers[u] == 1) mentionUsers = mentionUsers + "Yes";
+        if (kinoMessageUsers[u] == 2) mentionUsers = mentionUsers + "No";
         mentionUsers = mentionUsers + "\n";
       });
       reactionMessage.edit(mentionUsers);
