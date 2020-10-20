@@ -371,10 +371,15 @@ client.on('message', message => {
 
 client.on("messageReactionAdd",(messageReaction)=>{
   if(kinoMessages.indexOf(messageReaction.message)!= -1){
+    console.log("Reaction");
     if(weekDayNames.indexOf(messageReaction.emoji.identifier)!=-1){
+      console.log("Yes");
+      console.log(messageReaction.users.cache.last());
       messageReaction.message.channel.send(messageReaction.users.cache.last()+": Yes");
     }
     if(messageReaction.emoji.identifier=="white_cross"){
+      console.log("No");
+      console.log(messageReaction.users.cache.last());
       messageReaction.message.channel.send(messageReaction.users.cache.last()+": No");
     }
   }
