@@ -347,7 +347,7 @@ client.on('message', message => {
           message.channel.members.each(u => {
             m[u.username] = 0;
           });
-          m.keys().forEach(u => {
+          Object.keys(m).forEach(u => {
             mentionUsers = mentionUsers + "@" + u;
             if (m[u] == 0) mentionUsers = mentionUsers + "?";
             if (m[u] == 1) mentionUsers = mentionUsers + "Yes";
@@ -404,7 +404,7 @@ client.on("messageReactionAdd", (messageReaction) => {
         kinoMessageUsers[reactionUser.username] = 2;
       }
       let mentionUsers = "";
-      kinoMessageUsers.keys().forEach(u => {
+      Object.keys(kinoMessageUsers).forEach(u => {
         mentionUsers = mentionUsers + "@" + u;
         if (m[u] == 0) mentionUsers = mentionUsers + "?";
         if (m[u] == 1) mentionUsers = mentionUsers + "Yes";
