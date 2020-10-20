@@ -101,7 +101,7 @@ var letterEmoji = {
 };
 
 var kinoMessages = [];
-var weekDayNames = ["po","ut","st","ct","pa","so","ne"];
+var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 client.login(process.env.DISCORD_API_KEY);
@@ -341,7 +341,7 @@ client.on('message', message => {
           message.delete();
           startGoogleSearch(argument, message, 2);
           //let weekDays = "   po        út         st         čt         pá        so        ne";
-          
+
           let mentionUsers = "";
           let m = {};
           message.channel.members.each(u => {
@@ -349,13 +349,13 @@ client.on('message', message => {
           });
           m.keys.forEach(u => {
             mentionUsers = mentionUsers + "@" + u;
-            if(m[u]==0)mentionUsers = mentionUsers + "?";
-            if(m[u]==1)mentionUsers = mentionUsers + "Yes";
-            if(m[u]==2)mentionUsers = mentionUsers + "No";
+            if (m[u] == 0) mentionUsers = mentionUsers + "?";
+            if (m[u] == 1) mentionUsers = mentionUsers + "Yes";
+            if (m[u] == 2) mentionUsers = mentionUsers + "No";
             mentionUsers = mentionUsers + "\n";
           });
           kinoMessageUsers.push(m);
-          message.channel.send("Bude **" + argument + "**?\n"+mentionUsers).then((m) => {
+          message.channel.send("Bude **" + argument + "**?\n" + mentionUsers).then((m) => {
             /*for (let i = 1; i <= 7; i++) {
               //message.channel.send(argument.charAt(i));
               m.react(letterEmoji["" + i]);
@@ -382,35 +382,37 @@ client.on('message', message => {
   }
 });
 
-client.on("messageReactionAdd",(messageReaction)=>{
-  if(kinoMessages.indexOf(messageReaction.message)!= -1){
+client.on("messageReactionAdd", (messageReaction) => {
+  if (kinoMessages.indexOf(messageReaction.message) != -1) {
 
     let emojiName = messageReaction.emoji.name;
     let reactionUser = messageReaction.users.cache.last();
     let reactionMessage = messageReaction.message;
+    if (reactionUser != client.user) {
 
-    console.log("Reaction "+ emojiName);
-    if(weekDayNames.indexOf(emojiName)!=-1){
-      console.log("Yes");
-      console.log(reactionUser);
-      reactionMessage.channel.send(reactionUser.username+": Yes");
-      kinoMessageUsers[reactionUser.username]=1;
+      console.log("Reaction " + emojiName);
+      if (weekDayNames.indexOf(emojiName) != -1) {
+        console.log("Yes");
+        console.log(reactionUser);
+        reactionMessage.channel.send(reactionUser.username + ": Yes");
+        kinoMessageUsers[reactionUser.username] = 1;
+      }
+      if (emojiName == "white_cross") {
+        console.log("No");
+        console.log(reactionUser);
+        reactionMessage.channel.send(reactionUser.username + ": No");
+        kinoMessageUsers[reactionUser.username] = 2;
+      }
+      let mentionUsers = "";
+      kinoMessageUsers.keys.forEach(u => {
+        mentionUsers = mentionUsers + "@" + u;
+        if (m[u] == 0) mentionUsers = mentionUsers + "?";
+        if (m[u] == 1) mentionUsers = mentionUsers + "Yes";
+        if (m[u] == 2) mentionUsers = mentionUsers + "No";
+        mentionUsers = mentionUsers + "\n";
+      });
+      reactionMessage.edit(mentionUsers);
     }
-    if(emojiName=="white_cross"){
-      console.log("No");
-      console.log(reactionUser);
-      reactionMessage.channel.send(reactionUser.username+": No");
-      kinoMessageUsers[reactionUser.username]=2;
-    }
-    let mentionUsers = "";
-    kinoMessageUsers.keys.forEach(u => {
-      mentionUsers = mentionUsers + "@" + u;
-      if(m[u]==0)mentionUsers = mentionUsers + "?";
-      if(m[u]==1)mentionUsers = mentionUsers + "Yes";
-      if(m[u]==2)mentionUsers = mentionUsers + "No";
-      mentionUsers = mentionUsers + "\n";
-    });
-    reactionMessage.edit(mentionUsers);
   }
 });
 
