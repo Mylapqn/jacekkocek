@@ -348,6 +348,7 @@ client.on('message', message => {
           message.channel.members.each(u => {
             m[u.username] = 0;
           });
+          console.log("MMMM: "+m);
           Object.keys(m).forEach(u => {
             mentionUsers = mentionUsers + "@" + u;
             if (m[u] == 0) mentionUsers = mentionUsers + "?";
@@ -395,13 +396,11 @@ client.on("messageReactionAdd", (messageReaction) => {
       console.log("Reaction " + emojiName);
       if (weekDayNames.indexOf(emojiName) != -1) {
         console.log("Yes");
-        console.log(reactionUser);
         reactionMessage.channel.send(reactionUser.username + ": Yes");
         kinoMessageUsers[reactionUser.username] = 1;
       }
       if (emojiName == "white_cross") {
         console.log("No");
-        console.log(reactionUser);
         reactionMessage.channel.send(reactionUser.username + ": No");
         kinoMessageUsers[reactionUser.username] = 2;
       }
