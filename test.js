@@ -342,7 +342,11 @@ client.on('message', message => {
           startGoogleSearch(argument, message, 2);
           //let weekDays = "   po        út         st         čt         pá        so        ne";
           
-          message.channel.send("Bude **" + argument + "**?").then((m) => {
+          let mentionUsers = "";
+          message.channel.members.each(u => {
+            mentionUsers=mentionUsers+u.toString()+"\n";
+          });
+          message.channel.send("Bude **" + argument + "**?\n"+mentionUsers).then((m) => {
             /*for (let i = 1; i <= 7; i++) {
               //message.channel.send(argument.charAt(i));
               m.react(letterEmoji["" + i]);
@@ -375,12 +379,12 @@ client.on("messageReactionAdd",(messageReaction)=>{
     if(weekDayNames.indexOf(messageReaction.emoji.name)!=-1){
       console.log("Yes");
       console.log(messageReaction.users.cache.last());
-      messageReaction.message.channel.send(messageReaction.users.cache.last()+": Yes");
+      messageReaction.message.channel.send(messageReaction.users.cache.last().username+": Yes");
     }
     if(messageReaction.emoji.name=="white_cross"){
       console.log("No");
       console.log(messageReaction.users.cache.last());
-      messageReaction.message.channel.send(messageReaction.users.cache.last()+": No");
+      messageReaction.message.channel.send(messageReaction.users.cache.last().username+": No");
     }
   }
 });
