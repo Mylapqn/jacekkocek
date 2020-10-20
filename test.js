@@ -371,7 +371,7 @@ client.on('message', message => {
 
 client.on("messageReactionAdd",(messageReaction)=>{
   if(kinoMessages.indexOf(messageReaction.message)!= -1){
-    console.log("Reaction");
+    console.log("Reaction "+ messageReaction.emoji.identifier);
     if(weekDayNames.indexOf(messageReaction.emoji.identifier)!=-1){
       console.log("Yes");
       console.log(messageReaction.users.cache.last());
