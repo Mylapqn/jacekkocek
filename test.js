@@ -101,6 +101,7 @@ var letterEmoji = {
 };
 
 var kinoMessages = [];
+var kinoMessageUsers = [];
 var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
