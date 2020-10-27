@@ -102,6 +102,7 @@ var letterEmoji = {
 
 var kinoMessages = [];
 var kinoMessageUsers = [];
+var kinoData = new Map();
 var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
@@ -343,28 +344,34 @@ client.on('message', message => {
           startGoogleSearch(argument, message, 2);
           //let weekDays = "   po        út         st         čt         pá        so        ne";
 
-          let mentionUsers = "";
+          let film = argument.toLowerCase();
+          let newMessage = "";
           let m = {};
+
+          let obj = {
+            filmName: toTitleCase(film),
+            message: message,
+            users: new Map()
+          }
+
           message.channel.members.each(u => {
             if (u.user != client.user) {
               console.log(u.user.username);
-              m[u.user.username] = {response:0,mention:u.toString()};
+              //m[u.user.username] = {response:0,mention:u.toString()};
+              obj.users.set(u.user.username, { response: 0, mention: u.toString() });
             }
           });
-          console.log(m);
-          Object.keys(m).forEach(u => {
-            if (m[u].response == 0) mentionUsers = mentionUsers + "❓ ";
-            if (m[u].response == 1) mentionUsers = mentionUsers + "✅ ";
-            if (m[u].response == 2) mentionUsers = mentionUsers + "<:white_cross:767907092907687956> ";
-            mentionUsers = mentionUsers + m[u].mention;
-            mentionUsers = mentionUsers + "\n";
+          //console.log(m);
+          obj.users.forEach(u => {
+            if (u.response == 0) newMessage = newMessage + "❓ ";
+            if (u.response == 1) newMessage = newMessage + "✅ ";
+            if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
+            newMessage = newMessage + u.mention;
+            newMessage = newMessage + "\n";
           });
-          kinoMessageUsers.push({users:m,film:argument});
-          message.channel.send("Bude **" + argument + "**?\n" + mentionUsers).then((m) => {
-            /*for (let i = 1; i <= 7; i++) {
-              //message.channel.send(argument.charAt(i));
-              m.react(letterEmoji["" + i]);
-            }*/
+          //kinoMessageUsers.push({users:m,film:argument});
+
+          message.channel.send("Bude **" + obj.filmName + "**?\n" + newMessage).then((m) => {
             m.react("767907091469828106");
             m.react("767907090709872661");
             m.react("767907091125895178");
@@ -373,9 +380,10 @@ client.on('message', message => {
             m.react("767907093222916126");
             m.react("767907093352153118");
             m.react("767907092907687956");
-            kinoMessages.push(m);
+            //kinoMessages.push(m);
+            obj.message = m;
           });
-
+          kinoData.set(film, obj);
 
           break;
 
@@ -388,35 +396,47 @@ client.on('message', message => {
 });
 
 client.on("messageReactionAdd", (messageReaction) => {
-  let ind = kinoMessages.indexOf(messageReaction.message);
-  if (ind != -1) {
+  //let ind = kinoMessages.indexOf(messageReaction.message);
+  let kinoEntry = -1;
+
+  kinoData.forEach(obj => {
+    if (obj.message.id == messageReaction.message.id) {
+      kinoEntry = obj;
+      return;
+    }
+  });
+
+  if (kinoEntry != -1) {
 
     let emojiName = messageReaction.emoji.name;
     let reactionUser = messageReaction.users.cache.last();
     let reactionMessage = messageReaction.message;
+
     if (reactionUser != client.user) {
 
       console.log("Reaction " + emojiName);
       if (weekDayNames.indexOf(emojiName) != -1) {
-        console.log("Yes");
+        //console.log("Yes");
         //reactionMessage.channel.send(reactionUser.username + ": Yes");
-        kinoMessageUsers[ind].users[reactionUser.username].response = 1;
+        kinoEntry.users.get(reactionUser.username).response = 1;
       }
       if (emojiName == "white_cross") {
-        console.log("No");
+        //console.log("No");
         //reactionMessage.channel.send(reactionUser.username + ": No");
-        kinoMessageUsers[ind].users[reactionUser.username].response = 2;
+        kinoEntry.users.get(reactionUser.username).response = 2;
       }
-      let mentionUsers = "";
-      Object.keys(kinoMessageUsers[ind].users).forEach(uName => {
-        let u = kinoMessageUsers[ind].users[uName];
-        if (u.response == 0) mentionUsers = mentionUsers + "❓ ";
-        if (u.response == 1) mentionUsers = mentionUsers + "✅ ";
-        if (u.response == 2) mentionUsers = mentionUsers + "<:white_cross:767907092907687956> ";
-        mentionUsers = mentionUsers + u.mention;
-        mentionUsers = mentionUsers + "\n";
+
+      let newMessage = "";
+      obj.users.forEach(u => {
+        if (u.response == 0) newMessage = newMessage + "❓ ";
+        if (u.response == 1) newMessage = newMessage + "✅ ";
+        if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
+        newMessage = newMessage + u.mention;
+        newMessage = newMessage + "\n";
       });
-      reactionMessage.edit("Bude **" + kinoMessageUsers[ind].film + "**?\n" + mentionUsers);
+      //kinoMessageUsers.push({users:m,film:argument});
+
+      reactionMessage.edit("Bude **" + obj.filmName + "**?\n" + newMessage)
     }
   }
 });
@@ -590,3 +610,11 @@ function googleSearch(cx, searchTerm, message) {
     });
   });
 }
+
+function toTitleCase(phrase) {
+  return phrase
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
