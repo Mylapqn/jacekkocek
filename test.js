@@ -394,6 +394,7 @@ client.on('message', message => {
           break;
         }
         case "kinoReset": {
+          message.delete();
           let film = argument.toLowerCase();
           if (kinoData.has(film)) {
             kinoData.delete(film);
@@ -405,6 +406,7 @@ client.on('message', message => {
           break;
         }
         case "kinoRemind": {
+          message.delete();
           let film = argument.toLowerCase();
           if (kinoData.has(film)) {
             let kinoEntry = kinoData.get(film);
