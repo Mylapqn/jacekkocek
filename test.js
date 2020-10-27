@@ -83,6 +83,22 @@ var helpCommands = [
     prefix: true,
     arguments: "film",
     description: "Start vote on kino",
+    longDescription: "Sends a message where users can react whether (and when) they want to watch the film or not. Also tries to find and send short info about the film."
+  },
+  {
+    name: "kinoReset",
+    prefix: true,
+    arguments: "film",
+    description: "Cancel an ongoing vote on this film",
+    longDescription: "If there is an ongoing vote on this specific film, it is cancelled so you can start it again.\nYou do not have to use this if you want to start a new vote for a different film."
+
+  },
+  {
+    name: "kinoRemind",
+    prefix: true,
+    arguments: "film",
+    description: "Ping all users who want to watch the film",
+    longDescription: "If there is an ongoing vote on this film, everyone who reacted positively on the original vote message gets pinged. Also sends a link to the original message."
   },
 ];
 var helpAdminCommands = [
@@ -93,6 +109,16 @@ var helpAdminCommands = [
     description: "List letter emoji",
   }
 ];
+
+var changelog = {
+  version: 1.5,
+  commands: ["kinoRemind", "kinoReset"],
+  changes: [
+    "Added support for removing reactions on kino",
+    "There cannot be more than one ongoing vote on the same film anymore",
+    "Kino now formats film names properly"
+  ]
+};
 
 var letterEmoji = {
   a: "🇦", b: "🇧", c: "🇨", d: "🇩", e: "🇪", f: "🇫", g: "🇬", h: "🇭", i: "🇮", j: "🇯", k: "🇰", l: "🇱", m: "🇲", n: "🇳", o: "🇴", p: "🇵", q: "🇶", r: "🇷", s: "🇸", t: "🇹", u: "🇺", v: "🇻", w: "🇼", x: "🇽", y: "🇾", z: "🇿",
@@ -197,6 +223,47 @@ client.on('message', message => {
           message.channel.send(result);
           console.log(result, emoji);
           break;
+        case "version": {
+          message.delete();
+          let commandChanges = "";
+          let changeChanges = "";
+          changelog.newCommands.forEach(commandName => {
+            let c = -1;
+            helpCommands.forEach(helpEntry => {
+              if (helpEntry.name == commandName) {
+                c = helpEntry;
+                return;
+              }
+            });
+            if (c != -1) {
+              commandChanges += "`";
+              if (c.prefix) helpBasic += prefix;
+              commandChanges += c.name;
+              if (c.arguments != "") commandChanges += " <" + c.arguments + ">";
+              commandChanges += "` - " + c.description;
+              commandChanges += "\n";
+            }
+          });
+          changelog.newCommands.forEach(str => {
+            changeChanges += "- ";
+            changeChanges += str;
+            changeChanges += "\n";
+          });
+          message.channel.send({
+            embed: {
+              title: "JacekKocek v" + changelog.version, description: "Released " + changelog.releaseDate, fields: [
+                {
+                  name: "New commands", value: commandChanges
+                },
+                {
+                  name: "Changes", value: changeChanges
+                },
+
+              ]
+            }
+          });
+          break;
+        }
         case "help":
 
           /*message.channel.send({
@@ -215,7 +282,7 @@ client.on('message', message => {
 
             var helpBasic = "";
             helpCommands.forEach(command => {
-              helpBasic += "`"
+              helpBasic += "`";
               if (command.prefix) helpBasic += prefix;
               helpBasic += command.name;
               if (command.arguments != "") helpBasic += " <" + command.arguments + ">";
@@ -224,7 +291,7 @@ client.on('message', message => {
             });
             var helpAdmin = "";
             helpAdminCommands.forEach(command => {
-              helpAdmin += "`"
+              helpAdmin += "`";
               if (command.prefix) helpAdmin += prefix;
               helpAdmin += command.name;
               if (command.arguments != "") helpAdmin += " " + command.arguments;
