@@ -248,7 +248,7 @@ client.on('message', message => {
               if (c.prefix) commandChanges += prefix;
               commandChanges += c.name;
               if (c.arguments != "") commandChanges += " <" + c.arguments + ">";
-              commandChanges += "` - " + c.description;
+              commandChanges += "` • " + c.description;
               commandChanges += "\n";
             }
           });
