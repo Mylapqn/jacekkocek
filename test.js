@@ -436,7 +436,7 @@ client.on("messageReactionAdd", (messageReaction) => {
       });
       //kinoMessageUsers.push({users:m,film:argument});
 
-      reactionMessage.edit("Bude **" + obj.filmName + "**?\n" + newMessage)
+      reactionMessage.edit("Bude **" + kinoEntry.filmName + "**?\n" + newMessage)
     }
   }
 });
