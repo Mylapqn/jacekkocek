@@ -427,7 +427,7 @@ client.on("messageReactionAdd", (messageReaction) => {
       }
 
       let newMessage = "";
-      obj.users.forEach(u => {
+      kinoEntry.users.forEach(u => {
         if (u.response == 0) newMessage = newMessage + "❓ ";
         if (u.response == 1) newMessage = newMessage + "✅ ";
         if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
