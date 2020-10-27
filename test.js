@@ -341,7 +341,7 @@ client.on('message', message => {
 
         case "kino": {
           message.delete();
-          startGoogleSearch(argument, message, 2);
+
           //let weekDays = "   po        út         st         čt         pá        so        ne";
 
           let film = argument.toLowerCase();
@@ -349,6 +349,7 @@ client.on('message', message => {
             message.channel.send("There is already a vote on **" + toTitleCase(film) + "**! Use `$kinoReset " + film + "` to reset the vote.");
           }
           else {
+            startGoogleSearch(argument, message, 2);
             let newMessage = "";
             let m = {};
 
@@ -413,7 +414,7 @@ client.on('message', message => {
               if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
               newMessage = newMessage + "\n";
             });
-            message.channel.send(newMessage + "\nBude **" + kinoEntry.filmName + "**?\n" + kinoEntry.message.url);
+            message.channel.send(newMessage + "Bude **" + kinoEntry.filmName + "**?\n" + kinoEntry.message.url);
           }
           else {
             message.channel.send("Cannot find any vote for this film :disappointed:");
