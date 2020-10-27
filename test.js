@@ -112,6 +112,7 @@ var helpAdminCommands = [
 
 var changelog = {
   version: 1.5,
+  releaseDate: "27.10.2020",
   commands: ["kinoRemind", "kinoReset"],
   changes: [
     "Added support for removing reactions on kino",
@@ -244,7 +245,7 @@ client.on('message', message => {
               commandChanges += "\n";
             }
           });
-          changelog.commands.forEach(str => {
+          changelog.changes.forEach(str => {
             changeChanges += "- ";
             changeChanges += str;
             changeChanges += "\n";
