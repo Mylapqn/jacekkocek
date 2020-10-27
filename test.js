@@ -117,7 +117,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.5.1",
+  version: "1.5.2",
   releaseDate: "27.10.2020",
   commands: ["kinoRemind", "kinoReset", "version"],
   changes: [
@@ -244,7 +244,7 @@ client.on('message', message => {
             });
             if (c != -1) {
               commandChanges += "`";
-              if (c.prefix) helpBasic += prefix;
+              if (c.prefix) commandChanges += prefix;
               commandChanges += c.name;
               if (c.arguments != "") commandChanges += " <" + c.arguments + ">";
               commandChanges += "` - " + c.description;
