@@ -410,20 +410,22 @@ client.on("messageReactionAdd", (messageReaction) => {
 
     let emojiName = messageReaction.emoji.name;
     let reactionUser = messageReaction.users.cache.last();
+    let kinoUser = kinoEntry.users.get(reactionUser.username);
     let reactionMessage = messageReaction.message;
 
     if (reactionUser != client.user) {
 
       console.log("Reaction " + emojiName);
       if (weekDayNames.indexOf(emojiName) != -1) {
-        //console.log("Yes");
-        //reactionMessage.channel.send(reactionUser.username + ": Yes");
-        kinoEntry.users.get(reactionUser.username).response = 1;
-      }
-      if (emojiName == "white_cross") {
-        //console.log("No");
-        //reactionMessage.channel.send(reactionUser.username + ": No");
-        kinoEntry.users.get(reactionUser.username).response = 2;
+        
+        kinoUser.reactionCount++;
+
+        if (emojiName == "white_cross") {
+          kinoUser.response = 2;
+        }
+        else {
+          kinoUser.response = 1;
+        }
       }
 
       updateKinoMessage(kinoEntry);
