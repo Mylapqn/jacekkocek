@@ -227,7 +227,7 @@ client.on('message', message => {
           message.delete();
           let commandChanges = "";
           let changeChanges = "";
-          changelog.newCommands.forEach(commandName => {
+          changelog.commands.forEach(commandName => {
             let c = -1;
             helpCommands.forEach(helpEntry => {
               if (helpEntry.name == commandName) {
@@ -244,7 +244,7 @@ client.on('message', message => {
               commandChanges += "\n";
             }
           });
-          changelog.newCommands.forEach(str => {
+          changelog.commands.forEach(str => {
             changeChanges += "- ";
             changeChanges += str;
             changeChanges += "\n";
