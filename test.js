@@ -339,7 +339,7 @@ client.on('message', message => {
           addCringe(message.member);
           break;
 
-        case "kino":
+        case "kino": {
           message.delete();
           startGoogleSearch(argument, message, 2);
           //let weekDays = "   po        út         st         čt         pá        so        ne";
@@ -391,32 +391,35 @@ client.on('message', message => {
           }
 
           break;
-        case "kinoReset":
+        }
+        case "kinoReset": {
           let film = argument.toLowerCase();
           if (kinoData.has(film)) {
             kinoData.delete(film);
-            message.channel.send("The data for **"+ toTitleCase(film) + "** was successfully reset.");
+            message.channel.send("The data for **" + toTitleCase(film) + "** was successfully reset.");
           }
-          else{
+          else {
             message.channel.send("Cannot find any vote for this film :disappointed:");
           }
           break;
-        case "kinoRemind":
+        }
+        case "kinoRemind": {
           let film = argument.toLowerCase();
           if (kinoData.has(film)) {
             let kinoEntry = kinoData.get(film);
             let newMessage = "";
 
             kinoEntry.users.forEach(u => {
-              if (u.response == 1) newMessage = newMessage + "✅ "+ u.mention;
+              if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
               newMessage = newMessage + "\n";
             });
-            message.channel.send(newMessage+"\nBude **" + kinoEntry.filmName + "**?\n"+kinoEntry.message.url);
+            message.channel.send(newMessage + "\nBude **" + kinoEntry.filmName + "**?\n" + kinoEntry.message.url);
           }
-          else{
+          else {
             message.channel.send("Cannot find any vote for this film :disappointed:");
           }
           break;
+        }
 
         default:
           message.channel.send("Unknown command :disappointed:");
