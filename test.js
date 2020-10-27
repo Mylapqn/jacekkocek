@@ -100,6 +100,12 @@ var helpCommands = [
     description: "Ping all users who want to watch the film",
     longDescription: "If there is an ongoing vote on this film, everyone who reacted positively on the original vote message gets pinged. Also sends a link to the original message."
   },
+  {
+    name: "version",
+    prefix: true,
+    arguments: "",
+    description: "Short changelog of the latest release",
+  },
 ];
 var helpAdminCommands = [
   {
@@ -111,9 +117,9 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: 1.5,
+  version: "1.5.1",
   releaseDate: "27.10.2020",
-  commands: ["kinoRemind", "kinoReset"],
+  commands: ["kinoRemind", "kinoReset", "version"],
   changes: [
     "Added support for removing reactions on kino",
     "There cannot be more than one ongoing vote on the same film anymore",
