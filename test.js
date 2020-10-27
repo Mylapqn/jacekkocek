@@ -358,7 +358,7 @@ client.on('message', message => {
             if (u.user != client.user) {
               console.log(u.user.username);
               //m[u.user.username] = {response:0,mention:u.toString()};
-              obj.users.set(u.user.username, { response: 0, mention: u.toString() });
+              obj.users.set(u.user.username, { response: 0, reactionCount: 0, mention: u.toString() });
             }
           });
           //console.log(m);
@@ -426,21 +426,65 @@ client.on("messageReactionAdd", (messageReaction) => {
         kinoEntry.users.get(reactionUser.username).response = 2;
       }
 
-      let newMessage = "";
-      kinoEntry.users.forEach(u => {
-        if (u.response == 0) newMessage = newMessage + "❓ ";
-        if (u.response == 1) newMessage = newMessage + "✅ ";
-        if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
-        newMessage = newMessage + u.mention;
-        newMessage = newMessage + "\n";
-      });
-      //kinoMessageUsers.push({users:m,film:argument});
+      updateKinoMessage(kinoEntry);
 
-      reactionMessage.edit("Bude **" + kinoEntry.filmName + "**?\n" + newMessage)
     }
   }
 });
 
+client.on("messageReactionRemove", (messageReaction, user) => {
+  //let ind = kinoMessages.indexOf(messageReaction.message);
+  let kinoEntry = -1;
+
+  kinoData.forEach(obj => {
+    if (obj.message.id == messageReaction.message.id) {
+      kinoEntry = obj;
+      return;
+    }
+  });
+
+  if (kinoEntry != -1) {
+
+    let emojiName = messageReaction.emoji.name;
+    let kinoUser = kinoEntry.users.get(user.username);
+
+    if (user != client.user) {
+
+
+      kinoUser.reactionCount -= 1;
+
+      console.log("Reaction removed " + emojiName);
+
+      if (emojiName == "white_cross") {
+        if (kinoUser.reactionCount >= 1) {
+          kinoUser.response = 1;
+        }
+      }
+
+      if (kinoUser.reactionCount <= 0) {
+        kinoUser.response = 0;
+        kinoUser.reactionCount = 0;
+      }
+      updateKinoMessage(kinoEntry);
+
+    }
+  }
+});
+
+
+function updateKinoMessage(kinoEntry) {
+  let newMessage = "";
+  kinoEntry.users.forEach(u => {
+    if (u.response == 0) newMessage = newMessage + "❓ ";
+    if (u.response == 1) newMessage = newMessage + "✅ ";
+    if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
+    newMessage = newMessage + u.mention;
+    newMessage = newMessage + "\n";
+  });
+  //kinoMessageUsers.push({users:m,film:argument});
+
+  kinoEntry.message.edit("Bude **" + kinoEntry.filmName + "**?\n" + newMessage);
+}
 
 
 function cringeLeaderboard() {
