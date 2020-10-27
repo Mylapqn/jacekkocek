@@ -123,7 +123,8 @@ var changelog = {
   changes: [
     "Added support for removing reactions on kino",
     "There cannot be more than one ongoing vote on the same film anymore",
-    "Kino now formats film names properly"
+    "Kino now formats film names properly",
+    "f"
   ]
 };
 
