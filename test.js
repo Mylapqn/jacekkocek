@@ -415,17 +415,15 @@ client.on("messageReactionAdd", (messageReaction) => {
 
     if (reactionUser != client.user) {
 
+      kinoUser.reactionCount++;
       console.log("Reaction " + emojiName);
-      if (weekDayNames.indexOf(emojiName) != -1) {
-        
-        kinoUser.reactionCount++;
 
-        if (emojiName == "white_cross") {
-          kinoUser.response = 2;
-        }
-        else {
-          kinoUser.response = 1;
-        }
+      if (weekDayNames.indexOf(emojiName) != -1) {
+        //console.log("Current count: " + kinoUser.reactionCount);
+        kinoUser.response = 1;
+      }
+      if (emojiName == "white_cross") {
+        kinoUser.response = 2;
       }
 
       updateKinoMessage(kinoEntry);
@@ -456,6 +454,7 @@ client.on("messageReactionRemove", (messageReaction, user) => {
       kinoUser.reactionCount -= 1;
 
       console.log("Reaction removed " + emojiName);
+      //console.log("Current count: " + kinoUser.reactionCount);
 
       if (emojiName == "white_cross") {
         if (kinoUser.reactionCount >= 1) {
