@@ -401,7 +401,7 @@ client.on('message', message => {
             message.channel.send("The data for **" + toTitleCase(film) + "** was successfully reset.");
           }
           else {
-            message.channel.send("Cannot find any vote for this film :disappointed:");
+            message.channel.send("Cannot find any vote for **" + toTitleCase(film) + "** :disappointed:");
           }
           break;
         }
