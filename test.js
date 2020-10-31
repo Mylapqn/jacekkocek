@@ -142,6 +142,8 @@ var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 client.login(process.env.DISCORD_API_KEY);
 
+client.on('debug', console.log);
+
 client.on('ready', () => {
 
   console.log('I am ready! NEW 2');
@@ -501,7 +503,7 @@ client.on('message', message => {
         case "noise": {
           message.member.voice.channel.join().then(voice => {
             voice.setSpeaking(1);
-            voice.play("https://mylapqn.github.io/mam-hlad/Stirrings2.mp3");
+            voice.play("https://www.sample-videos.com/audio/mp3/wave.mp3");
           });
           break;
         }
