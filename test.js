@@ -498,6 +498,9 @@ client.on('message', message => {
           }
           break;
         }
+        case "noise": {
+          message.author.voice.channel.join();
+        }
 
         default:
           message.channel.send("Unknown command :disappointed:");
