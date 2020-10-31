@@ -499,7 +499,10 @@ client.on('message', message => {
           break;
         }
         case "noise": {
-          message.member.voice.channel.join();
+          message.member.voice.channel.join().then(voice => {
+            voice.play("https://raw.githubusercontent.com/Mylapqn/mam-hlad/master/Stirrings.mp3");
+          });
+          break;
         }
 
         default:
