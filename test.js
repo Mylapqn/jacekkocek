@@ -506,7 +506,7 @@ client.on('message', message => {
             console.log(voice);
             voice.setSpeaking(1);
             voice.play("https://www.sample-videos.com/audio/mp3/wave.mp3");
-          });
+          },function(e){console.log("REJECTED!!!",e)});
           break;
         }
 
