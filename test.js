@@ -79,6 +79,12 @@ var helpCommands = [
     description: "Send animated emoji",
   },
   {
+    name: ":loading:",
+    prefix: false,
+    arguments: "",
+    description: "Send animated emoji",
+  },
+  {
     name: "kino",
     prefix: true,
     arguments: "film",
@@ -117,9 +123,9 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.5.2b",
-  releaseDate: "27.10.2020",
-  commands: ["kinoRemind", "kinoReset", "version"],
+  version: "1.5.3",
+  releaseDate: "1.11.2020",
+  commands: ["kinoRemind", "kinoReset", "version", ":loading:"],
   changes: [
     "Added support for removing reactions on kino",
     "There cannot be more than one ongoing vote on the same film anymore",
@@ -179,6 +185,12 @@ client.on('message', message => {
 
       message.delete();
       message.channel.send(client.emojis.cache.get("708663999201411122").toString());
+
+    }
+    if (message.content === ':loading:') {
+
+      message.delete();
+      message.channel.send(client.emojis.cache.get("772234862652424203").toString());
 
     }
     if (message.content.toLowerCase() == "cringe") {
