@@ -499,7 +499,7 @@ client.on('message', message => {
           break;
         }
         case "noise": {
-          message.author.voice.channel.join();
+          message.member.voice.channel.join();
         }
 
         default:
