@@ -500,7 +500,7 @@ client.on('message', message => {
         }
         case "noise": {
           message.member.voice.channel.join().then(voice => {
-            voice.play("https://raw.githubusercontent.com/Mylapqn/mam-hlad/master/Stirrings.mp3");
+            voice.play("https://mylapqn.github.io/mam-hlad/Stirrings2.mp3");
           });
           break;
         }
