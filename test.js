@@ -140,9 +140,10 @@ var kinoData = new Map();
 var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
+
 client.login(process.env.DISCORD_API_KEY);
 
-client.on('debug', console.log);
+//client.on('debug', console.log);
 
 client.on('ready', () => {
 
@@ -500,15 +501,26 @@ client.on('message', message => {
           }
           break;
         }
-        case "noise": {
+        /*case "noise": {
           message.member.voice.channel.join().then(voice => {
+            const broadcast = client.voice.createBroadcast();
             console.log("CONNECTED TO VOICE!!!!!!!");
-            console.log(voice);
-            voice.setSpeaking(1);
-            voice.play("https://www.sample-videos.com/audio/mp3/wave.mp3");
-          },function(e){console.log("REJECTED!!!",e)});
+            //console.log(voice);
+            //voice.setSpeaking(1);
+
+            voice.play(broadcast);
+            setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
+            let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
+            dispatcher.on("end", function () { console.log("END"); });
+            dispatcher.on("speaking", function (e) {
+              console.log("SPEKING " + e);
+              if (e == 0) {
+                broadcast.play("noise.mp3", { volume: 0.1 });
+              }
+            });
+          }, function (e) { console.log("REJECTED!!!", e) });
           break;
-        }
+        }*/
 
         default:
           message.channel.send("Unknown command :disappointed:");
