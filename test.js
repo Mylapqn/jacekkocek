@@ -502,6 +502,8 @@ client.on('message', message => {
         }
         case "noise": {
           message.member.voice.channel.join().then(voice => {
+            console.log("CONNECTED TO VOICE!!!!!!!");
+            console.log(voice);
             voice.setSpeaking(1);
             voice.play("https://www.sample-videos.com/audio/mp3/wave.mp3");
           });
