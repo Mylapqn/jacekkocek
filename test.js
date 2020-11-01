@@ -526,7 +526,7 @@ client.on('message', message => {
             //console.log(voice);
             //voice.setSpeaking(1);
 
-            voice.play("noise.mp3",{ volume: 0.05 });
+            voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3",{ volume: 0.2 });
 
             /*voice.play(broadcast);
             setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
