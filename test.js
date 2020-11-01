@@ -129,7 +129,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.5.3",
+  version: "1.5.4",
   releaseDate: "1.11.2020",
   commands: ["kinoRemind", "kinoReset", "version", ":loading:"],
   changes: [
