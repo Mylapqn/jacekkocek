@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 //const Dotenv = require('dotenv');
 const Http = require('https');
-const { url } = require('inspector');
 //const { env } = require('process');
 //Dotenv.config();
 
@@ -112,6 +111,7 @@ var helpCommands = [
     arguments: "",
     description: "Short changelog of the latest release",
   },
+  
 ];
 var helpAdminCommands = [
   {
@@ -119,7 +119,13 @@ var helpAdminCommands = [
     prefix: true,
     arguments: "",
     description: "List letter emoji",
-  }
+  },
+  {
+    name: "noise",
+    prefix: true,
+    arguments: "",
+    description: "Play noise in your voice channel",
+  },
 ];
 
 var changelog = {
@@ -513,14 +519,16 @@ client.on('message', message => {
           }
           break;
         }
-        /*case "noise": {
+        case "noise": {
           message.member.voice.channel.join().then(voice => {
             const broadcast = client.voice.createBroadcast();
             console.log("CONNECTED TO VOICE!!!!!!!");
             //console.log(voice);
             //voice.setSpeaking(1);
 
-            voice.play(broadcast);
+            voice.play("noise.mp3",{ volume: 0.05 });
+
+            /*voice.play(broadcast);
             setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
             let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
             dispatcher.on("end", function () { console.log("END"); });
@@ -529,10 +537,10 @@ client.on('message', message => {
               if (e == 0) {
                 broadcast.play("noise.mp3", { volume: 0.1 });
               }
-            });
+            });*/
           }, function (e) { console.log("REJECTED!!!", e) });
           break;
-        }*/
+        }
 
         default:
           message.channel.send("Unknown command :disappointed:");
