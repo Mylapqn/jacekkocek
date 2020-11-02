@@ -157,13 +157,14 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.6.4",
+  version: "1.6.5",
   releaseDate: "2.11.2020",
   commands: ["song", "songs", "radio", "stop"],
   changes: [
     "Added support for playing audio in voice chat",
     "Added stream reading from server",
-    "Fixed bugs"
+    "Fixed bugs",
+    "Fixed kino member fetching"
   ]
 };
 
@@ -488,7 +489,7 @@ client.on('message', message => {
                 message: message,
                 users: new Map()
               }
-              
+
               message.guild.members.fetch().then(function(membersList){
                 membersList.each(u => {
                   if (u.user != client.user) {
