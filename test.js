@@ -891,6 +891,6 @@ function randomInt(min,max){
 
 function alternateFluttershyColor(){
   fluttershy = !fluttershy;
-  if(fluttershy)return[250,245,171];
-  else return[243,181,207];
+  if(fluttershy)return[243,228,136];
+  else return[229,129,177];
 }
