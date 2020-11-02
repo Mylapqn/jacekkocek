@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 //const Dotenv = require('dotenv');
 const Http = require('https');
+const ytdl = require('ytdl-core');
 //const { env } = require('process');
 //Dotenv.config();
 
@@ -529,7 +530,7 @@ client.on('message', message => {
             voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
 
 
-            mlpSong(1);
+            mlpSong(1,voice);
             /*voice.play(broadcast);
             setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
             let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
@@ -552,6 +553,7 @@ client.on('message', message => {
   }
 });
 
+//#region KINO
 client.on("messageReactionAdd", (messageReaction) => {
   //let ind = kinoMessages.indexOf(messageReaction.message);
   let kinoEntry = -1;
@@ -643,8 +645,8 @@ function updateKinoMessage(kinoEntry) {
 
   kinoEntry.message.edit("Bude **" + kinoEntry.filmName + "**?\n" + newMessage);
 }
-
-
+//#endregion
+//#region CRINGE
 function cringeLeaderboard() {
   var tempScores = new Array(9);
   tempScores.fill(-1);
@@ -674,16 +676,6 @@ function cringeLeaderboard() {
   }
   return usedIDs;
 }
-
-function dateString(inputDate) {
-  var minutes = inputDate.getMinutes();
-  var hours = inputDate.getHours();
-  var day = inputDate.getDay();
-  var month = inputDate.getMonth();
-  var year = inputDate.getFullYear();
-  return (day + "." + month + "." + year + " " + hours + ":" + minutes);
-}
-
 function addCringe(member) {
   var user = member.user;
   if (cringeScore[user.username] != null) cringeScore[user.username]++;
@@ -698,7 +690,8 @@ function addCringe(member) {
     member.roles.add(cringelordRole);
   }
 }
-
+//#endregion
+//#region FIND FUNCTIONS
 function findRole(cache, name) {
   array = cache.array();
   for (var i = 0; i < array.length; i++) {
@@ -721,7 +714,8 @@ function findCommand(name) {
   }
   return null;
 }
-
+//#endregion
+//#region GOOGLE
 function startGoogleSearch(argument, message, type) {
 
   var cx;
@@ -812,6 +806,16 @@ function googleSearch(cx, searchTerm, message) {
     });
   });
 }
+//#endregion
+
+function dateString(inputDate) {
+  var minutes = inputDate.getMinutes();
+  var hours = inputDate.getHours();
+  var day = inputDate.getDay();
+  var month = inputDate.getMonth();
+  var year = inputDate.getFullYear();
+  return (day + "." + month + "." + year + " " + hours + ":" + minutes);
+}
 
 function toTitleCase(phrase) {
   return phrase
@@ -821,7 +825,7 @@ function toTitleCase(phrase) {
     .join(' ');
 };
 
-function mlpSong(index) {
+function mlpSong(index, voice) {
   let id = index;
   if (!id) id = Math.round(Math.random() * 202)
   Http.get("https://ponyweb.ml/v1/song/" + id, function (res) {
@@ -832,7 +836,8 @@ function mlpSong(index) {
     });
     res.on("end", function () {
       var parsed = JSON.parse(body.substring(9, body.length));
-      console.log(parsed.data);
+      console.log(parsed.data[0].video);
+      voice.play(ytdl(parsed.data[0].video,{filter:"audioonly"}));
     });
 });
 }
