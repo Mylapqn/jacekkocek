@@ -489,7 +489,10 @@ client.on('message', message => {
                 users: new Map()
               }
 
-              console.log(message.guild.members.fetch());
+              let prom = message.guild.members.fetch();
+              setTimeout(() => {
+                console.log(prom);
+              }, 5000);
               message.guild.members.fetch().then(function(membersList){
                 console.log("HUH???");
                 membersList.each(u => {
