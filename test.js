@@ -927,6 +927,8 @@ function playRadio(voice, channel) {
       let seektime = (current_time - parsed.current.StreamTime) / 1000.0;
       let timeout_time = (parsed.next.StreamTime - current_time);
 
+      console.log("Playing radio");
+
       voice.play("https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
 
       if (radioTimer) clearTimeout(radioTimer);
@@ -973,6 +975,8 @@ function radioApiKey() {
     res.on("end", function () {
       var parsed = JSON.parse(body.substring(9, body.length));
       radioApiKey = parsed.key;
+      console.log(body);
+      console.log(parsed);
     });
   });
 }
