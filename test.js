@@ -546,7 +546,7 @@ client.on('message', message => {
             message.member.voice.channel.join().then(voice => {
               const broadcast = client.voice.createBroadcast();
               console.log("CONNECTED TO VOICE!!!!!!!");
-              mlpSong(voice, "",true);
+              mlpSong(voice, argument,true);
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
