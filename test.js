@@ -489,7 +489,7 @@ client.on('message', message => {
                 users: new Map()
               }
 
-              message.guild.members.fetch().then(membersList => {
+              message.guild.members.fetch().then(function(membersList){
                 console.log("HUH???");
                 membersList.each(u => {
                   if (u.user != client.user) {
@@ -521,7 +521,7 @@ client.on('message', message => {
                   obj.message = m;
                 });
                 kinoData.set(film, obj);
-              });
+              }).catch(console.log);
 
             }
           } else {
