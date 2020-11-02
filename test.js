@@ -112,6 +112,26 @@ var helpCommands = [
     arguments: "",
     description: "Short changelog of the latest release",
   },
+  {
+    name: "song",
+    prefix: true,
+    arguments: "song name or id",
+    description: "Play one song in your voice chat",
+    longDescription: "Play one song in your voice chat. The argument can be song name, song id, or nothing for a random song."
+  },
+  {
+    name: "radio",
+    prefix: true,
+    arguments: "song name or id",
+    description: "Start playing songs in your voice chat",
+    longDescription: "Start playing songs in your voice chat. The starting song can be specified, the following ones will be random.\nThe argument can be song name, song id, or nothing for a random song."
+  },
+  {
+    name: "stop",
+    prefix: true,
+    arguments: "",
+    description: "Stop the currently playing song",
+  },
 
 ];
 var helpAdminCommands = [
@@ -130,14 +150,11 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.5.4",
-  releaseDate: "1.11.2020",
-  commands: ["kinoRemind", "kinoReset", "version", ":loading:"],
+  version: "1.6.0",
+  releaseDate: "2.11.2020",
+  commands: ["song", "radio", "stop"],
   changes: [
-    "Added support for removing reactions on kino",
-    "There cannot be more than one ongoing vote on the same film anymore",
-    "Kino now formats film names properly",
-    "f"
+    "Added support for playing audio in voice chat"
   ]
 };
 
