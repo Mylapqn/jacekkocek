@@ -906,7 +906,7 @@ function mlpSong(voice, index, autoplay, channel) {
         if (autoplay) {
           radioTimer = setTimeout(function () {
             mlpSong(voice, "", true, channel);
-          }, songData.length * 1000 + 4000);
+          }, songData.length * 1000 + 6000);
         }
       }
       else {
@@ -939,7 +939,7 @@ function playRadio(voice, channel) {
       if (channel) {
         channel.send({
           embed: {
-            title: "► " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
+            title: "♫ " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
             color: alternateFluttershyColor(),
             footer: { text: "Next: " + parsed.next.Name }
           }
