@@ -854,17 +854,27 @@ function mlpSong(voice, index, autoplay, channel) {
 
       var parsed = JSON.parse(body.substring(9, body.length));
       if (parsed.data.length > 0) {
+        let songData = parsed.data[0];
         if (radioTimer) clearTimeout(radioTimer);
         console.log("Playing song, argument: " + id + " data:");
-        console.log(parsed.data[0].video);
+        console.log(songData.video);
         if (channel) {
-          channel.send("Now playing: "+parsed.data[0].name);
+          channel.send("Now playing: " + songData.name);
+          message.channel.send("Koče", {
+            embed: {
+              title: songData.name, description: songData.episode, fields: [
+                {
+                  name: "Length", value: songData.length + " seconds"
+                }
+              ]
+            }
+          });
         }
-        voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }), { volume: 0.5 });
+        voice.play(ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
         if (autoplay) {
           radioTimer = setTimeout(function () {
             mlpSong(voice, "", true, channel);
-          }, parsed.data[0].length * 1000 + 4000);
+          }, songData.length * 1000 + 4000);
         }
       }
       else {
