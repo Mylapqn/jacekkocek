@@ -874,11 +874,13 @@ function mlpSong(voice, index, autoplay, channel) {
     res.on("end", function () {
 
       var parsed = JSON.parse(body.substring(9, body.length));
+      let nextSong = 0;
       if (parsed.data.length > 0) {
         let songData = parsed.data[0];
         if (radioTimer) clearTimeout(radioTimer);
         console.log("Playing song, argument: " + id + " data:");
-        console.log(songData.video);
+        nextSong = songData.length;
+        //console.log(songData.video);
         if (channel) {
           channel.send({
             embed: {
@@ -888,11 +890,11 @@ function mlpSong(voice, index, autoplay, channel) {
           });
         }
         voice.play(ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
-        if (autoplay) {
-          radioTimer = setTimeout(function () {
-            mlpSong(voice, "", true, channel);
-          }, songData.length * 1000 + 6000);
-        }
+      }
+      if (autoplay) {
+        radioTimer = setTimeout(function () {
+          mlpSong(voice, "", true, channel);
+        }, nextSong * 1000 + 6000);
       }
       else {
         console.log("No song found, argument:", id);
