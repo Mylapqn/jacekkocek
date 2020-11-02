@@ -552,7 +552,7 @@ client.on('message', message => {
 
             //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
 
-            mlpSong(argument, voice);
+            mlpSong(voice,argument);
             /*voice.play(broadcast);
             setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
             let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
