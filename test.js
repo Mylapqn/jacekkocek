@@ -157,11 +157,12 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.6.0",
+  version: "1.6.2",
   releaseDate: "2.11.2020",
-  commands: ["song", "radio", "stop"],
+  commands: ["song", "songs", "radio", "stop"],
   changes: [
-    "Added support for playing audio in voice chat"
+    "Added support for playing audio in voice chat",
+    "Added stream reading from server"
   ]
 };
 
@@ -859,23 +860,7 @@ function googleSearch(cx, searchTerm, message) {
   });
 }
 //#endregion
-
-function dateString(inputDate) {
-  var minutes = inputDate.getMinutes();
-  var hours = inputDate.getHours();
-  var day = inputDate.getDay();
-  var month = inputDate.getMonth();
-  var year = inputDate.getFullYear();
-  return (day + "." + month + "." + year + " " + hours + ":" + minutes);
-}
-
-function toTitleCase(phrase) {
-  return phrase
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
+//#region SONGS
 
 function mlpSong(voice, index, autoplay, channel) {
   let id = index;
@@ -926,46 +911,34 @@ function playRadio(voice, channel) {
     res.on("end", function () {
 
       var parsed = JSON.parse(body.substring(9, body.length));
+      let timeout_time = 0;
 
-      let current_time = Date.now() + radioServerPing;
-      let seektime = (current_time - parsed.current.StreamTime) / 1000.0;
-      let timeout_time = (parsed.next.StreamTime - current_time);
+      if (parsed.current) {
+        let current_time = Date.now() + radioServerPing;
+        let seektime = (current_time - parsed.current.StreamTime) / 1000.0;
+        timeout_time = parsed.next.StreamTime - current_time;
 
-      console.log("Playing radio");
+        console.log("Playing radio");
 
-      voice.play("https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
+        voice.play("https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
 
-      if (radioTimer) clearTimeout(radioTimer);
-      if (channel) {
-        channel.send({
-          embed: {
-            title: "♫ " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
-            color: alternateFluttershyColor(),
-            footer: { text: "Next: " + parsed.next.Name }
-          }
-        });
+        if (radioTimer) clearTimeout(radioTimer);
+        if (channel) {
+          channel.send({
+            embed: {
+              title: "♫ " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
+              color: alternateFluttershyColor(),
+              footer: { text: "Next: " + parsed.next.Name }
+            }
+          });
+        }
       }
-
       radioTimer = setTimeout(() => {
         playRadio(voice, channel);
       }, timeout_time);
 
     });
   });
-}
-
-function randomInt(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
-}
-
-function alternateFluttershyColor() {
-  fluttershy = !fluttershy;
-  if (fluttershy) return [243, 228, 136];
-  else return [229, 129, 177];
-}
-
-function addZero(x) {
-  return String("0" + x).slice(-2);
 }
 
 function radioApiKey() {
@@ -980,7 +953,40 @@ function radioApiKey() {
       var parsed = JSON.parse(body.substring(9, body.length));
       radioApiKey = parsed.key;
       radioServerPing = parsed.time - startTime;
-      console.log("Server ping: "+radioServerPing);
+      console.log("Server ping: " + radioServerPing);
     });
   });
 }
+function addZero(x) {
+  return String("0" + x).slice(-2);
+}
+function alternateFluttershyColor() {
+  fluttershy = !fluttershy;
+  if (fluttershy) return [243, 228, 136];
+  else return [229, 129, 177];
+}
+
+//#endregion
+
+function dateString(inputDate) {
+  var minutes = inputDate.getMinutes();
+  var hours = inputDate.getHours();
+  var day = inputDate.getDay();
+  var month = inputDate.getMonth();
+  var year = inputDate.getFullYear();
+  return (day + "." + month + "." + year + " " + hours + ":" + minutes);
+}
+
+function toTitleCase(phrase) {
+  return phrase
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+function randomInt(min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
+
