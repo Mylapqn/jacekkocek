@@ -910,8 +910,6 @@ function mlpSong(voice, index, autoplay, channel) {
 }
 
 function playRadio(voice, channel) {
-  let id = index;
-  if (!index || index == "") id = Math.round(Math.random() * 202)
   Http.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey, function (res) {
     console.log(res.statusCode);
     var body;
