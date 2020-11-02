@@ -569,6 +569,12 @@ client.on('message', message => {
           break;
         }
 
+        case "stop": {
+          let v = message.guild.voice;
+          if(v)v.connection.dispatcher.pause();
+          break;
+        }
+
         default:
           message.channel.send("Unknown command :disappointed:");
 
