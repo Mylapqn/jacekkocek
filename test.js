@@ -859,12 +859,11 @@ function mlpSong(voice, index, autoplay, channel) {
         console.log("Playing song, argument: " + id + " data:");
         console.log(songData.video);
         if (channel) {
-          channel.send("Now playing: " + songData.name);
-          channel.send("Koče", {
+          channel.send("Now playing: ", {
             embed: {
-              title: songData.name, description: songData.episode, fields: [
+              title: songData.name, description: "From ***" + songData.episode + "***", fields: [
                 {
-                  name: "Length", value: songData.length + " seconds"
+                  name: "Now playing", value: songData.length + " seconds"
                 }
               ]
             }
