@@ -527,10 +527,10 @@ client.on('message', message => {
             //console.log(voice);
             //voice.setSpeaking(1);
 
-            voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+            //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
 
 
-            mlpSong(1,voice);
+            mlpSong(voice);
             /*voice.play(broadcast);
             setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
             let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
@@ -825,7 +825,7 @@ function toTitleCase(phrase) {
     .join(' ');
 };
 
-function mlpSong(index, voice) {
+function mlpSong(voice,index) {
   let id = index;
   if (!id) id = Math.round(Math.random() * 202)
   Http.get("https://ponyweb.ml/v1/song/" + id, function (res) {
