@@ -490,6 +490,7 @@ client.on('message', message => {
               }
 
               message.guild.members.fetch().then(membersList => {
+                console.log("HUH???");
                 membersList.each(u => {
                   if (u.user != client.user) {
                     console.log(u.user.username);
