@@ -883,7 +883,7 @@ function mlpSong(voice, index, autoplay, channel) {
         if (channel) {
           channel.send("Now playing:",{
             embed: {
-              title: "► "+songData.name, description: addZero(Math.floor(songData.length/60)) + ":"+addZero(songData.length%60)+" | From *" + songData.episode + "*",
+              title: "► "+songData.name, description: Math.floor(songData.length/60) + ":"+addZero(songData.length%60)+" | From *" + songData.episode + "*",
               color: alternateFluttershyColor()
             }
           });
