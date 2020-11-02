@@ -489,7 +489,7 @@ client.on('message', message => {
                 users: new Map()
               }
 
-              message.guild.members.each(u => {
+              message.guild.members.cache.each(u => {
                 if (u.user != client.user) {
                   console.log(u.user.username);
                   //m[u.user.username] = {response:0,mention:u.toString()};
