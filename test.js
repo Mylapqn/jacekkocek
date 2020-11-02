@@ -732,7 +732,7 @@ function addCringe(member) {
     //cringelordRole = member.guild.roles.cache.find(r => r.name = "Cringelord");
     //console.log(member.guild.roles.cache);
     cringelordRole = findRole(member.guild.roles.cache, "Cringelord");
-    cringelordRole.members.each(m => { m.roles.remove(cringelordRole);console.log("Removing cringelord from "+m.username)});
+    cringelordRole.members.each(m => { m.roles.remove(cringelordRole);console.log("Removing cringelord from "+m.nickname)});
     member.roles.add(cringelordRole);
   }
 }
