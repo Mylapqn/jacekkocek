@@ -120,11 +120,18 @@ var helpCommands = [
     longDescription: "Play one song in your voice chat. The argument can be song name, song id, or nothing for a random song."
   },
   {
-    name: "radio",
+    name: "songs",
     prefix: true,
     arguments: "song name or id",
     description: "Start playing songs in your voice chat",
     longDescription: "Start playing songs in your voice chat. The starting song can be specified, the following ones will be random.\nThe argument can be song name, song id, or nothing for a random song."
+  },
+  {
+    name: "radio",
+    prefix: true,
+    arguments: "",
+    description: "Start playing synchronised radio from server",
+    longDescription: "Start playing synchronised radio from server. You cannot specify which song to play."
   },
   {
     name: "stop",
@@ -171,7 +178,8 @@ var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 var radioTimer;
 var fluttershy = true;
-
+var radioApiKey;
+radioApiKey();
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
@@ -545,9 +553,6 @@ client.on('message', message => {
           message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
-              currentVoiceChannel = voice;
-              const broadcast = client.voice.createBroadcast();
-              console.log("CONNECTED TO VOICE!!!!!!!");
               voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
@@ -556,10 +561,15 @@ client.on('message', message => {
           message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
-              const broadcast = client.voice.createBroadcast();
-              console.log("CONNECTED TO VOICE!!!!!!!");
               mlpSong(voice, argument, false, message.channel);
-
+            }, function (e) { console.log("REJECTED!!!", e) });
+          break;
+        }
+        case "songs": {
+          message.delete();
+          if (message.member.voice.channel)
+            message.member.voice.channel.join().then(voice => {
+              mlpSong(voice, argument, true, message.channel);
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
@@ -567,10 +577,7 @@ client.on('message', message => {
           message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
-              const broadcast = client.voice.createBroadcast();
-              console.log("CONNECTED TO VOICE!!!!!!!");
-              mlpSong(voice, argument, true, message.channel);
-
+              playRadio(voice, message.channel);
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
@@ -883,7 +890,7 @@ function mlpSong(voice, index, autoplay, channel) {
         if (channel) {
           channel.send({
             embed: {
-              title: "► "+songData.name, description: Math.floor(songData.length/60) + ":"+addZero(songData.length%60)+" | From *" + songData.episode + "*",
+              title: "► " + songData.name, description: Math.floor(songData.length / 60) + ":" + addZero(songData.length % 60) + " | From *" + songData.episode + "*",
               color: alternateFluttershyColor()
             }
           });
@@ -902,16 +909,70 @@ function mlpSong(voice, index, autoplay, channel) {
   });
 }
 
-function randomInt(min,max){
-  return Math.round(Math.random()*(max-min)+min);
+function playRadio(voice, channel) {
+  let id = index;
+  if (!index || index == "") id = Math.round(Math.random() * 202)
+  Http.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey, function (res) {
+    console.log(res.statusCode);
+    var body;
+    res.on("data", function (data) {
+      body += data;
+    });
+    res.on("end", function () {
+
+      var parsed = JSON.parse(body.substring(9, body.length));
+
+      let servertime_offset = 0;
+      let current_time = Date.now() + servertime_offset;
+      let seektime = (current_time - parsed.current.StreamTime) / 1000.0;
+      let timeout_time = (parsed.next.StreamTime - current_time);
+
+      voice.play("https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
+
+      if (radioTimer) clearTimeout(radioTimer);
+      console.log(parsed);
+      if (channel) {
+        channel.send({
+          embed: {
+            title: "► " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(parsed.current.PlayTime % 60) + " | From *" + parsed.current.Episode + "*",
+            color: alternateFluttershyColor(),
+            footer:"Next: "+parsed.next.Name
+          }
+        });
+      }
+
+      radioTimer = setTimeout(() => {
+        playRadio(voice, channel);
+      }, timeout_time);
+
+    });
+  });
 }
 
-function alternateFluttershyColor(){
+function randomInt(min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
+function alternateFluttershyColor() {
   fluttershy = !fluttershy;
-  if(fluttershy)return[243,228,136];
-  else return[229,129,177];
+  if (fluttershy) return [243, 228, 136];
+  else return [229, 129, 177];
 }
 
-function addZero(x){
+function addZero(x) {
   return String("0" + x).slice(-2);
+}
+
+function radioApiKey() {
+  Http.get("https://ponyweb.ml/api.php?keyrequest", function (res) {
+    console.log(res.statusCode);
+    var body;
+    res.on("data", function (data) {
+      body += data;
+    });
+    res.on("end", function () {
+      var parsed = JSON.parse(body.substring(9, body.length));
+      radioApiKey = parsed.key;
+    });
+  });
 }
