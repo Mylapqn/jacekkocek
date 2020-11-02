@@ -157,12 +157,13 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.6.3",
+  version: "1.6.4",
   releaseDate: "2.11.2020",
   commands: ["song", "songs", "radio", "stop"],
   changes: [
     "Added support for playing audio in voice chat",
-    "Added stream reading from server"
+    "Added stream reading from server",
+    "Fixed bugs"
   ]
 };
 
@@ -469,85 +470,97 @@ client.on('message', message => {
 
         case "kino": {
           message.delete();
+          if (argument) {
 
-          //let weekDays = "   po        út         st         čt         pá        so        ne";
+            //let weekDays = "   po        út         st         čt         pá        so        ne";
 
-          let film = argument.toLowerCase();
-          if (kinoData.has(film)) {
-            message.channel.send("There is already a vote on **" + toTitleCase(film) + "**! Use `$kinoReset " + film + "` to reset the vote.");
-          }
-          else {
-            startGoogleSearch(argument, message, 2);
-            let newMessage = "";
-            let m = {};
-
-            let obj = {
-              filmName: toTitleCase(film),
-              message: message,
-              users: new Map()
+            let film = argument.toLowerCase();
+            if (kinoData.has(film)) {
+              message.channel.send("There is already a vote on **" + toTitleCase(film) + "**! Use `$kinoReset " + film + "` to reset the vote.");
             }
+            else {
+              startGoogleSearch(argument, message, 2);
+              let newMessage = "";
+              let m = {};
 
-            message.channel.members.each(u => {
-              if (u.user != client.user) {
-                console.log(u.user.username);
-                //m[u.user.username] = {response:0,mention:u.toString()};
-                obj.users.set(u.user.username, { response: 0, reactionCount: 0, mention: u.toString() });
+              let obj = {
+                filmName: toTitleCase(film),
+                message: message,
+                users: new Map()
               }
-            });
-            //console.log(m);
-            obj.users.forEach(u => {
-              if (u.response == 0) newMessage = newMessage + "❓ ";
-              if (u.response == 1) newMessage = newMessage + "✅ ";
-              if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
-              newMessage = newMessage + u.mention;
-              newMessage = newMessage + "\n";
-            });
-            //kinoMessageUsers.push({users:m,film:argument});
 
-            message.channel.send("Bude **" + obj.filmName + "**?\n" + newMessage).then((m) => {
-              m.react("767907091469828106");
-              m.react("767907090709872661");
-              m.react("767907091125895178");
-              m.react("767907091880476732");
-              m.react("767907093205614622");
-              m.react("767907093222916126");
-              m.react("767907093352153118");
-              m.react("767907092907687956");
-              //kinoMessages.push(m);
-              obj.message = m;
-            });
-            kinoData.set(film, obj);
+              message.channel.members.each(u => {
+                if (u.user != client.user) {
+                  console.log(u.user.username);
+                  //m[u.user.username] = {response:0,mention:u.toString()};
+                  obj.users.set(u.user.username, { response: 0, reactionCount: 0, mention: u.toString() });
+                }
+              });
+              //console.log(m);
+              obj.users.forEach(u => {
+                if (u.response == 0) newMessage = newMessage + "❓ ";
+                if (u.response == 1) newMessage = newMessage + "✅ ";
+                if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
+                newMessage = newMessage + u.mention;
+                newMessage = newMessage + "\n";
+              });
+              //kinoMessageUsers.push({users:m,film:argument});
+
+              message.channel.send("Bude **" + obj.filmName + "**?\n" + newMessage).then((m) => {
+                m.react("767907091469828106");
+                m.react("767907090709872661");
+                m.react("767907091125895178");
+                m.react("767907091880476732");
+                m.react("767907093205614622");
+                m.react("767907093222916126");
+                m.react("767907093352153118");
+                m.react("767907092907687956");
+                //kinoMessages.push(m);
+                obj.message = m;
+              });
+              kinoData.set(film, obj);
+            }
+          } else {
+            message.channel.send("You need to specify a film! :angry:");
           }
 
           break;
         }
         case "kinoReset": {
           message.delete();
-          let film = argument.toLowerCase();
-          if (kinoData.has(film)) {
-            kinoData.delete(film);
-            message.channel.send("The data for **" + toTitleCase(film) + "** was successfully reset.");
-          }
-          else {
-            message.channel.send("Cannot find any vote for **" + toTitleCase(film) + "** :disappointed:");
+          if (argument) {
+            let film = argument.toLowerCase();
+            if (kinoData.has(film)) {
+              kinoData.delete(film);
+              message.channel.send("The data for **" + toTitleCase(film) + "** was successfully reset.");
+            }
+            else {
+              message.channel.send("Cannot find any vote for **" + toTitleCase(film) + "** :disappointed:");
+            }
+          } else {
+            message.channel.send("You need to specify a film! :angry:");
           }
           break;
         }
         case "kinoRemind": {
           message.delete();
-          let film = argument.toLowerCase();
-          if (kinoData.has(film)) {
-            let kinoEntry = kinoData.get(film);
-            let newMessage = "";
+          if (argument) {
+            let film = argument.toLowerCase();
+            if (kinoData.has(film)) {
+              let kinoEntry = kinoData.get(film);
+              let newMessage = "";
 
-            kinoEntry.users.forEach(u => {
-              if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
-              newMessage = newMessage + "\n";
-            });
-            message.channel.send(newMessage + "Bude **" + kinoEntry.filmName + "**?\n" + kinoEntry.message.url);
-          }
-          else {
-            message.channel.send("Cannot find any vote for **" + toTitleCase(film) + "** :disappointed:");
+              kinoEntry.users.forEach(u => {
+                if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
+                newMessage = newMessage + "\n";
+              });
+              message.channel.send(newMessage + "Bude **" + kinoEntry.filmName + "**?\n" + kinoEntry.message.url);
+            }
+            else {
+              message.channel.send("Cannot find any vote for **" + toTitleCase(film) + "** :disappointed:");
+            }
+          } else {
+            message.channel.send("You need to specify a film! :angry:");
           }
           break;
         }
