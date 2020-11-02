@@ -538,7 +538,7 @@ client.on('message', message => {
             message.member.voice.channel.join().then(voice => {
               const broadcast = client.voice.createBroadcast();
               console.log("CONNECTED TO VOICE!!!!!!!");
-              mlpSong(voice, argument, false);
+              mlpSong(voice, argument, false, message.channel);
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
@@ -548,7 +548,7 @@ client.on('message', message => {
             message.member.voice.channel.join().then(voice => {
               const broadcast = client.voice.createBroadcast();
               console.log("CONNECTED TO VOICE!!!!!!!");
-              mlpSong(voice, argument, true);
+              mlpSong(voice, argument, true, message.channel);
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
@@ -557,7 +557,7 @@ client.on('message', message => {
         case "stop": {
           let v = message.guild.voice;
           if (v) v.connection.dispatcher.pause();
-          if(radioTimer)clearTimeout(radioTimer);
+          if (radioTimer) clearTimeout(radioTimer);
           break;
         }
 
@@ -841,7 +841,7 @@ function toTitleCase(phrase) {
     .join(' ');
 };
 
-function mlpSong(voice, index, autoplay) {
+function mlpSong(voice, index, autoplay, channel) {
   let id = index;
   if (!index || index == "") id = Math.round(Math.random() * 202)
   Http.get("https://ponyweb.ml/v1/song/" + id + "?time=second", function (res) {
@@ -854,13 +854,16 @@ function mlpSong(voice, index, autoplay) {
 
       var parsed = JSON.parse(body.substring(9, body.length));
       if (parsed.data.length > 0) {
-        if(radioTimer)clearTimeout(radioTimer);
+        if (radioTimer) clearTimeout(radioTimer);
         console.log("Playing song, argument: " + id + " data:");
         console.log(parsed.data[0].video);
+        if (channel) {
+          channel.send("Now playing: "+parsed.data[0].name);
+        }
         voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }), { volume: 0.5 });
         if (autoplay) {
           radioTimer = setTimeout(function () {
-            mlpSong(voice, "", true);
+            mlpSong(voice, "", true, channel);
           }, parsed.data[0].length * 1000 + 4000);
         }
       }
