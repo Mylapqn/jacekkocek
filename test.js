@@ -881,7 +881,7 @@ function mlpSong(voice, index, autoplay, channel) {
         console.log("Playing song, argument: " + id + " data:");
         console.log(songData.video);
         if (channel) {
-          channel.send("Now playing:",{
+          channel.send({
             embed: {
               title: "► "+songData.name, description: Math.floor(songData.length/60) + ":"+addZero(songData.length%60)+" | From *" + songData.episode + "*",
               color: alternateFluttershyColor()
