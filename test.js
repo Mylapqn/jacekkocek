@@ -179,6 +179,7 @@ var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 var radioTimer;
 var fluttershy = true;
 var radioApiKey;
+var radioServerPing = 0;
 radioApiKey();
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
@@ -731,7 +732,7 @@ function addCringe(member) {
     //cringelordRole = member.guild.roles.cache.find(r => r.name = "Cringelord");
     //console.log(member.guild.roles.cache);
     cringelordRole = findRole(member.guild.roles.cache, "Cringelord");
-    cringelordRole.members.each(m => { m.roles.remove(cringelordRole) });
+    cringelordRole.members.each(m => { m.roles.remove(cringelordRole);console.log("Removing cringelord from "+m.username)});
     member.roles.add(cringelordRole);
   }
 }
@@ -920,8 +921,7 @@ function playRadio(voice, channel) {
 
       var parsed = JSON.parse(body.substring(9, body.length));
 
-      let servertime_offset = 0;
-      let current_time = Date.now() + servertime_offset;
+      let current_time = Date.now() + radioServerPing;
       let seektime = (current_time - parsed.current.StreamTime) / 1000.0;
       let timeout_time = (parsed.next.StreamTime - current_time);
 
@@ -930,13 +930,12 @@ function playRadio(voice, channel) {
       voice.play("https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
 
       if (radioTimer) clearTimeout(radioTimer);
-      console.log(parsed);
       if (channel) {
         channel.send({
           embed: {
             title: "► " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(parsed.current.PlayTime % 60) + " | From *" + parsed.current.Episode + "*",
             color: alternateFluttershyColor(),
-            footer:"Next: "+parsed.next.Name
+            footer:{text:"Next: "+parsed.next.Name}
           }
         });
       }
@@ -965,6 +964,7 @@ function addZero(x) {
 
 function radioApiKey() {
   Http.get("https://ponyweb.ml/api.php?keyrequest", function (res) {
+    let startTime = Date.now();
     console.log(res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -973,8 +973,7 @@ function radioApiKey() {
     res.on("end", function () {
       var parsed = JSON.parse(body.substring(9, body.length));
       radioApiKey = parsed.key;
-      console.log(body);
-      console.log(parsed);
+      radioServerPing = parsed.time - startTime;
     });
   });
 }
