@@ -522,58 +522,39 @@ client.on('message', message => {
           break;
         }
         case "noise": {
-          if(message.member.voice.channel)
-          message.member.voice.channel.join().then(voice => {
-            currentVoiceChannel = voice;
-            const broadcast = client.voice.createBroadcast();
-            console.log("CONNECTED TO VOICE!!!!!!!");
-            //console.log(voice);
-            //voice.setSpeaking(1);
-
-            voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-
-
-            /*voice.play(broadcast);
-            setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
-            let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
-            dispatcher.on("end", function () { console.log("END"); });
-            dispatcher.on("speaking", function (e) {
-              console.log("SPEKING " + e);
-              if (e == 0) {
-                broadcast.play("noise.mp3", { volume: 0.1 });
-              }
-            });*/
-          }, function (e) { console.log("REJECTED!!!", e) });
+          if (message.member.voice.channel)
+            message.member.voice.channel.join().then(voice => {
+              currentVoiceChannel = voice;
+              const broadcast = client.voice.createBroadcast();
+              console.log("CONNECTED TO VOICE!!!!!!!");
+              voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+            }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
         case "song": {
-          if(message.member.voice.channel)
-          message.member.voice.channel.join().then(voice => {
-            const broadcast = client.voice.createBroadcast();
-            console.log("CONNECTED TO VOICE!!!!!!!");
-            //console.log(voice);
-            //voice.setSpeaking(1);
+          if (message.member.voice.channel)
+            message.member.voice.channel.join().then(voice => {
+              const broadcast = client.voice.createBroadcast();
+              console.log("CONNECTED TO VOICE!!!!!!!");
+              mlpSong(voice, argument,false);
 
-            //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+            }, function (e) { console.log("REJECTED!!!", e) });
+          break;
+        }
+        case "radio": {
+          if (message.member.voice.channel)
+            message.member.voice.channel.join().then(voice => {
+              const broadcast = client.voice.createBroadcast();
+              console.log("CONNECTED TO VOICE!!!!!!!");
+              mlpSong(voice, "",true);
 
-            mlpSong(voice,argument);
-            /*voice.play(broadcast);
-            setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
-            let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
-            dispatcher.on("end", function () { console.log("END"); });
-            dispatcher.on("speaking", function (e) {
-              console.log("SPEKING " + e);
-              if (e == 0) {
-                broadcast.play("noise.mp3", { volume: 0.1 });
-              }
-            });*/
-          }, function (e) { console.log("REJECTED!!!", e) });
+            }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
 
         case "stop": {
           let v = message.guild.voice;
-          if(v)v.connection.dispatcher.pause();
+          if (v) v.connection.dispatcher.pause();
           break;
         }
 
@@ -857,10 +838,10 @@ function toTitleCase(phrase) {
     .join(' ');
 };
 
-function mlpSong(voice, index) {
+function mlpSong(voice, index, autoplay) {
   let id = index;
   if (!index || index == "") id = Math.round(Math.random() * 202)
-  Http.get("https://ponyweb.ml/v1/song/" + id, function (res) {
+  Http.get("https://ponyweb.ml/v1/song/" + id + "?time=second", function (res) {
     console.log(res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -870,9 +851,14 @@ function mlpSong(voice, index) {
 
       var parsed = JSON.parse(body.substring(9, body.length));
       if (parsed.data.length > 0) {
-        console.log("Playing song, argument: "+ id+" data:");
+        console.log("Playing song, argument: " + id + " data:");
         console.log(parsed.data[0].video);
-        voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }),{volume:0.5});
+        voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }), { volume: 0.5 });
+        if (autoplay) {
+          setTimeout(function () {
+            mlpSong(voice, "", true);
+          }, parsed.data[0].length * 1000);
+        }
       }
       else {
         console.log("No song found, argument:", id);
