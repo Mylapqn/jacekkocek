@@ -488,13 +488,8 @@ client.on('message', message => {
                 message: message,
                 users: new Map()
               }
-
-              let prom = message.guild.members.fetch();
-              setTimeout(() => {
-                console.log(prom);
-              }, 5000);
+              
               message.guild.members.fetch().then(function(membersList){
-                console.log("HUH???");
                 membersList.each(u => {
                   if (u.user != client.user) {
                     console.log(u.user.username);
