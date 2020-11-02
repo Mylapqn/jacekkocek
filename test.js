@@ -522,6 +522,7 @@ client.on('message', message => {
           break;
         }
         case "noise": {
+          if(message.member.voice)
           message.member.voice.channel.join().then(voice => {
             currentVoiceChannel = voice;
             const broadcast = client.voice.createBroadcast();
@@ -546,6 +547,7 @@ client.on('message', message => {
           break;
         }
         case "song": {
+          if(message.member.voice)
           message.member.voice.channel.join().then(voice => {
             const broadcast = client.voice.createBroadcast();
             console.log("CONNECTED TO VOICE!!!!!!!");
