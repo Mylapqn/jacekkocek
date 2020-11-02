@@ -863,7 +863,7 @@ function mlpSong(voice, index, autoplay) {
           radioTimers.push(
             setTimeout(function () {
               mlpSong(voice, "", true);
-            }, parsed.data[0].length * 1000));
+            }, parsed.data[0].length * 1000 + 2000));
         }
       }
       else {
