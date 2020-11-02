@@ -153,6 +153,7 @@ var kinoData = new Map();
 var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 var radioTimer;
+var fluttershy = true;
 
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
@@ -866,7 +867,7 @@ function mlpSong(voice, index, autoplay, channel) {
           channel.send("Now playing:",{
             embed: {
               title: songData.name, description: Math.floor(songData.length/60) + ":"+songData.length%60+" | From *" + songData.episode + "*",
-              color: [randomInt(0,255),randomInt(0,255),randomInt(0,255)]
+              color: alternateFluttershyColor()
             }
           });
         }
@@ -886,4 +887,10 @@ function mlpSong(voice, index, autoplay, channel) {
 
 function randomInt(min,max){
   return Math.round(Math.random()*(max-min)+min);
+}
+
+function alternateFluttershyColor(){
+  if(fluttershy)return[250,245,171];
+  else return[243,181,207];
+  fluttershy = !fluttershy;
 }
