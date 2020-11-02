@@ -527,10 +527,32 @@ client.on('message', message => {
             //console.log(voice);
             //voice.setSpeaking(1);
 
+            voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+
+
+            /*voice.play(broadcast);
+            setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
+            let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
+            dispatcher.on("end", function () { console.log("END"); });
+            dispatcher.on("speaking", function (e) {
+              console.log("SPEKING " + e);
+              if (e == 0) {
+                broadcast.play("noise.mp3", { volume: 0.1 });
+              }
+            });*/
+          }, function (e) { console.log("REJECTED!!!", e) });
+          break;
+        }
+        case "song": {
+          message.member.voice.channel.join().then(voice => {
+            const broadcast = client.voice.createBroadcast();
+            console.log("CONNECTED TO VOICE!!!!!!!");
+            //console.log(voice);
+            //voice.setSpeaking(1);
+
             //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
 
-
-            mlpSong(voice);
+            mlpSong(argument, voice);
             /*voice.play(broadcast);
             setInterval(function () { broadcast.play("noise.mp3", { volume: 0.05 }) }, 10000);
             let dispatcher = broadcast.play("noise.mp3", { volume: 0.1 });
@@ -825,7 +847,7 @@ function toTitleCase(phrase) {
     .join(' ');
 };
 
-function mlpSong(voice,index) {
+function mlpSong(voice, index) {
   let id = index;
   if (!id) id = Math.round(Math.random() * 202)
   Http.get("https://ponyweb.ml/v1/song/" + id, function (res) {
@@ -835,9 +857,12 @@ function mlpSong(voice,index) {
       body += data;
     });
     res.on("end", function () {
+
       var parsed = JSON.parse(body.substring(9, body.length));
-      console.log(parsed.data[0].video);
-      voice.play(ytdl(parsed.data[0].video,{filter:"audioonly"}));
+      if (parsed.data.length > 0) {
+        console.log(parsed.data[0].video);
+        voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }));
+      }
     });
-});
+  });
 }
