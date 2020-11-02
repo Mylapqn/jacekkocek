@@ -489,6 +489,7 @@ client.on('message', message => {
                 users: new Map()
               }
 
+              console.log(message.guild.members.fetch());
               message.guild.members.fetch().then(function(membersList){
                 console.log("HUH???");
                 membersList.each(u => {
