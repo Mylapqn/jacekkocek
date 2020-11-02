@@ -863,6 +863,9 @@ function mlpSong(voice, index) {
         console.log(parsed.data[0].video);
         voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }));
       }
+      else {
+        console.log("No song found, argument:", argument);
+      }
     });
   });
 }
