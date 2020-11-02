@@ -861,7 +861,8 @@ function mlpSong(voice, index, autoplay, channel) {
         if (channel) {
           channel.send("Now playing:",{
             embed: {
-              title: songData.name, description: Math.floor(songData.length/60) + ":"+songData.length%60+" | From *" + songData.episode + "*"
+              title: songData.name, description: Math.floor(songData.length/60) + ":"+songData.length%60+" | From *" + songData.episode + "*",
+              color: [randomInt(0,255),randomInt(0,255),randomInt(0,255)]
             }
           });
         }
@@ -877,4 +878,8 @@ function mlpSong(voice, index, autoplay, channel) {
       }
     });
   });
+}
+
+function randomInt(min,max){
+  return Math.round(Math.random()*(max-min)+min);
 }
