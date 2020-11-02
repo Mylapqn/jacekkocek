@@ -489,36 +489,39 @@ client.on('message', message => {
                 users: new Map()
               }
 
-              message.channel.members.each(u => {
-                if (u.user != client.user) {
-                  console.log(u.user.username);
-                  //m[u.user.username] = {response:0,mention:u.toString()};
-                  obj.users.set(u.user.username, { response: 0, reactionCount: 0, mention: u.toString() });
-                }
-              });
-              //console.log(m);
-              obj.users.forEach(u => {
-                if (u.response == 0) newMessage = newMessage + "❓ ";
-                if (u.response == 1) newMessage = newMessage + "✅ ";
-                if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
-                newMessage = newMessage + u.mention;
-                newMessage = newMessage + "\n";
-              });
-              //kinoMessageUsers.push({users:m,film:argument});
+              message.guild.members.fetch().then(membersList => {
+                membersList.each(u => {
+                  if (u.user != client.user) {
+                    console.log(u.user.username);
+                    //m[u.user.username] = {response:0,mention:u.toString()};
+                    obj.users.set(u.user.username, { response: 0, reactionCount: 0, mention: u.toString() });
+                  }
+                });
+                //console.log(m);
+                obj.users.forEach(u => {
+                  if (u.response == 0) newMessage = newMessage + "❓ ";
+                  if (u.response == 1) newMessage = newMessage + "✅ ";
+                  if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
+                  newMessage = newMessage + u.mention;
+                  newMessage = newMessage + "\n";
+                });
+                //kinoMessageUsers.push({users:m,film:argument});
 
-              message.channel.send("Bude **" + obj.filmName + "**?\n" + newMessage).then((m) => {
-                m.react("767907091469828106");
-                m.react("767907090709872661");
-                m.react("767907091125895178");
-                m.react("767907091880476732");
-                m.react("767907093205614622");
-                m.react("767907093222916126");
-                m.react("767907093352153118");
-                m.react("767907092907687956");
-                //kinoMessages.push(m);
-                obj.message = m;
+                message.channel.send("Bude **" + obj.filmName + "**?\n" + newMessage).then((m) => {
+                  m.react("767907091469828106");
+                  m.react("767907090709872661");
+                  m.react("767907091125895178");
+                  m.react("767907091880476732");
+                  m.react("767907093205614622");
+                  m.react("767907093222916126");
+                  m.react("767907093352153118");
+                  m.react("767907092907687956");
+                  //kinoMessages.push(m);
+                  obj.message = m;
+                });
+                kinoData.set(film, obj);
               });
-              kinoData.set(film, obj);
+
             }
           } else {
             message.channel.send("You need to specify a film! :angry:");
