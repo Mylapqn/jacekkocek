@@ -152,7 +152,7 @@ var kinoMessageUsers = [];
 var kinoData = new Map();
 var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
-var radioTimers = [];
+var radioTimer;
 
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
@@ -557,9 +557,7 @@ client.on('message', message => {
         case "stop": {
           let v = message.guild.voice;
           if (v) v.connection.dispatcher.pause();
-          while(radioTimers.length>0){
-            clearTimeout(radioTimers.pop());
-          }
+          if(radioTimer)clearTimeout(radioTimer);
           break;
         }
 
@@ -856,14 +854,14 @@ function mlpSong(voice, index, autoplay) {
 
       var parsed = JSON.parse(body.substring(9, body.length));
       if (parsed.data.length > 0) {
+        if(radioTimer)clearTimeout(radioTimer);
         console.log("Playing song, argument: " + id + " data:");
         console.log(parsed.data[0].video);
         voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }), { volume: 0.5 });
         if (autoplay) {
-          radioTimers.push(
-            setTimeout(function () {
-              mlpSong(voice, "", true);
-            }, parsed.data[0].length * 1000 + 2000));
+          radioTimer = setTimeout(function () {
+            mlpSong(voice, "", true);
+          }, parsed.data[0].length * 1000 + 2000);
         }
       }
       else {
