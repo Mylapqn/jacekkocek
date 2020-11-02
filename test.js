@@ -980,6 +980,7 @@ function radioApiKey() {
       var parsed = JSON.parse(body.substring(9, body.length));
       radioApiKey = parsed.key;
       radioServerPing = parsed.time - startTime;
+      console.log("Server ping: "+radioServerPing);
     });
   });
 }
