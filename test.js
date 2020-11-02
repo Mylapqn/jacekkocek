@@ -732,8 +732,13 @@ function addCringe(member) {
     //cringelordRole = member.guild.roles.cache.find(r => r.name = "Cringelord");
     //console.log(member.guild.roles.cache);
     cringelordRole = findRole(member.guild.roles.cache, "Cringelord");
-    console.log("Cringelord member amount: "+cringelordRole.members.size);
-    cringelordRole.members.forEach(m => { m.roles.remove(cringelordRole);console.log("Removing cringelord from "+m.user.username)});
+    console.log("Cringelord member amount: " + cringelordRole.members.size);
+    cringelordRole.members.forEach(m => {
+      if (m != member) {
+        m.roles.remove(cringelordRole);
+        console.log("Removing cringelord from " + m.user.username)
+      }
+    });
     member.roles.add(cringelordRole);
   }
 }
@@ -936,7 +941,7 @@ function playRadio(voice, channel) {
           embed: {
             title: "► " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(parsed.current.PlayTime % 60) + " | From *" + parsed.current.Episode + "*",
             color: alternateFluttershyColor(),
-            footer:{text:"Next: "+parsed.next.Name}
+            footer: { text: "Next: " + parsed.next.Name }
           }
         });
       }
