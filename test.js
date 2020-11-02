@@ -861,7 +861,7 @@ function mlpSong(voice, index, autoplay) {
         if (autoplay) {
           radioTimer = setTimeout(function () {
             mlpSong(voice, "", true);
-          }, parsed.data[0].length * 1000 + 2000);
+          }, parsed.data[0].length * 1000 + 4000);
         }
       }
       else {
