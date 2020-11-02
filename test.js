@@ -862,7 +862,7 @@ function mlpSong(voice, index) {
       if (parsed.data.length > 0) {
         console.log("Playing song, argument: "+ id+" data:");
         console.log(parsed.data[0].video);
-        voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }));
+        voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }),{volume:0.5});
       }
       else {
         console.log("No song found, argument:", id);
