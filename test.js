@@ -939,7 +939,7 @@ function playRadio(voice, channel) {
       if (channel) {
         channel.send({
           embed: {
-            title: "► " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(parsed.current.PlayTime % 60) + " | From *" + parsed.current.Episode + "*",
+            title: "► " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(Math.floor(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
             color: alternateFluttershyColor(),
             footer: { text: "Next: " + parsed.next.Name }
           }
