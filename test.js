@@ -524,6 +524,7 @@ client.on('message', message => {
           break;
         }
         case "noise": {
+          message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               currentVoiceChannel = voice;
@@ -534,6 +535,7 @@ client.on('message', message => {
           break;
         }
         case "song": {
+          message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               const broadcast = client.voice.createBroadcast();
@@ -544,6 +546,7 @@ client.on('message', message => {
           break;
         }
         case "radio": {
+          message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               const broadcast = client.voice.createBroadcast();
@@ -555,6 +558,7 @@ client.on('message', message => {
         }
 
         case "stop": {
+          message.delete();
           let v = message.guild.voice;
           if (v) v.connection.dispatcher.pause();
           if (radioTimer) clearTimeout(radioTimer);
