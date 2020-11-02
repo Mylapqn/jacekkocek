@@ -860,11 +860,12 @@ function mlpSong(voice, index) {
 
       var parsed = JSON.parse(body.substring(9, body.length));
       if (parsed.data.length > 0) {
+        console.log("Playing song, argument: "+ id+" data:");
         console.log(parsed.data[0].video);
         voice.play(ytdl(parsed.data[0].video, { filter: "audioonly" }));
       }
       else {
-        console.log("No song found, argument:", argument);
+        console.log("No song found, argument:", id);
       }
     });
   });
