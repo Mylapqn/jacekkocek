@@ -157,7 +157,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.6.2",
+  version: "1.6.3",
   releaseDate: "2.11.2020",
   commands: ["song", "songs", "radio", "stop"],
   changes: [
@@ -890,14 +890,15 @@ function mlpSong(voice, index, autoplay, channel) {
           });
         }
         voice.play(ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
-      }
-      if (autoplay) {
-        radioTimer = setTimeout(function () {
-          mlpSong(voice, "", true, channel);
-        }, nextSong * 1000 + 6000);
+        if (autoplay) {
+          radioTimer = setTimeout(function () {
+            mlpSong(voice, "", true, channel);
+          }, nextSong * 1000 + 6000);
+        }
       }
       else {
         console.log("No song found, argument:", id);
+        mlpSong(voice, "", true, channel);
       }
     });
   });
