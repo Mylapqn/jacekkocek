@@ -821,8 +821,9 @@ function toTitleCase(phrase) {
     .join(' ');
 };
 
-function mlpSong(id) {
-  if (!id) let id = Math.round(Math.random() * 202)
+function mlpSong(index) {
+  let id = index;
+  if (!id) id = Math.round(Math.random() * 202)
   Http.get("https://ponyweb.ml/v1/song/" + id, function (res) {
     console.log(res.statusCode);
     var body;
