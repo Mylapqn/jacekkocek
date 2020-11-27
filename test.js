@@ -15,6 +15,7 @@ var cringelord;
 var cringelordScore = 0;
 var cringelordRole;
 var startDate;
+var defaultTimeZone="Europe/Prague";
 var helpCommands = [
   {
     name: "help",
@@ -610,6 +611,13 @@ client.on('message', message => {
         }
         case "time": {
           message.channel.send(dateString(new Date(Date.now())));
+          message.channel.send(getTimeOffset(new Date(),defaultTimeZone));
+          break;
+        }
+        case "remind": {
+          let serverTime = new Date(Date.now());
+          let summerTime = (serverTime.getMonth() >= 4 && serverTime.getMonth() <= 10)
+          message.channel.send(dateString(new Date(Date.now())));
           message.channel.send(new Date(2020,6,1).getTimezoneOffset());
           break;
         }
@@ -1000,6 +1008,13 @@ function dateString(inputDate) {
   var month = inputDate.getMonth();
   var year = inputDate.getFullYear();
   return (day + "." + month + "." + year + " " + hours + ":" + minutes);
+}
+
+function getTimeOffset(date,timeZone) {
+    const tz = date.toLocaleString("en", {timeZone, timeStyle: "long"}).split(" ").slice(-1)[0];
+  	const dateString = date.toString();
+  	let offset = Date.parse(`${dateString} ${tz}`)-Date.parse(`${dateString} UTC`);
+  	return offset;
 }
 
 function toTitleCase(phrase) {
