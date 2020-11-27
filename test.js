@@ -608,6 +608,10 @@ client.on('message', message => {
           if (radioTimer) clearTimeout(radioTimer);
           break;
         }
+        case "time": {
+          message.channel.send(dateString(Date.now()));
+          break;
+        }
 
         default:
           message.channel.send("Unknown command :disappointed:");
