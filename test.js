@@ -1006,8 +1006,8 @@ function alternateFluttershyColor() {
 function dateString(inputDate) {
   var minutes = inputDate.getMinutes();
   var hours = inputDate.getHours();
-  var day = inputDate.getDay();
-  var month = inputDate.getMonth();
+  var day = inputDate.getDate()+1;
+  var month = inputDate.getMonth()+1;
   var year = inputDate.getFullYear();
   return (day + "." + month + "." + year + " " + hours + ":" + minutes);
 }
