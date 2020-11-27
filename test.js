@@ -615,10 +615,7 @@ client.on('message', message => {
           break;
         }
         case "remind": {
-          let serverTime = new Date(Date.now());
-          let summerTime = (serverTime.getMonth() >= 4 && serverTime.getMonth() <= 10)
-          message.channel.send(dateString(new Date(Date.now())));
-          message.channel.send(new Date(2020,6,1).getTimezoneOffset());
+          message.channel.send(argument.split(" ")[0]);
           break;
         }
 
