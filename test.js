@@ -490,7 +490,7 @@ client.on('message', message => {
                 users: new Map()
               }
 
-              message.guild.members.fetch().then(function(membersList){
+              message.guild.members.fetch().then(function (membersList) {
                 membersList.each(u => {
                   if (u.user != client.user) {
                     console.log(u.user.username);
@@ -609,7 +609,7 @@ client.on('message', message => {
           break;
         }
         case "time": {
-          message.channel.send(dateString(Date.now()));
+          message.channel.send(dateString(new Date(Date.now())));
           break;
         }
 
