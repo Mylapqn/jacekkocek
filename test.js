@@ -610,7 +610,7 @@ client.on('message', message => {
         }
         case "time": {
           message.channel.send(dateString(new Date(Date.now())));
-          message.channel.send(new Date().getTimezoneOffset());
+          message.channel.send(new Date(2020,6,1).getTimezoneOffset());
           break;
         }
 
