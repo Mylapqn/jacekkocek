@@ -615,7 +615,12 @@ client.on('message', message => {
           break;
         }
         case "remind": {
+          if(argument != null){
           message.channel.send(argument.split(" ")[0]);
+          }
+          else {
+            message.channel.send("remind WHEN???");
+          }
           break;
         }
 
