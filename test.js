@@ -610,8 +610,7 @@ client.on('message', message => {
           break;
         }
         case "time": {
-          message.channel.send(dateString(new Date()));
-          message.channel.send(getTimeOffset(new Date(),defaultTimeZone));
+          message.channel.send(dateString(new Date(Date.now()-getTimeOffset(new Date(),defaultTimeZone))));
           break;
         }
         case "remind": {
