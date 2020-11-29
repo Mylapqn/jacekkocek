@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 //const Dotenv = require('dotenv');
-const Http = require('https');
+const Https = require('https');
+const Http = require('http');
 const ytdl = require('ytdl-core');
 //const { env } = require('process');
 //Dotenv.config();
@@ -882,7 +883,7 @@ function startGoogleSearch(argument, message, type) {
   }
 }
 function googleSearch(cx, searchTerm, message) {
-  Http.get("https://www.googleapis.com/customsearch/v1?key=AIzaSyBmL2RtAHmlDbAzUUcUK27SFq9byJWTAyc&cx=" + cx + "&q=" + searchTerm, function (res) {
+  Https.get("https://www.googleapis.com/customsearch/v1?key=AIzaSyBmL2RtAHmlDbAzUUcUK27SFq9byJWTAyc&cx=" + cx + "&q=" + searchTerm, function (res) {
     console.log(res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -912,7 +913,7 @@ function googleSearch(cx, searchTerm, message) {
 function mlpSong(voice, index, autoplay, channel) {
   let id = index;
   if (!index || index == "") id = Math.round(Math.random() * 202)
-  Http.get("https://ponyweb.ml/v1/song/" + id + "?time=second", function (res) {
+  Https.get("https://ponyweb.ml/v1/song/" + id + "?time=second", function (res) {
     console.log(res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -952,7 +953,7 @@ function mlpSong(voice, index, autoplay, channel) {
 }
 
 function playRadio(voice, channel) {
-  Http.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey, function (res) {
+  Https.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey, function (res) {
     console.log(res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -992,7 +993,7 @@ function playRadio(voice, channel) {
 }
 
 function radioApiKey() {
-  Http.get("https://ponyweb.ml/api.php?keyrequest", function (res) {
+  Https.get("https://ponyweb.ml/api.php?keyrequest", function (res) {
     let startTime = Date.now();
     console.log(res.statusCode);
     var body;
