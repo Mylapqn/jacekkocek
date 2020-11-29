@@ -578,7 +578,7 @@ client.on('message', message => {
               //voice.play("http://uk3.internet-radio.com:8405/live", { volume: 0.2 });
 
 
-              Http.get("uk3.internet-radio.com:8405/live", function (res) {
+              Http.get("http://uk3.internet-radio.com:8405/live", function (res) {
                 console.log(res.statusCode);
                 var body;
                 res.on("data", function (data) {
