@@ -3,6 +3,8 @@ const Discord = require('discord.js');
 const Https = require('https');
 const Http = require('http');
 const ytdl = require('ytdl-core');
+const icecastParser = require("icecast-parser");
+const Parser = icecastParser.Parser;
 //const { env } = require('process');
 //Dotenv.config();
 
@@ -578,7 +580,7 @@ client.on('message', message => {
               //voice.play("http://uk3.internet-radio.com:8405/live", { volume: 0.2 });
 
 
-              Http.get("http://uk3.internet-radio.com:8405/live", function (res) {
+              /*Http.get("http://uk3.internet-radio.com:8405/live", function (res) {
                 console.log("Status: " + res.statusCode);
                 var body;
                 res.on("data", function (data) {
@@ -588,6 +590,15 @@ client.on('message', message => {
                 res.on("end", function () {
                   console.log(body);
                 });
+              });*/
+              const radioStation = new Parser({ url: 'http://uk3.internet-radio.com:8405/live' });
+
+              radioStation.on('metadata', (metadata) => {
+                console.log(metadata.get('StreamTitle'));
+              });
+              radioStation.on('stream', (stream) => {
+                console.log(stream);
+                voice.play(stream);
               });
 
             }, function (e) { console.log("REJECTED!!!", e) });
