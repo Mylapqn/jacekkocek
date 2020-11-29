@@ -597,6 +597,14 @@ client.on('message', message => {
                 console.log("ERERER");
                 console.log(metadata.get('StreamTitle'));
               });
+              radioStation.on('empty', (e) => {
+                console.log("EMPTY");
+                console.log(e);
+              });
+              radioStation.on('error', (e) => {
+                console.log("ERROR");
+                console.log(e);
+              });
               console.log("WEWEWE");
               /*radioStation.on('stream', (stream) => {
                 console.log(stream);
