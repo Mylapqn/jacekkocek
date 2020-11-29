@@ -605,6 +605,10 @@ client.on('message', message => {
                 console.log("ERROR");
                 console.log(e);
               });
+              radioStation.on('end', (e) => {
+                console.log("END");
+                console.log(e);
+              });
               console.log(radioStation);
               console.log("WEWEWE");
               /*radioStation.on('stream', (stream) => {
