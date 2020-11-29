@@ -592,7 +592,8 @@ client.on('message', message => {
                 });
               });*/
 
-              const radioStation = new Parser({ url: 'http://uk3.internet-radio.com:8405/live' });
+              let radioStation = new Parser({ url: 'http://uk3.internet-radio.com:8405/live' });
+              console.log(radioStation);
               radioStation.on('metadata', (metadata) => {
                 console.log("ERERER");
                 console.log(metadata.get('StreamTitle'));
