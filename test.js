@@ -593,7 +593,6 @@ client.on('message', message => {
               });*/
 
               let radioStation = new Parser({ url: 'http://uk3.internet-radio.com:8405/live' });
-              console.log(radioStation);
               radioStation.on('metadata', (metadata) => {
                 console.log("ERERER");
                 console.log(metadata.get('StreamTitle'));
@@ -606,6 +605,7 @@ client.on('message', message => {
                 console.log("ERROR");
                 console.log(e);
               });
+              console.log(radioStation);
               console.log("WEWEWE");
               /*radioStation.on('stream', (stream) => {
                 console.log(stream);
