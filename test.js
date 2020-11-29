@@ -15,7 +15,7 @@ var cringelord;
 var cringelordScore = 0;
 var cringelordRole;
 var startDate;
-var defaultTimeZone="Europe/Prague";
+var defaultTimeZone = "Europe/Prague";
 var helpCommands = [
   {
     name: "help",
@@ -574,7 +574,20 @@ client.on('message', message => {
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-              voice.play("http://uk3.internet-radio.com:8405/live", { volume: 0.2 });
+              //voice.play("http://uk3.internet-radio.com:8405/live", { volume: 0.2 });
+
+
+              Http.get("http://uk3.internet-radio.com:8405/live", function (res) {
+                console.log(res.statusCode);
+                var body;
+                res.on("data", function (data) {
+                  body += data;
+                });
+                res.on("end", function () {
+                  console.log(body);
+                });
+              });
+
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
@@ -611,13 +624,13 @@ client.on('message', message => {
           break;
         }
         case "time": {
-          message.channel.send(dateString(new Date(Date.now()-getTimeOffset(new Date(),defaultTimeZone))));
+          message.channel.send(dateString(new Date(Date.now() - getTimeOffset(new Date(), defaultTimeZone))));
           message.channel.send(new Date().toString());
           break;
         }
         case "remind": {
-          if(argument != null){
-          message.channel.send(argument.split(" ")[0]);
+          if (argument != null) {
+            message.channel.send(argument.split(" ")[0]);
           }
           else {
             message.channel.send("remind WHEN???");
@@ -1008,16 +1021,16 @@ function dateString(inputDate) {
   var minutes = inputDate.getMinutes();
   var hours = inputDate.getHours();
   var day = inputDate.getDate();
-  var month = inputDate.getMonth()+1;
+  var month = inputDate.getMonth() + 1;
   var year = inputDate.getFullYear();
   return (day + "." + month + "." + year + " " + hours + ":" + minutes);
 }
 
-function getTimeOffset(date,timeZone) {
-    const tz = date.toLocaleString("en", {timeZone, timeStyle: "long"}).split(" ").slice(-1)[0];
-  	const dateString = date.toString();
-  	let offset = Date.parse(`${dateString} ${tz}`)-Date.parse(`${dateString} UTC`);
-  	return offset;
+function getTimeOffset(date, timeZone) {
+  const tz = date.toLocaleString("en", { timeZone, timeStyle: "long" }).split(" ").slice(-1)[0];
+  const dateString = date.toString();
+  let offset = Date.parse(`${dateString} ${tz}`) - Date.parse(`${dateString} UTC`);
+  return offset;
 }
 
 function toTitleCase(phrase) {
