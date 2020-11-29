@@ -579,7 +579,7 @@ client.on('message', message => {
 
 
               Http.get("http://uk3.internet-radio.com:8405/live", function (res) {
-                console.log(res.statusCode);
+                console.log("Status: " + res.statusCode);
                 var body;
                 res.on("data", function (data) {
                   body += data;
