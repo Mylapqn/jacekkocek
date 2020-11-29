@@ -591,15 +591,17 @@ client.on('message', message => {
                   console.log(body);
                 });
               });*/
-              const radioStation = new Parser({ url: 'http://uk3.internet-radio.com:8405/live' });
 
+              const radioStation = new Parser({ url: 'http://uk3.internet-radio.com:8405/live' });
               radioStation.on('metadata', (metadata) => {
+                console.log("ERERER");
                 console.log(metadata.get('StreamTitle'));
               });
-              radioStation.on('stream', (stream) => {
+              console.log("WEWEWE");
+              /*radioStation.on('stream', (stream) => {
                 console.log(stream);
                 voice.play(stream);
-              });
+              });*/
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
