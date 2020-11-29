@@ -582,6 +582,7 @@ client.on('message', message => {
                 var body;
                 res.on("data", function (data) {
                   body += data;
+                  console.log(data);
                 });
                 res.on("end", function () {
                   console.log(body);
