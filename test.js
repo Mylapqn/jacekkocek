@@ -577,7 +577,7 @@ client.on('message', message => {
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-              voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.1 });
+              voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.06 });
 
 
               /*Http.get("http://uk1.internet-radio.com:8004/live", function (res) {
