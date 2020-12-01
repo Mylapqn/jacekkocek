@@ -528,7 +528,7 @@ client.on('message', message => {
                   obj.message = m;
                 });
                 kinoData.set(film, obj);
-                if(kinoPlaylist.has(film)){
+                if (kinoPlaylist.has(film)) {
                   kinoPlaylist.get(film).watched = true;
                 }
               }).catch(console.log);
@@ -548,7 +548,7 @@ client.on('message', message => {
               kinoData.delete(film);
               message.channel.send("The data for **" + toTitleCase(film) + "** was successfully reset.");
             }
-            if(kinoPlaylist.has(film)){
+            if (kinoPlaylist.has(film)) {
               kinoPlaylist.delete(film);
               savePlaylist();
               message.channel.send("The suggestion for **" + toTitleCase(film) + "** was successfully reset.");
@@ -586,12 +586,12 @@ client.on('message', message => {
 
         case "kinoPlaylist": {
           message.delete();
-          if(kinoPlaylist.size > 0){
+          if (kinoPlaylist.size > 0) {
             let newMessage = "**Film suggestions/playlist**";
             kinoPlaylist.forEach(f => {
-              if(f.watched) newMessage+="✅ "
-              else newMessage+="<:white_cross:767907092907687956> ";
-              newMessage+=f.name + "\n";
+              if (f.watched) newMessage += "✅ "
+              else newMessage += "<:white_cross:767907092907687956> ";
+              newMessage += f.name + "\n";
             });
             message.channel.send(newMessage);
           }
@@ -602,22 +602,27 @@ client.on('message', message => {
 
         case "kinoSuggest": {
           message.delete();
-          let filmName = argument.toLowerCase();
-          if (kinoPlaylist.has(filmName)) {
-            message.channel.send("This film has already been suggested by **"+kinoPlaylist.get(filmName).suggestedBy+"**.");
-          }
-          else if (kinoData.has(filmName)){
-            message.channel.send("There is already a plan to watch this film: "+kinoData.get(filmName).message.url);
+          if (argument) {
+            let filmName = argument.toLowerCase();
+            if (kinoPlaylist.has(filmName)) {
+              message.channel.send("This film has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
+            }
+            else if (kinoData.has(filmName)) {
+              message.channel.send("There is already a plan to watch this film: " + kinoData.get(filmName).message.url);
+            }
+            else {
+              let newSug = {
+                name: toTitleCase(filmName),
+                suggestedBy: message.author.username,
+                watched: false
+              }
+              kinoPlaylist.set(filmName, newSug);
+              savePlaylist();
+              message.channel.send("**" + message.author.username + "** added *" + newSug.name + "* to film suggestions.");
+            }
           }
           else {
-            let newSug = {
-              name: toTitleCase(filmName),
-              suggestedBy: message.author.username,
-              watched: false
-            }
-            kinoPlaylist.set(filmName,newSug);
-            savePlaylist();
-            message.channel.send("**"+message.author.username+"** added *"+newSug.name+"* to film suggestions.");
+            message.channel.send("Suggest WHAT???");
           }
         }
 
