@@ -484,7 +484,7 @@ client.on('message', message => {
 
             let film = argument.toLowerCase();
             if (kinoData.has(film)) {
-              message.channel.send("There is already a vote on **" + toTitleCase(film) + "**! Use `$kinoReset " + film + "` to reset the vote.");
+              message.channel.send("There is already a vote on ***" + toTitleCase(film) + "***! Use `$kinoReset " + film + "` to reset the vote.");
             }
             else {
               startGoogleSearch(argument, message, 2);
@@ -515,7 +515,7 @@ client.on('message', message => {
                 });
                 //kinoMessageUsers.push({users:m,film:argument});
 
-                message.channel.send("Bude **" + obj.filmName + "**?\n" + newMessage).then((m) => {
+                message.channel.send("Bude ***" + obj.filmName + "***?\n" + newMessage).then((m) => {
                   m.react("767907091469828106");
                   m.react("767907090709872661");
                   m.react("767907091125895178");
@@ -547,15 +547,15 @@ client.on('message', message => {
             let film = argument.toLowerCase();
             if (kinoData.has(film)) {
               kinoData.delete(film);
-              message.channel.send("The data for **" + toTitleCase(film) + "** was successfully reset.");
+              message.channel.send("The data for ***" + toTitleCase(film) + "*** was successfully reset.");
             }
             if (kinoPlaylist.has(film)) {
               kinoPlaylist.delete(film);
               savePlaylist();
-              message.channel.send("The suggestion for **" + toTitleCase(film) + "** was successfully reset.");
+              message.channel.send("The suggestion for ***" + toTitleCase(film) + "*** was successfully reset.");
             }
             else {
-              message.channel.send("Cannot find any vote or suggestion for **" + toTitleCase(film) + "** :disappointed:");
+              message.channel.send("Cannot find any vote or suggestion for ***" + toTitleCase(film) + "*** :disappointed:");
             }
           } else {
             message.channel.send("You need to specify a film! :angry:");
@@ -574,10 +574,10 @@ client.on('message', message => {
                 if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
                 newMessage = newMessage + "\n";
               });
-              message.channel.send(newMessage + "Bude **" + kinoEntry.filmName + "**?\n" + kinoEntry.message.url);
+              message.channel.send(newMessage + "Bude ***" + kinoEntry.filmName + "***?\n" + kinoEntry.message.url);
             }
             else {
-              message.channel.send("Cannot find any vote for **" + toTitleCase(film) + "** :disappointed:");
+              message.channel.send("Cannot find any vote for ***" + toTitleCase(film) + "*** :disappointed:");
             }
           } else {
             message.channel.send("You need to specify a film! :angry:");
@@ -596,6 +596,7 @@ client.on('message', message => {
               newMessage += "*"+f.name + "* - by **"+f.suggestedBy+"**\n";
             });*/
             kinoPlaylist.forEach(f => {
+              newMessage+="• ";
               if (f.watched) newMessage += "~~*"+f.name + "*~~";
               else newMessage += "***"+f.name + "***";
               newMessage += "\n";
@@ -614,10 +615,10 @@ client.on('message', message => {
           if (argument) {
             let filmName = argument.toLowerCase();
             if (kinoPlaylist.has(filmName)) {
-              message.channel.send("*"+toTitleCase(filmName)+"* has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
+              message.channel.send("***"+toTitleCase(filmName)+"*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
             }
             else if (kinoData.has(filmName)) {
-              message.channel.send("There is already a plan to watch *"+toTitleCase(filmName)+"*: " + kinoData.get(filmName).message.url);
+              message.channel.send("There is already a plan to watch ***"+toTitleCase(filmName)+"***: " + kinoData.get(filmName).message.url);
             }
             else {
               let newSug = {
@@ -627,7 +628,7 @@ client.on('message', message => {
               }
               kinoPlaylist.set(filmName, newSug);
               savePlaylist();
-              message.channel.send("**" + message.author.username + "** added *" + newSug.name + "* to film suggestions.");
+              message.channel.send("**" + message.author.username + "** added ***" + newSug.name + "*** to film suggestions.");
             }
           }
           else {
@@ -793,7 +794,7 @@ function updateKinoMessage(kinoEntry) {
   });
   //kinoMessageUsers.push({users:m,film:argument});
 
-  kinoEntry.message.edit("Bude **" + kinoEntry.filmName + "**?\n" + newMessage);
+  kinoEntry.message.edit("Bude ***" + kinoEntry.filmName + "***?\n" + newMessage);
 }
 
 function savePlaylist() {
