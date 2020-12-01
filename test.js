@@ -598,6 +598,7 @@ client.on('message', message => {
           else {
             message.channel.send("The playlist is empty!");
           }
+          break;
         }
 
         case "kinoSuggest": {
@@ -624,6 +625,7 @@ client.on('message', message => {
           else {
             message.channel.send("Suggest WHAT???");
           }
+          break;
         }
 
         case "noise": {
