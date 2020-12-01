@@ -588,11 +588,19 @@ client.on('message', message => {
         case "kinoPlaylist": {
           message.delete();
           if (kinoPlaylist.size > 0) {
-            let newMessage = "**Film suggestions:**\n✅ - Watched, <:white_cross:767907092907687956> - Not watched\n\n";
-            kinoPlaylist.forEach(f => {
+            //let newMessage = "**Film suggestions:**\n✅ - Watched, <:white_cross:767907092907687956> - Not watched\n\n";
+            let newMessage = "**Film suggestions:**\n";
+            /*kinoPlaylist.forEach(f => {
               if (f.watched) newMessage += "✅ "
               else newMessage += "<:white_cross:767907092907687956> ";
               newMessage += "*"+f.name + "* - by **"+f.suggestedBy+"**\n";
+            });*/
+            kinoPlaylist.forEach(f => {
+              if (f.watched) newMessage += "~~"
+              newMessage += "•*"+f.name + "* - by **"+f.suggestedBy+"**";
+              if (f.watched) newMessage += "~~"
+              newMessage += "\n";
+              
             });
             message.channel.send(newMessage);
           }
