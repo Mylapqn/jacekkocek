@@ -588,7 +588,7 @@ client.on('message', message => {
         case "kinoPlaylist": {
           message.delete();
           if (kinoPlaylist.size > 0) {
-            let newMessage = "**Film suggestions:**\n✅ - Watched, <:white_cross:767907092907687956> - Not watched\n----------------";
+            let newMessage = "**Film suggestions:**\n✅ - Watched, <:white_cross:767907092907687956> - Not watched\n\n";
             kinoPlaylist.forEach(f => {
               if (f.watched) newMessage += "✅ "
               else newMessage += "<:white_cross:767907092907687956> ";
