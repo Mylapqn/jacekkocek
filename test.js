@@ -579,44 +579,6 @@ client.on('message', message => {
               //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
               voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
 
-
-              /*Http.get("http://uk1.internet-radio.com:8004/live", function (res) {
-                console.log("Status: " + res.statusCode);
-                var body;
-                res.on("data", function (data) {
-                  body += data;
-                  console.log(data);
-                });
-                res.on("end", function () {
-                  console.log(body);
-                });
-              });*/
-
-              /*
-              let radioStation = new Parser({ url: 'http://uk1.internet-radio.com:8004/live' });
-              radioStation.on('metadata', (metadata) => {
-                console.log("ERERER");
-                console.log(metadata.get('StreamTitle'));
-              });
-              radioStation.on('empty', (e) => {
-                console.log("EMPTY");
-                console.log(e);
-              });
-              radioStation.on('error', (e) => {
-                console.log("ERROR");
-                console.log(e);
-              });
-              radioStation.on('end', (e) => {
-                console.log("END");
-                console.log(e);
-              });
-              console.log(radioStation);
-              console.log("WEWEWE");
-              radioStation.on('stream', (stream) => {
-                console.log(stream);
-                voice.play(stream);
-              });*/
-
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
@@ -648,7 +610,10 @@ client.on('message', message => {
         case "stop": {
           message.delete();
           let v = message.guild.voice;
-          if (v) v.connection.dispatcher.pause();
+          if (v){
+            v.connection.dispatcher.pause();
+            v.kick();
+          }
           if (radioTimer) clearTimeout(radioTimer);
           break;
         }
