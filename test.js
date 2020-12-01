@@ -592,7 +592,7 @@ client.on('message', message => {
             kinoPlaylist.forEach(f => {
               if (f.watched) newMessage += "✅ "
               else newMessage += "<:white_cross:767907092907687956> ";
-              newMessage += f.name + "\n";
+              newMessage += "*"+f.name + "* - by **"+f.suggestedBy+"**\n";
             });
             message.channel.send(newMessage);
           }
@@ -607,10 +607,10 @@ client.on('message', message => {
           if (argument) {
             let filmName = argument.toLowerCase();
             if (kinoPlaylist.has(filmName)) {
-              message.channel.send("This film has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
+              message.channel.send("*"+toTitleCase(filmName)+"* has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
             }
             else if (kinoData.has(filmName)) {
-              message.channel.send("There is already a plan to watch this film: " + kinoData.get(filmName).message.url);
+              message.channel.send("There is already a plan to watch *"+toTitleCase(filmName)+"*: " + kinoData.get(filmName).message.url);
             }
             else {
               let newSug = {
