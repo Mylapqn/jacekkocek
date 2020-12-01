@@ -597,7 +597,7 @@ client.on('message', message => {
             });*/
             kinoPlaylist.forEach(f => {
               if (f.watched) newMessage += "~~"
-              newMessage += "•*"+f.name + "* - by **"+f.suggestedBy+"**";
+              newMessage += "•***"+f.name + "*** - by "+f.suggestedBy;
               if (f.watched) newMessage += "~~"
               newMessage += "\n";
               
