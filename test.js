@@ -789,7 +789,7 @@ function updateKinoMessage(kinoEntry) {
 }
 
 function savePlaylist() {
-  fs.writeFile(JSON.stringify(Array.from(kinoPlaylist)), playlistFileName);
+  fs.writeFile(JSON.stringify(Array.from(kinoPlaylist)), playlistFileName,()=>{});
 }
 
 function loadPlaylist() {
