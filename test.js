@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const Https = require('https');
 const Http = require('http');
 const ytdl = require('ytdl-core');
+const fs = require('fs');
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
@@ -189,11 +190,13 @@ var radioApiKey;
 var radioServerPing = 0;
 radioApiKey();
 
+var kinoPlaylist = new Map();
+var playlistFileName = "kinoPlaylist.json";
+loadPlaylist();
+
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
 client.login(process.env.DISCORD_API_KEY);
-
-//client.on('debug', console.log);
 
 client.on('ready', () => {
 
@@ -525,6 +528,9 @@ client.on('message', message => {
                   obj.message = m;
                 });
                 kinoData.set(film, obj);
+                if(kinoPlaylist.has(film)){
+                  kinoPlaylist.get(film).watched = true;
+                }
               }).catch(console.log);
 
             }
@@ -542,8 +548,13 @@ client.on('message', message => {
               kinoData.delete(film);
               message.channel.send("The data for **" + toTitleCase(film) + "** was successfully reset.");
             }
+            if(kinoPlaylist.has(film)){
+              kinoPlaylist.delete(film);
+              savePlaylist();
+              message.channel.send("The suggestion for **" + toTitleCase(film) + "** was successfully reset.");
+            }
             else {
-              message.channel.send("Cannot find any vote for **" + toTitleCase(film) + "** :disappointed:");
+              message.channel.send("Cannot find any vote or suggestion for **" + toTitleCase(film) + "** :disappointed:");
             }
           } else {
             message.channel.send("You need to specify a film! :angry:");
@@ -572,6 +583,44 @@ client.on('message', message => {
           }
           break;
         }
+
+        case "kinoPlaylist": {
+          message.delete();
+          if(kinoPlaylist.size > 0){
+            let newMessage = "**Film suggestions/playlist**";
+            kinoPlaylist.forEach(f => {
+              if(f.watched) newMessage+="✅ "
+              else newMessage+="<:white_cross:767907092907687956> ";
+              newMessage+=f.name + "\n";
+            });
+            message.channel.send(newMessage);
+          }
+          else {
+            message.channel.send("The playlist is empty!");
+          }
+        }
+
+        case "kinoSuggest": {
+          message.delete();
+          let filmName = argument.toLowerCase();
+          if (kinoPlaylist.has(filmName)) {
+            message.channel.send("This film has already been suggested by **"+kinoPlaylist.get(filmName).suggestedBy+"**.");
+          }
+          else if (kinoData.has(filmName)){
+            message.channel.send("There is already a plan to watch this film: "+kinoData.get(filmName).message.url);
+          }
+          else {
+            let newSug = {
+              name: toTitleCase(filmName),
+              suggestedBy: message.author.username,
+              watched: false
+            }
+            kinoPlaylist.set(filmName,newSug);
+            savePlaylist();
+            message.channel.send("**"+message.author.username+"** added *"+newSug.name+"* to film suggestions.");
+          }
+        }
+
         case "noise": {
           message.delete();
           if (message.member.voice.channel)
@@ -610,7 +659,7 @@ client.on('message', message => {
         case "stop": {
           message.delete();
           let v = message.guild.voice;
-          if (v){
+          if (v) {
             v.connection.dispatcher.pause();
             v.kick();
           }
@@ -718,7 +767,6 @@ client.on("messageReactionRemove", (messageReaction, user) => {
   }
 });
 
-
 function updateKinoMessage(kinoEntry) {
   let newMessage = "";
   kinoEntry.users.forEach(u => {
@@ -732,6 +780,24 @@ function updateKinoMessage(kinoEntry) {
 
   kinoEntry.message.edit("Bude **" + kinoEntry.filmName + "**?\n" + newMessage);
 }
+
+function savePlaylist() {
+  fs.writeFile(JSON.stringify(Array.from(kinoPlaylist)), playlistFileName);
+}
+
+function loadPlaylist() {
+  try {
+    let read = fs.readFileSync(playlistFileName);
+    kinoPlaylist = new Map(JSON.parse(read));
+    console.log("Loaded kino playlist.");
+  } catch (error) {
+    console.log("Could not load kino playlist!");
+    console.log(error);
+  }
+}
+
+
+
 //#endregion
 //#region CRINGE
 function cringeLeaderboard() {
