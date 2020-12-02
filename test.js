@@ -31,7 +31,7 @@ var helpCommands = [
     name: "spell",
     prefix: true,
     arguments: "word",
-    description: "Spell word in emoji reactions to the previous message",
+    description: "Spell word in emoji reactions",
   },
   {
     name: "zobrazit",
@@ -68,26 +68,26 @@ var helpCommands = [
     name: "cringe",
     prefix: false,
     arguments: "",
-    description: "Award Cringe to someone",
+    description: "Award Cringe",
     longDescription: "Award Cringe to someone - if they have more Cringe than anyone else, this will also make them the Cringelord",
   },
   {
     name: ":gif2:",
     prefix: false,
     arguments: "",
-    description: "Send animated emoji",
+    description: "Animated emoji",
   },
   {
     name: ":spin:",
     prefix: false,
     arguments: "",
-    description: "Send animated emoji",
+    description: "Animated emoji",
   },
   {
     name: ":loading:",
     prefix: false,
     arguments: "",
-    description: "Send animated emoji",
+    description: "Animated emoji",
   },
   {
     name: "kino",
@@ -100,7 +100,7 @@ var helpCommands = [
     name: "kinoReset",
     prefix: true,
     arguments: "film",
-    description: "Cancel an ongoing vote on this film or erase it from watchlist",
+    description: "Reset vote/suggestion for this film",
     longDescription: "If there is an ongoing vote or watchlist suggestion on this specific film, it is cancelled and you can start it again.\nYou do not have to use this if you want to start a new vote for a different film."
 
   },
@@ -389,9 +389,9 @@ client.on('message', message => {
                   {
                     name: "Basic commands", value: helpBasic
                   },
-                  /*{
+                  {
                     name: "Admin commands", value: helpAdmin
-                  },*/
+                  },
 
                 ]
               }
