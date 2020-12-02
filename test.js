@@ -157,7 +157,13 @@ var helpCommands = [
     description: "Add a film to the watchlist",
     longDescription: "Add a film to the 'watch later' watchlist. Interchangable with `suggest`."
   },
-  
+  {
+    name: "kinoPlaylist",
+    prefix: true,
+    arguments: "film",
+    description: "Display the film watchlist",
+    longDescription: "See the films to watch and the ones you have already watched. Interchangable with `playlist`, `kinoSuggestions`."
+  },
 
 ];
 var helpAdminCommands = [
@@ -383,9 +389,9 @@ client.on('message', message => {
                   {
                     name: "Basic commands", value: helpBasic
                   },
-                  {
+                  /*{
                     name: "Admin commands", value: helpAdmin
-                  },
+                  },*/
 
                 ]
               }
