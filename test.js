@@ -144,6 +144,26 @@ var helpCommands = [
     arguments: "",
     description: "Stop the currently playing song",
   },
+  {
+    name: "noise",
+    prefix: true,
+    arguments: "",
+    description: "Play noise in your voice channel",
+  },
+  {
+    name: "kinoSuggest",
+    prefix: true,
+    arguments: "film",
+    description: "Add a film to the watchlist",
+    longDescription: "Add a film to the 'watch later' watchlist. Interchangable with `suggest`."
+  },
+  {
+    name: "kinoPlaylist",
+    prefix: true,
+    arguments: "film",
+    description: "Display the film watchlist",
+    longDescription: "See the films to watch and the ones you have already watched. Interchangable with `playlist`, `kinoSuggestions`."
+  },
 
 ];
 var helpAdminCommands = [
@@ -152,12 +172,6 @@ var helpAdminCommands = [
     prefix: true,
     arguments: "",
     description: "List letter emoji",
-  },
-  {
-    name: "noise",
-    prefix: true,
-    arguments: "",
-    description: "Play noise in your voice channel",
   },
 ];
 
@@ -532,6 +546,13 @@ client.on('message', message => {
                   kinoPlaylist.get(film).watched = true;
                   savePlaylist();
                 }
+                else {
+                  kinoPlaylist.set({
+                    name: toTitleCase(film),
+                    suggestedBy: message.author.username,
+                    watched: true
+                  });
+                }
               }).catch(console.log);
 
             }
@@ -584,6 +605,7 @@ client.on('message', message => {
           }
           break;
         }
+        case "suggestions":
         case "playlist":
         case "kinoPlaylist": {
           message.delete();
@@ -596,11 +618,11 @@ client.on('message', message => {
               newMessage += "*"+f.name + "* - by **"+f.suggestedBy+"**\n";
             });*/
             kinoPlaylist.forEach(f => {
-              newMessage+="• ";
-              if (f.watched) newMessage += "~~*"+f.name + "*~~";
-              else newMessage += "***"+f.name + "***";
+              newMessage += "• ";
+              if (f.watched) newMessage += "~~*" + f.name + "*~~";
+              else newMessage += "***" + f.name + "***";
               newMessage += "\n";
-              
+
             });
             message.channel.send(newMessage);
           }
@@ -615,10 +637,10 @@ client.on('message', message => {
           if (argument) {
             let filmName = argument.toLowerCase();
             if (kinoPlaylist.has(filmName)) {
-              message.channel.send("***"+toTitleCase(filmName)+"*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
+              message.channel.send("***" + toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
             }
             else if (kinoData.has(filmName)) {
-              message.channel.send("There is already a plan to watch ***"+toTitleCase(filmName)+"***: " + kinoData.get(filmName).message.url);
+              message.channel.send("There is already a plan to watch ***" + toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url);
             }
             else {
               let newSug = {
@@ -798,7 +820,7 @@ function updateKinoMessage(kinoEntry) {
 }
 
 function savePlaylist() {
-  fs.writeFile(playlistFileName, JSON.stringify(Array.from(kinoPlaylist)),(e)=>{console.log(e)});
+  fs.writeFile(playlistFileName, JSON.stringify(Array.from(kinoPlaylist)), (e) => { console.log(e) });
 }
 
 function loadPlaylist() {
