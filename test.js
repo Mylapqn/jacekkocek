@@ -100,8 +100,8 @@ var helpCommands = [
     name: "kinoReset",
     prefix: true,
     arguments: "film",
-    description: "Cancel an ongoing vote on this film",
-    longDescription: "If there is an ongoing vote on this specific film, it is cancelled so you can start it again.\nYou do not have to use this if you want to start a new vote for a different film."
+    description: "Cancel an ongoing vote on this film or erase it from watchlist",
+    longDescription: "If there is an ongoing vote or watchlist suggestion on this specific film, it is cancelled and you can start it again.\nYou do not have to use this if you want to start a new vote for a different film."
 
   },
   {
@@ -176,14 +176,13 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.6.5",
-  releaseDate: "2.11.2020",
-  commands: ["song", "songs", "radio", "stop"],
+  version: "1.7.0",
+  releaseDate: "2.12.2020",
+  commands: ["kinoSuggest", "kinoPlaylist", "noise"],
   changes: [
-    "Added support for playing audio in voice chat",
-    "Added stream reading from server",
-    "Fixed bugs",
-    "Fixed kino member fetching"
+    "Added watchlist (playlist) for films",
+    "Watchlist is persistent and automatically saved",
+    "Added support for radio streams, used in `$noise`"
   ]
 };
 
