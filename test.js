@@ -206,7 +206,7 @@ radioApiKey();
 
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
-//loadPlaylist();
+loadPlaylist();
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
