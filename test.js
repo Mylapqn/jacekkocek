@@ -515,7 +515,7 @@ client.on('message', message => {
               message.guild.members.fetch().then(function (membersList) {
                 membersList.each(u => {
                   if (u.user != client.user) {
-                    console.log("User: "+u.user.username);
+                    console.log("User: " + u.user.username);
                     //m[u.user.username] = {response:0,mention:u.toString()};
                     obj.users.set(u.user.username, { response: 0, reactionCount: 0, mention: u.toString() });
                   }
@@ -552,7 +552,7 @@ client.on('message', message => {
                 }
                 else {
                   console.log("Creating film in suggestions.");
-                  kinoPlaylist.set(film,{
+                  kinoPlaylist.set(film, {
                     name: toTitleCase(film),
                     suggestedBy: message.author.username,
                     watched: true
@@ -921,6 +921,8 @@ function findCommand(name) {
 //#region GOOGLE
 function startGoogleSearch(argument, message, type) {
 
+  console.log("Starting Google Search for: " + argument);
+
   var cx;
   var index = 0;
   var searchTerm;
@@ -986,7 +988,7 @@ function startGoogleSearch(argument, message, type) {
 }
 function googleSearch(cx, searchTerm, message) {
   Https.get("https://www.googleapis.com/customsearch/v1?key=AIzaSyBmL2RtAHmlDbAzUUcUK27SFq9byJWTAyc&cx=" + cx + "&q=" + searchTerm, function (res) {
-    console.log(res.statusCode);
+    console.log("HTTPS Status:"+res.statusCode);
     var body;
     res.on("data", function (data) {
       body += data;
