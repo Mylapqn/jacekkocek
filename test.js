@@ -192,6 +192,8 @@ var letterEmoji = {
   "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣", "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣"
 };
 
+console.log("Starting up!")
+
 var kinoMessages = [];
 var kinoMessageUsers = [];
 var kinoData = new Map();
@@ -213,7 +215,7 @@ client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
 
-  console.log('I am ready! NEW 2');
+  console.log('I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   //console.log(client.user);
   startDate = new Date();
@@ -1054,7 +1056,7 @@ function mlpSong(voice, index, autoplay, channel) {
 
 function playRadio(voice, channel) {
   Https.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey, function (res) {
-    console.log(res.statusCode);
+    console.log("HTTPS status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
       body += data;
@@ -1095,7 +1097,7 @@ function playRadio(voice, channel) {
 function radioApiKey() {
   Https.get("https://ponyweb.ml/api.php?keyrequest", function (res) {
     let startTime = Date.now();
-    console.log(res.statusCode);
+    console.log("HTTPS status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
       body += data;
