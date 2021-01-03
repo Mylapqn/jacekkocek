@@ -513,7 +513,7 @@ client.on('message', message => {
               message.guild.members.fetch().then(function (membersList) {
                 membersList.each(u => {
                   if (u.user != client.user) {
-                    console.log(u.user.username);
+                    console.log("User: "+u.user.username);
                     //m[u.user.username] = {response:0,mention:u.toString()};
                     obj.users.set(u.user.username, { response: 0, reactionCount: 0, mention: u.toString() });
                   }
@@ -529,6 +529,7 @@ client.on('message', message => {
                 //kinoMessageUsers.push({users:m,film:argument});
 
                 message.channel.send("Bude ***" + obj.filmName + "***?\n" + newMessage).then((m) => {
+                  console.log("Kino message sent.");
                   m.react("767907091469828106");
                   m.react("767907090709872661");
                   m.react("767907091125895178");
@@ -539,19 +540,23 @@ client.on('message', message => {
                   m.react("767907092907687956");
                   //kinoMessages.push(m);
                   obj.message = m;
+                  console.log("Message reactions added.");
                 });
                 kinoData.set(film, obj);
                 if (kinoPlaylist.has(film)) {
+                  console.log("Found film in suggestions.");
                   kinoPlaylist.get(film).watched = true;
                   savePlaylist();
                 }
                 else {
+                  console.log("Creating film in suggestions.");
                   kinoPlaylist.set(film,{
                     name: toTitleCase(film),
                     suggestedBy: message.author.username,
                     watched: true
                   });
                 }
+                console.log("Kino done.");
               }).catch(console.log);
 
             }
