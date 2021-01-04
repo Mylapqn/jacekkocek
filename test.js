@@ -704,7 +704,8 @@ client.on('message', message => {
           message.delete();
           let v = message.guild.voice;
           if (v) {
-            v.connection.dispatcher.pause();
+            if (v.connection.dispatcher)
+              v.connection.dispatcher.pause();
             v.kick();
           }
           if (radioTimer) clearTimeout(radioTimer);
@@ -988,7 +989,7 @@ function startGoogleSearch(argument, message, type) {
 }
 function googleSearch(cx, searchTerm, message) {
   Https.get("https://www.googleapis.com/customsearch/v1?key=AIzaSyBmL2RtAHmlDbAzUUcUK27SFq9byJWTAyc&cx=" + cx + "&q=" + searchTerm, function (res) {
-    console.log("HTTPS Status:"+res.statusCode);
+    console.log("HTTPS Status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
       body += data;
