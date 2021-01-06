@@ -186,8 +186,8 @@ var changelog = {
   releaseDate: "6.1.2020",
   commands: ["hint"],
   changes: [
-    "The bot can now play in #ano",
-    "Use $hint while playing to get a hint"
+    "The bot can now play in **#ano**",
+    "Use `$hint` while playing to get a hint"
   ]
 };
 
