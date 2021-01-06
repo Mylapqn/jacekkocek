@@ -1164,6 +1164,7 @@ function findWord(newLetter, message) {
           lastSelectedWord = selectedWord;
           if (currentWord + newLetter == selectedWord) {
             message.channel.send(":white_check_mark:");
+            currentWord = "";
           }
           else {
             let selectedLetter = selectedWord.charAt(currentWord.length + 1);
@@ -1178,7 +1179,7 @@ function findWord(newLetter, message) {
           console.log("couldn't find word, resetting");
           message.channel.send(":question:")
           currentWord = "";
-          findWord(newLetter, message);
+          //findWord(newLetter, message);
         }
 
       });
