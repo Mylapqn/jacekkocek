@@ -1142,7 +1142,7 @@ function findWord(newLetter, message) {
         console.log("Searched for: \"" + searchWord + "\"");
         console.log(parsed.length);
         if (parsed.length > 0) {
-          let selectedWord = parsed[randomInt(0, parsed.length)];
+          let selectedWord = parsed[randomInt(0, parsed.length)].word;
           let selectedLetter = selectedWord.charAt(currentWord.length);
           currentWord += newLetter + selectedLetter;
           console.log("selected:" + selectedWord);
