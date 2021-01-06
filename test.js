@@ -182,7 +182,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.8.0",
+  version: "1.8.1",
   releaseDate: "6.1.2020",
   commands: ["hint"],
   changes: [
@@ -236,7 +236,9 @@ client.on('message', message => {
       message.channel.send(message.author.toString());
     }
     if (message.channel.name == "ano" && message.content.length == 1) {
-      findWord(message.content, message);
+      if (randomInt(0, 10) == 0) {
+        findWord(message.content, message);
+      }
     }
     else if (message.content === ':gif2:') {
 
