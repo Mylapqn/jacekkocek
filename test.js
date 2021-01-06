@@ -230,7 +230,7 @@ client.on('message', message => {
       message.channel.send(message.author.toString());
     }
     if (message.channel.name == "ano" && message.content.length == 1) {
-      message.channel.send("F");
+      findWord(message.content);
     }
     else if (message.content === ':gif2:') {
 
