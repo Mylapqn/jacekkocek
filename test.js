@@ -1127,6 +1127,7 @@ function alternateFluttershyColor() {
 //#endregion
 //#region LETTERS
 function findWord(cx, newLetter, message) {
+  console.log(newLetter);
   newLetter = newLetter.toLowerCase();
   if (isLetter(newLetter)) {
     let searchWord = currentWord + newLetter;
