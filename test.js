@@ -216,6 +216,7 @@ loadPlaylist();
 
 var currentWord = "";
 var lastSelectedWord = "";
+var wordGameEnabled = false;
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
@@ -236,7 +237,7 @@ client.on('message', message => {
       message.channel.send(message.author.toString());
     }
     if (message.channel.name == "ano" && message.content.length == 1) {
-      if (randomInt(0, 10) == 0) {
+      if (wordGameEnabled) {
         findWord(message.content, message);
       }
     }
