@@ -230,7 +230,7 @@ client.on('message', message => {
       message.channel.send(message.author.toString());
     }
     if (message.channel.name == "ano" && message.content.length == 1) {
-      findWord(message.content,message);
+      findWord(message.content, message);
     }
     else if (message.content === ':gif2:') {
 
@@ -1131,7 +1131,7 @@ function findWord(newLetter, message) {
   if (isLetter(newLetter)) {
     console.log(newLetter);
     let searchWord = currentWord + newLetter;
-    Https.get("https://api.datamuse.com/words?sp=" + searchWord+"*", function (res) {
+    Https.get("https://api.datamuse.com/sug?max=200&s=" + searchWord + "*", function (res) {
       console.log("HTTPS Status:" + res.statusCode);
       var body;
       res.on("data", function (data) {
@@ -1141,18 +1141,19 @@ function findWord(newLetter, message) {
         var parsed = JSON.parse(body.substring(9, body.length));
         console.log("Searched for: \"" + searchWord + "\"");
         console.log(parsed.length);
-        console.log(parsed[0]);
-
-
-        if (searchWord.length > 1) {
-          lastSearchResults = resultsList;
-          //console.log(resultsList);
-          //console.log(parsed.queries);
-
-          //message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
+        if (parsed.length > 0) {
+          let selectedWord = parsed[randomInt(0, parsed.length)];
+          let selectedLetter = selectedWord.charAt(currentWord.length);
+          currentWord += newLetter + selectedLetter;
+          console.log("selected:" + selectedWord);
+          console.log("  letter:" + selectedLetter);
+          console.log("currentW:" + currentWord);
+          message.channel.send(selectedLetter.toUpperCase());
         }
-        else {
-          //message.channel.send("No results :disappointed:", { tts: true });
+        else if (currentWord.length > 0) {
+          console.log("couldn't find word, resetting");
+          currentWord = "";
+          findWord(newLetter, message);
         }
 
       });
