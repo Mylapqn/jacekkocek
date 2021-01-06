@@ -164,6 +164,11 @@ var helpCommands = [
     description: "Display the film watchlist",
     longDescription: "See the films to watch and the ones you have already watched. Interchangable with `playlist`, `kinoSuggestions`."
   },
+  {
+    name: "hint",
+    prefix: true,
+    description: "Hint for #ano",
+  },
 
 ];
 var helpAdminCommands = [
@@ -176,13 +181,12 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.7.0",
-  releaseDate: "2.12.2020",
-  commands: ["kinoSuggest", "kinoPlaylist", "noise"],
+  version: "1.8.0",
+  releaseDate: "6.1.2020",
+  commands: ["hint"],
   changes: [
-    "Added watchlist (playlist) for films",
-    "Watchlist is persistent and automatically saved",
-    "Added support for radio streams, used in `$noise`"
+    "The bot can now play in #ano",
+    "Use $hint while playing to get a hint"
   ]
 };
 
