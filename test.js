@@ -227,9 +227,10 @@ client.on('message', message => {
     if (message.mentions.has(client.user)) {
       message.channel.send(message.author.toString());
     }
-
-
-    if (message.content === ':gif2:') {
+    if (message.channel.name == "ano" && message.content.length == 1) {
+      message.channel.send("F");
+    }
+    else if (message.content === ':gif2:') {
 
       kocek++;
 
@@ -243,19 +244,19 @@ client.on('message', message => {
 
       //message.channel.send(client.emojis.get("728583366030393414"));
     }
-    if (message.content === ':spin:') {
+    else if (message.content === ':spin:') {
 
       message.delete();
       message.channel.send(client.emojis.cache.get("708663999201411122").toString());
 
     }
-    if (message.content === ':loading:') {
+    else if (message.content === ':loading:') {
 
       message.delete();
       message.channel.send(client.emojis.cache.get("772234862652424203").toString());
 
     }
-    if (message.content.toLowerCase() == "cringe") {
+    else if (message.content.toLowerCase() == "cringe") {
       message.channel.messages.fetch({ limit: 2 }).then(messages => {
 
         var previousMessage = messages.array()[1];
@@ -264,8 +265,7 @@ client.on('message', message => {
 
       });
     }
-
-    if (message.content.startsWith(prefix)) {
+    else if (message.content.startsWith(prefix)) {
       var withoutPrefix = message.content.slice(prefix.length);
       var command, argument;
       if (withoutPrefix.indexOf(" ") != -1) {
