@@ -209,6 +209,8 @@ var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
 loadPlaylist();
 
+var currentWord = "";
+
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
 client.login(process.env.DISCORD_API_KEY);
@@ -1123,6 +1125,43 @@ function alternateFluttershyColor() {
 }
 
 //#endregion
+//#region LETTERS
+function findWord(cx, newLetter, message) {
+  newLetter = newLetter.toLowerCase();
+  if (isLetter(newLetter)) {
+    let searchWord = currentWord + newLetter;
+    Https.get("https://https://api.datamuse.com/words?sp=" + searchWord, function (res) {
+      console.log("HTTPS Status:" + res.statusCode);
+      var body;
+      res.on("data", function (data) {
+        body += data;
+      });
+      res.on("end", function () {
+        var parsed = JSON.parse(body.substring(9, body.length));
+        console.log("Searched for: \"" + searchWord + "\"");
+        console.log(parsed);
+
+
+        if (searchWord.length > 1) {
+          lastSearchResults = resultsList;
+          //console.log(resultsList);
+          //console.log(parsed.queries);
+
+          message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
+        }
+        else
+          message.channel.send("No results :disappointed:", { tts: true });
+
+      });
+    });
+  }
+}
+
+function isLetter(str) {
+  return str.length === 1 && str.match(/[a-z]/i);
+}
+//#endregion
+
 
 function dateString(inputDate) {
   var minutes = inputDate.getMinutes();
