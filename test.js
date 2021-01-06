@@ -166,6 +166,7 @@ var helpCommands = [
   },
   {
     name: "hint",
+    arguments: "",
     prefix: true,
     description: "Hint for #ano",
   },
@@ -315,6 +316,8 @@ client.on('message', message => {
           message.channel.send(result);
           console.log(result, emoji);
           break;
+        case "changelog":
+        case "changes":
         case "version": {
           message.delete();
           let commandChanges = "";
@@ -1156,7 +1159,7 @@ function findWord(newLetter, message) {
         console.log("Searched for: \"" + searchWord + "\"");
         console.log(parsed.length);
         if (parsed.length > 0) {
-          let selectedWord = parsed[randomInt(0, parsed.length-1)].word;
+          let selectedWord = parsed[randomInt(0, parsed.length - 1)].word;
           selectedWord = selectedWord.replace(/\s+/g, '');
           lastSelectedWord = selectedWord;
           if (currentWord + newLetter == selectedWord) {
