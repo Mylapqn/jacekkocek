@@ -1176,6 +1176,7 @@ function findWord(newLetter, message) {
         }
         else if (currentWord.length > 0) {
           console.log("couldn't find word, resetting");
+          message.channel.send(":question:")
           currentWord = "";
           findWord(newLetter, message);
         }
