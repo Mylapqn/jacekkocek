@@ -1141,6 +1141,7 @@ function findWord(newLetter, message) {
         var parsed = JSON.parse(body.substring(9, body.length));
         console.log("Searched for: \"" + searchWord + "\"");
         console.log(parsed.length);
+        console.log(parsed[0]);
 
 
         if (searchWord.length > 1) {
