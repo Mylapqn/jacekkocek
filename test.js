@@ -1150,8 +1150,9 @@ function findWord(newLetter, message) {
 
           //message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
         }
-        else
+        else {
           //message.channel.send("No results :disappointed:", { tts: true });
+        }
 
       });
     });
