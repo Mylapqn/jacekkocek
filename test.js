@@ -1173,6 +1173,10 @@ function findWord(newLetter, message) {
             console.log("  letter:" + selectedLetter);
             console.log("currentW:" + currentWord);
             message.channel.send(selectedLetter.toUpperCase());
+            if (currentWord == selectedWord) {
+              message.channel.send(":white_check_mark:");
+              currentWord = "";
+            }
           }
         }
         else if (currentWord.length > 0) {
