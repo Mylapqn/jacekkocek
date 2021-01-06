@@ -1131,7 +1131,7 @@ function findWord(newLetter, message) {
   if (isLetter(newLetter)) {
     console.log(newLetter);
     let searchWord = currentWord + newLetter;
-    Https.get("https://api.datamuse.com/sug?max=200&s=" + searchWord + "*", function (res) {
+    Https.get("https://api.datamuse.com/sug?max=50&s=" + searchWord + "*", function (res) {
       console.log("HTTPS Status:" + res.statusCode);
       var body;
       res.on("data", function (data) {
@@ -1142,7 +1142,7 @@ function findWord(newLetter, message) {
         console.log("Searched for: \"" + searchWord + "\"");
         console.log(parsed.length);
         if (parsed.length > 0) {
-          let selectedWord = parsed[randomInt(0, parsed.length)].word;
+          let selectedWord = parsed[randomInt(0, parsed.length-1)].word;
           if (currentWord + newLetter == selectedWord) {
             message.channel.send(":white_check_mark:");
           }
