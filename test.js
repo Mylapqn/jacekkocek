@@ -1140,7 +1140,7 @@ function findWord(newLetter, message) {
       res.on("end", function () {
         var parsed = JSON.parse(body.substring(9, body.length));
         console.log("Searched for: \"" + searchWord + "\"");
-        console.log(parsed);
+        console.log(parsed.length);
 
 
         if (searchWord.length > 1) {
