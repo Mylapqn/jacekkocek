@@ -230,7 +230,7 @@ client.on('message', message => {
       message.channel.send(message.author.toString());
     }
     if (message.channel.name == "ano" && message.content.length == 1) {
-      findWord(message.content);
+      findWord(message.content,message);
     }
     else if (message.content === ':gif2:') {
 
@@ -1126,7 +1126,7 @@ function alternateFluttershyColor() {
 
 //#endregion
 //#region LETTERS
-function findWord(cx, newLetter, message) {
+function findWord(newLetter, message) {
   console.log(newLetter);
   newLetter = newLetter.toLowerCase();
   if (isLetter(newLetter)) {
@@ -1148,10 +1148,10 @@ function findWord(cx, newLetter, message) {
           //console.log(resultsList);
           //console.log(parsed.queries);
 
-          message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
+          //message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
         }
         else
-          message.channel.send("No results :disappointed:", { tts: true });
+          //message.channel.send("No results :disappointed:", { tts: true });
 
       });
     });
