@@ -1143,12 +1143,17 @@ function findWord(newLetter, message) {
         console.log(parsed.length);
         if (parsed.length > 0) {
           let selectedWord = parsed[randomInt(0, parsed.length)].word;
-          let selectedLetter = selectedWord.charAt(currentWord.length+1);
-          currentWord += newLetter + selectedLetter;
-          console.log("selected:" + selectedWord);
-          console.log("  letter:" + selectedLetter);
-          console.log("currentW:" + currentWord);
-          message.channel.send(selectedLetter.toUpperCase());
+          if (currentWord + newLetter == selectedWord) {
+            message.channel.send(":white_check_mark:");
+          }
+          else {
+            let selectedLetter = selectedWord.charAt(currentWord.length + 1);
+            currentWord += newLetter + selectedLetter;
+            console.log("selected:" + selectedWord);
+            console.log("  letter:" + selectedLetter);
+            console.log("currentW:" + currentWord);
+            message.channel.send(selectedLetter.toUpperCase());
+          }
         }
         else if (currentWord.length > 0) {
           console.log("couldn't find word, resetting");
