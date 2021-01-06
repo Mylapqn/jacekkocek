@@ -1127,11 +1127,11 @@ function alternateFluttershyColor() {
 //#endregion
 //#region LETTERS
 function findWord(newLetter, message) {
-  console.log(newLetter);
   newLetter = newLetter.toLowerCase();
   if (isLetter(newLetter)) {
+    console.log(newLetter);
     let searchWord = currentWord + newLetter;
-    Https.get("https://https://api.datamuse.com/words?sp=" + searchWord, function (res) {
+    Https.get("https://https://api.datamuse.com/words?sp=" + searchWord+"*", function (res) {
       console.log("HTTPS Status:" + res.statusCode);
       var body;
       res.on("data", function (data) {
