@@ -210,6 +210,7 @@ var playlistFileName = "kinoPlaylist.json";
 loadPlaylist();
 
 var currentWord = "";
+var lastSelectedWord = "";
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
@@ -727,6 +728,15 @@ client.on('message', message => {
           }
           break;
         }
+        case "hint": {
+          if (lastSelectedWord != "") {
+            message.channel.send(lastSelectedWord.toUpperCase());
+          }
+          else {
+            message.channel.send("There is nothing to hint");
+          }
+          break;
+        }
 
         default:
           message.channel.send("Unknown command :disappointed:");
@@ -1143,6 +1153,8 @@ function findWord(newLetter, message) {
         console.log(parsed.length);
         if (parsed.length > 0) {
           let selectedWord = parsed[randomInt(0, parsed.length-1)].word;
+          selectedWord = selectedWord.replace(/\s+/g, '');
+          lastSelectedWord = selectedWord;
           if (currentWord + newLetter == selectedWord) {
             message.channel.send(":white_check_mark:");
           }
