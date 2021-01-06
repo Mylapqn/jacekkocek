@@ -1131,7 +1131,7 @@ function findWord(newLetter, message) {
   if (isLetter(newLetter)) {
     console.log(newLetter);
     let searchWord = currentWord + newLetter;
-    Https.get("https://https://api.datamuse.com/words?sp=" + searchWord+"*", function (res) {
+    Https.get("https://api.datamuse.com/words?sp=" + searchWord+"*", function (res) {
       console.log("HTTPS Status:" + res.statusCode);
       var body;
       res.on("data", function (data) {
