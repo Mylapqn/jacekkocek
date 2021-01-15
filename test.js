@@ -714,8 +714,7 @@ client.on('message', message => {
         }
 
         case "stop": {
-          if (message.guild)
-            let v = message.guild.voice;
+          let v = message.guild.voice;
           if (v) {
             if (v.connection.dispatcher)
               v.connection.dispatcher.pause();
