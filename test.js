@@ -679,13 +679,13 @@ client.on('message', message => {
         }
 
         case "noise": {
-          message.delete();
           if (message.member.voice.channel)
-            message.member.voice.channel.join().then(voice => {
-              //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-              voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
-
-            }, function (e) { console.log("REJECTED!!!", e) });
+          message.member.voice.channel.join().then(voice => {
+            message.delete();
+            //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+            voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
+            
+          }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
         case "song": {
@@ -714,13 +714,14 @@ client.on('message', message => {
         }
 
         case "stop": {
-          message.delete();
-          let v = message.guild.voice;
+          if (message.guild)
+            let v = message.guild.voice;
           if (v) {
             if (v.connection.dispatcher)
               v.connection.dispatcher.pause();
             v.kick();
           }
+          message.delete();
           if (radioTimer) clearTimeout(radioTimer);
           break;
         }
