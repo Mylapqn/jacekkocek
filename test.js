@@ -234,7 +234,7 @@ client.on('ready', () => {
   client.guilds.fetch("549589656606343178").then(guild => {
     let c = guild.channels.cache.find(channel => channel.name == "nvidia");
     c.messages.fetch("800379220517060619").then(message => {
-      console.log(message);
+      message.edit(new Date().toString());
     });
   });
 
