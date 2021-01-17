@@ -1353,14 +1353,13 @@ function updateStockInfo() {
             icon_url: "https://www.matousmarek.cz/alza.png"
           },
           url: "https://www.alza.cz/18881565.htm",
-          description: "There are 0 cards in stock.",
           fields: [],
           timestamp: new Date(),
           footer: {
             text: "Last update"
           }
         });
-        embed.setDescription("In stock: **" + products.length + " cards**");
+        embed.setDescription("In stock: **" + products.length + " cards** (CZC + Alza)");
         let i = 0;
         products.forEach(product => {
           if (i < 24) {
