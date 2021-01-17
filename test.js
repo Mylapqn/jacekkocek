@@ -1394,8 +1394,13 @@ function updateStockInfo() {
       }
       lastInStock = products.length;
     }
-    console.log(new Date().getHours());
-    setTimeout(updateStockInfo, 60000);
+    let hours = new Date().getHours() + 1;
+    let timeout = 900000;
+    if ((hours >= 10 && hours <= 12) || (hours >= 14 && hours <= 17))
+      timeout = 60000;
+    else
+      timeout = 900000;
+    setTimeout(updateStockInfo, timeout);
   });
 }
 
