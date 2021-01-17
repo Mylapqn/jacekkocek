@@ -1306,6 +1306,15 @@ function get_product_containers(base_url, $) {
 	}
 }
 
+async function load_all_products(array) {
+  let promises = [];
+  array.forEach(element => {
+      promises.push(load_products(element));
+  });
+
+  return [].concat(...await Promise.all(promises));
+}
+
 async function load_products(url) {
 	let products = [];
 	while (url) {
@@ -1332,7 +1341,7 @@ async function load_products(url) {
 
 
 function updateStockInfo() {
-  load_products("https://www.alza.cz/18881565.htm").then((products) => {
+  load_all_products(["https://www.alza.cz/18881565.htm", "https://www.czc.cz/graficke-karty/produkty?q-c-3-f_2027483=sGeForce%20RTX%203090&q-c-0-f_2027483=sGeForce%20RTX%203060%20Ti&q-c-1-f_2027483=sGeForce%20RTX%203070&q-c-2-f_2027483=sGeForce%20RTX%203080"]).then((products) => {
       console.log(products);
       if (stockMessage) {
         let timeString = "\nLAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" });
