@@ -1280,7 +1280,7 @@ function get_product_info_alza(base_url, product) {
 		status: link.prop("data-impression-dimension13"),
 		price: Math.round(parseFloat(link.prop("data-impression-metric2"))),
 		url: get_full_url(base_url, link.prop("href")),
-		in_stock: ink.prop("data-impression-dimension13").includes("skladem")
+		in_stock: link.prop("data-impression-dimension13").includes("skladem")
 	};
 }
 
@@ -1354,7 +1354,7 @@ function updateStockInfo() {
         embed.setDescription("In stock: **" + products.length + " cards**");
         let i = 0;
         products.forEach(product => {
-          if (i < 23) {
+          if (i < 24) {
             embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase() + "](" + product.url + ") | " + product.price+" Kč", inline: true });
             i++;
           }
