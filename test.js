@@ -1226,122 +1226,122 @@ function isLetter(str) {
 //#region ALZA MINER
 
 function get_shop_type(url) {
-	url = url.toLowerCase();
-	if (url.includes("alza.cz"))
-		return "alza";
-	if (url.includes("czc.cz"))
-		return "czc";
-	return "unknown";
+  url = url.toLowerCase();
+  if (url.includes("alza.cz"))
+    return "alza";
+  if (url.includes("czc.cz"))
+    return "czc";
+  return "unknown";
 }
 
 function get_full_url(base_url, destination) {
-	if (destination.startsWith("http"))
-		return destination;
-	if (destination.startsWith('/'))
-		return base_url.match("^(?:http:\/\/|https:\/\/)?[^\/?]*") + destination;
-	return base_url.split('/').slice(0, -1).join('/') + "/" + destination;
+  if (destination.startsWith("http"))
+    return destination;
+  if (destination.startsWith('/'))
+    return base_url.match("^(?:http:\/\/|https:\/\/)?[^\/?]*") + destination;
+  return base_url.split('/').slice(0, -1).join('/') + "/" + destination;
 }
 
 function get_next_page_url(base_url, $) {
-	let next;
-	switch (get_shop_type(base_url)) {
-		case "alza":
-			next = $("#pagerbottom>.next");
-			break;
-		case "czc":
-			next = $("#navigation-container-bottom .page-next");
-			break;
-	}
+  let next;
+  switch (get_shop_type(base_url)) {
+    case "alza":
+      next = $("#pagerbottom>.next");
+      break;
+    case "czc":
+      next = $("#navigation-container-bottom .page-next");
+      break;
+  }
 
-	if (next && next.length != 0)
-		return get_full_url(base_url, next.prop("href"));
-	return null;
+  if (next && next.length != 0)
+    return get_full_url(base_url, next.prop("href"));
+  return null;
 }
 
 function get_product_info_czc(base_url, product) {
-	let link = product.find(".tile-title a");
-	let price_element = product.find(".price-wrapper .price>.price-vatin");
-	let status = product.find(".tile-controls .control:nth-child(2)");
+  let link = product.find(".tile-title a");
+  let price_element = product.find(".price-wrapper .price>.price-vatin");
+  let status = product.find(".tile-controls .control:nth-child(2)");
 
-	let price = price_element.length != 0 ? parseInt(price_element.text().replace(/[^0-9]/g, "")) : 0;
-	let status_trim = status.text().trim();
-	return {
-		name: link.text().trim(),
-		status: status_trim,
-		price: price,
-		url: get_full_url(base_url, link.prop("href")),
-		in_stock: status_trim.toLowerCase().includes("skladem") && !status_trim.toLowerCase().includes("skladem 0")
-	};
+  let price = price_element.length != 0 ? parseInt(price_element.text().replace(/[^0-9]/g, "")) : 0;
+  let status_trim = status.text().trim();
+  return {
+    name: link.text().trim(),
+    status: status_trim,
+    price: price,
+    url: get_full_url(base_url, link.prop("href")),
+    in_stock: status_trim.toLowerCase().includes("skladem") && !status_trim.toLowerCase().includes("skladem 0")
+  };
 }
 
 function get_product_info_alza(base_url, product) {
-	let link = product.find(".top>.fb>a.name");
-	return {
-		name: link.text().trim(),
-		status: link.prop("data-impression-dimension13"),
-		price: Math.round(parseFloat(link.prop("data-impression-metric2"))),
-		url: get_full_url(base_url, link.prop("href")),
-		in_stock: link.prop("data-impression-dimension13").includes("skladem")
-	};
+  let link = product.find(".top>.fb>a.name");
+  return {
+    name: link.text().trim(),
+    status: link.prop("data-impression-dimension13"),
+    price: Math.round(parseFloat(link.prop("data-impression-metric2"))),
+    url: get_full_url(base_url, link.prop("href")),
+    in_stock: link.prop("data-impression-dimension13").includes("skladem")
+  };
 }
 
 function get_product_info(base_url, product) {
-	switch (get_shop_type(base_url)) {
-		case "alza":
-			return get_product_info_alza(base_url, product);
-		case "czc":
-			return get_product_info_czc(base_url, product);
-		default:
-			return null;
-	}
+  switch (get_shop_type(base_url)) {
+    case "alza":
+      return get_product_info_alza(base_url, product);
+    case "czc":
+      return get_product_info_czc(base_url, product);
+    default:
+      return null;
+  }
 }
 
 function get_product_containers(base_url, $) {
-	switch (get_shop_type(base_url)) {
-		case "alza":
-			return $("#boxc .box");
-		case "czc":
-			return $("#tiles .new-tile");
-		default:
-			return null;
-	}
+  switch (get_shop_type(base_url)) {
+    case "alza":
+      return $("#boxc .box");
+    case "czc":
+      return $("#tiles .new-tile");
+    default:
+      return null;
+  }
 }
 
 async function load_all_products(array) {
   let promises = [];
   array.forEach(element => {
-      promises.push(load_products(element));
+    promises.push(load_products(element));
   });
 
   return [].concat(...await Promise.all(promises));
 }
 
 async function load_products(url) {
-	let products = [];
-	while (url) {
-		let response = await axios.get(url);
-		if (response.status != 200)
-			throw new Error("Invalid request (status: " + response.status + ")");
-		url = response.request.res.responseUrl;
+  let products = [];
+  while (url) {
+    let response = await axios.get(url);
+    if (response.status != 200)
+      throw new Error("Invalid request (status: " + response.status + ")");
+    url = response.request.res.responseUrl;
 
-		let $ = cheerio.load(response.data);
-		let container = get_product_containers(url, $);
-		if (container) {
-			container.each((i, element) => {
-				let product = get_product_info(url, $(element));
-				if (product)
-					products.push(product);
-			});
-		}
+    let $ = cheerio.load(response.data);
+    let container = get_product_containers(url, $);
+    if (container) {
+      container.each((i, element) => {
+        let product = get_product_info(url, $(element));
+        if (product)
+          products.push(product);
+      });
+    }
 
-		url = get_next_page_url(url, $);
-	}
+    url = get_next_page_url(url, $);
+  }
 
-	return products;
+  return products;
 }
 
 function filter_stock(products) {
-	return products.filter((product) => product.in_stock);
+  return products.filter((product) => product.in_stock);
 }
 
 
@@ -1368,31 +1368,34 @@ function updateStockInfo() {
       });
       embed.setDescription("In stock: **" + products.length + " cards** (CZC + Alza)");
       let i = 0;
+      let maxItems = 23;
+      if (products.length == 24) { maxItems = 24 };
+
       products.forEach(product => {
-        if (i < 23) {
+        if (i < maxItems) {
           embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase() + "](" + product.url + ") | " + product.price + " Kč", inline: true });
           i++;
         }
       });
       if (products.length > 23) {
-        
-        embed.addFields({ name: products.length-23+" more", value: "[SEE ALL](https://www.alza.cz/18881565.htm)", inline: true });
+
+        embed.addFields({ name: "And " + products.length - 23 + " more...", value: "[SEE ALL](https://www.alza.cz/18881565.htm)", inline: true });
       }
 
       stockMessage.edit("", {
         embed: embed
       });
       let GPURole = stockMessage.guild.roles.cache.find(role => role.name == "Team Nvidia");
-        if (products.length > lastInStock) {
-          let msg = stockMessage.channel.send("**"+products.length - lastInStock + "** New cards in stock! " + "<@&"+GPURole+">").then((msg)=>{
-            setTimeout(() => {
-              msg.delete();
-            }, 30000);
-          });
-        }
-        lastInStock = products.length;
+      if (products.length > lastInStock) {
+        let msg = stockMessage.channel.send("**" + (products.length - lastInStock) + "** New cards in stock! " + "<@&" + GPURole + ">").then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+          }, 30000);
+        });
       }
-    });
+      lastInStock = products.length;
+    }
+  });
 }
 
 //#endregion
