@@ -277,7 +277,7 @@ client.on('ready', () => {
               icon_url: client.user.avatarURL(),
               text: "© Example"
             }
-          }
+          }.addFields({ name: "Inline Field", value: "They can also be inline.", inline: true })
         });
       }
     });
