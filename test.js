@@ -1347,40 +1347,39 @@ function filter_stock(products) {
 
 function updateStockInfo() {
   load_all_products(["https://www.alza.cz/18881565.htm", "https://www.czc.cz/graficke-karty/produkty?q-c-3-f_2027483=sGeForce%20RTX%203090&q-c-0-f_2027483=sGeForce%20RTX%203060%20Ti&q-c-1-f_2027483=sGeForce%20RTX%203070&q-c-2-f_2027483=sGeForce%20RTX%203080"]).then((productsRaw) => {
-    let products = filter_stock(productsRaw); 
-      console.log("Found "+products.length+" products");
-      if (stockMessage) {
-        let timeString = "\nLAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" });
-        //stockMessage.edit(products + timeString);
-        let embed = new Discord.MessageEmbed({
-          color: 3066993,
-          author: {
-            name: "GPU Stock",
-            icon_url: "https://www.matousmarek.cz/alza.png"
-          },
-          url: "https://www.alza.cz/18881565.htm",
-          fields: [],
-          timestamp: new Date(),
-          footer: {
-            text: "Last update"
-          }
-        });
-        embed.setDescription("In stock: **" + products.length + " cards** (CZC + Alza)");
-        let i = 0;
-        products.forEach(product => {
-          if (i < 24) {
-            embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase() + "](" + product.url + ") | " + product.price+" Kč", inline: true });
-            i++;
-          }
-        });
+    let products = filter_stock(productsRaw);
+    console.log("Found " + products.length + " products");
+    if (stockMessage) {
+      let timeString = "\nLAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" });
+      //stockMessage.edit(products + timeString);
+      let embed = new Discord.MessageEmbed({
+        color: 3066993,
+        author: {
+          name: "GPU Stock",
+          icon_url: "https://www.matousmarek.cz/alza.png"
+        },
+        url: "https://www.alza.cz/18881565.htm",
+        fields: [],
+        timestamp: new Date(),
+        footer: {
+          text: "Last update"
+        }
+      });
+      embed.setDescription("In stock: **" + products.length + " cards** (CZC + Alza)");
+      let i = 0;
+      products.forEach(product => {
+        if (i < 24) {
+          embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase() + "](" + product.url + ") | " + product.price + " Kč", inline: true });
+          i++;
+        }
+      });
 
-        stockMessage.edit("",{
-          embed: embed
-        });
-        console.log(stockMessage.guild.members.cache);
-        console.log(stockMessage.guild.roles.cache.find(role => role.name == "GPU Notification"));
-        if (products.length > lastInStock+1000) {
-          let msg = stockMessage.channel.send("New cards in stock!" + stockMessage.guild.members.cache.find(m => m.user.username == "Mylapqn")).then((msg)=>{
+      stockMessage.edit("", {
+        embed: embed
+      });
+      let GPURole = stockMessage.guild.roles.cache.find(role => role.name == "GPU Notification");
+        if (products.length > lastInStock) {
+          let msg = stockMessage.channel.send("New cards in stock!" + GPURole).then((msg)=>{
             setTimeout(() => {
               msg.delete();
             }, 30000);
