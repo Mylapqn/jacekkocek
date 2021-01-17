@@ -250,14 +250,14 @@ client.on('ready', () => {
         let timeString = "\nLAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" });
         //stockMessage.edit(products + timeString);
         let embed = new Discord.MessageEmbed({
-          color: 3447003,
+          color: 3066993,
           author: {
-            name: client.user.username,
-            icon_url: client.user.avatarURL()
+            name: "JacekKocek Miner",
+            icon_url: "https://www.matousmarek.cz/alza.png"
           },
-          title: "This is an embed",
-          url: "http://google.com",
-          description: "This is a test embed to showcase what they look like and what they can do.",
+          title: "Alza GPU Stock",
+          url: "https://www.alza.cz/18881565.htm",
+          description: "There are 0 cards in stock.",
           fields: [{
             name: "Fields",
             value: "They can have different fields with small headlines."
@@ -273,11 +273,10 @@ client.on('ready', () => {
           ],
           timestamp: new Date(),
           footer: {
-            icon_url: client.user.avatarURL(),
-            text: "© Example"
+            text: "Last update"
           }
         });
-        embed.addFields({ name: "Inline Field", value: "They can also be inline.", inline: true });
+        embed.addFields({ name: "RTX 3080[RTX](http://google.com)", value: "[IN STOCK](http://google.com) | 15 500 Kč", inline: true });
 
         stockMessage.edit({
           embed: embed
