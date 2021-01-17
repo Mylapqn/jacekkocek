@@ -1295,9 +1295,13 @@ function updateStockInfo() {
             text: "Last update"
           }
         });
-        embed.setDescription("In stock: **"+products.length+" cards**")
+        embed.setDescription("In stock: **" + products.length + " cards**");
+        let i = 0;
         products.forEach(product => {
-          embed.addFields({ name: product.name, value: "["+product.status.toUpperCase+"]("+product.url+") | "+product.price, inline: true });
+          if (i < 30) {
+            embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase + "](" + product.url + ") | " + product.price, inline: true });
+            i++;
+          }
         });
 
         stockMessage.edit("",{
