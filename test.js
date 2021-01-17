@@ -221,6 +221,7 @@ var lastSelectedWord = "";
 var wordGameEnabled = false;
 
 var stockMessage;
+var lastInStock = 0;
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
@@ -1376,6 +1377,13 @@ function updateStockInfo() {
         stockMessage.edit("",{
           embed: embed
         });
+        if (products.length > lastInStock) {
+          let msg = stockMessage.channel.send("New cards in stock!" + stockMessage.channel.members.find(m => m.user.username == "CrabICE"));
+          setTimeout(() => {
+            msg.delete();
+          }, 30000);
+        }
+        lastInStock = products.length;
       }
     });
 }
