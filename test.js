@@ -246,9 +246,10 @@ client.on('ready', () => {
   setInterval(function () {
     load_products("https://www.alza.cz/18881565.htm").then((products) => {
       console.log(products);
-      if (stockMessage)
+      if (stockMessage) {
         let timeString = "\nLAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" });
-        stockMessage.edit(products+timeString);
+        stockMessage.edit(products + timeString);
+      }
     });
   }, 60000);
 
