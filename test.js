@@ -1299,7 +1299,7 @@ function updateStockInfo() {
         let i = 0;
         products.forEach(product => {
           if (i < 30) {
-            embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase + "](" + product.url + ") | " + product.price, inline: true });
+            embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase() + "](" + product.url + ") | " + product.price, inline: true });
             i++;
           }
         });
