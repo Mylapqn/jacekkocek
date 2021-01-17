@@ -1400,6 +1400,7 @@ function updateStockInfo() {
       timeout = 60000;
     else
       timeout = 900000;
+    console.log("setting timeout to " + timeout);
     setTimeout(updateStockInfo, timeout);
   });
 }
