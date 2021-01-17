@@ -1377,8 +1377,8 @@ function updateStockInfo() {
         stockMessage.edit("",{
           embed: embed
         });
-        console.log(stockMessage.channel.members);
-        console.log(stockMessage.guild.members.cache.find(m => m.user.username == "Mylapqn"));
+        console.log(stockMessage.guild.members.cache);
+        console.log(stockMessage.guild.roles.cache.find(role => role.name == "GPU Notification"));
         if (products.length > lastInStock+1000) {
           let msg = stockMessage.channel.send("New cards in stock!" + stockMessage.guild.members.cache.find(m => m.user.username == "Mylapqn")).then((msg)=>{
             setTimeout(() => {
