@@ -220,6 +220,8 @@ var currentWord = "";
 var lastSelectedWord = "";
 var wordGameEnabled = false;
 
+var stockMessage;
+
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
 client.login(process.env.DISCORD_API_KEY);
@@ -234,18 +236,20 @@ client.on('ready', () => {
   client.guilds.fetch("549589656606343178").then(guild => {
     let c = guild.channels.cache.find(channel => channel.name == "nvidia");
     c.messages.fetch("800379220517060619").then(message => {
-      message.edit(new Date().toLocaleString("cs-CZ", {timeZone:"Europe/Prague"}));
+      stockMessage = message;
     });
   });
 
   load_products("https://www.alza.cz/18881565.htm").then((products) => {
-      //console.log(products);
-    });
+    //console.log(products);
+  });
   setInterval(function () {
     load_products("https://www.alza.cz/18881565.htm").then((products) => {
       //console.log(products);
+      if (stockMessage)
+        stockMessage.edit("LAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" }));
     });
-  }, 120000);
+  }, 60000);
 
 });
 
