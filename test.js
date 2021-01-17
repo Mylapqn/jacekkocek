@@ -1377,8 +1377,9 @@ function updateStockInfo() {
         stockMessage.edit("",{
           embed: embed
         });
+        console.log(stockMessage.channel.members);
         console.log(stockMessage.channel.members.find(m => m.user.username == "Mylapqn"));
-        if (products.length > lastInStock) {
+        if (products.length > lastInStock+1000) {
           let msg = stockMessage.channel.send("New cards in stock!" + stockMessage.channel.members.find(m => m.user.username == "Mylapqn")).then((msg)=>{
             setTimeout(() => {
               msg.delete();
