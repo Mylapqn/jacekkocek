@@ -4,6 +4,8 @@ const Https = require('https');
 const Http = require('http');
 const ytdl = require('ytdl-core');
 const fs = require('fs');
+const cheerio = require('cheerio');
+const axios = require('axios');
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
@@ -228,6 +230,13 @@ client.on('ready', () => {
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   //console.log(client.user);
   startDate = new Date();
+
+  setInterval(function () {
+    load_products("https://www.alza.cz/18881565.htm").then((products) => {
+      console.log(filter_stock(products));
+    });
+  }, 120000);
+
 });
 
 client.on('message', message => {
@@ -680,21 +689,21 @@ client.on('message', message => {
 
         case "noise": {
           if (message.member.voice.channel)
-          message.member.voice.channel.join().then(voice => {
-            message.delete();
-            //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-            voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
-          }, function (e) { console.log("REJECTED!!!", e) });
+            message.member.voice.channel.join().then(voice => {
+              message.delete();
+              //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+              voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
+            }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
         case "radio": {
           if (message.member.voice.channel)
-          message.member.voice.channel.join().then(voice => {
-            message.delete();
-            //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-            voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
-            
-          }, function (e) { console.log("REJECTED!!!", e) });
+            message.member.voice.channel.join().then(voice => {
+              message.delete();
+              //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+              voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
+
+            }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
         case "song": {
@@ -1207,7 +1216,60 @@ function isLetter(str) {
   return str.length === 1 && str.match(/[a-z]/i);
 }
 //#endregion
+//#region ALZA MINER
 
+function get_full_url(base_url, destination) {
+  if (destination.startsWith("http"))
+    return destination;
+  if (destination.startsWith('/'))
+    return base_url.match("^(?:http:\/\/|https:\/\/)?[^\/?]*") + destination;
+  return base_url.split('/').slice(0, -1).join('/') + "/" + destination;
+}
+
+function get_next_page_url(base_url, $) {
+  let next = $("#pagerbottom>.next");
+  if (next.length != 0)
+    return get_full_url(base_url, next.prop("href"));
+  return null;
+}
+
+function get_product_info(base_url, product) {
+  let link = product.find(".top>.fb>a.name");
+  return {
+    name: link.text(),
+    status: link.prop("data-impression-dimension13"),
+    price: Math.round(parseFloat(link.prop("data-impression-metric2"))),
+    url: get_full_url(base_url, link.prop("href"))
+  };
+}
+
+async function load_products(url) {
+  let products = [];
+  while (url) {
+    let response = await axios.get(url);
+    if (response.status != 200)
+      throw new Error("Invalid request (status: " + response.status + ")");
+    url = response.request.res.responseUrl;
+
+    let $ = cheerio.load(response.data);
+
+    $("#boxc .box").each((i, element) => {
+      let product = get_product_info(url, $(element));
+      if (product)
+        products.push(product);
+    });
+
+    url = get_next_page_url(url, $);
+  }
+
+  return products;
+}
+
+function filter_stock(products) {
+  return products.filter((product) => product.status.toLowerCase().includes("skladem"));
+}
+
+//#endregion
 
 function dateString(inputDate) {
   var minutes = inputDate.getMinutes();
@@ -1236,5 +1298,3 @@ function toTitleCase(phrase) {
 function randomInt(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
-
-
