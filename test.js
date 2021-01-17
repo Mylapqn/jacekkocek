@@ -252,10 +252,9 @@ client.on('ready', () => {
         let embed = new Discord.MessageEmbed({
           color: 3066993,
           author: {
-            name: "JacekKocek Miner",
+            name: "Alza GPU Stock",
             icon_url: "https://www.matousmarek.cz/alza.png"
           },
-          title: "Alza GPU Stock",
           url: "https://www.alza.cz/18881565.htm",
           description: "There are 0 cards in stock.",
           fields: [],
