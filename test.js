@@ -240,37 +240,8 @@ client.on('ready', () => {
     });
   });
 
-  load_products("https://www.alza.cz/18881565.htm").then((products) => {
-    //console.log(products);
-  });
-  setInterval(function () {
-    load_products("https://www.alza.cz/18881565.htm").then((products) => {
-      console.log(products);
-      if (stockMessage) {
-        let timeString = "\nLAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" });
-        //stockMessage.edit(products + timeString);
-        let embed = new Discord.MessageEmbed({
-          color: 3066993,
-          author: {
-            name: "Alza GPU Stock",
-            icon_url: "https://www.matousmarek.cz/alza.png"
-          },
-          url: "https://www.alza.cz/18881565.htm",
-          description: "There are 0 cards in stock.",
-          fields: [],
-          timestamp: new Date(),
-          footer: {
-            text: "Last update"
-          }
-        });
-        embed.addFields({ name: "RTX 3080", value: "[not IN STOCK](http://google.com) | 15 500 Kč", inline: true });
-
-        stockMessage.edit("",{
-          embed: embed
-        });
-      }
-    });
-  }, 60000);
+  updateStockInfo();
+  setInterval(updateStockInfo, 60000);
 
 });
 
@@ -1302,6 +1273,38 @@ async function load_products(url) {
 
 function filter_stock(products) {
   return products.filter((product) => product.status.toLowerCase().includes("skladem"));
+}
+
+function updateStockInfo() {
+  load_products("https://www.alza.cz/18881565.htm").then((products) => {
+      console.log(products);
+      if (stockMessage) {
+        let timeString = "\nLAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" });
+        //stockMessage.edit(products + timeString);
+        let embed = new Discord.MessageEmbed({
+          color: 3066993,
+          author: {
+            name: "Alza GPU Stock",
+            icon_url: "https://www.matousmarek.cz/alza.png"
+          },
+          url: "https://www.alza.cz/18881565.htm",
+          description: "There are 0 cards in stock.",
+          fields: [],
+          timestamp: new Date(),
+          footer: {
+            text: "Last update"
+          }
+        });
+        embed.setDescription("In stock: **"+products.length+" cards**")
+        products.forEach(product => {
+          embed.addFields({ name: product.name, value: "["+product.status.toUpperCase+"]("+product.url+") | "+product.price, inline: true });
+        });
+
+        stockMessage.edit("",{
+          embed: embed
+        });
+      }
+    });
 }
 
 //#endregion
