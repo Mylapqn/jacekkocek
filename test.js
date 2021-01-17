@@ -258,27 +258,15 @@ client.on('ready', () => {
           title: "Alza GPU Stock",
           url: "https://www.alza.cz/18881565.htm",
           description: "There are 0 cards in stock.",
-          fields: [{
-            name: "Fields",
-            value: "They can have different fields with small headlines."
-          },
-          {
-            name: "Masked links",
-            value: "You can put [masked links](http://google.com) inside of rich embeds."
-          },
-          {
-            name: "Markdown",
-            value: "You can put all the *usual* **__Markdown__** inside of them."
-          }
-          ],
+          fields: [],
           timestamp: new Date(),
           footer: {
             text: "Last update"
           }
         });
-        embed.addFields({ name: "RTX 3080[RTX](http://google.com)", value: "[IN STOCK](http://google.com) | 15 500 Kč", inline: true });
+        embed.addFields({ name: "RTX 3080", value: "[not IN STOCK](http://google.com) | 15 500 Kč", inline: true });
 
-        stockMessage.edit({
+        stockMessage.edit("",{
           embed: embed
         });
       }
