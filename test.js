@@ -1354,7 +1354,7 @@ function updateStockInfo() {
         embed.setDescription("In stock: **" + products.length + " cards**");
         let i = 0;
         products.forEach(product => {
-          if (i < 24) {
+          if (i < 23) {
             embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase() + "](" + product.url + ") | " + product.price+" Kč", inline: true });
             i++;
           }
