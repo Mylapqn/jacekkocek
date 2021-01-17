@@ -231,12 +231,17 @@ client.on('ready', () => {
   //console.log(client.user);
   startDate = new Date();
 
+  client.guilds.fetch("549589656606343178").then(guild => {
+    let c = guild.channels.cache.find(channel => channel.name == "nvidia");
+    c.send("test");
+  });
+
   load_products("https://www.alza.cz/18881565.htm").then((products) => {
-      console.log(products);
+      //console.log(products);
     });
   setInterval(function () {
     load_products("https://www.alza.cz/18881565.htm").then((products) => {
-      console.log(products);
+      //console.log(products);
     });
   }, 120000);
 
