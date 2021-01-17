@@ -231,9 +231,12 @@ client.on('ready', () => {
   //console.log(client.user);
   startDate = new Date();
 
+  load_products("https://www.alza.cz/18881565.htm").then((products) => {
+      console.log(products);
+    });
   setInterval(function () {
     load_products("https://www.alza.cz/18881565.htm").then((products) => {
-      console.log(filter_stock(products));
+      console.log(products);
     });
   }, 120000);
 
