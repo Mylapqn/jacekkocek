@@ -1378,10 +1378,11 @@ function updateStockInfo() {
           embed: embed
         });
         if (products.length > lastInStock) {
-          let msg = stockMessage.channel.send("New cards in stock!" + stockMessage.channel.members.find(m => m.user.username == "CrabICE"));
-          setTimeout(() => {
-            msg.delete();
-          }, 30000);
+          let msg = stockMessage.channel.send("New cards in stock!" + stockMessage.channel.members.find(m => m.user.username == "CrabICE")).then((msg)=>{
+            setTimeout(() => {
+              msg.delete();
+            }, 30000);
+          });
         }
         lastInStock = products.length;
       }
