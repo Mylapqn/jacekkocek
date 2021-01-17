@@ -1379,7 +1379,7 @@ function updateStockInfo() {
       });
       if (products.length > 23) {
 
-        embed.addFields({ name: "And " + products.length - 23 + " more...", value: "[SEE ALL](https://www.alza.cz/18881565.htm)", inline: true });
+        embed.addFields({ name: "And " + (products.length - 23) + " more...", value: "[SEE ALL](https://www.alza.cz/18881565.htm)", inline: true });
       }
 
       stockMessage.edit("", {
