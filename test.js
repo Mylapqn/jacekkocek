@@ -1369,18 +1369,22 @@ function updateStockInfo() {
       embed.setDescription("In stock: **" + products.length + " cards** (CZC + Alza)");
       let i = 0;
       products.forEach(product => {
-        if (i < 24) {
+        if (i < 23) {
           embed.addFields({ name: product.name, value: "[" + product.status.toUpperCase() + "](" + product.url + ") | " + product.price + " Kč", inline: true });
           i++;
         }
       });
+      if (products.length > 23) {
+        
+        embed.addFields({ name: products.length-23+" more", value: "[SEE ALL](https://www.alza.cz/18881565.htm)", inline: true });
+      }
 
       stockMessage.edit("", {
         embed: embed
       });
       let GPURole = stockMessage.guild.roles.cache.find(role => role.name == "Team Nvidia");
         if (products.length > lastInStock) {
-          let msg = stockMessage.channel.send("New cards in stock! " + "<@&"+GPURole+">").then((msg)=>{
+          let msg = stockMessage.channel.send("**"+products.length - lastInStock + "** New cards in stock! " + "<@&"+GPURole+">").then((msg)=>{
             setTimeout(() => {
               msg.delete();
             }, 30000);
