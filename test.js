@@ -1379,7 +1379,7 @@ function updateStockInfo() {
       });
       let GPURole = stockMessage.guild.roles.cache.find(role => role.name == "GPU Notification");
         if (products.length > lastInStock) {
-          let msg = stockMessage.channel.send("New cards in stock!" + GPURole).then((msg)=>{
+          let msg = stockMessage.channel.send("New cards in stock! " + "<@&"+GPURole+">").then((msg)=>{
             setTimeout(() => {
               msg.delete();
             }, 30000);
