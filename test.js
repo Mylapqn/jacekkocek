@@ -184,12 +184,12 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.8.1",
+  version: "1.9.0",
   releaseDate: "6.1.2020",
-  commands: ["hint"],
+  commands: ["radio"],
   changes: [
-    "The bot can now play in **#ano**",
-    "Use `$hint` while playing to get a hint"
+    "Added Nvidia stock checking capability",
+    "Added internet radio streaming"
   ]
 };
 
