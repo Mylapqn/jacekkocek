@@ -242,7 +242,6 @@ client.on('ready', () => {
   });
 
   updateStockInfo();
-  setInterval(updateStockInfo, 60000);
 
 });
 
@@ -1281,7 +1280,7 @@ function get_product_info_alza(base_url, product) {
     status: link.prop("data-impression-dimension13"),
     price: Math.round(parseFloat(link.prop("data-impression-metric2"))),
     url: get_full_url(base_url, link.prop("href")),
-    in_stock: link.prop("data-impression-dimension13").includes("skladem")
+    in_stock: link.prop("data-impression-dimension13").toLowerCase().includes("skladem")
   };
 }
 
@@ -1395,6 +1394,8 @@ function updateStockInfo() {
       }
       lastInStock = products.length;
     }
+    console.log(new Date().getHours());
+    setTimeout(updateStockInfo, 60000);
   });
 }
 
