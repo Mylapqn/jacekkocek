@@ -714,14 +714,14 @@ client.on('message', message => {
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
-        /*case "radio": {
+        case "mlpRadio": {
           message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               playRadio(voice, message.channel);
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
-        }*/
+        }
 
         case "stop": {
           let v = message.guild.voice;
