@@ -684,7 +684,6 @@ client.on('message', message => {
             message.delete();
             //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
             voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
-            http://us4.internet-radio.com:8197/stream
           }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
