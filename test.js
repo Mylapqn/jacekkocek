@@ -1353,7 +1353,7 @@ function updateStockInfo() {
       let timeString = "\nLAST UPDATE: " + new Date().toLocaleString("cs-CZ", { timeZone: "Europe/Prague" });
       //stockMessage.edit(products + timeString);
       let embed = new Discord.MessageEmbed({
-        color: 3066993,
+        color: [161, 207, 41],
         author: {
           name: "GPU Stock",
           icon_url: "https://www.matousmarek.cz/alza.png"
