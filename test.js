@@ -1319,8 +1319,10 @@ async function load_products(url) {
   let products = [];
   while (url) {
     let response = await axios.get(url);
-    if (response.status != 200)
+    if (response.status != 200) {
+      console.log("Error, status: " + response.status);
       throw new Error("Invalid request (status: " + response.status + ")");
+    }
     url = response.request.res.responseUrl;
 
     let $ = cheerio.load(response.data);
