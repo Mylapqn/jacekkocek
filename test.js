@@ -777,8 +777,8 @@ client.on('message', message => {
               }
 
             }, function (e) { console.log("REJECTED!!!", e) });
-            break;
           }
+          break;
         }
         case "song": {
           message.delete();
