@@ -757,10 +757,13 @@ client.on('message', message => {
                   }
                   message.channel.send({
                     embed: {
-                      title: "Radio Stations",
+                      title: "Internet Radio",
                       fields: [
                         {
-                          name: "", value: newMessage
+                          name: "List of available stations", value: newMessage
+                        },
+                        {
+                          name: "How to use", value: "Type `$radio` followed by the station number."
                         },
                       ],
                       color: [24, 195, 177]
