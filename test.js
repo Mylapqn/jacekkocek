@@ -710,7 +710,14 @@ client.on('message', message => {
               message.delete();
               //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
               //voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
-              voice.play("http://ice.actve.net/fm-evropa2-128", { volume: 0.6 });
+              switch (argument) {
+                default:
+                  voice.play("http://ice.actve.net/fm-evropa2-128", { volume: 0.6 });
+                  break;
+                case "1":
+                  voice.play("http://listen.shoutcast.com/japanimradio-tokyo", { volume: 0.6 });
+                  break;
+              }
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
