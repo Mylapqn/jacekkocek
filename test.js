@@ -749,12 +749,23 @@ client.on('message', message => {
                   break;
                 case "list":
                 case "stations":
-                  let newMessage = "__**Radio Stations:**__\n";
+                  let newMessage = "";
                   for (let i = 0; i < radioStations.length; i++) {
                     const station = radioStations[i];
                     newMessage += "`" + i + "` - **" + station.name + "**\n";
-                    
+
                   }
+                  message.channel.send({
+                    embed: {
+                      title: "Radio Stations",
+                      fields: [
+                        {
+                          name: "", value: newMessage
+                        },
+                      ],
+                      color: [24, 195, 177]
+                    }
+                  });
                   break;
               }
 
