@@ -197,13 +197,23 @@ var radioStations = [
   {
     name: "Evropa 2",
     color: [33, 63, 159],
-    url:"http://ice.actve.net/fm-evropa2-128"
+    url: "http://ice.actve.net/fm-evropa2-128"
   },
   {
     name: "Anime Radio ヾ(⌒∇⌒*)♪",
-    color: [248, 187, 190],
-    url:"http://listen.shoutcast.com/japanimradio-tokyo"
-  }
+    color: [255, 146, 140],
+    url: "http://listen.shoutcast.com/japanimradio-tokyo"
+  },
+  {
+    name: "SOCKENSCHUSS X",
+    color: [201, 22, 201],
+    url: "https://stream.laut.fm/sockenschuss-x"
+  },
+  {
+    name: "Instrumental Radio",
+    color: [67, 209, 204],
+    url: "http://agnes.torontocast.com:8151/;"
+  },
 
 ];
 
@@ -729,7 +739,22 @@ client.on('message', message => {
                   playStation(voice, 0, message.channel);
                   break;
                 case "1":
-                  playStation(voice, 1,message.channel);
+                  playStation(voice, 1, message.channel);
+                  break;
+                case "2":
+                  playStation(voice, 2, message.channel);
+                  break;
+                case "3":
+                  playStation(voice, 3, message.channel);
+                  break;
+                case "list":
+                case "stations":
+                  let newMessage = "__**Radio Stations:**__\n";
+                  for (let i = 0; i < radioStations.length; i++) {
+                    const station = radioStations[i];
+                    newMessage += "`" + i + "` - **" + station.name + "**\n";
+                    
+                  }
                   break;
               }
 
@@ -1200,7 +1225,7 @@ function playStation(voice, id, channel) {
       embed: {
         title: "♫ " + station.name,
         color: station.color,
-        footer: { text: "Now playing"}
+        footer: { text: "Now playing" }
       }
     });
   }
