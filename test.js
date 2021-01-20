@@ -757,7 +757,7 @@ client.on('message', message => {
                   }
                   message.channel.send({
                     embed: {
-                      title: "Internet Radio",
+                      title: "JacekKocek Internet Radio",
                       fields: [
                         {
                           name: "List of available stations", value: newMessage
