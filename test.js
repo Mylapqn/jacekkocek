@@ -193,6 +193,20 @@ var changelog = {
   ]
 };
 
+var radioStations = [
+  {
+    name: "Evropa 2",
+    color: [33, 63, 159],
+    url:"http://ice.actve.net/fm-evropa2-128"
+  },
+  {
+    name: "Anime Radio ヾ(⌒∇⌒*)♪",
+    color: [248, 187, 190],
+    url:"http://listen.shoutcast.com/japanimradio-tokyo"
+  }
+
+];
+
 var letterEmoji = {
   a: "🇦", b: "🇧", c: "🇨", d: "🇩", e: "🇪", f: "🇫", g: "🇬", h: "🇭", i: "🇮", j: "🇯", k: "🇰", l: "🇱", m: "🇲", n: "🇳", o: "🇴", p: "🇵", q: "🇶", r: "🇷", s: "🇸", t: "🇹", u: "🇺", v: "🇻", w: "🇼", x: "🇽", y: "🇾", z: "🇿",
   "#": "#️⃣",
@@ -712,10 +726,10 @@ client.on('message', message => {
               //voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
               switch (argument) {
                 default:
-                  voice.play("http://ice.actve.net/fm-evropa2-128", { volume: 0.6 });
+                  playStation(voice, 0, message.channel);
                   break;
                 case "1":
-                  voice.play("http://listen.shoutcast.com/japanimradio-tokyo", { volume: 0.6 });
+                  playStation(voice, 1,message.channel);
                   break;
               }
 
@@ -1176,6 +1190,20 @@ function alternateFluttershyColor() {
   fluttershy = !fluttershy;
   if (fluttershy) return [243, 228, 136];
   else return [229, 129, 177];
+}
+
+function playStation(voice, id, channel) {
+  let station = radioStations[id];
+  voice.play(station.url, { volume: 0.6 });
+  if (channel) {
+    channel.send({
+      embed: {
+        title: "♫ " + station.name,
+        color: station.color,
+        footer: { text: "Now playing"}
+      }
+    });
+  }
 }
 
 //#endregion
