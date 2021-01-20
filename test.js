@@ -136,9 +136,9 @@ var helpCommands = [
   {
     name: "radio",
     prefix: true,
-    arguments: "",
-    description: "Start playing synchronised radio from server",
-    longDescription: "Start playing synchronised radio from server. You cannot specify which song to play."
+    arguments: "station",
+    description: "Start playing internet radio",
+    longDescription: "Start playing internet radio. For a list of stations type `"+prefix+"radio stations.`"
   },
   {
     name: "stop",
@@ -184,12 +184,13 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.9.0",
-  releaseDate: "6.1.2020",
+  version: "1.10.0",
+  releaseDate: "21.1.2020",
   commands: ["radio"],
   changes: [
     "Added Nvidia stock checking capability",
-    "Added internet radio streaming"
+    "Added internet radio streaming",
+    "Added new radio stations"
   ]
 };
 
