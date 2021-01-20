@@ -138,7 +138,7 @@ var helpCommands = [
     prefix: true,
     arguments: "station",
     description: "Start playing internet radio",
-    longDescription: "Start playing internet radio. For a list of stations type `"+prefix+"radio stations.`"
+    longDescription: "Start playing internet radio. For a list of stations type `" + prefix + "radio stations.`"
   },
   {
     name: "stop",
@@ -732,9 +732,30 @@ client.on('message', message => {
           break;
         }
         case "radio": {
-          if (message.member.voice.channel)
+          message.delete();
+          if (argument == "stations" || argument == "list") {
+            let newMessage = "";
+            for (let i = 0; i < radioStations.length; i++) {
+              const station = radioStations[i];
+              newMessage += "`" + i + "` - **" + station.name + "**\n";
+            }
+            message.channel.send({
+              embed: {
+                title: "JacekKocek Internet Radio",
+                fields: [
+                  {
+                    name: "List of available stations", value: newMessage
+                  },
+                  {
+                    name: "How to use", value: "Type `$radio` followed by the station number."
+                  },
+                ],
+                color: [24, 195, 177]
+              }
+            });
+          }
+          else if (message.member.voice.channel) {
             message.member.voice.channel.join().then(voice => {
-              message.delete();
               //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
               //voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
               switch (argument) {
@@ -752,31 +773,12 @@ client.on('message', message => {
                   break;
                 case "list":
                 case "stations":
-                  let newMessage = "";
-                  for (let i = 0; i < radioStations.length; i++) {
-                    const station = radioStations[i];
-                    newMessage += "`" + i + "` - **" + station.name + "**\n";
-
-                  }
-                  message.channel.send({
-                    embed: {
-                      title: "JacekKocek Internet Radio",
-                      fields: [
-                        {
-                          name: "List of available stations", value: newMessage
-                        },
-                        {
-                          name: "How to use", value: "Type `$radio` followed by the station number."
-                        },
-                      ],
-                      color: [24, 195, 177]
-                    }
-                  });
                   break;
               }
 
             }, function (e) { console.log("REJECTED!!!", e) });
-          break;
+            break;
+          }
         }
         case "song": {
           message.delete();
