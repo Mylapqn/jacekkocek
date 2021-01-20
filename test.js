@@ -388,6 +388,7 @@ client.on('message', message => {
           });
           message.channel.send({
             embed: {
+              color: [24, 195, 177],
               title: "JacekKocek v" + changelog.version, description: "Released " + changelog.releaseDate, fields: [
                 {
                   name: "New commands", value: commandChanges
@@ -439,6 +440,7 @@ client.on('message', message => {
 
             message.channel.send({
               embed: {
+                color: [24, 195, 177],
                 title: "Help", description: "Type `" + prefix + "help <command>` to get further info on a command", fields: [
                   {
                     name: "Basic commands", value: helpBasic
