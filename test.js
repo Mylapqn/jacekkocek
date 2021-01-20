@@ -202,7 +202,7 @@ var radioStations = [
   },
   {
     name: "Anime Radio ヾ(⌒∇⌒*)♪",
-    color: [255, 146, 140],
+    color: [235, 135, 180],
     url: "http://listen.shoutcast.com/japanimradio-tokyo"
   },
   {
