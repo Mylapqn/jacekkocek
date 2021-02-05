@@ -203,7 +203,7 @@ var radioStations = [
   {
     name: "Anime Radio ヾ(⌒∇⌒*)♪",
     color: [235, 135, 180],
-    url: "https://japanim.radioca.st/stream&error=ok"
+    url: "http://188.213.140.126:8000/"
   },
   {
     name: "SOCKENSCHUSS X",
