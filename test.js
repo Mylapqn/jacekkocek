@@ -809,6 +809,13 @@ client.on('message', message => {
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               voice.play("mlp-mix.ogg",{volume:0.5});
+              message.channel.send({
+                embed: {
+                  title: "► " + "MLP Mix",
+                  color: [159,101,224],
+                  footer: { text: "Now playing" }
+                }
+              });
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
