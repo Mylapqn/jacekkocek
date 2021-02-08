@@ -804,6 +804,14 @@ client.on('message', message => {
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
+        case "mlpMix": {
+          message.delete();
+          if (message.member.voice.channel)
+            message.member.voice.channel.join().then(voice => {
+              voice.play("mlp-mix.ogg",{volume:0.5});
+            }, function (e) { console.log("REJECTED!!!", e) });
+          break;
+        }
 
         case "stop": {
           let v = message.guild.voice;
