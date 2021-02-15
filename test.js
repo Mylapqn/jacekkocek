@@ -813,7 +813,7 @@ client.on('message', message => {
                 embed: {
                   title: "► " + "MLP Mix",
                   color: [159,101,224],
-                  footer: { text: "4:17 | From *Andrej*" }
+                  footer: { text: '4:17 | From *Andrej*' }
                 }
               });
             }, function (e) { console.log("REJECTED!!!", e) });
@@ -1166,7 +1166,8 @@ function mlpSong(voice, index, autoplay, channel) {
         if (channel) {
           channel.send({
             embed: {
-              title: "► " + songData.name, description: Math.floor(songData.length / 60) + ":" + addZero(songData.length % 60) + " | From *" + songData.episode + "*",
+              title: "► " + songData.name,
+              description: Math.floor(songData.length / 60) + ":" + addZero(songData.length % 60) + " | From *" + songData.episode + "*",
               color: alternateFluttershyColor()
             }
           });
