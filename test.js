@@ -813,7 +813,7 @@ client.on('message', message => {
                 embed: {
                   title: "► " + "MLP Mix",
                   color: [159,101,224],
-                  footer: { text: "4:17 | From _Andrej_" }
+                  footer: { text: "4:17 | From *Andrej*" }
                 }
               });
             }, function (e) { console.log("REJECTED!!!", e) });
