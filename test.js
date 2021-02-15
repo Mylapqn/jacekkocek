@@ -334,6 +334,7 @@ client.on('message', message => {
           message.channel.send({
             embed: {
               title: "Cheese",
+              color: [254, 181, 2],
               description: 'Cheese'
             }
           });
