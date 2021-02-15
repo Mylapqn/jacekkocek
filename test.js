@@ -329,6 +329,15 @@ client.on('message', message => {
       }
       console.log("Command by " + message.author.username + ": " + command + ", argument: " + argument);
       switch (command) {
+        case "cheese":
+          message.delete();
+          message.channel.send({
+            embed: {
+              title: "Cheese",
+              description: 'Cheese'
+            }
+          });
+          break;
         case "spell":
           message.delete().then(() => {
             argument = argument.replace(/ /g, "").toLowerCase();
