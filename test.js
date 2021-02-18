@@ -266,7 +266,8 @@ client.on('ready', () => {
     });
   });
 
-  updateStockInfo();
+  //UPDATE NVIDIA STOCK ON/OFF
+  //updateStockInfo();
 
 });
 
