@@ -203,7 +203,7 @@ var radioStations = [
   {
     name: "Anime Radio ヾ(⌒∇⌒*)♪",
     color: [235, 135, 180],
-    url: "https://listen.shoutcast.com/japanimradio"
+    url: "https://japanimradiotokyo.fr/8002/stream"
   },
   {
     name: "SOCKENSCHUSS X",
