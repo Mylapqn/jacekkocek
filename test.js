@@ -184,7 +184,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.11.0",
+  version: "1.11.1",
   releaseDate: "4.4.2021",
   commands: [],
   changes: [
