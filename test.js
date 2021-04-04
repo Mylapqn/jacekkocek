@@ -763,7 +763,7 @@ client.on('message', message => {
                     name: "List of available stations", value: newMessage
                   },
                   {
-                    name: "How to use", value: "1. Type `$radio` followed by the station number or name.\nYou can also type `$radio` followed a custom radio URL."
+                    name: "How to use", value: "Type `$radio` followed by the station number or name.\nYou can also type `$radio` followed a custom radio URL."
                   },
                 ],
                 color: [24, 195, 177]
