@@ -752,7 +752,7 @@ client.on('message', message => {
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               message.delete();
-              voice.play("tududum.mp3", { volume: 1 });
+              voice.play("tududum.mp3", { volume: 3 });
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
