@@ -1267,7 +1267,17 @@ function alternateFluttershyColor() {
 }
 
 function playStation(voice, id, channel) {
-  let station = radioStations[id];
+  let station;
+  if (id.startsWith("http")) {
+    station = {
+      name: "Custom Station",
+      color: [128, 128, 128],
+      url: id
+    };
+  }
+  else {
+    station = radioStations[id];
+  }
   voice.play(station.url, { volume: 0.6 });
   if (channel) {
     channel.send({
