@@ -776,7 +776,7 @@ client.on('message', message => {
               //voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
               let num = parseInt(argument);
               console.log(num);
-              if (num != NaN && num != "NaN") {
+              if (!isNaN(num)) {
                 if (num < radioStations.length)
                   playStation(voice, num, message.channel);
                 else message.channel.send('Station number "' + num + '" not found. :disappointed:');
