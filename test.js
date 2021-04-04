@@ -777,7 +777,7 @@ client.on('message', message => {
               let num = parseInt(argument);
               console.log(num);
               if (!isNaN(num)) {
-                if (num < radioStations.length)
+                if (num < radioStations.length && num >= 0)
                   playStation(voice, num, message.channel);
                 else message.channel.send('Station number "' + num + '" not found. :disappointed:');
               }
