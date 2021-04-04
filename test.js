@@ -184,12 +184,11 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.10.0",
-  releaseDate: "21.1.2020",
-  commands: ["radio"],
+  version: "1.11.0",
+  releaseDate: "4.4.2021",
+  commands: [],
   changes: [
-    "Added Nvidia stock checking capability",
-    "Added internet radio streaming",
+    "Added radio search by name",
     "Added new radio stations"
   ]
 };
@@ -203,7 +202,8 @@ var radioStations = [
   {
     name: "Anime Radio ヾ(⌒∇⌒*)♪",
     color: [235, 135, 180],
-    url: "https://japanimradiotokyo.fr/8002/stream"
+    //url: "https://japanimradiotokyo.fr/8002/stream"
+    url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
   },
   {
     name: "SOCKENSCHUSS X",
@@ -214,6 +214,11 @@ var radioStations = [
     name: "Instrumental Radio",
     color: [67, 209, 204],
     url: "http://agnes.torontocast.com:8151/;"
+  },
+  {
+    name: "Nightdrive",
+    color: [103, 12, 208],
+    url: "https://stream.laut.fm/nightdrive"
   },
 
 ];
@@ -744,7 +749,7 @@ client.on('message', message => {
         }
         case "radio": {
           message.delete();
-          if (argument == "stations" || argument == "list") {
+          if (argument == "stations" || argument == "list" || argument == "") {
             let newMessage = "";
             for (let i = 0; i < radioStations.length; i++) {
               const station = radioStations[i];
@@ -769,23 +774,18 @@ client.on('message', message => {
             message.member.voice.channel.join().then(voice => {
               //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
               //voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
-              switch (argument) {
-                default:
+              let num = parseInt(argument);
+
+              if (num != NaN) {
+                if (num < radioStations.length)
                   playStation(voice, 0, message.channel);
-                  break;
-                case "1":
-                  playStation(voice, 1, message.channel);
-                  break;
-                case "2":
-                  playStation(voice, 2, message.channel);
-                  break;
-                case "3":
-                  playStation(voice, 3, message.channel);
-                  break;
-                case "list":
-                case "stations":
-                  break;
               }
+              else {
+                let st = radioStations.findIndex(element => element.name.includes(argument));
+                if (st != -1) playStation(voice, st, message.channel);
+                else message.channel.send('Station "' + argument + '" not found. :disappointed:');
+              }
+
 
             }, function (e) { console.log("REJECTED!!!", e) });
           }
@@ -819,11 +819,11 @@ client.on('message', message => {
           message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
-              voice.play("mlp-mix.ogg",{volume:0.5});
+              voice.play("mlp-mix.ogg", { volume: 0.5 });
               message.channel.send({
                 embed: {
                   title: "► " + "MLP Mix",
-                  color: [159,101,224],
+                  color: [159, 101, 224],
                   description: '4:17 | From *Andrej*'
                 }
               });
