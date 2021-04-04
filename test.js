@@ -781,8 +781,11 @@ client.on('message', message => {
                   playStation(voice, num, message.channel);
                 else message.channel.send('Station number "' + num + '" not found. :disappointed:');
               }
+              else if(argument.startsWith("http")){
+                playStation(voice, argument, message.channel);
+              }
               else {
-                let st = radioStations.findIndex(element => element.name.toLowerCase.includes(argument.toLowerCase));
+                let st = radioStations.findIndex(element => element.name.toLowerCase().includes(argument.toLowerCase()));
                 if (st != -1) playStation(voice, st, message.channel);
                 else message.channel.send('Station "' + argument + '" not found. :disappointed:');
                 console.log(radioStations[0].name);
