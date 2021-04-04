@@ -749,7 +749,7 @@ client.on('message', message => {
         }
         case "radio": {
           message.delete();
-          if (argument == "stations" || argument == "list" || argument == "") {
+          if (argument == "stations" || argument == "list" || argument == "" || argument == null) {
             let newMessage = "";
             for (let i = 0; i < radioStations.length; i++) {
               const station = radioStations[i];
@@ -779,6 +779,7 @@ client.on('message', message => {
               if (num != NaN) {
                 if (num < radioStations.length)
                   playStation(voice, 0, message.channel);
+                else message.channel.send('Station number "' + num + '" not found. :disappointed:');
               }
               else {
                 let st = radioStations.findIndex(element => element.name.includes(argument));
