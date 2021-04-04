@@ -1271,7 +1271,7 @@ function alternateFluttershyColor() {
 
 function playStation(voice, id, channel) {
   let station;
-  if (id.startsWith("http")) {
+  if (typeof(id) == "string") {
     station = {
       name: "Custom Station",
       color: [128, 128, 128],
