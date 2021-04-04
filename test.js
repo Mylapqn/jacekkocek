@@ -217,7 +217,8 @@ var radioStations = [
   },
   {
     name: "Nightdrive",
-    color: [103, 12, 208],
+    //color: [103, 12, 208],
+    color: [0, 0, 0],
     url: "https://stream.laut.fm/nightdrive"
   },
 
