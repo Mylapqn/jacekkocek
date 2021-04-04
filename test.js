@@ -748,6 +748,15 @@ client.on('message', message => {
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
+        case "tudum": {
+          if (message.member.voice.channel)
+            message.member.voice.channel.join().then(voice => {
+              message.delete();
+              voice.play("tududum.mp3", { volume: 0.2 });
+
+            }, function (e) { console.log("REJECTED!!!", e) });
+          break;
+        }
         case "radio": {
           message.delete();
           if (argument == "stations" || argument == "list" || argument == "" || argument == null) {
