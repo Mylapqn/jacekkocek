@@ -211,7 +211,7 @@ var radioStations = [
     color: [235, 135, 180],
     //url: "https://japanimradiotokyo.fr/8002/stream"
     //url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
-    url: "http://kathy.torontocast.com:3060/;?type=http"
+    url: "https://kathy.torontocast.com:3060/;?type=http&nocache=1614591208"
   },
   {
     name: "SOCKENSCHUSS X",
