@@ -211,7 +211,7 @@ var radioStations = [
     color: [235, 135, 180],
     //url: "https://japanimradiotokyo.fr/8002/stream"
     //url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
-    url: "https://kathy.torontocast.com:3060/;"
+    url: "http://kathy.torontocast.com:3060/;?type=http"
   },
   {
     name: "SOCKENSCHUSS X",
@@ -793,7 +793,7 @@ client.on('message', message => {
               //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
               //voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
               let num = parseInt(argument);
-              console.log(num);
+              //console.log(num);
               if (!isNaN(num)) {
                 if (num < radioStations.length && num >= 0)
                   playStation(voice, num, message.channel);
@@ -806,8 +806,8 @@ client.on('message', message => {
                 let st = radioStations.findIndex(element => element.name.toLowerCase().includes(argument.toLowerCase()));
                 if (st != -1) playStation(voice, st, message.channel);
                 else message.channel.send('Station "' + argument + '" not found. :disappointed:');
-                console.log(radioStations[0].name);
-                console.log(radioStations[0].name.includes("Evropa"));
+                //console.log(radioStations[0].name);
+                //console.log(radioStations[0].name.includes("Evropa"));
               }
 
 
