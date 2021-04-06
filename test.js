@@ -200,10 +200,18 @@ var radioStations = [
     url: "http://ice.actve.net/fm-evropa2-128"
   },
   {
-    name: "Anime Radio ヾ(⌒∇⌒*)♪",
+    name: "Anime Radio 1 ヾ(⌒∇⌒*)♪",
     color: [235, 135, 180],
     //url: "https://japanimradiotokyo.fr/8002/stream"
-    url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
+    //url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
+    url: "https://listen.moe/stream"
+  },
+  {
+    name: "Anime Radio 2 ♪(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
+    color: [235, 135, 180],
+    //url: "https://japanimradiotokyo.fr/8002/stream"
+    //url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
+    url: "https://kathy.torontocast.com:3060/;"
   },
   {
     name: "SOCKENSCHUSS X",
