@@ -799,7 +799,7 @@ client.on('message', message => {
                   playStation(voice, num, message.channel);
                 else message.channel.send('Station number "' + num + '" not found. :disappointed:');
               }
-              else if(argument.startsWith("http")){
+              else if (argument.startsWith("http")) {
                 playStation(voice, argument, message.channel);
               }
               else {
@@ -858,8 +858,9 @@ client.on('message', message => {
         case "stop": {
           let v = message.guild.voice;
           if (v) {
-            if (v.connection.dispatcher)
-              v.connection.dispatcher.pause();
+            if (v.connection)
+              if (v.connection.dispatcher)
+                v.connection.dispatcher.pause();
             v.kick();
           }
           message.delete();
@@ -1289,7 +1290,7 @@ function alternateFluttershyColor() {
 
 function playStation(voice, id, channel) {
   let station;
-  if (typeof(id) == "string") {
+  if (typeof (id) == "string") {
     station = {
       name: "Custom Station",
       color: [128, 128, 128],
