@@ -186,7 +186,7 @@ var helpAdminCommands = [
 var changelog = {
   version: "1.11.1",
   releaseDate: "4.4.2021",
-  commands: [],
+  commands: [""],
   changes: [
     "Added radio search by name",
     "Added new radio stations"
@@ -881,6 +881,18 @@ client.on('message', message => {
           }
           break;
         }
+        case "youtube":
+        case "yt":
+          {
+            message.delete();
+            if (message.member.voice.channel && argument)
+              message.member.voice.channel.join().then(voice => {
+                if (argument.startsWith("http"))
+                  voice.play(ytdl(argument, { filter: "audioonly" }), { volume: 0.7 });
+              }, function (e) { console.log("REJECTED!!!", e) });
+            break;
+            break;
+          }
         case "hint": {
           if (lastSelectedWord != "") {
             message.channel.send(lastSelectedWord.toUpperCase());
@@ -898,6 +910,8 @@ client.on('message', message => {
     }
   }
 });
+
+
 
 //#region KINO
 client.on("messageReactionAdd", (messageReaction) => {
