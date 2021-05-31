@@ -888,7 +888,7 @@ client.on('message', message => {
             if (message.member.voice.channel && argument)
               message.member.voice.channel.join().then(voice => {
                 if (argument.startsWith("http"))
-                  voice.play(ytdl(argument, { filter: "audioonly" }), { volume: 1.1 });
+                  voice.play(ytdl(argument, { filter: "audioonly" }), { volume: 2.5 });
               }, function (e) { console.log("REJECTED!!!", e) });
             break;
             break;
