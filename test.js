@@ -251,6 +251,8 @@ var radioApiKey;
 var radioServerPing = 0;
 radioApiKey();
 
+var nextYoutube;
+
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
 loadPlaylist();
@@ -749,9 +751,9 @@ client.on('message', message => {
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               message.delete();
-              //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+              //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
 
-              voice.play("http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
+              voicePlay(voice,"http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
@@ -760,7 +762,7 @@ client.on('message', message => {
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               message.delete();
-              voice.play("tududum.mp3", { volume: 1.2 });
+              voicePlay(voice,"tududum.mp3", { volume: 1.2 });
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
@@ -790,8 +792,8 @@ client.on('message', message => {
           }
           else if (message.member.voice.channel) {
             message.member.voice.channel.join().then(voice => {
-              //voice.play("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-              //voice.play("http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
+              //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+              //voicePlay(voice,"http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
               let num = parseInt(argument);
               //console.log(num);
               if (!isNaN(num)) {
@@ -843,7 +845,8 @@ client.on('message', message => {
           message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
-              voice.play("mlp-mix.ogg", { volume: 0.5 });
+              voicePlay(voice,"mlp-mix.ogg", { volume: 0.5 });
+              voicePlay(voice,"mlp-mix.ogg", { volume: 0.5 });
               message.channel.send({
                 embed: {
                   title: "► " + "MLP Mix",
@@ -864,6 +867,7 @@ client.on('message', message => {
             v.kick();
           }
           message.delete();
+          clearYoutubeTimeout();
           if (radioTimer) clearTimeout(radioTimer);
           break;
         }
@@ -1191,10 +1195,20 @@ function googleSearch(cx, searchTerm, message) {
 //#endregion
 //#region SONGS
 
+function voicePlay(voice,audio,options){
+  clearYoutubeTimeout();
+  if (radioTimer) clearTimeout(radioTimer);
+  voice.play(audio,options);
+}
+
+function clearYoutubeTimeout() {
+  if (nextYoutube) clearTimeout(nextYoutube);
+}
+
 function playYoutube(argument, channel) {
   let voice = channel.guild.voice.connection;
   if (voice && argument.startsWith("http")) {
-    let videoStream = ytdl(argument, { filter: "audioonly"/*,highWaterMark: 1<<25*/});
+    let videoStream = ytdl(argument, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
     videoStream.on("info", (info) => {
       let length = info.videoDetails.lengthSeconds;
       let lenString;
@@ -1212,14 +1226,14 @@ function playYoutube(argument, channel) {
         }
       });
       //console.log(info);
-      voice.play(videoStream, { volume: 0.8 });
+      voicePlay(voice,videoStream, { volume: 0.8 });
       let nextVideo = info.related_videos[0];
       if (nextVideo) {
         let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo.id;
         videoStream.on("finish", () => {
-          channel.send("end");
-          //playYoutube(nextUrl, channel);
         });
+        clearYoutubeTimeout();
+        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (length + 2) * 1000);
       }
     })
   }
@@ -1253,7 +1267,7 @@ function mlpSong(voice, index, autoplay, channel) {
             }
           });
         }
-        voice.play(ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
+        voicePlay(voice,ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
         if (autoplay) {
           radioTimer = setTimeout(function () {
             mlpSong(voice, "", true, channel);
@@ -1287,7 +1301,7 @@ function playRadio(voice, channel) {
 
         console.log("Playing radio");
 
-        voice.play("https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
+        voicePlay(voice,"https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
 
         if (radioTimer) clearTimeout(radioTimer);
         if (channel) {
@@ -1345,7 +1359,7 @@ function playStation(voice, id, channel) {
   else {
     station = radioStations[id];
   }
-  voice.play(station.url, { volume: 0.6 });
+  voicePlay(voice,station.url, { volume: 0.6 });
   if (channel) {
     channel.send({
       embed: {
