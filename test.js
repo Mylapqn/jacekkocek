@@ -1219,7 +1219,7 @@ function playYoutube(videoUrl, channel) {
       let length = info.videoDetails.lengthSeconds;
       let lenString;
       if (length >= 3600) {
-        lenString = Math.floor(info.videoDetails.lengthSeconds / 3600) + ":" + addZero(Math.floor(info.videoDetails.lengthSeconds / 60)) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
+        lenString = Math.floor(info.videoDetails.lengthSeconds / 3600) + ":" + addZero(Math.floor((info.videoDetails.lengthSeconds % 3600) / 60)) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
       }
       else {
         lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
