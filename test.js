@@ -1220,6 +1220,7 @@ function voicePlay(voice, audio, options) {
 
 function clearYoutubeTimeout() {
   if (nextYoutube) clearTimeout(nextYoutube);
+  nextYoutube = null;
 }
 
 function playYoutube(videoUrl, channel) {
