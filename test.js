@@ -1239,7 +1239,7 @@ function playYoutube(videoUrl, channel) {
         videoStream.on("finish", () => {
         });
         clearYoutubeTimeout();
-        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 1) * 1000);
+        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 3) * 1000);
       }
     })
   }
@@ -1257,7 +1257,7 @@ function searchYoutube(argument) {
       });
       res.on("end", function () {
         var parsed = JSON.parse(body.substring(9, body.length));
-        console.log(parsed);
+        //console.log(parsed);
         if(parsed.error){
           console.log("ERROR");
           console.log(parsed.error);
