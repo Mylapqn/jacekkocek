@@ -1192,7 +1192,7 @@ function googleSearch(cx, searchTerm, message) {
 //#region SONGS
 
 function playYoutube(argument, channel) {
-  let voice = channel.guild.voice.channel;
+  let voice = channel.guild.voice.connection;
   if (voice && argument.startsWith("http")) {
     let videoStream = ytdl(argument, { filter: "audioonly" });
     videoStream.on("info", (info) => {
