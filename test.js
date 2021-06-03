@@ -753,7 +753,7 @@ client.on('message', message => {
               message.delete();
               //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
 
-              voicePlay(voice,"http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
+              voicePlay(voice, "http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
@@ -762,7 +762,7 @@ client.on('message', message => {
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
               message.delete();
-              voicePlay(voice,"tududum.mp3", { volume: 1.2 });
+              voicePlay(voice, "tududum.mp3", { volume: 1.2 });
 
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
@@ -845,8 +845,8 @@ client.on('message', message => {
           message.delete();
           if (message.member.voice.channel)
             message.member.voice.channel.join().then(voice => {
-              voicePlay(voice,"mlp-mix.ogg", { volume: 0.5 });
-              voicePlay(voice,"mlp-mix.ogg", { volume: 0.5 });
+              voicePlay(voice, "mlp-mix.ogg", { volume: 0.5 });
+              voicePlay(voice, "mlp-mix.ogg", { volume: 0.5 });
               message.channel.send({
                 embed: {
                   title: "► " + "MLP Mix",
@@ -890,7 +890,13 @@ client.on('message', message => {
           message.delete();
           if (message.member.voice.channel && argument)
             message.member.voice.channel.join().then(voice => {
-              playYoutube(argument, message.channel);
+              if (argument.startsWith("http")) {
+                playYoutube(argument, message.channel);
+              }
+              else {
+                searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); });
+              }
+
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
@@ -1168,7 +1174,7 @@ function startGoogleSearch(argument, message, type) {
   }
 }
 function googleSearch(cx, searchTerm, message) {
-  Https.get("https://www.googleapis.com/customsearch/v1?key="+process.env.SEARCH_API_KEY+"&cx=" + cx + "&q=" + searchTerm, function (res) {
+  Https.get("https://www.googleapis.com/customsearch/v1?key=" + process.env.SEARCH_API_KEY + "&cx=" + cx + "&q=" + searchTerm, function (res) {
     console.log("HTTPS Status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -1195,20 +1201,20 @@ function googleSearch(cx, searchTerm, message) {
 //#endregion
 //#region SONGS
 
-function voicePlay(voice,audio,options){
+function voicePlay(voice, audio, options) {
   clearYoutubeTimeout();
   if (radioTimer) clearTimeout(radioTimer);
-  voice.play(audio,options);
+  voice.play(audio, options);
 }
 
 function clearYoutubeTimeout() {
   if (nextYoutube) clearTimeout(nextYoutube);
 }
 
-function playYoutube(argument, channel) {
+function playYoutube(videoUrl, channel) {
   let voice = channel.guild.voice.connection;
-  if (voice && argument.startsWith("http")) {
-    let videoStream = ytdl(argument, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
+  if (voice) {
+    let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
     videoStream.on("info", (info) => {
       let length = info.videoDetails.lengthSeconds;
       let lenString;
@@ -1226,32 +1232,34 @@ function playYoutube(argument, channel) {
         }
       });
       //console.log(info);
-      voicePlay(voice,videoStream, { volume: 0.8 });
+      voicePlay(voice, videoStream, { volume: 0.8 });
       let nextVideo = info.related_videos[0];
       if (nextVideo) {
         let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo.id;
         videoStream.on("finish", () => {
         });
         clearYoutubeTimeout();
-        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length)+1) * 1000);
+        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 1) * 1000);
       }
     })
   }
 }
 
-searchYoutube("cbt")
 
-function searchYoutube(argument){
-  Https.get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q="+argument+"&regionCode=US&relevanceLanguage=EN&key="+process.env.SEARCH_API_KEY, function (res) {
-    console.log("HTTPS Status:" + res.statusCode);
-    var body;
-    res.on("data", function (data) {
-      body += data;
-    });
-    res.on("end", function () {
-      var parsed = JSON.parse(body.substring(9, body.length));
-      console.log(parsed.items[0]);
 
+function searchYoutube(argument) {
+  return new Promise((resolve, reject) => {
+    Https.get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + argument + "&regionCode=US&relevanceLanguage=EN&key=" + process.env.SEARCH_API_KEY, function (res) {
+      console.log("HTTPS Status:" + res.statusCode);
+      var body;
+      res.on("data", function (data) {
+        body += data;
+      });
+      res.on("end", function () {
+        var parsed = JSON.parse(body.substring(9, body.length));
+        console.log(parsed.items[0].id.videoId);
+        resolve(parsed.items[0].id.videoId);
+      });
     });
   });
 }
@@ -1284,7 +1292,7 @@ function mlpSong(voice, index, autoplay, channel) {
             }
           });
         }
-        voicePlay(voice,ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
+        voicePlay(voice, ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
         if (autoplay) {
           radioTimer = setTimeout(function () {
             mlpSong(voice, "", true, channel);
@@ -1318,7 +1326,7 @@ function playRadio(voice, channel) {
 
         console.log("Playing radio");
 
-        voicePlay(voice,"https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
+        voicePlay(voice, "https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
 
         if (radioTimer) clearTimeout(radioTimer);
         if (channel) {
@@ -1376,7 +1384,7 @@ function playStation(voice, id, channel) {
   else {
     station = radioStations[id];
   }
-  voicePlay(voice,station.url, { volume: 0.6 });
+  voicePlay(voice, station.url, { volume: 0.6 });
   if (channel) {
     channel.send({
       embed: {
