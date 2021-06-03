@@ -904,9 +904,9 @@ client.on('message', message => {
         case "skip": {
           message.delete();
           if (nextYoutube) {
-            let voice = channel.guild.voice.connection;
+            let voice = message.guild.voice.connection;
             if (voice) {
-              playYoutube(nextYoutubeData.url, message.channel);
+              playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
             }
           }
           break;
