@@ -887,8 +887,13 @@ client.on('message', message => {
             message.delete();
             if (message.member.voice.channel && argument)
               message.member.voice.channel.join().then(voice => {
-                if (argument.startsWith("http"))
-                  voice.play(ytdl(argument, { filter: "audioonly" }), { volume: 0.8 });
+                if (argument.startsWith("http")) {
+                  let videoStream = ytdl(argument, { filter: "audioonly" });
+                  videoStream.on("info", (info) => {
+                    message.channel.send("test");
+                    voice.play(videoStream, { volume: 0.8 });
+                  })
+                }
               }, function (e) { console.log("REJECTED!!!", e) });
             break;
             break;
