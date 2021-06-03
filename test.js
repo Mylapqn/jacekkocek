@@ -1194,7 +1194,7 @@ function googleSearch(cx, searchTerm, message) {
 function playYoutube(argument, channel) {
   let voice = channel.guild.voice.connection;
   if (voice && argument.startsWith("http")) {
-    let videoStream = ytdl(argument, { filter: "audioonly"/*,highWaterMark: 1<<25}*/);
+    let videoStream = ytdl(argument, { filter: "audioonly"/*,highWaterMark: 1<<25*/});
     videoStream.on("info", (info) => {
       let length = info.videoDetails.lengthSeconds;
       let lenString;
