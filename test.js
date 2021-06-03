@@ -1234,6 +1234,7 @@ function playYoutube(argument, channel) {
         });
         clearYoutubeTimeout();
         nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (length + 2) * 1000);
+        channel.send(((length + 2) * 1000));
       }
     })
   }
