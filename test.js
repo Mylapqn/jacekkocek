@@ -1249,7 +1249,7 @@ function playYoutube(videoUrl, channel) {
 
 function searchYoutube(argument) {
   return new Promise((resolve, reject) => {
-    Https.get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + argument + "&regionCode=US&relevanceLanguage=EN&safeSearch=none&key=" + process.env.SEARCH_API_KEY, function (res) {
+    Https.get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&eventType=completed&maxResults=1&q=" + argument + "&regionCode=US&relevanceLanguage=EN&safeSearch=none&type=video&key=" + process.env.SEARCH_API_KEY, function (res) {
       console.log("HTTPS Status:" + res.statusCode);
       var body;
       res.on("data", function (data) {
