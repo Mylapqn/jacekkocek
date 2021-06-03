@@ -891,6 +891,7 @@ client.on('message', message => {
                   let videoStream = ytdl(argument, { filter: "audioonly" });
                   videoStream.on("info", (info) => {
                     message.channel.send("test");
+                    console.log(info);
                     voice.play(videoStream, { volume: 0.8 });
                   })
                 }
