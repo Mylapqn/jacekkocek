@@ -1217,7 +1217,7 @@ function playYoutube(argument, channel) {
       if (nextVideo) {
         let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo.id;
         videoStream.on("end", () => {
-          playYoutube(nextUrl, channel);
+          //playYoutube(nextUrl, channel);
         });
       }
     })
