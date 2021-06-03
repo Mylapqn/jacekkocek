@@ -890,7 +890,22 @@ client.on('message', message => {
                 if (argument.startsWith("http")) {
                   let videoStream = ytdl(argument, { filter: "audioonly" });
                   videoStream.on("info", (info) => {
-                    message.channel.send("test");
+                    let length = info.videoDetails.lengthSeconds;
+                    let lenString;
+                    if (length >= 3600) {
+                      lenString = Math.floor(info.videoDetails.lengthSeconds / 3600) + ":" + addZero(Math.floor(info.videoDetails.lengthSeconds / 60)) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
+                    }
+                    else {
+                      lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
+                    }
+                    message.channel.send({
+                      embed: {
+                        title: "► " + info.videoDetails.title,
+                        color: [255, 0, 0],
+                        description: lenString + ' | From *' + info.videoDetails.ownerChannelName + '*'
+                      }
+
+                    });
                     console.log(info);
                     voice.play(videoStream, { volume: 0.8 });
                   })
