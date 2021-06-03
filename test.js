@@ -1194,7 +1194,7 @@ function googleSearch(cx, searchTerm, message) {
 function playYoutube(argument, channel) {
   let voice = channel.guild.voice.connection;
   if (voice && argument.startsWith("http")) {
-    let videoStream = ytdl(argument, { filter: "audioonly",highWaterMark: 1<<25});
+    let videoStream = ytdl(argument, { filter: "audioonly"/*,highWaterMark: 1<<25}*/);
     videoStream.on("info", (info) => {
       let length = info.videoDetails.lengthSeconds;
       let lenString;
@@ -1216,7 +1216,8 @@ function playYoutube(argument, channel) {
       let nextVideo = info.related_videos[0];
       if (nextVideo) {
         let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo.id;
-        videoStream.on("end", () => {
+        videoStream.on("finish", () => {
+          channel.send("end");
           //playYoutube(nextUrl, channel);
         });
       }
