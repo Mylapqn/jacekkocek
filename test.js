@@ -894,7 +894,7 @@ client.on('message', message => {
                 playYoutube(argument, message.channel);
               }
               else {
-                searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); });
+                searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(message.channel.send("No results"));
               }
 
             }, function (e) { console.log("REJECTED!!!", e) });
@@ -1262,7 +1262,7 @@ function searchYoutube(argument) {
           console.log(parsed.error);
           reject();
         }
-        else if (parsed.items) {
+        else if (parsed.items&&parsed.items.length > 0) {
           console.log(parsed.items[0].id.videoId);
           resolve(parsed.items[0].id.videoId);
         }
