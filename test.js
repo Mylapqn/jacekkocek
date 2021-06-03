@@ -882,38 +882,14 @@ client.on('message', message => {
           break;
         }
         case "youtube":
-        case "yt":
-          {
-            message.delete();
-            if (message.member.voice.channel && argument)
-              message.member.voice.channel.join().then(voice => {
-                if (argument.startsWith("http")) {
-                  let videoStream = ytdl(argument, { filter: "audioonly" });
-                  videoStream.on("info", (info) => {
-                    let length = info.videoDetails.lengthSeconds;
-                    let lenString;
-                    if (length >= 3600) {
-                      lenString = Math.floor(info.videoDetails.lengthSeconds / 3600) + ":" + addZero(Math.floor(info.videoDetails.lengthSeconds / 60)) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
-                    }
-                    else {
-                      lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
-                    }
-                    message.channel.send({
-                      embed: {
-                        title: "► " + info.videoDetails.title,
-                        color: [255, 0, 0],
-                        description: lenString + ' | From *' + info.videoDetails.ownerChannelName + '*'
-                      }
-
-                    });
-                    console.log(info);
-                    voice.play(videoStream, { volume: 0.8 });
-                  })
-                }
-              }, function (e) { console.log("REJECTED!!!", e) });
-            break;
-            break;
-          }
+        case "yt": {
+          message.delete();
+          if (message.member.voice.channel && argument)
+            message.member.voice.channel.join().then(voice => {
+              playYoutube(argument, message.channel);
+            }, function (e) { console.log("REJECTED!!!", e) });
+          break;
+        }
         case "hint": {
           if (lastSelectedWord != "") {
             message.channel.send(lastSelectedWord.toUpperCase());
@@ -1214,6 +1190,39 @@ function googleSearch(cx, searchTerm, message) {
 }
 //#endregion
 //#region SONGS
+
+function playYoutube(argument, channel) {
+  let voice = channel.guild.voice;
+  if (voice && argument.startsWith("http")) {
+    let videoStream = ytdl(argument, { filter: "audioonly" });
+    videoStream.on("info", (info) => {
+      let length = info.videoDetails.lengthSeconds;
+      let lenString;
+      if (length >= 3600) {
+        lenString = Math.floor(info.videoDetails.lengthSeconds / 3600) + ":" + addZero(Math.floor(info.videoDetails.lengthSeconds / 60)) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
+      }
+      else {
+        lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
+      }
+      channel.send({
+        embed: {
+          title: "► " + info.videoDetails.title,
+          color: [255, 0, 0],
+          description: lenString + ' | From *' + info.videoDetails.ownerChannelName + '*'
+        }
+      });
+      console.log(info);
+      voice.play(videoStream, { volume: 0.8 });
+      let nextVideo = info.related_videos[0];
+      if (nextVideo) {
+        let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo.id;
+        videoStream.on("end", () => {
+          playYoutube(nextUrl, channel);
+        });
+      }
+    })
+  }
+}
 
 function mlpSong(voice, index, autoplay, channel) {
   let id = index;
