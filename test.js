@@ -906,7 +906,7 @@ client.on('message', message => {
           if (nextYoutube) {
             let voice = channel.guild.voice.connection;
             if (voice) {
-              playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
+              playYoutube(nextYoutubeData.url, message.channel);
             }
           }
           break;
