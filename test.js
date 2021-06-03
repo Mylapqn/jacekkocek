@@ -252,6 +252,7 @@ var radioServerPing = 0;
 radioApiKey();
 
 var nextYoutube;
+var nextYoutubeData;
 
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
@@ -894,10 +895,20 @@ client.on('message', message => {
                 playYoutube(argument, message.channel);
               }
               else {
-                searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(()=>{message.channel.send("No results")});
+                searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(() => { message.channel.send("No results") });
               }
 
             }, function (e) { console.log("REJECTED!!!", e) });
+          break;
+        }
+        case "skip": {
+          message.delete();
+          if (nextYoutube) {
+            let voice = channel.guild.voice.connection;
+            if (voice) {
+              playYoutube(nextYoutube.url, nextYoutube.channel);
+            }
+          }
           break;
         }
         case "hint": {
@@ -1240,6 +1251,7 @@ function playYoutube(videoUrl, channel) {
         });
         clearYoutubeTimeout();
         nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 3) * 1000);
+        nextYoutubeData = { url: nextUrl, channel: channel };
       }
     })
   }
@@ -1258,16 +1270,16 @@ function searchYoutube(argument) {
       res.on("end", function () {
         var parsed = JSON.parse(body.substring(9, body.length));
         //console.log(parsed);
-        if(parsed.error){
+        if (parsed.error) {
           console.log("ERROR");
           console.log(parsed.error);
           reject();
         }
-        else if (parsed.items&&parsed.items.length > 0) {
-          console.log("SUCCESS! ID: "+parsed.items[0].id.videoId);
+        else if (parsed.items && parsed.items.length > 0) {
+          console.log("SUCCESS! ID: " + parsed.items[0].id.videoId);
           resolve(parsed.items[0].id.videoId);
         }
-        else{
+        else {
           reject();
         }
       });
