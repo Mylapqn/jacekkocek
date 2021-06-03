@@ -1168,7 +1168,7 @@ function startGoogleSearch(argument, message, type) {
   }
 }
 function googleSearch(cx, searchTerm, message) {
-  Https.get("https://www.googleapis.com/customsearch/v1?key=AIzaSyBmL2RtAHmlDbAzUUcUK27SFq9byJWTAyc&cx=" + cx + "&q=" + searchTerm, function (res) {
+  Https.get("https://www.googleapis.com/customsearch/v1?key="+process.env.SEARCH_API_KEY+"&cx=" + cx + "&q=" + searchTerm, function (res) {
     console.log("HTTPS Status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -1237,6 +1237,23 @@ function playYoutube(argument, channel) {
       }
     })
   }
+}
+
+searchYoutube("cbt")
+
+function searchYoutube(argument){
+  Https.get("https://youtube.googleapis.com/youtube/v3/search?part="+argument+"&key="+process.env.SEARCH_API_KEY, function (res) {
+    console.log("HTTPS Status:" + res.statusCode);
+    var body;
+    res.on("data", function (data) {
+      body += data;
+    });
+    res.on("end", function () {
+      var parsed = JSON.parse(body.substring(9, body.length));
+      console.log(parsed);
+
+    });
+  });
 }
 
 function mlpSong(voice, index, autoplay, channel) {
