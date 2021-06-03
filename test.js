@@ -1258,8 +1258,13 @@ function searchYoutube(argument) {
       res.on("end", function () {
         var parsed = JSON.parse(body.substring(9, body.length));
         console.log(parsed);
-        console.log(parsed.items[0].id.videoId);
-        resolve(parsed.items[0].id.videoId);
+        if (parsed.items) {
+          console.log(parsed.items[0].id.videoId);
+          resolve(parsed.items[0].id.videoId);
+        }
+        else{
+          reject();
+        }
       });
     });
   });
