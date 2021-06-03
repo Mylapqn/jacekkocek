@@ -1242,7 +1242,7 @@ function playYoutube(argument, channel) {
 searchYoutube("cbt")
 
 function searchYoutube(argument){
-  Https.get("https://youtube.googleapis.com/youtube/v3/search?part="+argument+"&key="+process.env.SEARCH_API_KEY, function (res) {
+  Https.get("https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q="+argument+"&regionCode=US&relevanceLanguage=EN&key="+process.env.SEARCH_API_KEY, function (res) {
     console.log("HTTPS Status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -1250,7 +1250,7 @@ function searchYoutube(argument){
     });
     res.on("end", function () {
       var parsed = JSON.parse(body.substring(9, body.length));
-      console.log(parsed.error.errors[0]);
+      console.log(parsed);
 
     });
   });
