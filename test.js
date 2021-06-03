@@ -1233,8 +1233,7 @@ function playYoutube(argument, channel) {
         videoStream.on("finish", () => {
         });
         clearYoutubeTimeout();
-        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length)+2) * 1000);
-        channel.send(((parseInt(length)+2) * 1000));
+        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length)+1) * 1000);
       }
     })
   }
