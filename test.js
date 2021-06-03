@@ -1211,7 +1211,7 @@ function playYoutube(argument, channel) {
           description: lenString + ' | From *' + info.videoDetails.ownerChannelName + '*'
         }
       });
-      console.log(info);
+      //console.log(info);
       voice.play(videoStream, { volume: 0.8 });
       let nextVideo = info.related_videos[0];
       if (nextVideo) {
