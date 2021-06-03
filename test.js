@@ -894,7 +894,7 @@ client.on('message', message => {
                 playYoutube(argument, message.channel);
               }
               else {
-                searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(message.channel.send("No results"));
+                searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(()=>{message.channel.send("No results")});
               }
 
             }, function (e) { console.log("REJECTED!!!", e) });
