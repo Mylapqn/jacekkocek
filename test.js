@@ -1250,7 +1250,7 @@ function searchYoutube(argument){
     });
     res.on("end", function () {
       var parsed = JSON.parse(body.substring(9, body.length));
-      console.log(parsed);
+      console.log(parsed.items[0]);
 
     });
   });
