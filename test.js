@@ -1259,11 +1259,12 @@ function searchYoutube(argument) {
         var parsed = JSON.parse(body.substring(9, body.length));
         console.log(parsed);
         if(parsed.error){
+          console.log("ERROR");
           console.log(parsed.error);
           reject();
         }
         else if (parsed.items&&parsed.items.length > 0) {
-          console.log(parsed.items[0].id.videoId);
+          console.log("SUCCESS! ID: "+parsed.items[0].id.videoId);
           resolve(parsed.items[0].id.videoId);
         }
         else{
