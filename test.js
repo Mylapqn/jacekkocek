@@ -1250,7 +1250,7 @@ function clearYoutubeTimeout() {
   if (nextYoutube) clearTimeout(nextYoutube);
   nextYoutube = null;
 }
-
+youtubePlaylistName = "Unknown Playlist";
 function playYoutubePlaylist(playlistUrl, channel) {
   getYoutubePlaylistName(playlistUrl).then(title => {
     youtubePlaylistName = title;
