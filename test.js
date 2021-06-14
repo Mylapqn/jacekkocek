@@ -256,6 +256,7 @@ var nextYoutubeData;
 
 var youtubePlaylist = [];
 var youtubePlaylistPosition = 0;
+var youtubePlaylistName = "test";
 
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
@@ -922,7 +923,7 @@ client.on('message', message => {
               if (argument && youtubePlaylist.length > 0) {
                 let num = parseInt(argument);
                 if (num != "NaN") {
-                  message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
+                  //message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
                   youtubePlaylistPosition += (num - 1);
                   if (youtubePlaylistPosition >= 0 && youtubePlaylistPosition < youtubePlaylist.length) {
                     nextYoutubeData.url = "https://www.youtube.com/watch?v=" + youtubePlaylist[youtubePlaylistPosition];
@@ -1251,6 +1252,7 @@ function clearYoutubeTimeout() {
 }
 
 function playYoutubePlaylist(playlistUrl, channel) {
+  youtubePlaylistName = playlistUrl;
   getYoutubePlaylist(playlistUrl).then((items) => {
     youtubePlaylist = items.map(x => x.contentDetails.videoId);
     youtubePlaylistPosition = 0;
@@ -1275,13 +1277,16 @@ function playYoutube(videoUrl, channel) {
       else {
         lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
       }
-      channel.send({
-        embed: {
-          title: "► " + info.videoDetails.title,
-          color: [255, 0, 0],
-          description: lenString + ' | From *' + info.videoDetails.ownerChannelName + '*'
-        }
-      });
+      let embed = new Discord.MessageEmbed()
+      .setColor([255, 0, 0])
+      .setTitle("► " + info.videoDetails.title)
+      .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*');
+
+      if(youtubePlaylist.length > 0){
+        embed.setFooter(youtubePlaylistPosition + ". in playlist: "+youtubePlaylistName);
+      }
+
+      channel.send(embed);
       //console.log(info);
       voicePlay(voice, videoStream, { volume: 0.8 });
       let nextVideo;
