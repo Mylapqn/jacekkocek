@@ -872,6 +872,7 @@ client.on('message', message => {
           }
           message.delete();
           clearYoutubeTimeout();
+          youtubePlaylist = [];
           if (radioTimer) clearTimeout(radioTimer);
           break;
         }
@@ -895,9 +896,18 @@ client.on('message', message => {
           if (message.member.voice.channel && argument)
             message.member.voice.channel.join().then(voice => {
               if (argument.startsWith("http")) {
-                playYoutube(argument, message.channel);
+                if (argument.includes("&list")) {
+                  let n = argument.indexOf("&list");
+                  let listId = argument.slice(n + 6);
+                  playYoutubePlaylist(listId, message.channel);
+                }
+                else {
+                  youtubePlaylist = [];
+                  playYoutube(argument, message.channel);
+                }
               }
               else {
+                youtubePlaylist = [];
                 searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(() => { message.channel.send("No results") });
               }
 
@@ -909,6 +919,11 @@ client.on('message', message => {
           if (nextYoutube) {
             let voice = message.guild.voice.connection;
             if (voice) {
+              if (argument && youtubePlaylist.length > 0) {
+                let num = parseInt(argument);
+                if (num != "NaN")
+                  youtubePlaylistPosition += argument - 1;
+              }
               playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
             }
           }
@@ -1229,8 +1244,9 @@ function clearYoutubeTimeout() {
 function playYoutubePlaylist(playlistUrl, channel) {
   getYoutubePlaylist(playlistUrl).then((items) => {
     youtubePlaylist = items.map(x => x.contentDetails.videoId);
+    youtubePlaylistPosition = 0;
     console.log(youtubePlaylist);
-    //playYoutube("https://www.youtube.com/watch?v=" + id, message.channel);
+    playYoutube("https://www.youtube.com/watch?v=" + youtubePlaylist[0], channel);
   })
 }
 
@@ -1258,7 +1274,20 @@ function playYoutube(videoUrl, channel) {
       });
       //console.log(info);
       voicePlay(voice, videoStream, { volume: 0.8 });
-      let nextVideo = info.related_videos[0];
+      let nextVideo;
+      if (youtubePlaylist.length > 0) {
+        youtubePlaylistPosition++;
+        if (youtubePlaylist.length >= youtubePlaylistPosition) {
+          nextVideo = youtubePlaylist[youtubePlaylistPosition];
+        }
+        else {
+          clearYoutubeTimeout();
+          channel.send("End of playlist.");
+        }
+      }
+      else {
+        nextVideo = info.related_videos[0].id;
+      }
       if (nextVideo) {
         let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo.id;
         videoStream.on("finish", () => {
@@ -1273,7 +1302,7 @@ function playYoutube(videoUrl, channel) {
 
 function getYoutubePlaylist(argument) {
   return new Promise((resolve, reject) => {
-    Https.get("https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=" + argument + "&key=" + process.env.SEARCH_API_KEY, function (res) {
+    Https.get("https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=50&playlistId=" + argument + "&key=" + process.env.SEARCH_API_KEY, function (res) {
       console.log("HTTPS Status:" + res.statusCode);
       var body;
       res.on("data", function (data) {
