@@ -872,6 +872,7 @@ client.on('message', message => {
             v.kick();
           }
           message.delete();
+          message.channel.send("Stopped.");
           clearYoutubeTimeout();
           youtubePlaylist = [];
           if (radioTimer) clearTimeout(radioTimer);
