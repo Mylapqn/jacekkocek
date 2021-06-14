@@ -1345,7 +1345,7 @@ function getYoutubePlaylist(argument) {
 
 function getYoutubePlaylistName(argument) {
   return new Promise((resolve, reject) => {
-    Https.get("https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=1&playlistId=" + argument + "&key=" + process.env.SEARCH_API_KEY, function (res) {
+    Https.get("https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=1&id=" + argument + "&key=" + process.env.SEARCH_API_KEY, function (res) {
       console.log("HTTPS Status:" + res.statusCode);
       var body;
       res.on("data", function (data) {
