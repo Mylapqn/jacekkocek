@@ -921,8 +921,10 @@ client.on('message', message => {
             if (voice) {
               if (argument && youtubePlaylist.length > 0) {
                 let num = parseInt(argument);
-                if (num != "NaN")
+                if (num != "NaN") {
+                  message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
                   youtubePlaylistPosition += argument;
+                }
               }
               playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
             }
@@ -1253,7 +1255,7 @@ function playYoutubePlaylist(playlistUrl, channel) {
 playYoutubePlaylist("PLv3TTBr1W_9tppikBxAE_G6qjWdBljBHJ");
 
 function playYoutube(videoUrl, channel) {
-  console.log("playing "+videoUrl);
+  console.log("playing " + videoUrl);
   let voice = channel.guild.voice.connection;
   if (voice) {
     let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
