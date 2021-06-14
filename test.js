@@ -1283,7 +1283,7 @@ function playYoutube(videoUrl, channel) {
         .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*');
 
       if (youtubePlaylist.length > 0) {
-        embed.setFooter(youtubePlaylistPosition + 1 + "/"+youtubePlaylist.length+1+" in " + youtubePlaylistName);
+        embed.setFooter(youtubePlaylistPosition + 1 + "/"+(youtubePlaylist.length+1)+" in " + youtubePlaylistName);
       }
 
       channel.send(embed);
