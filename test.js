@@ -1252,7 +1252,6 @@ function clearYoutubeTimeout() {
 }
 
 function playYoutubePlaylist(playlistUrl, channel) {
-  youtubePlaylistName = playlistUrl;
   getYoutubePlaylistName(playlistUrl).then(title => {
     youtubePlaylistName = title;
   })
