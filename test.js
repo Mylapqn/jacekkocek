@@ -254,6 +254,9 @@ radioApiKey();
 var nextYoutube;
 var nextYoutubeData;
 
+var youtubePlaylist = [];
+var youtubePlaylistPosition = 0;
+
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
 loadPlaylist();
@@ -1223,6 +1226,16 @@ function clearYoutubeTimeout() {
   nextYoutube = null;
 }
 
+function playYoutubePlaylist(playlistUrl, channel) {
+  getYoutubePlaylist(playlistUrl).then((items) => {
+    youtubePlaylist = items.map(x => x.contentDetails.videoId);
+    console.log(youtubePlaylist);
+    //playYoutube("https://www.youtube.com/watch?v=" + id, message.channel);
+  })
+}
+
+playYoutubePlaylist("PLv3TTBr1W_9tppikBxAE_G6qjWdBljBHJ");
+
 function playYoutube(videoUrl, channel) {
   let voice = channel.guild.voice.connection;
   if (voice) {
@@ -1258,7 +1271,33 @@ function playYoutube(videoUrl, channel) {
   }
 }
 
-
+function getYoutubePlaylist(argument) {
+  return new Promise((resolve, reject) => {
+    Https.get("https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=" + argument + "&key=" + process.env.SEARCH_API_KEY, function (res) {
+      console.log("HTTPS Status:" + res.statusCode);
+      var body;
+      res.on("data", function (data) {
+        body += data;
+      });
+      res.on("end", function () {
+        var parsed = JSON.parse(body.substring(9, body.length));
+        //console.log(parsed);
+        if (parsed.error) {
+          console.log("ERROR");
+          console.log(parsed.error);
+          reject();
+        }
+        else if (parsed.items && parsed.items.length > 0) {
+          console.log("SUCCESS! Items: " + parsed.items.length);
+          resolve(parsed.items);
+        }
+        else {
+          reject();
+        }
+      });
+    });
+  });
+}
 
 function searchYoutube(argument) {
   return new Promise((resolve, reject) => {
