@@ -1281,7 +1281,8 @@ function playYoutube(videoUrl, channel) {
       let embed = new Discord.MessageEmbed()
         .setColor([255, 0, 0])
         .setTitle("► " + info.videoDetails.title)
-        .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*');
+        .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*')
+        .setURL(videoUrl);
 
       if (youtubePlaylist.length > 0) {
         embed.setFooter(youtubePlaylistPosition + 1 + "/"+(youtubePlaylist.length)+" in " + youtubePlaylistName);
