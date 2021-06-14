@@ -1291,15 +1291,12 @@ function playYoutube(videoUrl, channel) {
       voicePlay(voice, videoStream, { volume: 0.8 });
       let nextVideo;
       if (youtubePlaylist.length > 0) {
-        channel.send("playlist position: "+youtubePlaylistPosition);
         youtubePlaylistPosition++;
         if (youtubePlaylist.length > youtubePlaylistPosition) {
-          channel.send("next video: "+youtubePlaylistPosition);
           nextVideo = youtubePlaylist[youtubePlaylistPosition];
         }
         else {
-          channel.send("end position: "+youtubePlaylistPosition);
-          channel.send("End of playlist.");
+          channel.send('End of playlist "'+youtubePlaylistName+'".');
           clearYoutubeTimeout();
         }
       }
