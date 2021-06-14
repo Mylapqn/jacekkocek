@@ -1253,6 +1253,7 @@ function playYoutubePlaylist(playlistUrl, channel) {
 playYoutubePlaylist("PLv3TTBr1W_9tppikBxAE_G6qjWdBljBHJ");
 
 function playYoutube(videoUrl, channel) {
+  console.log("playing "+videoUrl);
   let voice = channel.guild.voice.connection;
   if (voice) {
     let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
