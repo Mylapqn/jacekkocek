@@ -1293,7 +1293,7 @@ function playYoutube(videoUrl, channel) {
       if (youtubePlaylist.length > 0) {
         channel.send("playlist position: "+youtubePlaylistPosition);
         youtubePlaylistPosition++;
-        if (youtubePlaylist.length >= youtubePlaylistPosition) {
+        if (youtubePlaylist.length > youtubePlaylistPosition) {
           channel.send("next video: "+youtubePlaylistPosition);
           nextVideo = youtubePlaylist[youtubePlaylistPosition];
         }
