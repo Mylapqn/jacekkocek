@@ -924,6 +924,13 @@ client.on('message', message => {
                 if (num != "NaN") {
                   message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
                   youtubePlaylistPosition += num;
+                  if (youtubePlaylistPosition >= 0 && youtubePlaylistPosition < youtubePlaylist.length) {
+                    nextYoutubeData.url = "https://www.youtube.com/watch?v=" + youtubePlaylist[youtubePlaylistPosition];
+                  }
+                  else {
+                    message.channel.send("Cannot skip outside of playlist!");
+                    youtubePlaylistPosition -= num
+                  }
                 }
               }
               playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
