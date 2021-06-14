@@ -1253,6 +1253,9 @@ function clearYoutubeTimeout() {
 
 function playYoutubePlaylist(playlistUrl, channel) {
   youtubePlaylistName = playlistUrl;
+  getYoutubePlaylistName(playlistUrl).then(title => {
+    youtubePlaylistName = title;
+  })
   getYoutubePlaylist(playlistUrl).then((items) => {
     youtubePlaylist = items.map(x => x.contentDetails.videoId);
     youtubePlaylistPosition = 0;
@@ -1260,8 +1263,6 @@ function playYoutubePlaylist(playlistUrl, channel) {
     playYoutube("https://www.youtube.com/watch?v=" + youtubePlaylist[0], channel);
   })
 }
-
-playYoutubePlaylist("PLv3TTBr1W_9tppikBxAE_G6qjWdBljBHJ");
 
 function playYoutube(videoUrl, channel) {
   console.log("playing " + videoUrl);
@@ -1278,12 +1279,12 @@ function playYoutube(videoUrl, channel) {
         lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
       }
       let embed = new Discord.MessageEmbed()
-      .setColor([255, 0, 0])
-      .setTitle("► " + info.videoDetails.title)
-      .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*');
+        .setColor([255, 0, 0])
+        .setTitle("► " + info.videoDetails.title)
+        .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*');
 
-      if(youtubePlaylist.length > 0){
-        embed.setFooter(youtubePlaylistPosition + ". in playlist: "+youtubePlaylistName);
+      if (youtubePlaylist.length > 0) {
+        embed.setFooter(youtubePlaylistPosition + 1 + ". in " + youtubePlaylistName);
       }
 
       channel.send(embed);
@@ -1334,6 +1335,34 @@ function getYoutubePlaylist(argument) {
         else if (parsed.items && parsed.items.length > 0) {
           console.log("SUCCESS! Items: " + parsed.items.length);
           resolve(parsed.items);
+        }
+        else {
+          reject();
+        }
+      });
+    });
+  });
+}
+
+function getYoutubePlaylistName(argument) {
+  return new Promise((resolve, reject) => {
+    Https.get("https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=1&playlistId=" + argument + "&key=" + process.env.SEARCH_API_KEY, function (res) {
+      console.log("HTTPS Status:" + res.statusCode);
+      var body;
+      res.on("data", function (data) {
+        body += data;
+      });
+      res.on("end", function () {
+        var parsed = JSON.parse(body.substring(9, body.length));
+        //console.log(parsed);
+        if (parsed.error) {
+          console.log("ERROR");
+          console.log(parsed.error);
+          reject();
+        }
+        else if (parsed.items && parsed.items.length > 0) {
+          console.log("SUCCESS! Name: " + parsed.items[0].snippet.title);
+          resolve(parsed.items[0].snippet.title);
         }
         else {
           reject();
