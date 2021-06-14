@@ -923,13 +923,13 @@ client.on('message', message => {
                 let num = parseInt(argument);
                 if (num != "NaN") {
                   message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
-                  youtubePlaylistPosition += num;
+                  youtubePlaylistPosition += (num - 1);
                   if (youtubePlaylistPosition >= 0 && youtubePlaylistPosition < youtubePlaylist.length) {
                     nextYoutubeData.url = "https://www.youtube.com/watch?v=" + youtubePlaylist[youtubePlaylistPosition];
                   }
                   else {
                     message.channel.send("Cannot skip outside of playlist!");
-                    youtubePlaylistPosition -= num
+                    youtubePlaylistPosition -= (num - 1);
                   }
                 }
               }
