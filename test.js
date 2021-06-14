@@ -922,7 +922,7 @@ client.on('message', message => {
               if (argument && youtubePlaylist.length > 0) {
                 let num = parseInt(argument);
                 if (num != "NaN")
-                  youtubePlaylistPosition += argument - 1;
+                  youtubePlaylistPosition += argument;
               }
               playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
             }
