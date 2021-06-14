@@ -897,9 +897,9 @@ client.on('message', message => {
           if (message.member.voice.channel && argument)
             message.member.voice.channel.join().then(voice => {
               if (argument.startsWith("http")) {
-                if (argument.includes("&list")) {
-                  let n = argument.indexOf("&list");
-                  let listId = argument.slice(n + 6);
+                if (argument.includes("list=")) {
+                  let n = argument.indexOf("list=");
+                  let listId = argument.slice(n + 5);
                   playYoutubePlaylist(listId, message.channel);
                 }
                 else {
