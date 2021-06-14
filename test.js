@@ -1290,7 +1290,7 @@ function playYoutube(videoUrl, channel) {
         nextVideo = info.related_videos[0].id;
       }
       if (nextVideo) {
-        let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo.id;
+        let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
         videoStream.on("finish", () => {
         });
         clearYoutubeTimeout();
