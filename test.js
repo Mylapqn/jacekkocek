@@ -172,6 +172,12 @@ var helpCommands = [
     prefix: true,
     description: "Hint for #ano",
   },
+  {
+    name: "youtube",
+    arguments: "video url",
+    prefix: true,
+    description: "Play YT in voice chat",
+  },
 
 ];
 var helpAdminCommands = [
@@ -184,12 +190,12 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.11.1",
-  releaseDate: "4.4.2021",
-  commands: ["none"],
+  version: "1.13.2",
+  releaseDate: "14.6.2021",
+  commands: ["youtube"],
   changes: [
-    "Added radio search by name",
-    "Added new radio stations"
+    "Added youtube streaming",
+    "Added playlists to the youtube command"
   ]
 };
 
