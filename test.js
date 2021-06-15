@@ -437,7 +437,9 @@ client.on('message', message => {
                 },
 
               ]
-            }
+            },
+            component:null
+
           });
           break;
         }
