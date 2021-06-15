@@ -186,7 +186,7 @@ var helpAdminCommands = [
 var changelog = {
   version: "1.11.1",
   releaseDate: "4.4.2021",
-  commands: [""],
+  commands: ["none"],
   changes: [
     "Added radio search by name",
     "Added new radio stations"
