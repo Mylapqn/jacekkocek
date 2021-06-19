@@ -167,16 +167,10 @@ var helpCommands = [
     longDescription: "See the films to watch and the ones you have already watched. Interchangable with `playlist`, `kinoSuggestions`."
   },
   {
-    name: "hint",
-    arguments: "",
-    prefix: true,
-    description: "Hint for #ano",
-  },
-  {
     name: "youtube",
     arguments: "video url",
     prefix: true,
-    description: "Play YT in voice chat",
+    description: "",
   },
 
 ];
