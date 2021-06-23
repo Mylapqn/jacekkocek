@@ -1270,6 +1270,7 @@ function playYoutube(videoUrl, channel) {
   if (voice) {
     let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
     videoStream.on("info", (info) => {
+      console.log("info" + info);
       let length = info.videoDetails.lengthSeconds;
       let lenString;
       if (length >= 3600) {
