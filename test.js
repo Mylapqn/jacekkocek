@@ -229,6 +229,24 @@ var radioStations = [
     color: [0, 0, 0],
     url: "https://stream.laut.fm/nightdrive"
   },
+  {
+    name: "Radcap Synthwave",
+    //color: [103, 12, 208],
+    color: [200, 0, 0],
+    url: "http://79.120.39.202:8002/retrowave"
+  },
+  {
+    name: "Radcap Space",
+    //color: [103, 12, 208],
+    color: [200, 0, 0],
+    url: "http://79.111.119.111:8002/spacemusic"
+  },
+  {
+    name: "Radcap Spacesynth",
+    //color: [103, 12, 208],
+    color: [200, 0, 0],
+    url: "http://79.120.39.202:8002/spacesynth"
+  },  
 
 ];
 

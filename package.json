@@ -17,7 +17,7 @@
     "ffmpeg-static": "^4.2.7",
     "https": "^1.0.0",
     "process": "^0.11.10",
-    "ytdl-core": "^4.8.2"
+    "ytdl-core": "latest"
   },
   "devDependencies": {}
 }
