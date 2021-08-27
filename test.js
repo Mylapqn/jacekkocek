@@ -196,7 +196,7 @@ var changelog = {
 var radioStations = [
   {
     name: "Evropa 2",
-    color: [33, 63, 159],
+    color: [60, 80, 220],
     url: "http://ice.actve.net/fm-evropa2-128"
   },
   {
@@ -214,8 +214,13 @@ var radioStations = [
     url: "https://kathy.torontocast.com:3060/;"
   },
   {
+    name: "Anime Radio 3 ☆٩(◕‿◕｡)۶☆",
+    color: [235, 135, 180],
+    url: "http://79.111.119.111:8002/anime"
+  },
+  {
     name: "SOCKENSCHUSS X",
-    color: [201, 22, 201],
+    color: [100, 0, 180],
     url: "https://stream.laut.fm/sockenschuss-x"
   },
   {
@@ -225,26 +230,22 @@ var radioStations = [
   },
   {
     name: "Nightdrive",
-    //color: [103, 12, 208],
     color: [0, 0, 0],
     url: "https://stream.laut.fm/nightdrive"
   },
   {
     name: "Radcap Synthwave",
-    //color: [103, 12, 208],
-    color: [200, 0, 0],
+    color: [200, 0, 70],
     url: "http://79.120.39.202:8002/retrowave"
   },
   {
     name: "Radcap Space",
-    //color: [103, 12, 208],
-    color: [200, 0, 0],
+    color: [200, 0, 70],
     url: "http://79.111.119.111:8002/spacemusic"
   },
   {
     name: "Radcap Spacesynth",
-    //color: [103, 12, 208],
-    color: [200, 0, 0],
+    color: [200, 0, 70],
     url: "http://79.120.39.202:8002/spacesynth"
   },  
 
