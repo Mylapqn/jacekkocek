@@ -247,7 +247,7 @@ var radioStations = [
     name: "Radcap Spacesynth",
     color: [200, 0, 70],
     url: "http://79.120.39.202:8002/spacesynth"
-  },  
+  },
 
 ];
 
@@ -379,6 +379,10 @@ client.on('message', message => {
               description: 'Cheese'
             }
           });
+          break;
+        case "say":
+          message.delete();
+          message.channel.send(argument);
           break;
         case "spell":
           message.delete().then(() => {
@@ -1305,7 +1309,7 @@ function playYoutube(videoUrl, channel) {
         .setURL(videoUrl);
 
       if (youtubePlaylist.length > 0) {
-        embed.setFooter(youtubePlaylistPosition + 1 + "/"+(youtubePlaylist.length)+" in " + youtubePlaylistName);
+        embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
       }
 
       channel.send(embed);
@@ -1318,7 +1322,7 @@ function playYoutube(videoUrl, channel) {
           nextVideo = youtubePlaylist[youtubePlaylistPosition];
         }
         else {
-          channel.send('End of playlist "'+youtubePlaylistName+'".');
+          channel.send('End of playlist "' + youtubePlaylistName + '".');
           clearYoutubeTimeout();
         }
       }
