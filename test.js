@@ -579,6 +579,7 @@ client.on('message', message => {
                   if (reacts.includes("♋")) break;
                 }});*/
 
+                messagesToDelete = argNumber;
                 msgDeleteInterval = setInterval(() => {
                   if (messagesToDelete >= 100) {
                     channel.bulkDelete(100);
