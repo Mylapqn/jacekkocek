@@ -567,13 +567,14 @@ client.on('message', message => {
                   }
 
                 });*/
-                channel.fetch().then(channel => {for (var i = 0; i < argNumber; i++) {
+                /*channel.fetch().then(channel => {for (var i = 0; i < argNumber; i++) {
                   let lastMessage= channel.lastMessage;
                   var reacts = lastMessage.reactions.cache.mapValues(reaction => reaction._emoji.name).array();
                   //message.channel.send(argument.charAt(i));
                   lastMessage.delete();
                   if (reacts.includes("♋")) break;
-                }});
+                }});*/
+                channel.bulkDelete(argNumber);
                 
               }
             });
