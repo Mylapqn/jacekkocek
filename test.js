@@ -588,7 +588,7 @@ client.on('message', message => {
                   else{
                     clearInterval(msgDeleteInterval);
                   }
-                }, 1000);
+                }, 3000);
 
               }
             });
