@@ -6,6 +6,7 @@ const ytdl = require('ytdl-core');
 const fs = require('fs');
 const cheerio = require('cheerio');
 const axios = require('axios');
+const { clearInterval } = require('timers');
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
@@ -192,6 +193,9 @@ var changelog = {
     "Added playlists to the youtube command"
   ]
 };
+
+var messagesToDelete = 0;
+var msgDeleteInterval;
 
 var radioStations = [
   {
@@ -574,10 +578,17 @@ client.on('message', message => {
                   lastMessage.delete();
                   if (reacts.includes("♋")) break;
                 }});*/
-                for (var i = argNumber; i > 0; i -= 100) {
-                  channel.bulkDelete(100);
 
-                }
+                msgDeleteInterval = setInterval(() => {
+                  if (messagesToDelete >= 100) {
+                    channel.bulkDelete(100);
+                    messagesToDelete -= 100;
+                  }
+                  else{
+                    clearInterval(msgDeleteInterval);
+                  }
+                }, 1000);
+
               }
             });
           }
