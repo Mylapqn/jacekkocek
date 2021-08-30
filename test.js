@@ -574,8 +574,10 @@ client.on('message', message => {
                   lastMessage.delete();
                   if (reacts.includes("♋")) break;
                 }});*/
-                channel.bulkDelete(argNumber);
-                
+                for (var i = argNumber; i > 0; i -= 100) {
+                  channel.bulkDelete(100);
+
+                }
               }
             });
           }
