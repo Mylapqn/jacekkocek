@@ -194,8 +194,7 @@ var changelog = {
   ]
 };
 
-var messagesToDelete = 0;
-var msgDeleteInterval;
+
 
 var radioStations = [
   {
@@ -560,7 +559,7 @@ client.on('message', message => {
                 if (argNumber > 20 && message.author.tag != "Mylapqn#5546") argNumber = 20;
                 console.log("Deleting " + argNumber + " last messages in #" + message.channel.name + ", command by " + message.author.username);
                 let channel = message.channel;
-                /*message.channel.messages.fetch({ limit: argNumber }).then(messages => {
+                message.channel.messages.fetch({ limit: argNumber }).then(messages => {
 
                   var previousMessages = messages.array();
                   for (var i = 0; i < argNumber; i++) {
@@ -570,7 +569,7 @@ client.on('message', message => {
                     if (reacts.includes("♋")) break;
                   }
 
-                });*/
+                });
                 /*channel.fetch().then(channel => {for (var i = 0; i < argNumber; i++) {
                   let lastMessage= channel.lastMessage;
                   var reacts = lastMessage.reactions.cache.mapValues(reaction => reaction._emoji.name).array();
@@ -579,16 +578,7 @@ client.on('message', message => {
                   if (reacts.includes("♋")) break;
                 }});*/
 
-                messagesToDelete = argNumber;
-                msgDeleteInterval = setInterval(() => {
-                  if (messagesToDelete >= 100) {
-                    channel.bulkDelete(100);
-                    messagesToDelete -= 100;
-                  }
-                  else{
-                    clearInterval(msgDeleteInterval);
-                  }
-                }, 3000);
+
 
               }
             });
