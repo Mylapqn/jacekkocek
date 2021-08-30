@@ -555,7 +555,8 @@ client.on('message', message => {
               if (argNumber > 0) {
                 if (argNumber > 20 && message.author.tag != "Mylapqn#5546") argNumber = 20;
                 console.log("Deleting " + argNumber + " last messages in #" + message.channel.name + ", command by " + message.author.username);
-                message.channel.messages.fetch({ limit: argNumber }).then(messages => {
+                let channel = message.channel;
+                /*message.channel.messages.fetch({ limit: argNumber }).then(messages => {
 
                   var previousMessages = messages.array();
                   for (var i = 0; i < argNumber; i++) {
@@ -565,7 +566,14 @@ client.on('message', message => {
                     if (reacts.includes("♋")) break;
                   }
 
-                });
+                });*/
+                for (var i = 0; i < argNumber; i++) {
+                  let lastMessage= channel.lastMessage;
+                  var reacts = lastMessage.reactions.cache.mapValues(reaction => reaction._emoji.name).array();
+                  //message.channel.send(argument.charAt(i));
+                  lastMessage.delete();
+                  if (reacts.includes("♋")) break;
+                }
               }
             });
           }
