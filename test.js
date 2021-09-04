@@ -549,6 +549,10 @@ client.on('message', message => {
           startGoogleSearch(argument, message, 0);
 
           break;
+        case "w2g":
+httpPost("https://w2g.tv/rooms/create.json").then(parsed => {message.channel.send(parsed)});
+
+          break;
         case "nuke":
           if (message.author.username != "RudolfJelin") {
             message.delete().then(() => {
@@ -1377,6 +1381,44 @@ function getYoutubePlaylist(argument) {
         }
         else {
           reject();
+        }
+      });
+    });
+  });
+}
+
+function httpPost(url) {
+  let opts = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "w2g_api_key": "<api_key>",
+      "share": "https://www.youtube.com/watch?v=8Wdp35Z-fRs",
+      "bg_color": "#00ff00",
+      "bg_opacity": "50"
+    })
+  }
+  return new Promise((resolve, reject) => {
+    Https.request(url, opts, function (res) {
+      console.log("HTTPS POST Status:" + res.statusCode);
+      var body;
+      res.on("data", function (data) {
+        body += data;
+      });
+      res.on("end", function () {
+        var parsed = JSON.parse(body.substring(9, body.length));
+        //console.log(parsed);
+        if (parsed.error) {
+          console.log("ERROR");
+          console.log(parsed.error);
+          reject();
+        }
+        else {
+          console.log("POST SUCCESS! Items: " + parsed);
+          resolve(parsed);
         }
       });
     });
