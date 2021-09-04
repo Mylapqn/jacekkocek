@@ -1388,6 +1388,7 @@ function getYoutubePlaylist(argument) {
 }
 
 function httpPost(url) {
+  console.log("asas");
   let opts = {
     method: 'POST',
     headers: {
