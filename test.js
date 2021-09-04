@@ -550,7 +550,7 @@ client.on('message', message => {
 
           break;
         case "w2g":
-httpPost("https://w2g.tv/rooms/create.json").then(parsed => {message.channel.send(parsed)});
+          httpPost("https://w2g.tv/rooms/create.json").then(parsed => { message.channel.send(parsed) });
 
           break;
         case "nuke":
@@ -1403,6 +1403,7 @@ function httpPost(url) {
     })
   }
   return new Promise((resolve, reject) => {
+    console.log("HTTPS POST");
     Https.request(url, opts, function (res) {
       console.log("HTTPS POST Status:" + res.statusCode);
       var body;
