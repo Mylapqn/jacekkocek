@@ -322,7 +322,7 @@ client.on('ready', () => {
 client.on('interactionCreate', interaction => {
 	if (!interaction.isButton()) return;
   console.log("Interaction",interaction);
-  interaction.reply({content:"sus"});
+  interaction.update({content:"sus"});
 });
 
 client.on('messageCreate', message => {
