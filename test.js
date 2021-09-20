@@ -319,7 +319,7 @@ client.on('ready', () => {
 
 });
 
-client.on('message', message => {
+client.on('messageCreate', message => {
   if (message.author.id != client.user.id) {
 
     if (message.mentions.has(client.user)) {
@@ -393,8 +393,23 @@ client.on('message', message => {
           const row = new Discord.MessageActionRow().addComponents(
             new Discord.MessageButton()
               .setCustomId('test')
-              .setLabel('Test Button')
+              .setLabel('Emergency meeting')
               .setStyle('DANGER'),
+            new Discord.MessageSelectMenu()
+              .setCustomId('select')
+              .setPlaceholder('Select your mogus')
+              .addOptions([
+                {
+                  label: 'Red mogus',
+                  description: 'common',
+                  value: 'first_option',
+                },
+                {
+                  label: 'Yellow mogus',
+                  description: 'uncommon',
+                  value: 'second_option',
+                },
+              ]),
           );
           message.channel.send({ content: "test button???", components: [row] })
           break;
