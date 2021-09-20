@@ -394,7 +394,7 @@ client.on('interactionCreate', interaction => {
     if (!interaction.replied) interaction.reply({ content: interaction.user.username + " voted " + color + ". " + color + impostor });
   }
   else if(interaction.isCommand()){
-    if(interaction.commandId == "amogus"){
+    if(interaction.commandName == "amogus"){
       interaction.reply({content:"Success"});
     }
   }
