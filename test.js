@@ -16,7 +16,7 @@ const Intents = Discord.Intents;
 const intents = new Intents();
 intents.add(Intents.FLAGS.GUILD_MESSAGES);
 intents.add(Intents.FLAGS.GUILDS);
-intents.add(Intents.FLAGS.GUILD_EMOJIS);
+//intents.add(Intents.FLAGS.GUILD_EMOJIS);
 const client = new Discord.Client({intents: intents});
 
 var kocek = 0;
