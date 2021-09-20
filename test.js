@@ -307,10 +307,38 @@ client.login(process.env.DISCORD_API_KEY);
 function registerCommands() {
   let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/728312628413333584/commands";
   let data = {
-    name: "testcommand",
-    description: "testdescription",
+    name: "amogus",
+    description: "Create your own mogus",
+    options: [
+      {
+          "name": "color",
+          "description": "The color of your mogus",
+          "type": 3,
+          "required": True,
+          "choices": [
+              {
+                  "name": "Red",
+                  "value": "red"
+              },
+              {
+                  "name": "Yellow",
+                  "value": "yellow"
+              },
+              {
+                  "name": "Green",
+                  "value": "green"
+              }
+          ]
+      },
+      {
+          "name": "sus",
+          "description": "Whether the mogus is sus",
+          "type": 5,
+          "required": True
+      }
+  ]
   }
-  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN },data:data,url:url,method:"post" }).then(function(response){console.log(response)})
+  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN },data:data,url:url,method:"post" });
 }
 
 
