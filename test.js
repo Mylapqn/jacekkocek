@@ -391,7 +391,7 @@ client.on('message', message => {
               .setLabel('Test Button')
               .setStyle('DANGER'),
           );
-          message.channel.send({ content: "test button", components: [row] })
+          message.channel.send({ content: "test button???", components: [row] })
           break;
         }
         case "say":
