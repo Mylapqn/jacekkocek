@@ -340,7 +340,7 @@ client.on('interactionCreate', interaction => {
         },
       ]),
   );
-  interaction.update({content:"sus", components:[row2]});
+  interaction.update({content:"DEAD BODY REPORTED", components:[row2]});
 });
 
 client.on('messageCreate', message => {
