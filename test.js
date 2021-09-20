@@ -185,12 +185,11 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.13.2",
-  releaseDate: "14.6.2021",
-  commands: ["youtube"],
+  version: "1.14.1",
+  releaseDate: "20.9.2021",
+  commands: ["help"],
   changes: [
-    "Added youtube streaming",
-    "Added playlists to the youtube command"
+    " ",
   ]
 };
 
