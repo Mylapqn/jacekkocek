@@ -345,8 +345,8 @@ client.on('interactionCreate', interaction => {
   }
   else if (interaction.isSelectMenu()){
     let color,impostor;
-    if(interaction.customId == "red"){color = "Red"; impostor = " was the impostor."} 
-    else if(interaction.customId == "yellow") {color = "Yellow";impostor = " was not the impostor."}
+    if(interaction.values[0] == "red"){color = "Red"; impostor = " was the impostor."} 
+    else if(interaction.values[0] == "yellow") {color = "Yellow";impostor = " was not the impostor."}
     interaction.reply({content:interaction.member.nickname+" voted "+color+". "+color+impostor});
   }
 });
