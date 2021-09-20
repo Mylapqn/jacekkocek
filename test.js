@@ -12,7 +12,7 @@ const { clearInterval } = require('timers');
 //const { env } = require('process');
 //Dotenv.config();
 
-const client = new Discord.Client();
+const client = new Discord.Client({intents: [Discord.Intents.ALL]});
 
 var kocek = 0;
 var lastSearchResults = null;
@@ -296,7 +296,7 @@ client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
 
-  console.log('['+new Date()+']I am ready!');
+  console.log('['+new Date()+'] I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   //console.log(client.user);
   startDate = new Date();
