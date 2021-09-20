@@ -310,7 +310,7 @@ function registerCommands() {
     name: "testcommand",
     description: "testdescription",
   }
-  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN },data:data,url:url,method:"post" })
+  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN },data:data,url:url,method:"post" }).then(function(response){console.log(response)})
 }
 
 
