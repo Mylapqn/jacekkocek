@@ -307,10 +307,10 @@ client.login(process.env.DISCORD_API_KEY);
 function registerCommands() {
   let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/728312628413333584/commands";
   let data = {
-    "name": "blep",
-    "description": "Send a random adorable animal photo",
+    name: "testcommand",
+    description: "testdescription",
   }
-  axios.post(url, data, { headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN } })
+  axios.post({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN },data:data,url:url,method:"post" })
 }
 
 registerCommands();
