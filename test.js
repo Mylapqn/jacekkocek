@@ -319,6 +319,12 @@ client.on('ready', () => {
 
 });
 
+client.on('interactionCreate', interaction => {
+	if (!interaction.isButton()) return;
+  console.log(interaction);
+  interaction.reply({content:"sus"});
+});
+
 client.on('messageCreate', message => {
   if (message.author.id != client.user.id) {
 
