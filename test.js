@@ -363,7 +363,7 @@ client.on('ready', () => {
 });
 
 client.on('interactionCreate', interaction => {
-  console.log("Interaction", interaction.component);
+  console.log("Interaction", interaction);
   if (interaction.isButton()) {
 
     const row2 = new Discord.MessageActionRow().addComponents(
