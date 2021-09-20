@@ -12,7 +12,10 @@ const { clearInterval } = require('timers');
 //const { env } = require('process');
 //Dotenv.config();
 
-const client = new Discord.Client({intents: new Discord.Intents([Discord.Intents.FLAGS.GUILDS,Discord.Intents.FLAGS.GUILD_EMOJIS,Discord.Intents.FLAGS.GUILD_MEMBERS,Discord.Intents.FLAGS.GUILD_MESSAGES,Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,Discord.Intents.FLAGS.GUILD_VOICE_STATES])});
+const Intents = Discord.Intents;
+const intents = new Intents();
+intents.add(Intents.FLAGS.GUILD_MESSAGES);
+const client = new Discord.Client({intents: intents});
 
 var kocek = 0;
 var lastSearchResults = null;
