@@ -322,7 +322,25 @@ client.on('ready', () => {
 client.on('interactionCreate', interaction => {
 	if (!interaction.isButton()) return;
   console.log("Interaction",interaction);
-  interaction.update({content:"sus"});
+
+  const row2 = new Discord.MessageActionRow().addComponents(
+    new Discord.MessageSelectMenu()
+      .setCustomId('select')
+      .setPlaceholder('Select your mogus')
+      .addOptions([
+        {
+          label: 'Red mogus',
+          description: 'common',
+          value: 'first_option',
+        },
+        {
+          label: 'Yellow mogus',
+          description: 'uncommon',
+          value: 'second_option',
+        },
+      ]),
+  );
+  interaction.update({content:"sus", components:[row2]});
 });
 
 client.on('messageCreate', message => {
@@ -419,7 +437,7 @@ client.on('messageCreate', message => {
                 },
               ]),
           );
-          message.channel.send({ content: "sus???", components: [row, row2] })
+          message.channel.send({ content: "sus???", components: [row] })
           break;
         }
         case "say":
