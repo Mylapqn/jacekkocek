@@ -305,7 +305,7 @@ var lastInStock = 0;
 client.login(process.env.DISCORD_API_KEY);
 
 function registerCommands() {
-  let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/728312628413333584/commands";
+  let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/549589656606343178/commands";
   let data = {
     name: "amogus",
     description: "Create your own mogus",
