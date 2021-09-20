@@ -321,7 +321,7 @@ client.on('ready', () => {
 
 client.on('interactionCreate', interaction => {
 	if (!interaction.isButton()) return;
-  console.log(interaction);
+  console.log("Interaction",interaction);
   interaction.reply({content:"sus"});
 });
 
