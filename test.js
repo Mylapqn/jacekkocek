@@ -395,6 +395,8 @@ client.on('messageCreate', message => {
               .setCustomId('test')
               .setLabel('Emergency meeting')
               .setStyle('DANGER'),
+          );
+          const row2 = new Discord.MessageActionRow().addComponents(
             new Discord.MessageSelectMenu()
               .setCustomId('select')
               .setPlaceholder('Select your mogus')
@@ -411,7 +413,7 @@ client.on('messageCreate', message => {
                 },
               ]),
           );
-          message.channel.send({ content: "sus???", components: [row] })
+          message.channel.send({ content: "sus???", components: [row, row2] })
           break;
         }
         case "say":
