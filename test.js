@@ -310,13 +310,13 @@ function registerCommands() {
     name: "testcommand",
     description: "testdescription",
   }
-  axios.post({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN },data:data,url:url,method:"post" })
+  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN },data:data,url:url,method:"post" })
 }
 
-registerCommands();
 
 client.on('ready', () => {
-
+  
+  registerCommands();
   console.log('[' + new Date() + '] I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   //console.log(client.user);
