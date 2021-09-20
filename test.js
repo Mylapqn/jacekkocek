@@ -411,7 +411,7 @@ client.on('messageCreate', message => {
                 },
               ]),
           );
-          message.channel.send({ content: "test button???", components: [row] })
+          message.channel.send({ content: "sus???", components: [row] })
           break;
         }
         case "say":
