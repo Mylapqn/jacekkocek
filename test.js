@@ -395,7 +395,7 @@ client.on('interactionCreate', interaction => {
   }
   else if(interaction.isCommand()){
     if(interaction.commandName == "amogus"){
-      interaction.reply({content:"Success"});
+      interaction.reply({content:"Successfully created "+interaction.options.getString("color")+ " mogus."});
     }
   }
 });
