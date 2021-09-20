@@ -347,7 +347,7 @@ client.on('interactionCreate', interaction => {
     let color,impostor;
     if(interaction.values[0] == "red"){color = "Red"; impostor = " was the impostor."} 
     else if(interaction.values[0] == "yellow") {color = "Yellow";impostor = " was not the impostor."}
-    interaction.reply({content:interaction.member.nickname+" voted "+color+". "+color+impostor});
+    if(!interaction.replied)interaction.reply({content:interaction.user.username+" voted "+color+". "+color+impostor});
   }
 });
 
