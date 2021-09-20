@@ -383,6 +383,17 @@ client.on('message', message => {
             }
           });
           break;
+        case "button": {
+          message.delete();
+          const row = new Discord.MessageActionRow().addComponents(
+            new Discord.MessageButton()
+              .setCustomId('test')
+              .setLabel('Test Button')
+              .setStyle('DANGER'),
+          );
+          message.channel.send({ content: "test", components: [row] })
+          break;
+        }
         case "say":
           message.delete();
           message.channel.send(argument);
