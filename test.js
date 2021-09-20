@@ -18,7 +18,7 @@ intents.add(Intents.FLAGS.GUILD_MESSAGES);
 intents.add(Intents.FLAGS.GUILDS);
 intents.add(Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS);
 intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
-const client = new Discord.Client({intents: intents});
+const client = new Discord.Client({ intents: intents });
 
 var kocek = 0;
 var lastSearchResults = null;
@@ -302,7 +302,7 @@ client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
 
-  console.log('['+new Date()+'] I am ready!');
+  console.log('[' + new Date() + '] I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   //console.log(client.user);
   startDate = new Date();
@@ -462,18 +462,20 @@ client.on('message', message => {
             changeChanges += "\n";
           });
           message.channel.send({
-            embed: {
-              color: [24, 195, 177],
-              title: "JacekKocek v" + changelog.version, description: "Released " + changelog.releaseDate, fields: [
-                {
-                  name: "New commands", value: commandChanges
-                },
-                {
-                  name: "Changes", value: changeChanges
-                },
+            embeds: [
+              {
+                color: [24, 195, 177],
+                title: "JacekKocek v" + changelog.version, description: "Released " + changelog.releaseDate, fields: [
+                  {
+                    name: "New commands", value: commandChanges
+                  },
+                  {
+                    name: "Changes", value: changeChanges
+                  },
 
-              ]
-            }
+                ]
+              }
+            ]
           });
           break;
         }
