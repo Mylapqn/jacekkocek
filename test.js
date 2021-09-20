@@ -21,6 +21,44 @@ intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
 intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
+
+function registerCommands(){
+  let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/728312628413333584/commands";
+  let data = {
+    "name": "blep",
+    "description": "Send a random adorable animal photo",
+    "options": [
+        {
+            "name": "animal",
+            "description": "The type of animal",
+            "type": 3,
+            "required": True,
+            "choices": [
+                {
+                    "name": "Dog",
+                    "value": "animal_dog"
+                },
+                {
+                    "name": "Cat",
+                    "value": "animal_cat"
+                },
+                {
+                    "name": "Penguin",
+                    "value": "animal_penguin"
+                }
+            ]
+        },
+        {
+            "name": "only_smol",
+            "description": "Whether to show only baby animals",
+            "type": 5,
+            "required": False
+        }
+    ]
+}
+  axios.post(url, data, {headers:{"Authorization":"Bot "+process.env.DISCORD_BOT_TOKEN}})
+}
+
 var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
