@@ -22,42 +22,7 @@ intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
 
-function registerCommands(){
-  let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/728312628413333584/commands";
-  let data = {
-    "name": "blep",
-    "description": "Send a random adorable animal photo",
-    "options": [
-        {
-            "name": "animal",
-            "description": "The type of animal",
-            "type": 3,
-            "required": True,
-            "choices": [
-                {
-                    "name": "Dog",
-                    "value": "animal_dog"
-                },
-                {
-                    "name": "Cat",
-                    "value": "animal_cat"
-                },
-                {
-                    "name": "Penguin",
-                    "value": "animal_penguin"
-                }
-            ]
-        },
-        {
-            "name": "only_smol",
-            "description": "Whether to show only baby animals",
-            "type": 5,
-            "required": False
-        }
-    ]
-}
-  axios.post(url, data, {headers:{"Authorization":"Bot "+process.env.DISCORD_BOT_TOKEN}})
-}
+
 
 var kocek = 0;
 var lastSearchResults = null;
@@ -339,6 +304,17 @@ var lastInStock = 0;
 
 client.login(process.env.DISCORD_API_KEY);
 
+function registerCommands() {
+  let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/728312628413333584/commands";
+  let data = {
+    "name": "blep",
+    "description": "Send a random adorable animal photo",
+  }
+  axios.post(url, data, { headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN } })
+}
+
+registerCommands();
+
 client.on('ready', () => {
 
   console.log('[' + new Date() + '] I am ready!');
@@ -381,13 +357,13 @@ client.on('interactionCreate', interaction => {
     );
     interaction.update({ content: "DEAD BODY REPORTED", components: [row2] });
   }
-  else if (interaction.isSelectMenu()){
-    let color,impostor;
-    if(interaction.values[0] == "red"){color = "Red"; impostor = " was the impostor."} 
-    else if(interaction.values[0] == "yellow") {color = "Yellow";impostor = " was not the impostor."}
+  else if (interaction.isSelectMenu()) {
+    let color, impostor;
+    if (interaction.values[0] == "red") { color = "Red"; impostor = " was the impostor." }
+    else if (interaction.values[0] == "yellow") { color = "Yellow"; impostor = " was not the impostor." }
     /*if(randomInt(0,1) == 0)impostor = " was the impostor.";
     else impostor = " was not the impostor.";*/
-    if(!interaction.replied)interaction.reply({content:interaction.user.username+" voted "+color+". "+color+impostor});
+    if (!interaction.replied) interaction.reply({ content: interaction.user.username + " voted " + color + ". " + color + impostor });
   }
 });
 
