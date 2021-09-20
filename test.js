@@ -314,7 +314,7 @@ function registerCommands() {
           name: "color",
           description: "The color of your mogus",
           type: 3,
-          required: True,
+          required: true,
           choices: [
               {
                   name: "Red",
@@ -334,7 +334,7 @@ function registerCommands() {
           name: "sus",
           description: "Whether the mogus is sus",
           type: 5,
-          required: True
+          required: true
       }
   ]
   }
