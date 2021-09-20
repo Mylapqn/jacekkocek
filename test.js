@@ -18,6 +18,7 @@ intents.add(Intents.FLAGS.GUILD_MESSAGES);
 intents.add(Intents.FLAGS.GUILDS);
 intents.add(Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS);
 intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
+intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
 var kocek = 0;
@@ -320,8 +321,8 @@ client.on('ready', () => {
 });
 
 client.on('interactionCreate', interaction => {
+  console.log("Interaction", interaction.component);
   if (interaction.isButton()) {
-    console.log("Interaction", interaction);
 
     const row2 = new Discord.MessageActionRow().addComponents(
       new Discord.MessageSelectMenu()
@@ -331,12 +332,12 @@ client.on('interactionCreate', interaction => {
           {
             label: 'Red mogus',
             description: 'common',
-            value: 'first_option',
+            value: 'red',
           },
           {
             label: 'Yellow mogus',
             description: 'uncommon',
-            value: 'second_option',
+            value: 'yellow',
           },
         ]),
     );
