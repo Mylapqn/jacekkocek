@@ -320,28 +320,36 @@ client.on('ready', () => {
 });
 
 client.on('interactionCreate', interaction => {
-	if (!interaction.isButton()) return;
-  console.log("Interaction",interaction);
+  if (interaction.isButton()) {
+    console.log("Interaction", interaction);
 
-  const row2 = new Discord.MessageActionRow().addComponents(
-    new Discord.MessageSelectMenu()
-      .setCustomId('select')
-      .setPlaceholder('Select your mogus')
-      .addOptions([
-        {
-          label: 'Red mogus',
-          description: 'common',
-          value: 'first_option',
-        },
-        {
-          label: 'Yellow mogus',
-          description: 'uncommon',
-          value: 'second_option',
-        },
-      ]),
-  );
-  interaction.update({content:"DEAD BODY REPORTED", components:[row2]});
+    const row2 = new Discord.MessageActionRow().addComponents(
+      new Discord.MessageSelectMenu()
+        .setCustomId('select')
+        .setPlaceholder('Select your mogus')
+        .addOptions([
+          {
+            label: 'Red mogus',
+            description: 'common',
+            value: 'first_option',
+          },
+          {
+            label: 'Yellow mogus',
+            description: 'uncommon',
+            value: 'second_option',
+          },
+        ]),
+    );
+    interaction.update({ content: "DEAD BODY REPORTED", components: [row2] });
+  }
+  else if (interaction.isSelectMenu()){
+    let color,impostor;
+    if(interaction.customId == "red"){color = "Red"; impostor = " was the impostor."} 
+    else if(interaction.customId == "yellow") {color = "Yellow";impostor = " was not the impostor."}
+    interaction.reply({content:interaction.member.nickname+" voted "+color+". "+color+impostor});
+  }
 });
+
 
 client.on('messageCreate', message => {
   if (message.author.id != client.user.id) {
