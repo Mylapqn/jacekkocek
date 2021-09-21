@@ -1126,7 +1126,7 @@ client.on("messageReactionAdd", (messageReaction) => {
   let emojiName = messageReaction.emoji.name;
   let reactionUser = messageReaction.users.cache.last();
   let reactionMessage = messageReaction.message;
-  console.log(reactionMessage.content);
+  console.log(reactionMessage.content, emojiName);
 
   if (emojiName == "cooking") {
     console.log("cooking",reactionMessage.attachments);
