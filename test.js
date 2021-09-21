@@ -1121,6 +1121,7 @@ client.on('messageCreate', message => {
 
 //#region KINO
 client.on("messageReactionAdd", (messageReaction) => {
+  console.log("added reaction");
   let emojiName = messageReaction.emoji.name;
   let reactionUser = messageReaction.users.cache.last();
   let reactionMessage = messageReaction.message;
