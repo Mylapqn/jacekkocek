@@ -449,8 +449,24 @@ client.on('messageCreate', message => {
 
       });
     }
-    else if(message.type == "REPLY"){
-      console.log(message);
+    else if (message.type == "REPLY" && message.content.toLowerCase() == "usmažit prosím") {
+      message.channel.messages.fetch(message.reference.messageId).then(msg => {
+        let url = null;
+        if (msg.attachments.size > 0) {
+          url = msg.attachments.first().proxyURL;
+        }
+        else if(msg.content.includes("http")){
+          url = msg.content.substr(msg.content.indexOf("http"));
+        }
+        if (url != null) {
+          Jimp.read(url).then(image => {
+            console.log("jimp start");
+            image.convolute([[0, -2, 0], [-2, 8.9, -2], [0, -2, 0]]).contrast(.8).color([{ apply: "saturate", params: [20] }]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).write("./outputImg.png");
+            console.log("jimp done")
+            msg.channel.send({ files: ["./outputImg.png"] });
+          })
+        }
+      });
     }
     else if (message.content.startsWith(prefix)) {
       var withoutPrefix = message.content.slice(prefix.length);
@@ -1125,20 +1141,11 @@ client.on('messageCreate', message => {
 
 //#region KINO
 client.on("messageReactionAdd", (messageReaction) => {
-  console.log("added reaction");
   let emojiName = messageReaction.emoji.name;
   let reactionUser = messageReaction.users.cache.last();
   let reactionMessage = messageReaction.message;
 
   if (emojiName == "🍳") {
-    if (reactionMessage.attachments.size > 0) {
-      Jimp.read(reactionMessage.attachments.first().proxyURL).then(image => {
-        console.log("jimp start");
-        image.convolute([[0, -2, 0], [-2, 8.9, -2], [0, -2, 0]]).contrast(.8).color([{ apply: "saturate", params: [20] }]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).write("./outputImg.png");
-        console.log("jimp done")
-        reactionMessage.channel.send({ files: ["./outputImg.png"] });
-      })
-    }
   }
   else {
     let kinoEntry = -1;
