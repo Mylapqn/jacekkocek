@@ -462,12 +462,12 @@ client.on('messageCreate', message => {
         if (url != null) {
           Jimp.read(url).then(image => {
             console.log("jimp start");
-            let kernelSharpen = [[0, -2, 0], [-2, 9, -2], [0, -2, 0]];
+            let kernelSharpen = [[0, -3, 0], [-3, 13, -3], [0, -3, 0]];
             image
               .quality(10)
               .convolute(kernelSharpen)
-              .contrast(.9)
-              .color([{ apply: "saturate", params: [50] }])
+              .contrast(.99)
+              .color([{ apply: "saturate", params: [70] }])
               .convolute(kernelSharpen)
               .writeAsync("./outputImg.jpg").then(e => {
                 console.log("jimp done")
