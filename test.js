@@ -1131,7 +1131,7 @@ client.on("messageReactionAdd", (messageReaction) => {
     if (reactionMessage.attachments.size > 0) {
       Jimp.read(reactionMessage.attachments.first().proxyURL).then(image => {
         console.log("jimp start");
-        image.convolute([[0, -2, 0], [-2, 8, -2], [0, -2, 0]]).contrast(.8).color([{ apply: "saturate", params: [20] }]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).write("./outputImg.png");
+        image.convolute([[0, -2, 0], [-2, 8.9, -2], [0, -2, 0]]).contrast(.8).color([{ apply: "saturate", params: [20] }]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).write("./outputImg.png");
         console.log("jimp done")
         reactionMessage.channel.send({ files: ["./outputImg.png"] });
       })
