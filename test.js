@@ -340,7 +340,7 @@ function registerCommands() {
       }
     ]
   }
-axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { /*console.log(response) */});
+  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { /*console.log(response) */ });
 }
 
 
@@ -1129,6 +1129,9 @@ client.on("messageReactionAdd", (messageReaction) => {
   console.log(reactionMessage.content);
 
   if (emojiName == "cooking") {
+    if (reactionMessage.attachments.size > 0){
+      reactionMessage.channel.send(reactionMessage.attachments.first().proxyURL);
+    }
   }
   else {
     let kinoEntry = -1;
