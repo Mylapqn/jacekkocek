@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const Jimp = require('jimp');
 //const Dotenv = require('dotenv');
 const Https = require('https');
 const Http = require('http');
@@ -311,39 +312,39 @@ function registerCommands() {
     description: "Create your own mogus",
     options: [
       {
-          name: "color",
-          description: "The color of your mogus",
-          type: 3,
-          required: true,
-          choices: [
-              {
-                  name: "Red",
-                  value: "red"
-              },
-              {
-                  name: "Yellow",
-                  value: "yellow"
-              },
-              {
-                  name: "Green",
-                  value: "green"
-              }
-          ]
+        name: "color",
+        description: "The color of your mogus",
+        type: 3,
+        required: true,
+        choices: [
+          {
+            name: "Red",
+            value: "red"
+          },
+          {
+            name: "Yellow",
+            value: "yellow"
+          },
+          {
+            name: "Green",
+            value: "green"
+          }
+        ]
       },
       {
-          name: "sus",
-          description: "Whether the mogus is sus",
-          type: 5,
-          required: true
+        name: "sus",
+        description: "Whether the mogus is sus",
+        type: 5,
+        required: true
       }
-  ]
+    ]
   }
-  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN },data:data,url:url,method:"post" }).then(function(response){console.log(response)});
+  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { console.log(response) });
 }
 
 
 client.on('ready', () => {
-  
+
   registerCommands();
   console.log('[' + new Date() + '] I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
@@ -393,9 +394,9 @@ client.on('interactionCreate', interaction => {
     else impostor = " was not the impostor.";*/
     if (!interaction.replied) interaction.reply({ content: interaction.user.username + " voted " + color + ". " + color + impostor });
   }
-  else if(interaction.isCommand()){
-    if(interaction.commandName == "amogus"){
-      interaction.reply({content:"Successfully created "+interaction.options.getString("color")+ " mogus."});
+  else if (interaction.isCommand()) {
+    if (interaction.commandName == "amogus") {
+      interaction.reply({ content: "Successfully created " + interaction.options.getString("color") + " mogus." });
     }
   }
 });
@@ -1120,38 +1121,41 @@ client.on('messageCreate', message => {
 
 //#region KINO
 client.on("messageReactionAdd", (messageReaction) => {
-  //let ind = kinoMessages.indexOf(messageReaction.message);
-  let kinoEntry = -1;
+  let emojiName = messageReaction.emoji.name;
+  let reactionUser = messageReaction.users.cache.last();
+  let reactionMessage = messageReaction.message;
 
-  kinoData.forEach(obj => {
-    if (obj.message.id == messageReaction.message.id) {
-      kinoEntry = obj;
-      return;
-    }
-  });
+  if (emojiName == "cooking") {
+    console.log(reactionMessage.content);
+  }
+  else {
+    let kinoEntry = -1;
 
-  if (kinoEntry != -1) {
-
-    let emojiName = messageReaction.emoji.name;
-    let reactionUser = messageReaction.users.cache.last();
-    let kinoUser = kinoEntry.users.get(reactionUser.username);
-    let reactionMessage = messageReaction.message;
-
-    if (reactionUser != client.user) {
-
-      kinoUser.reactionCount++;
-      console.log("Reaction " + emojiName);
-
-      if (weekDayNames.indexOf(emojiName) != -1) {
-        //console.log("Current count: " + kinoUser.reactionCount);
-        kinoUser.response = 1;
+    kinoData.forEach(obj => {
+      if (obj.message.id == messageReaction.message.id) {
+        kinoEntry = obj;
+        return;
       }
-      if (emojiName == "white_cross") {
-        kinoUser.response = 2;
+    });
+
+    if (kinoEntry != -1) {
+      let kinoUser = kinoEntry.users.get(reactionUser.username);
+      if (reactionUser != client.user) {
+
+        kinoUser.reactionCount++;
+        console.log("Reaction " + emojiName);
+
+        if (weekDayNames.indexOf(emojiName) != -1) {
+          //console.log("Current count: " + kinoUser.reactionCount);
+          kinoUser.response = 1;
+        }
+        if (emojiName == "white_cross") {
+          kinoUser.response = 2;
+        }
+
+        updateKinoMessage(kinoEntry);
+
       }
-
-      updateKinoMessage(kinoEntry);
-
     }
   }
 });

@@ -16,8 +16,8 @@
     "dotenv": "^10.0.0",
     "ffmpeg-static": "^4.4.0",
     "https": "^1.0.0",
+    "jimp": "^0.16.1",
     "process": "^0.11.10",
     "ytdl-core": "^4.9.1"
-  },
-  "devDependencies": {}
+  }
 }
