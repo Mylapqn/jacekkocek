@@ -478,19 +478,19 @@ client.on('messageCreate', message => {
               .setLabel('Emergency meeting')
               .setStyle('DANGER'),
               new Discord.MessageButton()
-              .setCustomId('test')
+              .setCustomId('test2')
               .setLabel('Emergency meeting')
               .setStyle('DANGER'),
               new Discord.MessageButton()
-              .setCustomId('test')
+              .setCustomId('test3')
               .setLabel('Emergency meeting')
               .setStyle('DANGER'),
               new Discord.MessageButton()
-              .setCustomId('test')
+              .setCustomId('test4')
               .setLabel('Emergency meeting')
               .setStyle('DANGER'),
               new Discord.MessageButton()
-              .setCustomId('test')
+              .setCustomId('test5')
               .setLabel('Emergency meeting')
               .setStyle('DANGER'),
           );
@@ -511,7 +511,7 @@ client.on('messageCreate', message => {
                 },
               ]),
           );
-          message.channel.send({ content: "sus???", components: [row,row,row,row,row] })
+          message.channel.send({ content: "sus???", components: [row,row2] })
           break;
         }
         case "say":
