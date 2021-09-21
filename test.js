@@ -1130,7 +1130,9 @@ client.on("messageReactionAdd", (messageReaction) => {
   if (emojiName == "🍳") {
     if (reactionMessage.attachments.size > 0) {
       Jimp.read(reactionMessage.attachments.first().proxyURL).then(image => {
-        image.contrast(1).color([{ apply: "saturate", params: [50] }]).convolute([[0, -1, 0], [-1, 5, -1], [0, -1, 0]]).write("outputImg.png")
+        console.log("jimp");
+        image.contrast(1).color([{ apply: "saturate", params: [50] }]).convolute([[0, -1, 0], [-1, 5, -1], [0, -1, 0]]).write("outputImg.png");
+        console.log("jimp2")
         reactionMessage.channel.send({ files: ["outputImg.png"] });
       })
     }
