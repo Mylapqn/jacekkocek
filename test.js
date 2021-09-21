@@ -461,9 +461,9 @@ client.on('messageCreate', message => {
         if (url != null) {
           Jimp.read(url).then(image => {
             console.log("jimp start");
-            image.convolute([[0, -2, 0], [-2, 8.9, -2], [0, -2, 0]]).contrast(.8).color([{ apply: "saturate", params: [20] }]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).write("./outputImg.png");
+            image.quality(30).convolute([[0, -2, 0], [-2, 8.9, -2], [0, -2, 0]]).contrast(.8).color([{ apply: "saturate", params: [20] }]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).write("./outputImg.jpg");
             console.log("jimp done")
-            msg.channel.send({ files: ["./outputImg.png"] });
+            msg.channel.send({ files: ["./outputImg.jpg"] }).then(e=>{fs.unlink("./outputImg.jpg")});
           })
         }
       });
