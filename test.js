@@ -475,23 +475,7 @@ client.on('messageCreate', message => {
           const row = new Discord.MessageActionRow().addComponents(
             new Discord.MessageButton()
               .setCustomId('test')
-              .setLabel('Po')
-              .setStyle('DANGER'),
-              new Discord.MessageButton()
-              .setCustomId('test2')
-              .setLabel('Út')
-              .setStyle('DANGER'),
-              new Discord.MessageButton()
-              .setCustomId('test3')
-              .setLabel('St')
-              .setStyle('DANGER'),
-              new Discord.MessageButton()
-              .setCustomId('test4')
-              .setLabel('Čt')
-              .setStyle('DANGER'),
-              new Discord.MessageButton()
-              .setCustomId('test5')
-              .setLabel('Pá')
+              .setLabel('Emergency meeting')
               .setStyle('DANGER'),
           );
           const row2 = new Discord.MessageActionRow().addComponents(
@@ -511,7 +495,7 @@ client.on('messageCreate', message => {
                 },
               ]),
           );
-          message.channel.send({ content: "sus???", components: [row,row2] })
+          message.channel.send({ content: "sus???", components: [row] })
           break;
         }
         case "say":
@@ -698,7 +682,7 @@ client.on('messageCreate', message => {
                 let channel = message.channel;
                 message.channel.messages.fetch({ limit: argNumber }).then(messages => {
 
-                  var previousMessages = messages.array();
+                  var previousMessages = Array.from(messages.values());
                   for (var i = 0; i < argNumber; i++) {
                     var reacts = previousMessages[i].reactions.cache.mapValues(reaction => reaction._emoji.name).array();
                     //message.channel.send(argument.charAt(i));
