@@ -466,7 +466,7 @@ client.on('messageCreate', message => {
               .quality(10)
               .convolute(kernelSharpen)
               .contrast(.9)
-              .color([{ apply: "saturate", params: [30] }])
+              .color([{ apply: "saturate", params: [50] }])
               .convolute(kernelSharpen)
               .writeAsync("./outputImg.jpg").then(e => {
                 console.log("jimp done")
