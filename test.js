@@ -461,7 +461,7 @@ client.on('messageCreate', message => {
         if (url != null) {
           Jimp.read(url).then(image => {
             console.log("jimp start");
-            let kernelSharpen = [[0, -2, 0], [-2, 8.9, -2], [0, -2, 0]];
+            let kernelSharpen = [[0, -2, 0], [-2, 9, -2], [0, -2, 0]];
             image
               .quality(30)
               .convolute(kernelSharpen)
