@@ -449,6 +449,9 @@ client.on('messageCreate', message => {
 
       });
     }
+    else if(message.reference){
+      console.log(message.reference);
+    }
     else if (message.content.startsWith(prefix)) {
       var withoutPrefix = message.content.slice(prefix.length);
       var command, argument;
