@@ -449,8 +449,8 @@ client.on('messageCreate', message => {
 
       });
     }
-    else if(message.reference){
-      console.log(message.reference);
+    else if(message.type == "REPLY"){
+      console.log(message);
     }
     else if (message.content.startsWith(prefix)) {
       var withoutPrefix = message.content.slice(prefix.length);
