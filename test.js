@@ -339,7 +339,7 @@ function registerCommands() {
       }
     ]
   }
-  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { //console.log(response) });
+axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { /*console.log(response) */});
 }
 
 
