@@ -477,6 +477,22 @@ client.on('messageCreate', message => {
               .setCustomId('test')
               .setLabel('Emergency meeting')
               .setStyle('DANGER'),
+              new Discord.MessageButton()
+              .setCustomId('test')
+              .setLabel('Emergency meeting')
+              .setStyle('DANGER'),
+              new Discord.MessageButton()
+              .setCustomId('test')
+              .setLabel('Emergency meeting')
+              .setStyle('DANGER'),
+              new Discord.MessageButton()
+              .setCustomId('test')
+              .setLabel('Emergency meeting')
+              .setStyle('DANGER'),
+              new Discord.MessageButton()
+              .setCustomId('test')
+              .setLabel('Emergency meeting')
+              .setStyle('DANGER'),
           );
           const row2 = new Discord.MessageActionRow().addComponents(
             new Discord.MessageSelectMenu()
@@ -495,7 +511,7 @@ client.on('messageCreate', message => {
                 },
               ]),
           );
-          message.channel.send({ content: "sus???", components: [row] })
+          message.channel.send({ content: "sus???", components: [row,row,row,row,row] })
           break;
         }
         case "say":
