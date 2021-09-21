@@ -475,23 +475,23 @@ client.on('messageCreate', message => {
           const row = new Discord.MessageActionRow().addComponents(
             new Discord.MessageButton()
               .setCustomId('test')
-              .setLabel('Emergency meeting')
+              .setLabel('Po')
               .setStyle('DANGER'),
               new Discord.MessageButton()
               .setCustomId('test2')
-              .setLabel('Emergency meeting')
+              .setLabel('Út')
               .setStyle('DANGER'),
               new Discord.MessageButton()
               .setCustomId('test3')
-              .setLabel('Emergency meeting')
+              .setLabel('St')
               .setStyle('DANGER'),
               new Discord.MessageButton()
               .setCustomId('test4')
-              .setLabel('Emergency meeting')
+              .setLabel('Čt')
               .setStyle('DANGER'),
               new Discord.MessageButton()
               .setCustomId('test5')
-              .setLabel('Emergency meeting')
+              .setLabel('Pá')
               .setStyle('DANGER'),
           );
           const row2 = new Discord.MessageActionRow().addComponents(
