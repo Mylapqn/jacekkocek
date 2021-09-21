@@ -1128,7 +1128,7 @@ client.on("messageReactionAdd", (messageReaction) => {
   let reactionMessage = messageReaction.message;
   console.log(reactionMessage.content, emojiName);
 
-  if (emojiName == "cooking") {
+  if (emojiName == "🍳") {
     console.log("cooking",reactionMessage.attachments);
     if (reactionMessage.attachments.size > 0){
       reactionMessage.channel.send(reactionMessage.attachments.first().proxyURL);
