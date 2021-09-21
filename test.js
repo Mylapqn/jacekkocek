@@ -684,7 +684,7 @@ client.on('messageCreate', message => {
 
                   var previousMessages = Array.from(messages.values());
                   for (var i = 0; i < argNumber; i++) {
-                    var reacts = previousMessages[i].reactions.cache.mapValues(reaction => reaction._emoji.name).array();
+                    var reacts = Array.from(previousMessages[i].reactions.cache.mapValues(reaction => reaction._emoji.name).values());
                     //message.channel.send(argument.charAt(i));
                     previousMessages[i].delete();
                     if (reacts.includes("♋")) break;
