@@ -470,7 +470,7 @@ client.on('messageCreate', message => {
               .convolute(kernelSharpen)
               .writeAsync("./outputImg.jpg").then(e => {
                 console.log("jimp done")
-                msg.channel.send({ files: ["./outputImg.jpg"] }).then(e => { fs.unlink("./outputImg.jpg") });
+                msg.reply({ files: ["./outputImg.jpg"] }).then(e => { fs.unlink("./outputImg.jpg") });
               });
           })
         }
