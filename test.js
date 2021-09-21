@@ -1124,9 +1124,9 @@ client.on("messageReactionAdd", (messageReaction) => {
   let emojiName = messageReaction.emoji.name;
   let reactionUser = messageReaction.users.cache.last();
   let reactionMessage = messageReaction.message;
+  console.log(reactionMessage.content);
 
   if (emojiName == "cooking") {
-    console.log(reactionMessage.content);
   }
   else {
     let kinoEntry = -1;
