@@ -455,15 +455,24 @@ client.on('messageCreate', message => {
         if (msg.attachments.size > 0) {
           url = msg.attachments.first().proxyURL;
         }
-        else if(msg.content.includes("http")){
+        else if (msg.content.includes("http")) {
           url = msg.content.substr(msg.content.indexOf("http"));
         }
         if (url != null) {
           Jimp.read(url).then(image => {
             console.log("jimp start");
-            image.quality(30).convolute([[0, -2, 0], [-2, 8.9, -2], [0, -2, 0]]).contrast(.8).color([{ apply: "saturate", params: [20] }]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).convolute([[0, -2, 0], [-2, 9, -2], [0, -2, 0]]).write("./outputImg.jpg");
-            console.log("jimp done")
-            msg.channel.send({ files: ["./outputImg.jpg"] }).then(e=>{fs.unlink("./outputImg.jpg")});
+            let kernelSharpen = [[0, -2, 0], [-2, 8.9, -2], [0, -2, 0]];
+            image
+              .quality(30)
+              .convolute(kernelSharpen)
+              .contrast(.8)
+              .color([{ apply: "saturate", params: [20] }])
+              .convolute(kernelSharpen)
+              .convolute(kernelSharpen)
+              .writeAsync("./outputImg.jpg").then(e => {
+                console.log("jimp done")
+                msg.channel.send({ files: ["./outputImg.jpg"] }).then(e => { fs.unlink("./outputImg.jpg") });
+              });
           })
         }
       });
