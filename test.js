@@ -407,7 +407,8 @@ client.on('messageCreate', message => {
   if (message.author.id != client.user.id) {
 
     if (message.mentions.has(client.user)) {
-      message.channel.send(message.author.toString());
+      if (message.type != "REPLY")
+        message.channel.send(message.author.toString());
     }
     if (message.channel.name == "ano" && message.content.length == 1) {
       if (wordGameEnabled) {
