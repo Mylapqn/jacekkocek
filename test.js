@@ -16,6 +16,7 @@ const { clearInterval } = require('timers');
 const Intents = Discord.Intents;
 const intents = new Intents();
 intents.add(Intents.FLAGS.GUILD_MESSAGES);
+intents.add(Intents.FLAGS.GUILD_MESSAGE_REACTIONS);
 intents.add(Intents.FLAGS.GUILDS);
 intents.add(Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS);
 intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
