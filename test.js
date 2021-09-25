@@ -346,7 +346,7 @@ function registerCommands() {
     type:2,
     name: "Open JacekKocek",
   }
-  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { console.log("Command registration 2: ",response) }).catch(e=>{console.log(e)});
+  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "delete" }).then(function (response) { console.log("Command registration 2: " + response.statusText) }).catch(e=>{console.log(e)});
 
 
 }
