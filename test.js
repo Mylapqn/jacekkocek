@@ -514,9 +514,8 @@ client.on('messageCreate', message => {
           const row = new Discord.MessageActionRow().addComponents(
             new Discord.MessageButton()
               .setCustomId('test')
-              //.setLabel('Emergency meeting')
+              .setLabel('Emergency meeting')
               .setStyle('DANGER')
-              .setLabel("                                                   ")
           );
           const row2 = new Discord.MessageActionRow().addComponents(
             new Discord.MessageSelectMenu()
