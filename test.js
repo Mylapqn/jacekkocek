@@ -338,6 +338,12 @@ function registerCommands() {
         description: "Whether the mogus is sus",
         type: 5,
         required: true
+      },
+      {
+        name: "user",
+        description: "The user who uses the mogus",
+        type: 6,
+        required: false
       }
     ]
   }
