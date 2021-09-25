@@ -376,7 +376,7 @@ client.on('ready', () => {
 let interactionsUsed = new Map();
 
 client.on('interactionCreate', interaction => {
-  console.log("Interaction", interaction);
+  //console.log("Interaction", interaction);
   if (interaction.isButton()) {
 
     const row2 = new Discord.MessageActionRow().addComponents(
