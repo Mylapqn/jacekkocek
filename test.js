@@ -516,7 +516,6 @@ client.on('messageCreate', message => {
               .setCustomId('test')
               //.setLabel('Emergency meeting')
               .setStyle('DANGER')
-              .setEmoji("728583366030393414"),
           );
           const row2 = new Discord.MessageActionRow().addComponents(
             new Discord.MessageSelectMenu()
