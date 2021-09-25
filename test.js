@@ -309,7 +309,7 @@ client.login(process.env.DISCORD_API_KEY);
 function registerCommands() {
   let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/549589656606343178/commands";
   let data = {
-    id:"1",
+    id: "1",
     name: "amogus",
     description: "Create your own mogus",
     options: [
@@ -373,6 +373,8 @@ client.on('ready', () => {
 
 });
 
+let interactionsUsed = new Map();
+
 client.on('interactionCreate', interaction => {
   console.log("Interaction", interaction);
   if (interaction.isButton()) {
@@ -402,7 +404,11 @@ client.on('interactionCreate', interaction => {
     else if (interaction.values[0] == "yellow") { color = "Yellow"; impostor = " was not the impostor." }
     /*if(randomInt(0,1) == 0)impostor = " was the impostor.";
     else impostor = " was not the impostor.";*/
-    if (!interaction.replied) interaction.reply({ content: interaction.user.username + " voted " + color + ". " + color + impostor });
+    if (!interactionsUsed.has(interaction.message.id)) interactionsUsed.set(interaction.message.id, []);
+    if (!interaction.replied && !interactionsUsed.get(interaction.message.id).includes(interaction.user.id)) {
+      interaction.reply({ content: interaction.user.username + " voted " + color + ". " + color + impostor });
+      interactionsUsed.get(interaction.message.id).push(interaction.user.id);
+    }
   }
   else if (interaction.isCommand()) {
     if (interaction.commandName == "amogus") {
