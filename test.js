@@ -309,6 +309,7 @@ client.login(process.env.DISCORD_API_KEY);
 function registerCommands() {
   let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/549589656606343178/commands";
   let data = {
+    id:"1",
     name: "amogus",
     description: "Create your own mogus",
     options: [
@@ -341,12 +342,6 @@ function registerCommands() {
     ]
   }
   axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { console.log("Command registration 1: " + response.statusText) });
-
-  data = {
-    type:2,
-    name: "Open JacekKocek",
-  }
-  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, url: url+"/891439235830255636", method: "delete" }).then(function (response) { console.log("Command registration 2: " + response.statusText) }).catch(e=>{console.log(e)});
 
 
 }
