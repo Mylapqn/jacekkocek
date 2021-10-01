@@ -948,7 +948,7 @@ client.on('messageCreate', message => {
           if (message.member.voice.channel) {
             DiscordVoice.joinVoiceChannel({
               channelId: message.member.voice.channel.id,
-              guildId: message.guildId,
+              guildId: message.guild.id,
               adapterCreator:message.guild.voiceAdapterCreator,
             }).subscribe(audioPlayer);
             audioPlayer.play("http://uk1.internet-radio.com:8004/live");
