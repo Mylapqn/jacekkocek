@@ -508,11 +508,11 @@ client.on('messageCreate', message => {
         case "cheese":
           message.delete();
           message.channel.send({
-            embed: {
+            embeds: [{
               title: "Cheese",
               color: [254, 181, 2],
               description: 'Cheese'
-            }
+            }]
           });
           break;
         case "button": {
@@ -624,18 +624,6 @@ client.on('messageCreate', message => {
           break;
         }
         case "help":
-
-          /*message.channel.send({
-            embed: {
-              title: "Help", description: "Type `¤help <command>` to get further info on a command", fields: [
-                { name: "Display help", value: "```¤help```", inline: true },
-                { name: "Spell a word in reactions", value: "```¤spell <word>```", inline: true },
-                { name: "List letter emoji", value: "```¤listLetterEmoji```", inline: true },
-                { name: "Send animated emoji", value: "```:gif2:```", inline: true },
-
-              ]
-            }
-          });*/
           console.log(argument);
           if (argument == null) {
 
@@ -660,7 +648,7 @@ client.on('messageCreate', message => {
 
 
             message.channel.send({
-              embed: {
+              embeds: [{
                 color: [24, 195, 177],
                 title: "Help", description: "Type `" + prefix + "help <command>` to get further info on a command", fields: [
                   {
@@ -671,7 +659,7 @@ client.on('messageCreate', message => {
                   },
 
                 ]
-              }
+              }]
             });
 
           }
@@ -687,9 +675,9 @@ client.on('messageCreate', message => {
             var c = findCommand(cleanArg);
             if (c != null) {
               message.channel.send({
-                embed: {
+                embeds: [{
                   title: "Help - " + c.name, description: (c.longDescription != null ? c.longDescription : c.description)
-                }
+                }]
               });
 
             }
@@ -984,7 +972,7 @@ client.on('messageCreate', message => {
               newMessage += "`" + i + "` - **" + station.name + "**\n";
             }
             message.channel.send({
-              embed: {
+              embeds: [{
                 title: "JacekKocek Internet Radio",
                 fields: [
                   {
@@ -995,7 +983,7 @@ client.on('messageCreate', message => {
                   },
                 ],
                 color: [24, 195, 177]
-              }
+              }]
             });
           }
           else if (message.member.voice.channel) {
@@ -1056,11 +1044,11 @@ client.on('messageCreate', message => {
               voicePlay(voice, "mlp-mix.ogg", { volume: 0.5 });
               voicePlay(voice, "mlp-mix.ogg", { volume: 0.5 });
               message.channel.send({
-                embed: {
+                embeds: [{
                   title: "► " + "MLP Mix",
                   color: [159, 101, 224],
                   description: '4:17 | From *Andrej*'
-                }
+                }]
               });
             }, function (e) { console.log("REJECTED!!!", e) });
           break;
@@ -1668,11 +1656,11 @@ function mlpSong(voice, index, autoplay, channel) {
         //console.log(songData.video);
         if (channel) {
           channel.send({
-            embed: {
+            embeds: [{
               title: "► " + songData.name,
               description: Math.floor(songData.length / 60) + ":" + addZero(songData.length % 60) + " | From *" + songData.episode + "*",
               color: alternateFluttershyColor()
-            }
+            }]
           });
         }
         voicePlay(voice, ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
@@ -1714,11 +1702,11 @@ function playRadio(voice, channel) {
         if (radioTimer) clearTimeout(radioTimer);
         if (channel) {
           channel.send({
-            embed: {
+            embeds: [{
               title: "♫ " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
               color: alternateFluttershyColor(),
               footer: { text: "Next: " + parsed.next.Name }
-            }
+            }]
           });
         }
       }
@@ -1770,11 +1758,11 @@ function playStation(voice, id, channel) {
   voicePlay(voice, station.url, { volume: 0.6 });
   if (channel) {
     channel.send({
-      embed: {
+      embeds: [{
         title: "♫ " + station.name,
         color: station.color,
         footer: { text: "Now playing" }
-      }
+      }]
     });
   }
 }
@@ -1995,7 +1983,7 @@ function updateStockInfo() {
       }
 
       stockMessage.edit("", {
-        embed: embed
+        embeds: [embed]
       });
       let GPURole = stockMessage.guild.roles.cache.find(role => role.name == "Team Nvidia");
       if (products.length > lastInStock) {
