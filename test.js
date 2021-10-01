@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const DiscordVoice = require("@discordjs/voice");
 const Jimp = require('jimp');
-//const Dotenv = require('dotenv');
 const Https = require('https');
 const Http = require('http');
 const ytdl = require('ytdl-core');
@@ -12,7 +11,8 @@ const { clearInterval } = require('timers');
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
-//Dotenv.config();
+
+require('dotenv').config();
 
 const Intents = Discord.Intents;
 const intents = new Intents();
@@ -26,7 +26,7 @@ const client = new Discord.Client({ intents: intents });
 
 
 
-let audioPlayer = new DiscordVoice.AudioPlayer();
+let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
 var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
@@ -309,7 +309,8 @@ client.login(process.env.DISCORD_API_KEY);
 
 function registerCommands() {
   let url = "https://discord.com/api/v8/applications/728313132619137124/guilds/549589656606343178/commands";
-  let data = {
+  let data;
+  data = {
     id: "1",
     name: "amogus",
     description: "Create your own mogus",
@@ -348,7 +349,61 @@ function registerCommands() {
       }
     ]
   }
-  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { console.log("Command registration 1: " + response.statusText) });
+  //axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { console.log("Command registration 1: " + response.statusText) });
+  data = {
+    id: "2",
+    name: "radio",
+    description: "Play radio in the voice chat",
+    options: [
+      {
+        name: "play",
+        description: "Play a radio station in the voice chat",
+        type: 1,
+        options: [
+          {
+            name: "station",
+            description: "Station name",
+            type: 4,
+            required: true,
+            choices: [
+              {
+                name: "Evropa 2",
+                value: 0
+              },
+              {
+                name: "Anime Radio 1",
+                value: 1
+              },
+              {
+                name: "Spacesynth",
+                value: 2
+              }
+            ]
+          },
+        ]
+      },
+      {
+        name: "custom",
+        description: "Play a custom radio station in the voice chat",
+        type: 1,
+        options: [
+          {
+            name: "url",
+            description: "URL of custom stst",
+            type: 3,
+            required: true
+          }
+        ]
+      },
+      {
+        name: "list",
+        description: "List all radio station presets",
+        type: 1,
+      }
+
+    ]
+  }
+  axios.request({ headers: { "Authorization": "Bot " + process.env.DISCORD_BOT_TOKEN }, data: data, url: url, method: "post" }).then(function (response) { console.log("Command registration 2: " + response.statusText) });
 
 
 }
@@ -946,13 +1001,7 @@ client.on('messageCreate', message => {
 
         case "noise": {
           if (message.member.voice.channel) {
-            console.log(message.guild.voiceAdapterCreator);
-            DiscordVoice.joinVoiceChannel({
-              channelId: message.member.voice.channel.id,
-              guildId: message.guild.id,
-              adapterCreator:message.guild.voiceAdapterCreator,
-            }).subscribe(audioPlayer);
-            audioPlayer.play("http://uk1.internet-radio.com:8004/live");
+            voiceChannelPlay(message.member.voice.channel, "http://uk1.internet-radio.com:8004/live", 0.063);
 
             /*
             message.member.voice.channel.join().then(voice => {
@@ -968,12 +1017,11 @@ client.on('messageCreate', message => {
           break;
         }
         case "tudum": {
-          if (message.member.voice.channel)
-            message.member.voice.channel.join().then(voice => {
-              message.delete();
-              voicePlay(voice, "tududum.mp3", { volume: 1.2 });
-
-            }, function (e) { console.log("REJECTED!!!", e) });
+          if (message.member.voice.channel) {
+            let v = 1.2;
+            if (argument && !isNaN(argument)) v = argument;
+            voiceChannelPlay(message.member.voice.channel, "tududum.mp3", v);
+          }
           break;
         }
         case "radio": {
@@ -1000,29 +1048,28 @@ client.on('messageCreate', message => {
             });
           }
           else if (message.member.voice.channel) {
-            message.member.voice.channel.join().then(voice => {
-              //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-              //voicePlay(voice,"http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
-              let num = parseInt(argument);
-              //console.log(num);
-              if (!isNaN(num)) {
-                if (num < radioStations.length && num >= 0)
-                  playStation(voice, num, message.channel);
-                else message.channel.send('Station number "' + num + '" not found. :disappointed:');
-              }
-              else if (argument.startsWith("http")) {
-                playStation(voice, argument, message.channel);
-              }
-              else {
-                let st = radioStations.findIndex(element => element.name.toLowerCase().includes(argument.toLowerCase()));
-                if (st != -1) playStation(voice, st, message.channel);
-                else message.channel.send('Station "' + argument + '" not found. :disappointed:');
-                //console.log(radioStations[0].name);
-                //console.log(radioStations[0].name.includes("Evropa"));
-              }
+            let voice = message.member.voice.channel;
+            //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
+            //voicePlay(voice,"http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
+            let num = parseInt(argument);
+            //console.log(num);
+            if (!isNaN(num)) {
+              if (num < radioStations.length && num >= 0)
+                playStation(voice, num, message.channel);
+              else message.channel.send('Station number "' + num + '" not found. :disappointed:');
+            }
+            else if (argument.startsWith("http")) {
+              playStation(voice, argument, message.channel);
+            }
+            else {
+              let st = radioStations.findIndex(element => element.name.toLowerCase().includes(argument.toLowerCase()));
+              if (st != -1) playStation(voice, st, message.channel);
+              else message.channel.send('Station "' + argument + '" not found. :disappointed:');
+              //console.log(radioStations[0].name);
+              //console.log(radioStations[0].name.includes("Evropa"));
+            }
 
 
-            }, function (e) { console.log("REJECTED!!!", e) });
           }
           break;
         }
@@ -1068,18 +1115,33 @@ client.on('messageCreate', message => {
         }
 
         case "stop": {
-          let v = message.guild.voice;
-          if (v) {
-            if (v.connection)
-              if (v.connection.dispatcher)
-                v.connection.dispatcher.pause();
-            v.kick();
+          let connection = DiscordVoice.getVoiceConnection(message.guildId);
+          if (connection) {
+            connection.disconnect();
+            message.delete();
+            message.channel.send("Stopped.");
           }
-          message.delete();
-          message.channel.send("Stopped.");
           clearYoutubeTimeout();
           youtubePlaylist = [];
           if (radioTimer) clearTimeout(radioTimer);
+          break;
+        }
+        case "listen": {
+          let channel = message.member.voice.channel;
+          let connection = DiscordVoice.joinVoiceChannel({
+            channelId: channel.id,
+            guildId: channel.guild.id,
+            adapterCreator: channel.guild.voiceAdapterCreator,
+            selfDeaf: false
+          })
+          //let receiver = new DiscordVoice.VoiceReceiver(connection);
+          //connection.subscribe(audioPlayer);
+          let receiver = connection.receiver;
+          let audioStream = receiver.subscribe(message.member.user.id);
+          audioStream.on("data", (data) => {
+            connection.playOpusPacket(data);
+          });
+          //receiver.onWsPacket((p)=>{console.log("data!!");connection.playOpusPacket(p)});
           break;
         }
         case "time": {
@@ -1447,6 +1509,19 @@ function googleSearch(cx, searchTerm, message) {
 //#endregion
 //#region SONGS
 
+function voiceChannelPlay(channel, audio, volume) {
+  DiscordVoice.joinVoiceChannel({
+    channelId: channel.id,
+    guildId: channel.guild.id,
+    adapterCreator: channel.guild.voiceAdapterCreator,
+  }).subscribe(audioPlayer);
+  let res = DiscordVoice.createAudioResource(audio, { inlineVolume: true });
+  let v = volume ?? 1;
+  v = Math.min(Math.abs(v), 5);
+  res.volume.volume = v;
+  audioPlayer.play(res);
+}
+
 function voicePlay(voice, audio, options) {
   clearYoutubeTimeout();
   if (radioTimer) clearTimeout(radioTimer);
@@ -1768,7 +1843,7 @@ function playStation(voice, id, channel) {
   else {
     station = radioStations[id];
   }
-  voicePlay(voice, station.url, { volume: 0.6 });
+  voiceChannelPlay(voice, station.url, 0.6);
   if (channel) {
     channel.send({
       embeds: [{
