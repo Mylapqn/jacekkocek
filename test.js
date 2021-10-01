@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const DiscordVoice = require("@discordjs/voice");
 const Jimp = require('jimp');
 //const Dotenv = require('dotenv');
 const Https = require('https');
@@ -25,7 +26,7 @@ const client = new Discord.Client({ intents: intents });
 
 
 
-
+let audioPlayer = new DiscordVoice.AudioPlayer();
 var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
@@ -944,7 +945,14 @@ client.on('messageCreate', message => {
         }
 
         case "noise": {
-          if (message.member.voice.channel)
+          if (message.member.voice.channel) {
+            DiscordVoice.joinVoiceChannel({
+              channelId: message.member.voice.channel.id,
+              guildId: message.guildId
+            }).subscribe(audioPlayer);
+            audioPlayer.play("http://uk1.internet-radio.com:8004/live");
+
+            /*
             message.member.voice.channel.join().then(voice => {
               message.delete();
               //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
@@ -952,6 +960,9 @@ client.on('messageCreate', message => {
               voicePlay(voice, "http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
 
             }, function (e) { console.log("REJECTED!!!", e) });
+            */
+
+          }
           break;
         }
         case "tudum": {
