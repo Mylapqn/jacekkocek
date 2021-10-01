@@ -946,6 +946,7 @@ client.on('messageCreate', message => {
 
         case "noise": {
           if (message.member.voice.channel) {
+            console.log(message.guild.voiceAdapterCreator);
             DiscordVoice.joinVoiceChannel({
               channelId: message.member.voice.channel.id,
               guildId: message.guild.id,
