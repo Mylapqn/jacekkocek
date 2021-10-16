@@ -1329,7 +1329,6 @@ function savePlaylist() {
 function loadPlaylist() {
   try {
     let read = fs.readFileSync(playlistFileName);
-    console.log(JSON.parse(read));
     kinoPlaylist = new Map(JSON.parse(read));
     console.log("Loaded kino playlist.");
   } catch (error) {
