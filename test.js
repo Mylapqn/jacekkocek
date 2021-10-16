@@ -12,7 +12,7 @@ const { clearInterval } = require('timers');
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
 
-require('dotenv').config();
+//require('dotenv').config();
 
 const Intents = Discord.Intents;
 const intents = new Intents();
@@ -1127,21 +1127,23 @@ client.on('messageCreate', message => {
           break;
         }
         case "listen": {
-          let channel = message.member.voice.channel;
-          let connection = DiscordVoice.joinVoiceChannel({
-            channelId: channel.id,
-            guildId: channel.guild.id,
-            adapterCreator: channel.guild.voiceAdapterCreator,
-            selfDeaf: false
-          })
-          //let receiver = new DiscordVoice.VoiceReceiver(connection);
-          //connection.subscribe(audioPlayer);
-          let receiver = connection.receiver;
-          let audioStream = receiver.subscribe(message.member.user.id);
-          audioStream.on("data", (data) => {
-            connection.playOpusPacket(data);
-          });
-          //receiver.onWsPacket((p)=>{console.log("data!!");connection.playOpusPacket(p)});
+          if (message.member.voice.channel) {
+            let channel = message.member.voice.channel;
+            let connection = DiscordVoice.joinVoiceChannel({
+              channelId: channel.id,
+              guildId: channel.guild.id,
+              adapterCreator: channel.guild.voiceAdapterCreator,
+              selfDeaf: false
+            })
+            //let receiver = new DiscordVoice.VoiceReceiver(connection);
+            //connection.subscribe(audioPlayer);
+            let receiver = connection.receiver;
+            let audioStream = receiver.subscribe(message.member.user.id);
+            audioStream.on("data", (data) => {
+              connection.playOpusPacket(data);
+            });
+            //receiver.onWsPacket((p)=>{console.log("data!!");connection.playOpusPacket(p)});
+          }
           break;
         }
         case "time": {
