@@ -1575,7 +1575,7 @@ function playYoutube(videoUrl, channel) {
       embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
     }
 
-    channel.send(embed);
+    channel.send({embeds:[embed]});
     //console.log(info);
     voiceChannelPlay(null, videoStream, 0.8)
     //voicePlay(voice, videoStream, { volume: 0.8 });
