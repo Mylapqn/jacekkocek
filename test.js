@@ -1574,8 +1574,12 @@ function playYoutube(videoUrl, channel) {
     if (youtubePlaylist.length > 0) {
       embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
     }
-
-    channel.send({embeds:[embed]});
+    try {
+      channel.send({embeds:[embed]});
+      
+    } catch (error) {
+      console.log(error)
+    }
     //console.log(info);
     voiceChannelPlay(null, videoStream, 0.8)
     //voicePlay(voice, videoStream, { volume: 0.8 });
