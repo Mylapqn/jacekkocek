@@ -1327,6 +1327,9 @@ function savePlaylist() {
 }
 
 function loadPlaylist() {
+  let read = fs.readFileSync(playlistFileName);
+  console.log(read);
+  console.log(JSON.parse(read));
   try {
     let read = fs.readFileSync(playlistFileName);
     console.log(read);
