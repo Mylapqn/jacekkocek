@@ -1163,8 +1163,8 @@ client.on('messageCreate', message => {
         case "youtube":
         case "yt": {
           message.delete();
-          if (message.member.voice.channel && argument)
-
+          if (message.member.voice.channel && argument) {
+            joinVoiceChannel(message.member.voice.channel);
             if (argument.startsWith("http")) {
               if (argument.includes("list=")) {
                 let n = argument.indexOf("list=");
@@ -1180,6 +1180,7 @@ client.on('messageCreate', message => {
               youtubePlaylist = [];
               searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(() => { message.channel.send("No results") });
             }
+          }
 
           break;
         }
@@ -1511,16 +1512,21 @@ function googleSearch(cx, searchTerm, message) {
 //#region SONGS
 
 function voiceChannelPlay(channel, audio, volume) {
-  DiscordVoice.joinVoiceChannel({
-    channelId: channel.id,
-    guildId: channel.guild.id,
-    adapterCreator: channel.guild.voiceAdapterCreator,
-  }).subscribe(audioPlayer);
+  if (channel != null)
+    joinVoiceChannel(channel);
   let res = DiscordVoice.createAudioResource(audio, { inlineVolume: true });
   let v = volume ?? 1;
   v = Math.min(Math.abs(v), 5);
   res.volume.volume = v;
   audioPlayer.play(res);
+}
+
+function joinVoiceChannel(channel) {
+  DiscordVoice.joinVoiceChannel({
+    channelId: channel.id,
+    guildId: channel.guild.id,
+    adapterCreator: channel.guild.voiceAdapterCreator,
+  }).subscribe(audioPlayer);
 }
 
 function voicePlay(voice, audio, options) {
@@ -1548,57 +1554,55 @@ function playYoutubePlaylist(playlistUrl, channel) {
 
 function playYoutube(videoUrl, channel) {
   console.log("playing " + videoUrl);
-  let voice = channel.guild.voice.connection;
-  if (voice) {
-    let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
-    videoStream.on("info", (info) => {
-      console.log("info" + info);
-      let length = info.videoDetails.lengthSeconds;
-      let lenString;
-      if (length >= 3600) {
-        lenString = Math.floor(info.videoDetails.lengthSeconds / 3600) + ":" + addZero(Math.floor((info.videoDetails.lengthSeconds % 3600) / 60)) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
+  let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
+  videoStream.on("info", (info) => {
+    console.log("info" + info);
+    let length = info.videoDetails.lengthSeconds;
+    let lenString;
+    if (length >= 3600) {
+      lenString = Math.floor(info.videoDetails.lengthSeconds / 3600) + ":" + addZero(Math.floor((info.videoDetails.lengthSeconds % 3600) / 60)) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
+    }
+    else {
+      lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
+    }
+    let embed = new Discord.MessageEmbed()
+      .setColor([255, 0, 0])
+      .setTitle("► " + info.videoDetails.title)
+      .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*')
+      .setURL(videoUrl);
+
+    if (youtubePlaylist.length > 0) {
+      embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
+    }
+
+    channel.send(embed);
+    //console.log(info);
+    voiceChannelPlay(null, videoStream, 0.8)
+    //voicePlay(voice, videoStream, { volume: 0.8 });
+    let nextVideo;
+    if (youtubePlaylist.length > 0) {
+      youtubePlaylistPosition++;
+      if (youtubePlaylist.length > youtubePlaylistPosition) {
+        nextVideo = youtubePlaylist[youtubePlaylistPosition];
       }
       else {
-        lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
-      }
-      let embed = new Discord.MessageEmbed()
-        .setColor([255, 0, 0])
-        .setTitle("► " + info.videoDetails.title)
-        .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*')
-        .setURL(videoUrl);
-
-      if (youtubePlaylist.length > 0) {
-        embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
-      }
-
-      channel.send(embed);
-      //console.log(info);
-      voiceChannelPlay(voice,videoStream,0.8)
-      //voicePlay(voice, videoStream, { volume: 0.8 });
-      let nextVideo;
-      if (youtubePlaylist.length > 0) {
-        youtubePlaylistPosition++;
-        if (youtubePlaylist.length > youtubePlaylistPosition) {
-          nextVideo = youtubePlaylist[youtubePlaylistPosition];
-        }
-        else {
-          channel.send('End of playlist "' + youtubePlaylistName + '".');
-          clearYoutubeTimeout();
-        }
-      }
-      else {
-        nextVideo = info.related_videos[0].id;
-      }
-      if (nextVideo) {
-        let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
-        videoStream.on("finish", () => {
-        });
+        channel.send('End of playlist "' + youtubePlaylistName + '".');
         clearYoutubeTimeout();
-        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 3) * 1000);
-        nextYoutubeData = { url: nextUrl, channel: channel };
       }
-    })
-  }
+    }
+    else {
+      nextVideo = info.related_videos[0].id;
+    }
+    if (nextVideo) {
+      let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
+      videoStream.on("finish", () => {
+      });
+      clearYoutubeTimeout();
+      nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 3) * 1000);
+      nextYoutubeData = { url: nextUrl, channel: channel };
+    }
+  })
+
 }
 
 function getYoutubePlaylist(argument) {
