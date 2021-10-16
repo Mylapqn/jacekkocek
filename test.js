@@ -1164,24 +1164,23 @@ client.on('messageCreate', message => {
         case "yt": {
           message.delete();
           if (message.member.voice.channel && argument)
-            message.member.voice.channel.join().then(voice => {
-              if (argument.startsWith("http")) {
-                if (argument.includes("list=")) {
-                  let n = argument.indexOf("list=");
-                  let listId = argument.slice(n + 5);
-                  playYoutubePlaylist(listId, message.channel);
-                }
-                else {
-                  youtubePlaylist = [];
-                  playYoutube(argument, message.channel);
-                }
+
+            if (argument.startsWith("http")) {
+              if (argument.includes("list=")) {
+                let n = argument.indexOf("list=");
+                let listId = argument.slice(n + 5);
+                playYoutubePlaylist(listId, message.channel);
               }
               else {
                 youtubePlaylist = [];
-                searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(() => { message.channel.send("No results") });
+                playYoutube(argument, message.channel);
               }
+            }
+            else {
+              youtubePlaylist = [];
+              searchYoutube(argument).then((id) => { playYoutube("https://www.youtube.com/watch?v=" + id, message.channel); }).catch(() => { message.channel.send("No results") });
+            }
 
-            }, function (e) { console.log("REJECTED!!!", e) });
           break;
         }
         case "skip": {
@@ -1574,7 +1573,8 @@ function playYoutube(videoUrl, channel) {
 
       channel.send(embed);
       //console.log(info);
-      voicePlay(voice, videoStream, { volume: 0.8 });
+      voiceChannelPlay(voice,videoStream,0.8)
+      //voicePlay(voice, videoStream, { volume: 0.8 });
       let nextVideo;
       if (youtubePlaylist.length > 0) {
         youtubePlaylistPosition++;
