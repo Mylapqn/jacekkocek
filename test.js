@@ -1286,10 +1286,13 @@ client.on('messageCreate', message => {
           break;
         }
         case "remindList": {
+          cleanupReminders();
+          saveReminders();
           let msg = "__Reminders:__";
           reminders.forEach(rem => {
             msg +="• **"+rem.text + "** at <t:"+rem.timestamp+">\n";
           });
+          message.channel.send(msg);
           break;
         }
 
