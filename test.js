@@ -1257,7 +1257,7 @@ client.on('messageCreate', message => {
               }
               reminders.push(newRem);
               setupReminders();
-              message.channel.send("Added reminder for "+remText+" at "+new Date(now()+time));
+              message.channel.send("Added reminder for "+remText+" at <t:"+(now()+time)+">");
             }
           }
           else {
