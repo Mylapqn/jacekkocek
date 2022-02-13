@@ -1274,9 +1274,11 @@ client.on('messageCreate', message => {
                 reminders.push(newRem);
                 console.log(newRem);
                 setupReminders();
-                message.channel.send({
-                  content: "Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">",
-                  allowedMentions: {parse:[]}
+                message.delete().then(() => {
+                  message.channel.send({
+                    content: "Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">",
+                    allowedMentions: { parse: [] }
+                  });
                 });
               }
               else {
