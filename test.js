@@ -8,6 +8,7 @@ const fs = require('fs');
 const cheerio = require('cheerio');
 const axios = require('axios');
 const { clearInterval } = require('timers');
+const Canvas = require('canvas');
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
@@ -1217,11 +1218,25 @@ client.on('messageCreate', message => {
           }
           break;
         }
+        
 
         default:
           message.channel.send("Unknown command :disappointed:");
 
       }
+    }
+    else if (message.content.startsWith("#")){
+      var reg=/^#([0-9a-f]{3}){1,2}$/i;
+      if(reg.test(message.content))
+
+        let can = Canvas.createCanvas(100,100);
+        let ctx = can.getContext("2d");
+        ctx.fillStyle=message.content;
+        ctx.fillRect(0,0,100,100);
+        let buf = can.createPNGStream();
+        message.channel.send({files:[buf]});
+        break;
+      
     }
   }
 });
