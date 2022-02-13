@@ -1272,8 +1272,9 @@ client.on('messageCreate', message => {
                 let mentions = Array.from(message.mentions.users.keys());
                 newRem.mentions = mentions
                 reminders.push(newRem);
-                console.log(newRem);
-                setupReminders();
+                //console.log(newRem);
+                if (time <= reminderThreshold) setupReminders();
+                saveReminders();
                 message.delete().then(() => {
                   message.channel.send({
                     content: "Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">",
@@ -1314,8 +1315,18 @@ client.on('messageCreate', message => {
   }
 });
 
+function cleanupReminders() {
+  for (let i = 0; i < reminders.length; i++) {
+    let rem = reminders[i];
+    if (rem.timestamp < now()) {
+      reminders.splice(i, 1);
+    }
+    i -= 1;
+  }
+}
 
 function setupReminders() {
+  cleanupReminders();
   upcomingReminders = [];
   for (let i = 0; i < reminders.length; i++) {
     let rem = reminders[i];
@@ -1471,6 +1482,21 @@ function loadPlaylist() {
     console.log("Loaded kino playlist.");
   } catch (error) {
     console.log("Could not load kino playlist!");
+    console.log(error);
+  }
+}
+
+function saveReminders() {
+  fs.writeFile(remindersFileName, JSON.stringify(reminders), (e) => { console.log(e) });
+}
+
+function loadReminders() {
+  try {
+    let read = fs.readFileSync(remindersFileName);
+    reminders = JSON.parse(read);
+    console.log("Loaded reminders.");
+  } catch (error) {
+    console.log("Could not load reminders!");
     console.log(error);
   }
 }
