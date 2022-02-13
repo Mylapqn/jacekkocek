@@ -7,9 +7,7 @@ const ytdl = require('ytdl-core');
 const fs = require('fs');
 const cheerio = require('cheerio');
 const axios = require('axios');
-const { clearInterval } = require('timers');
 const Canvas = require('canvas');
-const { timeStamp } = require('console');
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
@@ -308,12 +306,6 @@ var lastInStock = 0;
 const reminderThreshold = 3600;
 
 let reminders = [];
-reminders[0] = {
-  timestamp: 1644781420,
-  text: "Test Remind",
-  guild: "549589656606343178",
-  channel: "662455047451574292"
-}
 
 let upcomingReminders = [];
 const remindersFileName = "reminders.json";
@@ -1474,7 +1466,7 @@ function updateKinoMessage(kinoEntry) {
 }
 
 function savePlaylist() {
-  fs.writeFile(playlistFileName, JSON.stringify(Array.from(kinoPlaylist)), (e) => { console.log(e) });
+  fs.writeFile(playlistFileName, JSON.stringify(Array.from(kinoPlaylist)), (e) => { console.log("Finished writing", e) });
 }
 
 function loadPlaylist() {
@@ -1489,7 +1481,7 @@ function loadPlaylist() {
 }
 
 function saveReminders() {
-  fs.writeFile(remindersFileName, JSON.stringify(reminders), (e) => { console.log(e) });
+  fs.writeFile(remindersFileName, JSON.stringify(reminders), (e) => { console.log("Finished writing", e) });
 }
 
 function loadReminders() {
