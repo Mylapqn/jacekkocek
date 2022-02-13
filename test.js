@@ -316,6 +316,7 @@ reminders[0] = {
 }
 
 let upcomingReminders = [];
+loadReminders();
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
