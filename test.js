@@ -1250,7 +1250,7 @@ client.on('messageCreate', message => {
               }
               let arr = split[1];
               let time = parseFloat(arr[1]);
-              console.log("time",time);
+              console.log("time",arr, time);
               time *= units;
 
               let remText = argument.slice(ind+len);
