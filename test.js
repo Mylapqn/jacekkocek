@@ -1227,8 +1227,9 @@ client.on('messageCreate', message => {
         }
         case "remind": {
           if (argument != null) {
-            message.channel.send("|"+argument.split(" ")[0]+"|");
-            if(argument.split(" ")[0] == "in"){
+            let split = argument.split(" ");
+            message.channel.send("|"+split[0]+"|");
+            if(split[0] == "in"){
               let units = 3600;
               let len = 0;
               let ind;
@@ -1247,9 +1248,9 @@ client.on('messageCreate', message => {
                 len = 4;
                 console.log("days",ind);
               }
-              let arr = argument.slice(0,ind).split(" ");
-              let time = parseFloat(arr[arr.length-1]);
-              console.log("time",arr);
+              let arr = split[1];
+              let time = parseFloat(arr[1]);
+              console.log("time",time);
               time *= units;
 
               let remText = argument.slice(ind+len);
