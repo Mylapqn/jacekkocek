@@ -303,7 +303,7 @@ var wordGameEnabled = false;
 var stockMessage;
 var lastInStock = 0;
 
-const reminderThreshold = 3600;
+const reminderThreshold = 10;
 
 let reminders = [];
 
