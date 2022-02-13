@@ -1262,7 +1262,7 @@ client.on('messageCreate', message => {
               }
               reminders.push(newRem);
               setupReminders();
-              message.channel.send("Added reminder for "+remText+" at <t:"+(now()+time)+">");
+              message.channel.send("Added reminder for "+remText+" at <t:"+Math.round(now()+time)+">");
             }
           }
           else {
