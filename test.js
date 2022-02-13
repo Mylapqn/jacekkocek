@@ -1261,7 +1261,7 @@ function setupReminders(timeThreshold) {
     if (rem.timestamp <= now() + timeThreshold) {
       let timeout = setTimeout(() => {
         executeReminder(rem);
-      }, rem.timestamp - now());
+      }, (rem.timestamp - now())*1000);
       rem.timeout = timeout;
       upcomingReminders.push(rem);
     }
