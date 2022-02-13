@@ -1227,7 +1227,7 @@ client.on('messageCreate', message => {
         }
         case "remind": {
           if (argument != null) {
-            message.channel.send(argument.split(" ")[0]);
+            message.channel.send("|"+argument.split(" ")[0]+"|");
             if(argument.split(" ")[0] == "in"){
               let units = 3600;
               let len = 0;
