@@ -1249,8 +1249,8 @@ client.on('messageCreate', message => {
                 console.log("days",ind);
               }
               let arr = split[1];
-              let time = parseFloat(arr[1]);
-              console.log("arr",arr, "time", time);
+              let time = parseFloat(arr);
+              console.log("time",time, "units", units);
               time *= units;
 
               let remText = argument.slice(ind+len);
