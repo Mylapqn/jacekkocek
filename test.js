@@ -1228,24 +1228,17 @@ client.on('messageCreate', message => {
         case "remind": {
           if (argument != null) {
             let split = argument.split(" ");
-            message.channel.send("|" + split[0] + "|");
             if (split[0] == "in") {
               let units = 3600;
               let ind;
-              if (split[3] == "hours") {
+              if (split[2] == "hours") {
                 units = 3600;
-
-                console.log("hours", ind);
               }
-              else if (ind = argument.indexOf("minutes")) {
+              else if (split[2] == "minutes") {
                 units = 60;
-
-                console.log("minutes", ind);
               }
-              else if (ind = argument.indexOf("days")) {
+              else if (split[2] == "days") {
                 units = 86400;
-
-                console.log("days", ind);
               }
               let arr = split[1];
               let time = parseFloat(arr);
@@ -1253,7 +1246,7 @@ client.on('messageCreate', message => {
               time *= units;
 
               let remText = "";
-              for (let i = 4; i < split.length; i++) {
+              for (let i = 3; i < split.length; i++) {
                 const word = split[i];
                 remText += word;
               }
