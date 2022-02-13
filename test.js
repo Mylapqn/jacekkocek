@@ -1481,7 +1481,9 @@ function loadPlaylist() {
 }
 
 function saveReminders() {
-  fs.writeFile(remindersFileName, JSON.stringify(reminders), (e) => { console.log("Finished writing", e) });
+  let a = JSON.stringify(reminders);
+  console.log(a);
+  fs.writeFile(remindersFileName, a, (e) => { console.log("Finished writing", e) });
 }
 
 function loadReminders() {
