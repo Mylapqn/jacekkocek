@@ -1285,6 +1285,13 @@ client.on('messageCreate', message => {
           }
           break;
         }
+        case "remindList": {
+          let msg = "__Reminders:__";
+          reminders.forEach(rem => {
+            msg +="• **"+rem.text + "** at <t:"+rem.timestamp+">\n";
+          });
+          break;
+        }
 
 
         default:
