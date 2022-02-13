@@ -1223,7 +1223,6 @@ client.on('messageCreate', message => {
           if (argument != null) {
             let split = argument.split(" ");
             if (split[0] == "in" && split.length >= 3) {
-              console.log("AAAAH1");
               let units = -1;
               if (split[2].startsWith("sec") || split[2] == "s") {
                 units = 1;
@@ -1246,19 +1245,16 @@ client.on('messageCreate', message => {
               let arr = split[1];
               let time = parseFloat(arr);
               //console.log("time", time, "units", units);
-              console.log("AAAAH2");
               time *= units;
               if (time == NaN || time == "NaN" || time <= 0) message.channel.send("Invalid time!");
               else if (time > 2629743) message.channel.send("Cannot create timers over 1 month!");
               else if (time > 0) {
-                console.log("AAAAH3");
                 let remText = "";
                 for (let i = 3; i < split.length; i++) {
                   const word = split[i];
                   remText += word + " ";
                 }
                 remText = remText.trim();
-                console.log("AAAAH4");
                 if (remText == "") remText = "Unnamed reminder";
                 let newRem = {
                   guild: message.guildId,
@@ -1267,16 +1263,12 @@ client.on('messageCreate', message => {
                   timestamp: now() + time,
                   mentions: []
                 }
-                console.log("AAAAH5");
                 let mentions = Array.from(message.mentions.users.keys());
                 newRem.mentions = mentions;
                 reminders.push(newRem);
                 //console.log(newRem);
-                console.log("AAAAH6");
                 if (time <= reminderThreshold) setupReminders();
-                console.log("AAAAH7");
                 saveReminders();
-                console.log("AAAAH8");
                 message.delete().then(() => {
                   message.channel.send({
                     content: "Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">",
