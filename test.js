@@ -1271,6 +1271,7 @@ client.on('messageCreate', message => {
                 }
                 let mentions = Array.from(message.mentions.users.keys());
                 console.log(message.mentions.users);
+                console.log(mentions);
                 mentions.forEach(m => {
                   newRem.mentions.push(m.id);
                 });
