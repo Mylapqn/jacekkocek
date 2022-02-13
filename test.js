@@ -1270,6 +1270,7 @@ client.on('messageCreate', message => {
                   mentions: []
                 }
                 let mentions = message.mentions.users;
+                console.log(message.mentions.users);
                 for (let i = 0; i < mentions.length; i++) {
                   console.log("MENTION");
                   const m = mentions[i];
