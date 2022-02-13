@@ -1269,7 +1269,7 @@ client.on('messageCreate', message => {
                   timestamp: now() + time,
                   mentions: []
                 }
-                let mentions = message.mentions.users.keys();
+                let mentions = Array.from(message.mentions.users.keys());
                 console.log(message.mentions.users);
                 mentions.forEach(m => {
                   newRem.mentions.push(m.id);
