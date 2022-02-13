@@ -1261,7 +1261,7 @@ client.on('messageCreate', message => {
                   guild: message.guildId,
                   channel: message.channelId,
                   text: remText,
-                  timestamp: now() + time,
+                  timestamp: Math.round(now() + time),
                   mentions: []
                 }
                 let mentions = Array.from(message.mentions.users.keys());
@@ -1272,7 +1272,7 @@ client.on('messageCreate', message => {
                 saveReminders();
                 message.delete().then(() => {
                   message.channel.send({
-                    content: "Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">",
+                    content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
                     allowedMentions: { parse: [] }
                   });
                 });
