@@ -427,6 +427,9 @@ client.on('ready', () => {
   });
 
   setupReminders();
+  setInterval(() => {
+    setupReminders();
+  }, reminderThreshold*1000);
   console.log(upcomingReminders);
 
   //UPDATE NVIDIA STOCK ON/OFF
@@ -1327,9 +1330,6 @@ function setupReminders() {
   }
   if (upcomingReminders.length > 0)
     console.log("Set up " + upcomingReminders.length + " reminders.")
-  setTimeout(() => {
-    setupReminders();
-  }, reminderThreshold*1000);
 }
 
 function now() {
