@@ -306,7 +306,7 @@ var lastInStock = 0;
 
 let reminders = [];
 reminders[0] = {
-  timestamp: 1644781200,
+  timestamp: 1644781250,
   text: "Test Remind",
   guild: "549589656606343178",
   channel: "662455047451574292"
