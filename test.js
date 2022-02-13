@@ -1263,7 +1263,7 @@ client.on('messageCreate', message => {
                   const word = split[i];
                   remText += word + " ";
                 }
-                remText = remText.slice(0, -1);
+                remText = remText.trim();
                 let newRem = {
                   guild: message.guildId,
                   channel: message.channelId,
@@ -1272,7 +1272,7 @@ client.on('messageCreate', message => {
                 }
                 reminders.push(newRem);
                 setupReminders();
-                message.channel.send("Added reminder for _" + remText + "_ at <t:" + Math.round(now() + time) + ">");
+                message.channel.send("Added reminder for **\"_" + remText + "_\"** at <t:" + Math.round(now() + time) + ">");
               }
             }
           }
