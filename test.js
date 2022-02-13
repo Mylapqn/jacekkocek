@@ -1263,7 +1263,7 @@ client.on('messageCreate', message => {
                   const word = split[i];
                   remText += word + " ";
                 }
-                remText = remText.slice(-1);
+                remText = remText.slice(0, -1);
                 let newRem = {
                   guild: message.guildId,
                   channel: message.channelId,
