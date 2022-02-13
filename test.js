@@ -1261,6 +1261,8 @@ client.on('messageCreate', message => {
                   remText += word + " ";
                 }
                 remText = remText.trim();
+                let mentions = message.mentions;
+                console.log(mentions);
                 if (remText == "") remText = "Unnamed reminder";
                 let newRem = {
                   guild: message.guildId,
