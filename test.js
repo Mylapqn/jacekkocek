@@ -1261,14 +1261,18 @@ client.on('messageCreate', message => {
                   remText += word + " ";
                 }
                 remText = remText.trim();
-                let mentions = message.mentions;
-                console.log(mentions);
                 if (remText == "") remText = "Unnamed reminder";
                 let newRem = {
                   guild: message.guildId,
                   channel: message.channelId,
                   text: remText,
-                  timestamp: now() + time
+                  timestamp: now() + time,
+                  mentions: []
+                }
+                let mentions = message.mentions.users;
+                for (let i = 0; i < mentions.length; i++) {
+                  const m = mentions[i];
+                  newRem.mentions.push(m.id);
                 }
                 reminders.push(newRem);
                 setupReminders();
@@ -1337,7 +1341,13 @@ function now() {
 function executeReminder(rem) {
   client.guilds.fetch(rem.guild).then(guild => {
     guild.channels.fetch(rem.channel).then(channel => {
+      let mentions = "";
+      rem.mentions.forEach(m => {
+        mentions+="<@!"+m+"> ";
+      });
+
       channel.send({
+        content:mentions,
         embeds: [{
           title: "Reminder",
           color: [24, 195, 177],
