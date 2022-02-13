@@ -1323,7 +1323,6 @@ function cleanupReminders() {
     if (rem.timestamp < now()) {
       reminders.splice(i, 1);
     }
-    i -= 1;
   }
 }
 
@@ -1489,10 +1488,7 @@ function loadPlaylist() {
 }
 
 function saveReminders() {
-  console.log("saving")
-  let a = JSON.stringify(reminders);
-  console.log(a);
-  fs.writeFile(remindersFileName, a, (e) => { console.log("Finished writing", e) });
+  fs.writeFile(remindersFileName, JSON.stringify(reminders), (e) => { console.log("Finished writing", e) });
 }
 
 function loadReminders() {
