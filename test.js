@@ -1268,6 +1268,7 @@ client.on('messageCreate', message => {
                 reminders.push(newRem);
                 //console.log(newRem);
                 if (time <= reminderThreshold) setupReminders();
+                console.log("sdfsdf");
                 saveReminders();
                 message.delete().then(() => {
                   message.channel.send({
