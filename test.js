@@ -1336,6 +1336,8 @@ function setupReminders() {
     }
 
   }
+  if (upcomingReminders.length > 0)
+    console.log("Set up " + upcomingReminders.length + " reminders.")
   setTimeout(() => {
     setupReminders();
   }, reminderThreshold);
