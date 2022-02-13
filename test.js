@@ -297,7 +297,7 @@ var wordGameEnabled = false;
 var stockMessage;
 var lastInStock = 0;
 
-const reminderThreshold = 10;
+const reminderThreshold = 3600;
 
 let reminders = [];
 
@@ -429,7 +429,7 @@ client.on('ready', () => {
   setupReminders();
   setInterval(() => {
     setupReminders();
-  }, reminderThreshold*1000);
+  }, reminderThreshold * 1000);
   console.log(upcomingReminders);
 
   //UPDATE NVIDIA STOCK ON/OFF
@@ -1258,9 +1258,15 @@ client.on('messageCreate', message => {
                 }
                 let mentions = Array.from(message.mentions.users.keys());
                 newRem.mentions = mentions;
-                reminders.push(newRem);
                 //console.log(newRem);
-                if (time <= reminderThreshold) setupReminders();
+                if (time <= reminderThreshold) {
+                  newRem.timeout = setTimeout(() => {
+                    executeReminder(rem);
+                  }, (rem.timestamp - now()) * 1000);;
+                  upcomingReminders.push(rem);
+                  console.log("Set up 1 reminder immediately.")
+                }
+                reminders.push(newRem);
                 saveReminders();
                 message.delete().then(() => {
                   message.channel.send({
