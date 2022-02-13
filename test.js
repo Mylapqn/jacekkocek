@@ -1292,7 +1292,7 @@ client.on('messageCreate', message => {
           reminders.forEach(rem => {
             msg +="• **"+rem.text + "** at <t:"+rem.timestamp+">\n";
           });
-          message.channel.send(msg);
+          message.channel.send({content:msg,allowedMentions:{parse:[]}});
           break;
         }
 
