@@ -306,7 +306,7 @@ var lastInStock = 0;
 
 let reminders = [];
 reminders[0] = {
-  timestamp: 1644781100,
+  timestamp: 1644781200,
   text: "Test Remind",
   guild: "549589656606343178",
   channel: "662455047451574292"
@@ -1265,6 +1265,7 @@ function setupReminders(timeThreshold) {
       rem.timeout = timeout;
       upcomingReminders.push(rem);
     }
+    console.log(now(),rem,rem.timestamp-now());
 
   }
   console.log(upcomingReminders);
