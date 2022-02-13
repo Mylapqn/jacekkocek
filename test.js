@@ -1501,6 +1501,7 @@ function loadReminders() {
     reminders = JSON.parse(read);
     console.log("Loaded reminders.");
     console.log(reminders);
+    cleanupReminders();
   } catch (error) {
     console.log("Could not load reminders!");
     console.log(error);
