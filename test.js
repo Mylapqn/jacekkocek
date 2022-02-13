@@ -1235,17 +1235,21 @@ client.on('messageCreate', message => {
               if(ind = argument.indexOf("hours")){
                 units = 3600;
                 len = 5;
+                console.log("hours",ind);
               }
               else if(ind = argument.indexOf("minutes")){
                 units = 60;
                 len = 7;
+                console.log("minutes",ind);
               }
               else if(ind = argument.indexOf("days")){
                 units = 86400;
                 len = 4;
+                console.log("days",ind);
               }
               let arr = argument.slice(0,ind).split(" ");
               let time = parseFloat(arr[arr.length-1]);
+              console.log("time",time);
               time *= units;
 
               let remText = argument.slice(ind+len);
