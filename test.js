@@ -433,6 +433,7 @@ client.on('ready', () => {
   });
 
   setupReminders();
+  console.log(upcomingReminders);
 
   //UPDATE NVIDIA STOCK ON/OFF
   //updateStockInfo();
@@ -1497,6 +1498,7 @@ function loadReminders() {
     let read = fs.readFileSync(remindersFileName);
     reminders = JSON.parse(read);
     console.log("Loaded reminders.");
+    console.log(reminders);
   } catch (error) {
     console.log("Could not load reminders!");
     console.log(error);
