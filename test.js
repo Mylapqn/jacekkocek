@@ -1230,13 +1230,13 @@ client.on('messageCreate', message => {
             let split = argument.split(" ");
             if (split[0] == "in") {
               let units = 3600;
-              if (split[2].startsWith("second")) {
+              if (split[2].startsWith("sec")) {
                 units = 1;
               }
               else if (split[2].startsWith("min")) {
                 units = 60;
               }
-              else if (split[2].startsWith("hour")) {
+              else if (split[2].startsWith("hour") || split[2].startsWith("hr")) {
                 units = 3600;
               }
               else if (split[2].startsWith("day")) {
