@@ -304,6 +304,16 @@ var wordGameEnabled = false;
 var stockMessage;
 var lastInStock = 0;
 
+let reminders = [];
+reminders[0] = {
+  timestamp: 1644781100,
+  text: "Test Remind",
+  guild: "549589656606343178",
+  channel: "662455047451574292"
+}
+
+let upcomingReminders = [];
+
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
 client.login(process.env.DISCORD_API_KEY);
@@ -424,6 +434,8 @@ client.on('ready', () => {
       stockMessage = message;
     });
   });
+
+  setupReminders(3600);
 
   //UPDATE NVIDIA STOCK ON/OFF
   //updateStockInfo();
@@ -1226,7 +1238,7 @@ client.on('messageCreate', message => {
       }
     }
     else if (message.content.startsWith("#")) {
-      var reg = /^#([0-9a-f]{3}){1,2}$/i;
+      let reg = /^#([0-9a-f]{3}){1,2}$/i;
       if (reg.test(message.content)) {
 
         let can = Canvas.createCanvas(100, 100);
@@ -1242,6 +1254,33 @@ client.on('messageCreate', message => {
 });
 
 
+function setupReminders(timeThreshold) {
+  upcomingReminders = [];
+  for (let i = 0; i < reminders.length; i++) {
+    let rem = reminders[i];
+    if (rem.timestamp <= now() + timeThreshold) {
+      let timeout = setTimeout(() => {
+        executeReminder(rem);
+      }, rem.timestamp - now());
+      rem.timeout = timeout;
+      upcomingReminders.push(rem);
+    }
+
+  }
+  console.log(upcomingReminders);
+}
+
+function now() {
+  return Date.now() / 1000;
+}
+
+function executeReminder(rem) {
+  client.guilds.fetch(rem.guild).then(guild => {
+    guild.channels.fetch(rem.channel).then(channel => {
+      channel.send(rem.text);
+    });
+  });
+}
 
 //#region KINO
 client.on("messageReactionAdd", (messageReaction) => {
