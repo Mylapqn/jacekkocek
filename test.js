@@ -1270,11 +1270,7 @@ client.on('messageCreate', message => {
                   mentions: []
                 }
                 let mentions = Array.from(message.mentions.users.keys());
-                console.log(message.mentions.users);
-                console.log(mentions);
-                mentions.forEach(m => {
-                  newRem.mentions.push(m.id);
-                });
+                newRem.mentions = mentions
                 reminders.push(newRem);
                 console.log(newRem);
                 setupReminders();
@@ -1344,11 +1340,11 @@ function executeReminder(rem) {
     guild.channels.fetch(rem.channel).then(channel => {
       let mentions = "Reminder: ";
       rem.mentions.forEach(m => {
-        mentions+="<@!"+m+"> ";
+        mentions += "<@!" + m + "> ";
       });
 
       channel.send({
-        content:mentions,
+        content: mentions,
         embeds: [{
           title: "Reminder",
           color: [24, 195, 177],
