@@ -1255,9 +1255,9 @@ client.on('messageCreate', message => {
               let time = parseFloat(arr);
               console.log("time", time, "units", units);
               time *= units;
-              if(time == NaN) message.channel.send("Invalid time!");
+              if(time == NaN || time == "NaN") message.channel.send("Invalid time!");
               else if (time > 2629743) message.channel.send("Cannot create timers over 1 month!");
-              else {
+              else if (time > 0){
                 let remText = "";
                 for (let i = 3; i < split.length; i++) {
                   const word = split[i];
@@ -1274,6 +1274,9 @@ client.on('messageCreate', message => {
                 reminders.push(newRem);
                 setupReminders();
                 message.channel.send("Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">");
+              }
+              else {
+                message.channel.send("Invalid arguments!");
               }
             }
           }
