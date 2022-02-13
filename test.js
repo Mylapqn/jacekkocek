@@ -1270,6 +1270,7 @@ client.on('messageCreate', message => {
                 }
                 reminders.push(newRem);
                 setupReminders();
+                console.log(remText);
                 message.channel.send("Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">");
               }
               else {
