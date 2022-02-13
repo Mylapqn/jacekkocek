@@ -1288,7 +1288,7 @@ client.on('messageCreate', message => {
         case "remindList": {
           cleanupReminders();
           saveReminders();
-          let msg = "__Reminders:__";
+          let msg = "__Reminders:__\n";
           reminders.forEach(rem => {
             msg +="• **"+rem.text + "** at <t:"+rem.timestamp+">\n";
           });
