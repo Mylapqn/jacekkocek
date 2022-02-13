@@ -1218,25 +1218,26 @@ client.on('messageCreate', message => {
           }
           break;
         }
-        
+
 
         default:
           message.channel.send("Unknown command :disappointed:");
 
       }
     }
-    else if (message.content.startsWith("#")){
-      var reg=/^#([0-9a-f]{3}){1,2}$/i;
-      if(reg.test(message.content))
+    else if (message.content.startsWith("#")) {
+      var reg = /^#([0-9a-f]{3}){1,2}$/i;
+      if (reg.test(message.content)) {
 
-        let can = Canvas.createCanvas(100,100);
+        let can = Canvas.createCanvas(100, 100);
         let ctx = can.getContext("2d");
-        ctx.fillStyle=message.content;
-        ctx.fillRect(0,0,100,100);
+        ctx.fillStyle = message.content;
+        ctx.fillRect(0, 0, 100, 100);
         let buf = can.createPNGStream();
-        message.channel.send({files:[buf]});
+        message.channel.send({ files: [buf] });
         break;
-      
+      }
+
     }
   }
 });
@@ -1590,8 +1591,8 @@ function playYoutube(videoUrl, channel) {
       embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
     }
     try {
-      channel.send({embeds:[embed]});
-      
+      channel.send({ embeds: [embed] });
+
     } catch (error) {
       console.log(error)
     }
