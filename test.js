@@ -1274,7 +1274,10 @@ client.on('messageCreate', message => {
                 reminders.push(newRem);
                 console.log(newRem);
                 setupReminders();
-                message.channel.send("Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">");
+                message.channel.send({
+                  content: "Added reminder for **_" + remText + "_** at <t:" + Math.round(now() + time) + ">",
+                  allowedMentions: {parse:[]}
+                });
               }
               else {
                 message.channel.send("Invalid arguments!");
@@ -1338,19 +1341,24 @@ function now() {
 function executeReminder(rem) {
   client.guilds.fetch(rem.guild).then(guild => {
     guild.channels.fetch(rem.channel).then(channel => {
-      let mentions = "Reminder: ";
+      let mentions = "";
       rem.mentions.forEach(m => {
         mentions += "<@!" + m + "> ";
       });
 
-      channel.send({
-        content: mentions,
+      let toSend = {
         embeds: [{
           title: "Reminder",
           color: [24, 195, 177],
           description: rem.text
         }]
-      });
+      }
+      if (mentions != "") {
+        toSend.content = mentions
+      }
+
+      channel.send(toSend);
+
       reminders.splice(reminders.indexOf(rem), 1);
     });
   });
