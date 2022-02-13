@@ -1228,21 +1228,21 @@ client.on('messageCreate', message => {
         case "remind": {
           if (argument != null) {
             let split = argument.split(" ");
-            if (split[0] == "in") {
+            if (split[0] == "in" && split.length >= 3) {
               let units = 3600;
-              if (split[2].startsWith("sec")) {
+              if (split[2].startsWith("sec") || split[2] == "s") {
                 units = 1;
               }
-              else if (split[2].startsWith("min")) {
+              else if (split[2].startsWith("min") || split[2] == "m") {
                 units = 60;
               }
-              else if (split[2].startsWith("hour") || split[2].startsWith("hr")) {
+              else if (split[2].startsWith("hour") || split[2] == "h" || split[2] == "hr") {
                 units = 3600;
               }
-              else if (split[2].startsWith("day")) {
+              else if (split[2].startsWith("day") || split[2] == "d") {
                 units = 86400;
               }
-              else if (split[2].startsWith("week")) {
+              else if (split[2].startsWith("week") || split[2] == "w") {
                 units = 604800;
               }
               else if (split[2].startsWith("mon")) {
