@@ -1488,7 +1488,16 @@ function loadPlaylist() {
 }
 
 function saveReminders() {
-  fs.writeFile(remindersFileName, JSON.stringify(reminders), (e) => { console.log("Finished writing", e) });
+  let f = [];
+  reminders.forEach(r => {
+    f.push({
+      guild: r.guild,
+      channel: r.channel,
+      text: r.text,
+      timestamp: r.timestamp
+    })
+  });
+  fs.writeFile(remindersFileName, JSON.stringify(f), (e) => { console.log("Finished writing", e) });
 }
 
 function loadReminders() {
