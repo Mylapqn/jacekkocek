@@ -1229,7 +1229,7 @@ client.on('messageCreate', message => {
           if (argument != null) {
             let split = argument.split(" ");
             if (split[0] == "in" && split.length >= 3) {
-              let units = 3600;
+              let units = -1;
               if (split[2].startsWith("sec") || split[2] == "s") {
                 units = 1;
               }
@@ -1255,7 +1255,7 @@ client.on('messageCreate', message => {
               let time = parseFloat(arr);
               console.log("time", time, "units", units);
               time *= units;
-              if(time == NaN || time == "NaN") message.channel.send("Invalid time!");
+              if(time == NaN || time == "NaN" ||time <= 0) message.channel.send("Invalid time!");
               else if (time > 2629743) message.channel.send("Cannot create timers over 1 month!");
               else if (time > 0){
                 let remText = "";
