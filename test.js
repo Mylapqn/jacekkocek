@@ -1253,8 +1253,8 @@ client.on('messageCreate', message => {
               time *= units;
 
               let remText = "";
-              for (let i = 4; i < slice.length; i++) {
-                const word = slice[i];
+              for (let i = 4; i < split.length; i++) {
+                const word = split[i];
                 remText += word;
               }
               let newRem = {
