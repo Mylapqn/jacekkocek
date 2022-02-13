@@ -1269,13 +1269,11 @@ client.on('messageCreate', message => {
                   timestamp: now() + time,
                   mentions: []
                 }
-                let mentions = message.mentions.users;
+                let mentions = message.mentions.users.keys();
                 console.log(message.mentions.users);
-                for (let i = 0; i < mentions.length; i++) {
-                  console.log("MENTION");
-                  const m = mentions[i];
+                mentions.forEach(m => {
                   newRem.mentions.push(m.id);
-                }
+                });
                 reminders.push(newRem);
                 console.log(newRem);
                 setupReminders();
