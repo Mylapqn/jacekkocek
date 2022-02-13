@@ -1233,7 +1233,7 @@ client.on('messageCreate', message => {
               if (split[2].startsWith("second")) {
                 units = 1;
               }
-              else if (split[2].startsWith("minute")) {
+              else if (split[2].startsWith("min")) {
                 units = 60;
               }
               else if (split[2].startsWith("hour")) {
@@ -1245,7 +1245,7 @@ client.on('messageCreate', message => {
               else if (split[2].startsWith("week")) {
                 units = 604800;
               }
-              else if (split[2].startsWith("month")) {
+              else if (split[2].startsWith("mon")) {
                 units = 2629743;
               }
               else {
@@ -1264,6 +1264,7 @@ client.on('messageCreate', message => {
                   remText += word + " ";
                 }
                 remText = remText.trim();
+                if(remText == "") remText = "Unnamed reminder";
                 let newRem = {
                   guild: message.guildId,
                   channel: message.channelId,
