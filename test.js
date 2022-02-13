@@ -1230,35 +1230,49 @@ client.on('messageCreate', message => {
             let split = argument.split(" ");
             if (split[0] == "in") {
               let units = 3600;
-              let ind;
-              if (split[2] == "hours") {
-                units = 3600;
+              if (split[2].startsWith("second")) {
+                units = 1;
               }
-              else if (split[2] == "minutes") {
+              else if (split[2].startsWith("minute")) {
                 units = 60;
               }
-              else if (split[2] == "days") {
+              else if (split[2].startsWith("hour")) {
+                units = 3600;
+              }
+              else if (split[2].startsWith("day")) {
                 units = 86400;
+              }
+              else if (split[2].startsWith("week")) {
+                units = 604800;
+              }
+              else if (split[2].startsWith("month")) {
+                units = 2629743;
+              }
+              else {
+                message.channel.send("You must specify a time unit!")
               }
               let arr = split[1];
               let time = parseFloat(arr);
               console.log("time", time, "units", units);
               time *= units;
-
-              let remText = "";
-              for (let i = 3; i < split.length; i++) {
-                const word = split[i];
-                remText += word;
+              if(time == NaN) message.channel.send("Invalid time!");
+              else if (time > 2629743) message.channel.send("Cannot create timers over 1 month!");
+              else {
+                let remText = "";
+                for (let i = 3; i < split.length; i++) {
+                  const word = split[i];
+                  remText += word + " ";
+                }
+                let newRem = {
+                  guild: message.guildId,
+                  channel: message.channelId,
+                  text: remText,
+                  timestamp: now() + time
+                }
+                reminders.push(newRem);
+                setupReminders();
+                message.channel.send("Added reminder for _" + remText + "_at <t:" + Math.round(now() + time) + ">");
               }
-              let newRem = {
-                guild: message.guildId,
-                channel: message.channelId,
-                text: remText,
-                timestamp: now() + time
-              }
-              reminders.push(newRem);
-              setupReminders();
-              message.channel.send("Added reminder for " + remText + " at <t:" + Math.round(now() + time) + ">");
             }
           }
           else {
