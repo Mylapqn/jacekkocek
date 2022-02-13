@@ -1349,9 +1349,11 @@ function executeReminder(rem) {
   client.guilds.fetch(rem.guild).then(guild => {
     guild.channels.fetch(rem.channel).then(channel => {
       let mentions = "";
-      rem.mentions.forEach(m => {
-        mentions += "<@!" + m + "> ";
-      });
+      if (rem.mentions) {
+        rem.mentions.forEach(m => {
+          mentions += "<@!" + m + "> ";
+        });
+      }
 
       let toSend = {
         embeds: [{
