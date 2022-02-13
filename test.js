@@ -1249,7 +1249,7 @@ client.on('messageCreate', message => {
               }
               let arr = argument.slice(0,ind).split(" ");
               let time = parseFloat(arr[arr.length-1]);
-              console.log("time",time);
+              console.log("time",arr[arr.length-1]);
               time *= units;
 
               let remText = argument.slice(ind+len);
