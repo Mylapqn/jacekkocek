@@ -69,12 +69,6 @@ var helpCommands = [
     description: "Zobrazit hledaný film",
   },
   {
-    name: "hit",
-    prefix: true,
-    arguments: "",
-    description: "yes",
-  },
-  {
     name: "listCringe",
     prefix: true,
     arguments: "",
@@ -831,11 +825,6 @@ client.on('messageCreate', message => {
             message.channel.send(output);
           }
           break;
-        case "hit":
-          message.channel.send("cringe");
-          addCringe(message.member);
-          break;
-
         case "kino": {
           message.delete();
           if (argument) {
@@ -1340,7 +1329,7 @@ function setupReminders() {
     console.log("Set up " + upcomingReminders.length + " reminders.")
   setTimeout(() => {
     setupReminders();
-  }, reminderThreshold);
+  }, reminderThreshold*1000);
 }
 
 function now() {
