@@ -1235,7 +1235,6 @@ client.on('messageCreate', message => {
         ctx.fillRect(0, 0, 100, 100);
         let buf = can.createPNGStream();
         message.channel.send({ files: [buf] });
-        break;
       }
 
     }
