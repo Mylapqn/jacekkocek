@@ -9,6 +9,7 @@ const cheerio = require('cheerio');
 const axios = require('axios');
 const { clearInterval } = require('timers');
 const Canvas = require('canvas');
+const { timeStamp } = require('console');
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
@@ -304,6 +305,8 @@ var wordGameEnabled = false;
 var stockMessage;
 var lastInStock = 0;
 
+const reminderThreshold = 3600;
+
 let reminders = [];
 reminders[0] = {
   timestamp: 1644781420,
@@ -435,7 +438,7 @@ client.on('ready', () => {
     });
   });
 
-  setupReminders(3600);
+  setupReminders();
 
   //UPDATE NVIDIA STOCK ON/OFF
   //updateStockInfo();
@@ -1164,15 +1167,7 @@ client.on('messageCreate', message => {
           message.channel.send(new Date().toString());
           break;
         }
-        case "remind": {
-          if (argument != null) {
-            message.channel.send(argument.split(" ")[0]);
-          }
-          else {
-            message.channel.send("remind WHEN???");
-          }
-          break;
-        }
+
         case "youtube":
         case "yt": {
           message.delete();
@@ -1230,6 +1225,46 @@ client.on('messageCreate', message => {
           }
           break;
         }
+        case "remind": {
+          if (argument != null) {
+            message.channel.send(argument.split(" ")[0]);
+            if(argument.split(" ")[0] == "in"){
+              let units = 3600;
+              let len = 0;
+              let ind;
+              if(ind = argument.indexOf("hours")){
+                units = 3600;
+                len = 5;
+              }
+              else if(ind = argument.indexOf("minutes")){
+                units = 60;
+                len = 7;
+              }
+              else if(ind = argument.indexOf("days")){
+                units = 86400;
+                len = 4;
+              }
+              let arr = argument.slice(0,ind).split(" ");
+              let time = parseFloat(arr[arr.length-1]);
+              time *= units;
+
+              let remText = argument.slice(ind+len);
+              let newRem = {
+                guild: message.guildId,
+                channel: message.channelId,
+                text: remText,
+                timestamp: now()+time
+              }
+              reminders.push(newRem);
+              setupReminders();
+              message.channel.send("Added reminder for "+remText+" at "+new Date(now()+time));
+            }
+          }
+          else {
+            message.channel.send("remind WHEN???");
+          }
+          break;
+        }
 
 
         default:
@@ -1254,21 +1289,25 @@ client.on('messageCreate', message => {
 });
 
 
-function setupReminders(timeThreshold) {
+function setupReminders() {
   upcomingReminders = [];
   for (let i = 0; i < reminders.length; i++) {
     let rem = reminders[i];
-    if (rem.timestamp <= now() + timeThreshold) {
+    if (rem.timestamp > now() && rem.timestamp <= now() + reminderThreshold) {
       let timeout = setTimeout(() => {
         executeReminder(rem);
-      }, (rem.timestamp - now())*1000);
+      }, (rem.timestamp - now()) * 1000);
+      if(rem.timeout){
+        clearTimeout(rem.timeout);
+      }
       rem.timeout = timeout;
       upcomingReminders.push(rem);
     }
-    console.log(now(),rem,rem.timestamp-now());
 
   }
-  console.log(upcomingReminders);
+  setTimeout(() => {
+    setupReminders();
+  }, reminderThreshold);
 }
 
 function now() {
@@ -1279,6 +1318,7 @@ function executeReminder(rem) {
   client.guilds.fetch(rem.guild).then(guild => {
     guild.channels.fetch(rem.channel).then(channel => {
       channel.send(rem.text);
+      reminders.splice(reminders.indexOf(rem), 1);
     });
   });
 }
