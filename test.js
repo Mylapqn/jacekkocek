@@ -1261,9 +1261,9 @@ client.on('messageCreate', message => {
                 //console.log(newRem);
                 if (time <= reminderThreshold) {
                   newRem.timeout = setTimeout(() => {
-                    executeReminder(rem);
+                    executeReminder(newRem);
                   }, (rem.timestamp - now()) * 1000);;
-                  upcomingReminders.push(rem);
+                  upcomingReminders.push(newRem);
                   console.log("Set up 1 reminder immediately.")
                 }
                 reminders.push(newRem);
