@@ -1248,23 +1248,20 @@ client.on('messageCreate', message => {
               else if (split[2].startsWith("mon")) {
                 units = 2629743;
               }
-              else {
-                message.channel.send("You must specify a time unit!")
-              }
               let arr = split[1];
               let time = parseFloat(arr);
               console.log("time", time, "units", units);
               time *= units;
-              if(time == NaN || time == "NaN" ||time <= 0) message.channel.send("Invalid time!");
+              if (time == NaN || time == "NaN" || time <= 0) message.channel.send("Invalid time!");
               else if (time > 2629743) message.channel.send("Cannot create timers over 1 month!");
-              else if (time > 0){
+              else if (time > 0) {
                 let remText = "";
                 for (let i = 3; i < split.length; i++) {
                   const word = split[i];
                   remText += word + " ";
                 }
                 remText = remText.trim();
-                if(remText == "") remText = "Unnamed reminder";
+                if (remText == "") remText = "Unnamed reminder";
                 let newRem = {
                   guild: message.guildId,
                   channel: message.channelId,
@@ -1337,7 +1334,13 @@ function now() {
 function executeReminder(rem) {
   client.guilds.fetch(rem.guild).then(guild => {
     guild.channels.fetch(rem.channel).then(channel => {
-      channel.send(rem.text);
+      channel.send({
+        embeds: [{
+          title: "Reminder",
+          color: [24, 195, 177],
+          description: rem.text
+        }]
+      });
       reminders.splice(reminders.indexOf(rem), 1);
     });
   });
