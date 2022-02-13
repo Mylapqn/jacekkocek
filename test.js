@@ -1228,41 +1228,44 @@ client.on('messageCreate', message => {
         case "remind": {
           if (argument != null) {
             let split = argument.split(" ");
-            message.channel.send("|"+split[0]+"|");
-            if(split[0] == "in"){
+            message.channel.send("|" + split[0] + "|");
+            if (split[0] == "in") {
               let units = 3600;
-              let len = 0;
               let ind;
-              if(ind = argument.indexOf("hours")){
+              if (split[3] == "hours") {
                 units = 3600;
-                len = 5;
-                console.log("hours",ind);
+
+                console.log("hours", ind);
               }
-              else if(ind = argument.indexOf("minutes")){
+              else if (ind = argument.indexOf("minutes")) {
                 units = 60;
-                len = 7;
-                console.log("minutes",ind);
+
+                console.log("minutes", ind);
               }
-              else if(ind = argument.indexOf("days")){
+              else if (ind = argument.indexOf("days")) {
                 units = 86400;
-                len = 4;
-                console.log("days",ind);
+
+                console.log("days", ind);
               }
               let arr = split[1];
               let time = parseFloat(arr);
-              console.log("time",time, "units", units);
+              console.log("time", time, "units", units);
               time *= units;
 
-              let remText = argument.slice(ind+len);
+              let remText = "";
+              for (let i = 4; i < slice.length; i++) {
+                const word = slice[i];
+                remText += word;
+              }
               let newRem = {
                 guild: message.guildId,
                 channel: message.channelId,
                 text: remText,
-                timestamp: now()+time
+                timestamp: now() + time
               }
               reminders.push(newRem);
               setupReminders();
-              message.channel.send("Added reminder for "+remText+" at <t:"+Math.round(now()+time)+">");
+              message.channel.send("Added reminder for " + remText + " at <t:" + Math.round(now() + time) + ">");
             }
           }
           else {
@@ -1302,7 +1305,7 @@ function setupReminders() {
       let timeout = setTimeout(() => {
         executeReminder(rem);
       }, (rem.timestamp - now()) * 1000);
-      if(rem.timeout){
+      if (rem.timeout) {
         clearTimeout(rem.timeout);
       }
       rem.timeout = timeout;
