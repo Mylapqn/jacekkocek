@@ -1496,7 +1496,8 @@ function saveReminders() {
       guild: r.guild,
       channel: r.channel,
       text: r.text,
-      timestamp: r.timestamp
+      timestamp: r.timestamp,
+      mentions: r.mentions
     })
   });
   fs.writeFile(remindersFileName, JSON.stringify(f), (e) => { console.log("Finished writing", e) });
