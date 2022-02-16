@@ -1233,14 +1233,14 @@ client.on('messageCreate', message => {
                 units = 604800;
               }
               else if (split[2].startsWith("mon")) {
-                units = 2629743;
+                units = 2592000;
               }
               let arr = split[1];
               let time = parseFloat(arr);
               //console.log("time", time, "units", units);
               time *= units;
               if (time == NaN || time == "NaN" || time <= 0) message.channel.send("Invalid time!");
-              else if (time > 2629743) message.channel.send("Cannot create timers over 1 month!");
+              else if (time > 31968000) message.channel.send("Cannot create timers over 1 year!");
               else if (time > 0) {
                 let remText = "";
                 for (let i = 3; i < split.length; i++) {
