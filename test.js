@@ -461,7 +461,7 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "remind": {
-        interaction.reply("Reming " + interaction.options.data[0].name + ": " + interaction.options.data[0].value + ", " + interaction.options.data[0].name + ": " + interaction.options.data[0].value);
+        interaction.reply("Reming " + interaction.options.data[0].name + ": " + interaction.options.data[0].value + ", " + interaction.options.data[1].name + ": " + interaction.options.data[1].value);
         break;
       }
     }
