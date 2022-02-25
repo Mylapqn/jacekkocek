@@ -449,6 +449,7 @@ client.on('interactionCreate', interaction => {
       }
       case "kino": {
         interaction.channel.send("it was kino")
+        interaction.reply("it was kino")
         break;
       }
       case "kino suggest": {
