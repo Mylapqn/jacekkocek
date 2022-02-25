@@ -442,6 +442,7 @@ let interactionsUsed = new Map();
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isCommand()) {
+    let arguments = interaction.options.data;
     switch (interaction.commandName) {
       case "amogus": {
         interaction.reply({ content: "Successfully created " + interaction.options.getString("color") + " mogus." });
@@ -461,8 +462,66 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "remind": {
-        interaction.reply("Reming " + interaction.options.data[0].name + ": " + interaction.options.data[0].value + ", " + interaction.options.data[1].name + ": " + interaction.options.data[1].value);
-        break;
+        let split = arguments[0].split(" ");
+        if (split.length == 2) {
+          let units = -1;
+          if (split[1].startsWith("sec") || split[2] == "s") {
+            units = 1;
+          }
+          else if (split[1].startsWith("min") || split[2] == "m") {
+            units = 60;
+          }
+          else if (split[1].startsWith("hour") || split[2] == "h" || split[2] == "hr") {
+            units = 3600;
+          }
+          else if (split[1].startsWith("day") || split[2] == "d") {
+            units = 86400;
+          }
+          else if (split[1].startsWith("week") || split[2] == "w") {
+            units = 604800;
+          }
+          else if (split[1].startsWith("mon")) {
+            units = 2592000;
+          }
+          let arr = split[0];
+          let time = parseFloat(arr);
+          //console.log("time", time, "units", units);
+          time *= units;
+          if (time == NaN || time == "NaN" || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
+          else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
+          else if (time > 0) {
+            let remText = arguments[1].value.trim();
+            if (remText == "") remText = "Unnamed reminder";
+            let newRem = {
+              guild: interaction.guildId,
+              channel: interaction.channelId,
+              text: remText,
+              timestamp: Math.round(now() + time),
+              mentions: []
+            }
+            //console.log(newRem);
+            if (time <= reminderThreshold) {
+              newRem.timeout = setTimeout(() => {
+                executeReminder(newRem);
+              }, (newRem.timestamp - now()) * 1000);;
+              upcomingReminders.push(newRem);
+              console.log("Set up 1 reminder immediately.")
+            }
+            reminders.push(newRem);
+            saveReminders();
+            interaction.reply({
+              content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
+              allowedMentions: { parse: [] }
+            });
+          }
+          else {
+            interaction.reply({ content: "Invalid time!", ephemeral: true });
+          }
+          break;
+        }
+        else {
+          interaction.reply({ content: "Invalid time!", ephemeral: true });
+        }
       }
     }
   }
@@ -1349,17 +1408,18 @@ function executeReminder(rem) {
         });
       }
 
-      let toSend = {
+      let toSend = "**Reminder: **" + rem.text;
+      /*let toSend = {
         embeds: [{
           title: "Reminder",
           color: [24, 195, 177],
           description: rem.text
         }]
-      }
-      if (mentions != "") {
-        toSend.content = mentions
-      }
-
+        if (mentions != "") {
+          toSend.content = mentions
+        }
+      }*/
+        
       channel.send(toSend);
 
       reminders.splice(reminders.indexOf(rem), 1);
