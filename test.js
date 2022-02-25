@@ -462,7 +462,7 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "remind": {
-        let split = arguments[0].split(" ");
+        let split = arguments[0].value.split(" ");
         if (split.length == 2) {
           let units = -1;
           if (split[1].startsWith("sec") || split[2] == "s") {
