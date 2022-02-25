@@ -448,12 +448,17 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "kino": {
-        interaction.channel.send("it was kino")
-        interaction.reply(interaction.commandName)
-        break;
-      }
-      case "suggest": {
-        interaction.channel.send("it was suggest")
+        switch (interaction.options.getSubcommand()) {
+          case "suggest": {
+            interaction.channel.send("it was suggest")
+            break;
+          }
+          case "remind": {
+            interaction.channel.send("it was remind")
+            break;
+          }
+        }
+
         break;
       }
       case "amosgus": {
