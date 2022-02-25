@@ -1419,7 +1419,7 @@ function executeReminder(rem) {
           toSend.content = mentions
         }
       }*/
-        
+
       channel.send(toSend);
 
       reminders.splice(reminders.indexOf(rem), 1);
