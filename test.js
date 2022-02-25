@@ -36,6 +36,7 @@ var cringelordScore = 0;
 var cringelordRole;
 var startDate;
 var defaultTimeZone = "Europe/Prague";
+
 var helpCommands = [
   {
     name: "help",
@@ -182,6 +183,7 @@ var helpCommands = [
   },
 
 ];
+
 var helpAdminCommands = [
   {
     name: "listLetterEmoji",
@@ -199,8 +201,6 @@ var changelog = {
     " ",
   ]
 };
-
-
 
 var radioStations = [
   {
@@ -441,42 +441,23 @@ let interactionsUsed = new Map();
 
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
-  if (interaction.isButton()) {
-
-    const row2 = new Discord.MessageActionRow().addComponents(
-      new Discord.MessageSelectMenu()
-        .setCustomId('select')
-        .setPlaceholder('Select your mogus')
-        .addOptions([
-          {
-            label: 'Red mogus',
-            description: 'common',
-            value: 'red',
-          },
-          {
-            label: 'Yellow mogus',
-            description: 'uncommon',
-            value: 'yellow',
-          },
-        ]),
-    );
-    interaction.update({ content: "DEAD BODY REPORTED", components: [row2] });
-  }
-  else if (interaction.isSelectMenu()) {
-    let color, impostor;
-    if (interaction.values[0] == "red") { color = "Red"; impostor = " was the impostor." }
-    else if (interaction.values[0] == "yellow") { color = "Yellow"; impostor = " was not the impostor." }
-    /*if(randomInt(0,1) == 0)impostor = " was the impostor.";
-    else impostor = " was not the impostor.";*/
-    if (!interactionsUsed.has(interaction.message.id)) interactionsUsed.set(interaction.message.id, []);
-    if (!interaction.replied && !interactionsUsed.get(interaction.message.id).includes(interaction.user.id)) {
-      interaction.reply({ content: interaction.user.username + " voted " + color + ". " + color + impostor });
-      interactionsUsed.get(interaction.message.id).push(interaction.user.id);
-    }
-  }
-  else if (interaction.isCommand()) {
-    if (interaction.commandName == "amogus") {
-      interaction.reply({ content: "Successfully created " + interaction.options.getString("color") + " mogus." });
+  if (interaction.isCommand()) {
+    switch (interaction.commandName) {
+      case "amogus": {
+        interaction.reply({ content: "Successfully created " + interaction.options.getString("color") + " mogus." });
+        break;
+      }
+      case "kino": {
+        interaction.channel.send("it was kino")
+        break;
+      }
+      case "kino suggest": {
+        interaction.channel.send("it was kino remind")
+        break;
+      }
+      case "amosgus": {
+        break;
+      }
     }
   }
 });
@@ -1290,9 +1271,9 @@ client.on('messageCreate', message => {
           saveReminders();
           let msg = "__Reminders:__\n";
           reminders.forEach(rem => {
-            msg +="• **"+rem.text + "** at <t:"+rem.timestamp+">\n";
+            msg += "• **" + rem.text + "** at <t:" + rem.timestamp + ">\n";
           });
-          message.channel.send({content:msg,allowedMentions:{parse:[]}});
+          message.channel.send({ content: msg, allowedMentions: { parse: [] } });
           break;
         }
 
