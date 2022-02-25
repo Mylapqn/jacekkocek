@@ -449,11 +449,11 @@ client.on('interactionCreate', interaction => {
       }
       case "kino": {
         interaction.channel.send("it was kino")
-        interaction.reply(interaction.command)
+        interaction.reply(interaction.commandName)
         break;
       }
-      case "kino suggest": {
-        interaction.channel.send("it was kino remind")
+      case "suggest": {
+        interaction.channel.send("it was suggest")
         break;
       }
       case "amosgus": {
