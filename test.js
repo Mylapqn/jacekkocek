@@ -450,11 +450,11 @@ client.on('interactionCreate', interaction => {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
           case "suggest": {
-            interaction.channel.send("it was suggest")
+            interaction.reply("it was suggest")
             break;
           }
           case "remind": {
-            interaction.channel.send("it was remind")
+            interaction.reply("it was remind")
             break;
           }
         }
