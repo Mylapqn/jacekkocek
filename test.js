@@ -458,10 +458,10 @@ client.on('interactionCreate', interaction => {
             break;
           }
         }
-
         break;
       }
-      case "amosgus": {
+      case "remind": {
+        interaction.reply("dfijd" + interaction.options.data[0].name+interaction.options.data[1].name);
         break;
       }
     }
