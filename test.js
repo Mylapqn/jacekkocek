@@ -442,7 +442,7 @@ let interactionsUsed = new Map();
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isCommand()) {
-    let arguments = interaction.options.data;
+    let arguments = interaction.options.data.map(x => x.value);
     switch (interaction.commandName) {
       case "amogus": {
         interaction.reply({ content: "Successfully created " + interaction.options.getString("color") + " mogus." });
@@ -451,38 +451,118 @@ client.on('interactionCreate', interaction => {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
           case "suggest": {
-            interaction.reply("it was suggest")
+            let filmName = arguments[0].toLowerCase();
+            if (kinoPlaylist.has(filmName)) {
+              interaction.reply({ content: "***" + toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.", ephemeral: true });
+            }
+            else if (kinoData.has(filmName)) {
+              interaction.reply({ content: "There is already a plan to watch ***" + toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
+            }
+            else {
+              let newSug = {
+                name: toTitleCase(filmName),
+                suggestedBy: message.author.username,
+                watched: false
+              }
+              kinoPlaylist.set(filmName, newSug);
+              savePlaylist();
+              interaction.reply("**" + message.author.username + "** added ***" + newSug.name + "*** to film suggestions.");
+            }
             break;
           }
           case "playlist": {
-            interaction.reply("it was remind")
+            if (kinoPlaylist.size > 0) {
+              let newMessage = "**__Film suggestions:__**\n";
+              kinoPlaylist.forEach(f => {
+                newMessage += "• ";
+                if (f.watched) {
+                  newMessage += "~~*" + f.name + "*~~";
+                }
+                else newMessage += "***" + f.name + "***";
+                newMessage += "\n";
+
+              });
+              interaction.reply(newMessage);
+            }
+            else {
+              interaction.reply({ content: "The playlist is empty!", ephemeral: true });
+            }
             break;
           }
           case "remind": {
-            interaction.reply("it was suggest")
+            let film = arguments[0].toLowerCase();
+            if (kinoData.has(film)) {
+              let kinoEntry = kinoData.get(film);
+              let newMessage = "";
+
+              kinoEntry.users.forEach(u => {
+                if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
+                newMessage = newMessage + "\n";
+              });
+              let time = 1000;
+              if (interaction.options.getString("when")) {
+                time = parseTime(interaction.options.getString("when"));
+              }
+              if (time == NaN || time == "NaN" || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
+              else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
+              else if (time > 0) {
+                let remText = newMessage;
+                let newRem = {
+                  guild: interaction.guildId,
+                  channel: interaction.channelId,
+                  text: remText,
+                  timestamp: Math.round(now() + time),
+                  mentions: []
+                }
+                createReminder(newRem);
+                interaction.reply({
+                  content: "Added reminder for **_" + toTitleCase(film) + "_** at <t:" + newRem.timestamp + ">",
+                  allowedMentions: { parse: [] },
+                  ephemeral: true
+                });
+              }
+              else {
+                interaction.reply({ content: "Invalid time!", ephemeral: true });
+              }
+            }
+            else {
+              interaction.reply({ content: "Cannot find any vote for ***" + toTitleCase(film) + "*** :disappointed:", ephemeral: true });
+            }
             break;
           }
           case "reset": {
-            interaction.reply("it was remind")
+            let film = arguments[0].toLowerCase();
+            if (kinoData.has(film)) {
+              kinoData.delete(film);
+              interaction.reply("The data for ***" + toTitleCase(film) + "*** was successfully reset.");
+            }
+            if (kinoPlaylist.has(film)) {
+              kinoPlaylist.delete(film);
+              savePlaylist();
+              interaction.reply("The suggestion for ***" + toTitleCase(film) + "*** was successfully reset.");
+            }
+            else {
+              interaction.reply({ content: "Cannot find any vote or suggestion for ***" + toTitleCase(film) + "*** :disappointed:", ephemeral: true });
+            }
             break;
           }
           case "watch": {
-            interaction.reply("it was suggest")
+            interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
             break;
           }
           case "info": {
-            interaction.reply("it was remind")
+            interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
             break;
           }
         }
         break;
       }
       case "remind": {
-        let time = parseTime(arguments[0].value);
+        let time = parseTime(arguments[0]);
         if (time == NaN || time == "NaN" || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
         else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
         else if (time > 0) {
-          let remText = arguments[1].value.trim();
+          let remText = arguments[1].trim();
           if (remText == "") remText = "Unnamed reminder";
           let newRem = {
             guild: interaction.guildId,
