@@ -290,13 +290,6 @@ var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
 loadPlaylist();
 
-var currentWord = "";
-var lastSelectedWord = "";
-var wordGameEnabled = false;
-
-var stockMessage;
-var lastInStock = 0;
-
 const reminderThreshold = 3600;
 
 let reminders = [];
@@ -489,11 +482,6 @@ client.on('messageCreate', message => {
     if (message.mentions.has(client.user)) {
       if (message.type != "REPLY")
         message.channel.send(message.author.toString());
-    }
-    if (message.channel.name == "ano" && message.content.length == 1) {
-      if (wordGameEnabled) {
-        findWord(message.content, message);
-      }
     }
     else if (message.content === ':gif2:') {
 
@@ -1201,15 +1189,6 @@ client.on('messageCreate', message => {
               }
               playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
             }
-          }
-          break;
-        }
-        case "hint": {
-          if (lastSelectedWord != "") {
-            message.channel.send(lastSelectedWord.toUpperCase());
-          }
-          else {
-            message.channel.send("There is nothing to hint");
           }
           break;
         }
@@ -2012,59 +1991,6 @@ function playStation(voice, id, channel) {
   }
 }
 
-//#endregion
-//#region LETTERS
-function findWord(newLetter, message) {
-  newLetter = newLetter.toLowerCase();
-  if (isLetter(newLetter)) {
-    console.log(newLetter);
-    let searchWord = currentWord + newLetter;
-    Https.get("https://api.datamuse.com/sug?max=50&s=" + searchWord + "*", function (res) {
-      console.log("HTTPS Status:" + res.statusCode);
-      var body;
-      res.on("data", function (data) {
-        body += data;
-      });
-      res.on("end", function () {
-        var parsed = JSON.parse(body.substring(9, body.length));
-        console.log("Searched for: \"" + searchWord + "\"");
-        console.log(parsed.length);
-        if (parsed.length > 0) {
-          let selectedWord = parsed[randomInt(0, parsed.length - 1)].word;
-          selectedWord = selectedWord.replace(/\s+/g, '');
-          lastSelectedWord = selectedWord;
-          if (currentWord + newLetter == selectedWord) {
-            message.channel.send(":white_check_mark:");
-            currentWord = "";
-          }
-          else {
-            let selectedLetter = selectedWord.charAt(currentWord.length + 1);
-            currentWord += newLetter + selectedLetter;
-            console.log("selected:" + selectedWord);
-            console.log("  letter:" + selectedLetter);
-            console.log("currentW:" + currentWord);
-            message.channel.send(selectedLetter.toUpperCase());
-            if (currentWord == selectedWord) {
-              message.channel.send(":white_check_mark:");
-              currentWord = "";
-            }
-          }
-        }
-        else if (currentWord.length > 0) {
-          console.log("couldn't find word, resetting");
-          message.channel.send(":question:")
-          currentWord = "";
-          //findWord(newLetter, message);
-        }
-
-      });
-    });
-  }
-}
-
-function isLetter(str) {
-  return str.length === 1 && str.match(/[a-z]/i);
-}
 //#endregion
 
 function dateString(inputDate) {
