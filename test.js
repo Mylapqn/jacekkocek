@@ -30,10 +30,6 @@ let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "p
 var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
-var cringeScore = {};
-var cringelord;
-var cringelordScore = 0;
-var cringelordRole;
 var startDate;
 var defaultTimeZone = "Europe/Prague";
 
@@ -68,19 +64,6 @@ var helpCommands = [
     prefix: true,
     arguments: "název filmu",
     description: "Zobrazit hledaný film",
-  },
-  {
-    name: "listCringe",
-    prefix: true,
-    arguments: "",
-    description: "Display the Cringe leaderboard",
-  },
-  {
-    name: "cringe",
-    prefix: false,
-    arguments: "",
-    description: "Award Cringe",
-    longDescription: "Award Cringe to someone - if they have more Cringe than anyone else, this will also make them the Cringelord",
   },
   {
     name: ":gif2:",
@@ -268,8 +251,6 @@ var letterEmoji = {
 
 console.log("--------------------------------------\nStarting up!")
 
-var kinoMessages = [];
-var kinoMessageUsers = [];
 var kinoData = new Map();
 var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
@@ -508,15 +489,6 @@ client.on('messageCreate', message => {
       message.delete();
       message.channel.send(client.emojis.cache.get("772234862652424203").toString());
 
-    }
-    else if (message.content.toLowerCase() == "cringe") {
-      message.channel.messages.fetch({ limit: 2 }).then(messages => {
-
-        var previousMessage = messages.array()[1];
-        addCringe(previousMessage.member);
-
-
-      });
     }
     else if (message.type == "REPLY" && message.content.toLowerCase() == "usmažit prosím") {
       message.channel.messages.fetch(message.reference.messageId).then(msg => {
@@ -792,29 +764,6 @@ client.on('messageCreate', message => {
           }
           else {
             message.channel.send("cringe");
-            addCringe(message.member);
-          }
-          break;
-        case "listCringe":
-
-          if (Object.keys(cringeScore).length == 0) { message.channel.send("No cringe :disappointed:"); }
-          else {
-            //var output = "**Cringe leaderboard since " + dateString(startDate) + ":**\n";
-            var output = "__**Cringe leaderboard:**__\n";
-            var cringeUsers = cringeLeaderboard();
-            for (var i = 0; i < cringeUsers.length; i++) {
-              if (cringeUsers[i] != -1) {
-                if (i == 0) output += (i + 1) + ". Cringelord **" + cringeUsers[i] + "**: " + cringeScore[cringeUsers[i]] + " cringe\n";
-                else
-                  output += (i + 1) + ". **" + cringeUsers[i] + "**: " + cringeScore[cringeUsers[i]] + " cringe\n";
-              }
-            }
-
-            /*for (var u in cringeScore) {
-              console.log(u, cringeScore[u]);
-              output += u + ": " + cringeScore[u] + " cringe\n";
-            }*/
-            message.channel.send(output);
           }
           break;
         case "kino": {
@@ -1465,57 +1414,6 @@ function loadReminders() {
 
 
 
-//#endregion
-//#region CRINGE
-function cringeLeaderboard() {
-  var tempScores = new Array(9);
-  tempScores.fill(-1);
-
-  var usedIDs = new Array(9);
-  usedIDs.fill(-1);
-
-  var con = true;
-
-  for (var t = 0; t < tempScores.length; t++) {
-    //console.log("a");
-    for (var u in cringeScore) {
-      //console.log("b");
-      if (cringeScore[u] > tempScores[t]) {
-        con = true;
-        for (var v = 0; v < t; v++) {
-          if (usedIDs[v] == u) {
-            con = false;
-          }
-        }
-        if (con) {
-          tempScores[t] = cringeScore[u];
-          usedIDs[t] = u;
-        }
-      }
-    }
-  }
-  return usedIDs;
-}
-function addCringe(member) {
-  var user = member.user;
-  if (cringeScore[user.username] != null) cringeScore[user.username]++;
-  else cringeScore[user.username] = 1;
-  if (cringeScore[user.username] > cringelordScore) {
-    cringelordScore = cringeScore[user.username];
-    cringelord = user;
-    //cringelordRole = member.guild.roles.cache.find(r => r.name = "Cringelord");
-    //console.log(member.guild.roles.cache);
-    cringelordRole = findRole(member.guild.roles.cache, "Cringelord");
-    console.log("Cringelord member amount: " + cringelordRole.members.size);
-    cringelordRole.members.forEach(m => {
-      if (m != member) {
-        m.roles.remove(cringelordRole);
-        console.log("Removing cringelord from " + m.user.username)
-      }
-    });
-    member.roles.add(cringelordRole);
-  }
-}
 //#endregion
 //#region FIND FUNCTIONS
 function findRole(cache, name) {
