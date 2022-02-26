@@ -262,6 +262,7 @@ radioApiKey();
 
 var nextYoutube;
 var nextYoutubeData;
+var youtubeAutoplay = false;
 
 var youtubePlaylist = [];
 var youtubePlaylistPosition = 0;
@@ -443,6 +444,36 @@ client.on('interactionCreate', interaction => {
         }
         else {
           interaction.reply({ content: "Invalid time!", ephemeral: true });
+        }
+        break;
+      }
+      case "youtube": {
+        let vid = interaction.options.getString("video");
+        if (interaction.member.voice.channel) {
+          joinVoiceChannel(interaction.member.voice.channel);
+          if (interaction.options.getBoolean("autoplay")) {
+            youtubeAutoplay = true;
+          }
+          else youtubeAutoplay = false;
+          if (vid.startsWith("http")) {
+            if (vid.includes("list=")) {
+              let n = vid.indexOf("list=");
+              let listId = vid.slice(n + 5);
+              playYoutubePlaylist(listId, interaction.channel);
+            }
+            else {
+              youtubePlaylist = [];
+              playYoutube(vid, interaction.channel);
+            }
+          }
+          else {
+            youtubePlaylist = [];
+            searchYoutube(vid).then((id) => {
+              interaction.reply({ content: "Playing youtube in :sound:" + interaction.member.voice.channel.name, ephemeral: true });
+              playYoutube("https://www.youtube.com/watch?v=" + id, interaction.channel);
+            }).catch(() => { interaction.reply({ content: "No results!", ephemeral: true }); });
+          }
+
         }
         break;
       }
@@ -1612,7 +1643,7 @@ function playYoutube(videoUrl, channel) {
         clearYoutubeTimeout();
       }
     }
-    else {
+    else if (youtubeAutoplay) {
       nextVideo = info.related_videos[0].id;
     }
     if (nextVideo) {
