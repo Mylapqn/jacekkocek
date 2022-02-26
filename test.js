@@ -1272,29 +1272,29 @@ client.on('messageCreate', message => {
 
 
 function parseTime(inputString) {
-    let units = -1;
-    let unitString = inputString.match(/[a-zA-Z]+/g);
-    console.log(unitString);
-    if(unitString == "") return -1;
-    if (unitString.startsWith("sec") || unitString == "s") {
-      units = 1;
-    }
-    else if (unitString.startsWith("min") || unitString == "m") {
-      units = 60;
-    }
-    else if (unitString.startsWith("hour") || unitString == "h" || unitString == "hr") {
-      units = 3600;
-    }
-    else if (unitString.startsWith("day") || unitString == "d") {
-      units = 86400;
-    }
-    else if (unitString.startsWith("week") || unitString == "w") {
-      units = 604800;
-    }
-    else if (unitString.startsWith("mon")) {
-      units = 2592000;
-    }
-    return parseFloat(inputString) * units;
+  let units = -1;
+  let unitString = inputString.match(/[a-zA-Z]+/g);
+  console.log(unitString);
+  if (unitString == "") return -1;
+  if (unitString.startsWith("sec") || unitString == "s") {
+    units = 1;
+  }
+  else if (unitString.startsWith("min") || unitString == "m") {
+    units = 60;
+  }
+  else if (unitString.startsWith("hour") || unitString == "h" || unitString == "hr") {
+    units = 3600;
+  }
+  else if (unitString.startsWith("day") || unitString == "d") {
+    units = 86400;
+  }
+  else if (unitString.startsWith("week") || unitString == "w") {
+    units = 604800;
+  }
+  else if (unitString.startsWith("mon")) {
+    units = 2592000;
+  }
+  return parseFloat(inputString) * units;
 }
 
 function createReminder(newRem) {
