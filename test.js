@@ -459,10 +459,12 @@ client.on('interactionCreate', interaction => {
             if (vid.includes("list=")) {
               let n = vid.indexOf("list=");
               let listId = vid.slice(n + 5);
+              interaction.reply({ content: "Playing youtube in :sound:" + interaction.member.voice.channel.name, ephemeral: true });
               playYoutubePlaylist(listId, interaction.channel);
             }
             else {
               youtubePlaylist = [];
+              interaction.reply({ content: "Playing youtube in :sound:" + interaction.member.voice.channel.name, ephemeral: true });
               playYoutube(vid, interaction.channel);
             }
           }
