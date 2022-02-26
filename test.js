@@ -442,7 +442,6 @@ let interactionsUsed = new Map();
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isCommand()) {
-    let arguments = interaction.options.data.map(x => x.value);
     switch (interaction.commandName) {
       case "amogus": {
         interaction.reply({ content: "Successfully created " + interaction.options.getString("color") + " mogus." });
@@ -451,7 +450,7 @@ client.on('interactionCreate', interaction => {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
           case "suggest": {
-            let filmName = arguments[0].toLowerCase();
+            let filmName = interaction.options.getString("film").toLowerCase();
             if (kinoPlaylist.has(filmName)) {
               interaction.reply({ content: "***" + toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.", ephemeral: true });
             }
@@ -531,7 +530,7 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "reset": {
-            let film = arguments[0].toLowerCase();
+            let film = interaction.options.getString("film").toLowerCase();
             if (kinoData.has(film)) {
               kinoData.delete(film);
               interaction.reply("The data for ***" + toTitleCase(film) + "*** was successfully reset.");
@@ -558,11 +557,11 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "remind": {
-        let time = parseTime(arguments[0]);
+        let time = parseTime(interaction.options.getString("delay"));
         if (time == NaN || time == "NaN" || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
         else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
         else if (time > 0) {
-          let remText = arguments[1].trim();
+          let remText = interaction.options.getString("text").trim();
           if (remText == "") remText = "Unnamed reminder";
           let newRem = {
             guild: interaction.guildId,
