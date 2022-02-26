@@ -287,7 +287,6 @@ client.on('ready', () => {
 
   console.log('' + new Date() + ' I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
-  //console.log(client.user);
   startDate = new Date();
 
   /*client.guilds.fetch("549589656606343178").then(guild => {
@@ -303,12 +302,7 @@ client.on('ready', () => {
   }, reminderThreshold * 1000);
   console.log(upcomingReminders);
 
-  //UPDATE NVIDIA STOCK ON/OFF
-  //updateStockInfo();
-
 });
-
-let interactionsUsed = new Map();
 
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
