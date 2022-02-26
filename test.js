@@ -454,7 +454,23 @@ client.on('interactionCreate', interaction => {
             interaction.reply("it was suggest")
             break;
           }
+          case "playlist": {
+            interaction.reply("it was remind")
+            break;
+          }
           case "remind": {
+            interaction.reply("it was suggest")
+            break;
+          }
+          case "reset": {
+            interaction.reply("it was remind")
+            break;
+          }
+          case "watch": {
+            interaction.reply("it was suggest")
+            break;
+          }
+          case "info": {
             interaction.reply("it was remind")
             break;
           }
@@ -462,66 +478,29 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "remind": {
-        let split = arguments[0].value.split(" ");
-        if (split.length == 2) {
-          let units = -1;
-          if (split[1].startsWith("sec") || split[2] == "s") {
-            units = 1;
+        let time = parseTime(arguments[0].value);
+        if (time == NaN || time == "NaN" || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
+        else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
+        else if (time > 0) {
+          let remText = arguments[1].value.trim();
+          if (remText == "") remText = "Unnamed reminder";
+          let newRem = {
+            guild: interaction.guildId,
+            channel: interaction.channelId,
+            text: remText,
+            timestamp: Math.round(now() + time),
+            mentions: []
           }
-          else if (split[1].startsWith("min") || split[2] == "m") {
-            units = 60;
-          }
-          else if (split[1].startsWith("hour") || split[2] == "h" || split[2] == "hr") {
-            units = 3600;
-          }
-          else if (split[1].startsWith("day") || split[2] == "d") {
-            units = 86400;
-          }
-          else if (split[1].startsWith("week") || split[2] == "w") {
-            units = 604800;
-          }
-          else if (split[1].startsWith("mon")) {
-            units = 2592000;
-          }
-          let arr = split[0];
-          let time = parseFloat(arr);
-          //console.log("time", time, "units", units);
-          time *= units;
-          if (time == NaN || time == "NaN" || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
-          else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
-          else if (time > 0) {
-            let remText = arguments[1].value.trim();
-            if (remText == "") remText = "Unnamed reminder";
-            let newRem = {
-              guild: interaction.guildId,
-              channel: interaction.channelId,
-              text: remText,
-              timestamp: Math.round(now() + time),
-              mentions: []
-            }
-            //console.log(newRem);
-            if (time <= reminderThreshold) {
-              newRem.timeout = setTimeout(() => {
-                executeReminder(newRem);
-              }, (newRem.timestamp - now()) * 1000);;
-              upcomingReminders.push(newRem);
-              console.log("Set up 1 reminder immediately.")
-            }
-            reminders.push(newRem);
-            saveReminders();
-            interaction.reply({
-              content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
-              allowedMentions: { parse: [] }
-            });
-          }
-          else {
-            interaction.reply({ content: "Invalid time!", ephemeral: true });
-          }
-          break;
+          createReminder(newRem);
+          interaction.reply({
+            content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
+            allowedMentions: { parse: [] }
+          });
         }
         else {
           interaction.reply({ content: "Invalid time!", ephemeral: true });
         }
+        break;
       }
     }
   }
@@ -1258,79 +1237,6 @@ client.on('messageCreate', message => {
           }
           break;
         }
-        case "remind": {
-          if (argument != null) {
-            let split = argument.split(" ");
-            if (split[0] == "in" && split.length >= 3) {
-              let units = -1;
-              if (split[2].startsWith("sec") || split[2] == "s") {
-                units = 1;
-              }
-              else if (split[2].startsWith("min") || split[2] == "m") {
-                units = 60;
-              }
-              else if (split[2].startsWith("hour") || split[2] == "h" || split[2] == "hr") {
-                units = 3600;
-              }
-              else if (split[2].startsWith("day") || split[2] == "d") {
-                units = 86400;
-              }
-              else if (split[2].startsWith("week") || split[2] == "w") {
-                units = 604800;
-              }
-              else if (split[2].startsWith("mon")) {
-                units = 2592000;
-              }
-              let arr = split[1];
-              let time = parseFloat(arr);
-              //console.log("time", time, "units", units);
-              time *= units;
-              if (time == NaN || time == "NaN" || time <= 0) message.channel.send("Invalid time!");
-              else if (time > 31968000) message.channel.send("Cannot create timers over 1 year!");
-              else if (time > 0) {
-                let remText = "";
-                for (let i = 3; i < split.length; i++) {
-                  const word = split[i];
-                  remText += word + " ";
-                }
-                remText = remText.trim();
-                if (remText == "") remText = "Unnamed reminder";
-                let newRem = {
-                  guild: message.guildId,
-                  channel: message.channelId,
-                  text: remText,
-                  timestamp: Math.round(now() + time),
-                  mentions: []
-                }
-                let mentions = Array.from(message.mentions.users.keys());
-                newRem.mentions = mentions;
-                //console.log(newRem);
-                if (time <= reminderThreshold) {
-                  newRem.timeout = setTimeout(() => {
-                    executeReminder(newRem);
-                  }, (newRem.timestamp - now()) * 1000);;
-                  upcomingReminders.push(newRem);
-                  console.log("Set up 1 reminder immediately.")
-                }
-                reminders.push(newRem);
-                saveReminders();
-                message.delete().then(() => {
-                  message.channel.send({
-                    content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
-                    allowedMentions: { parse: [] }
-                  });
-                });
-              }
-              else {
-                message.channel.send("Invalid arguments!");
-              }
-            }
-          }
-          else {
-            message.channel.send("remind WHEN???");
-          }
-          break;
-        }
         case "remindList": {
           cleanupReminders();
           saveReminders();
@@ -1363,6 +1269,45 @@ client.on('messageCreate', message => {
     }
   }
 });
+
+
+function parseTime(inputString) {
+    let units = -1;
+    let unitString = inputString.match(/[a-zA-Z]+/g);
+    if(unitString == "") return -1;
+    if (unitString.startsWith("sec") || unitString == "s") {
+      units = 1;
+    }
+    else if (unitString.startsWith("min") || unitString == "m") {
+      units = 60;
+    }
+    else if (unitString.startsWith("hour") || unitString == "h" || unitString == "hr") {
+      units = 3600;
+    }
+    else if (unitString.startsWith("day") || unitString == "d") {
+      units = 86400;
+    }
+    else if (unitString.startsWith("week") || unitString == "w") {
+      units = 604800;
+    }
+    else if (unitString.startsWith("mon")) {
+      units = 2592000;
+    }
+    return parseFloat(inputString) * units;
+}
+
+function createReminder(newRem) {
+  let time = newRem.timestamp - now();
+  if (time <= reminderThreshold) {
+    newRem.timeout = setTimeout(() => {
+      executeReminder(newRem);
+    }, (time) * 1000);;
+    upcomingReminders.push(newRem);
+    console.log("Set up 1 reminder immediately.")
+  }
+  reminders.push(newRem);
+  saveReminders();
+}
 
 function cleanupReminders() {
   for (let i = 0; i < reminders.length; i++) {
