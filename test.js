@@ -1274,6 +1274,7 @@ client.on('messageCreate', message => {
 function parseTime(inputString) {
     let units = -1;
     let unitString = inputString.match(/[a-zA-Z]+/g);
+    console.log(unitString);
     if(unitString == "") return -1;
     if (unitString.startsWith("sec") || unitString == "s") {
       units = 1;
