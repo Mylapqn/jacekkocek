@@ -490,7 +490,7 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "remind": {
-            let film = arguments[0].toLowerCase();
+            let film = interaction.options.getString("name").toLowerCase();
             if (kinoData.has(film)) {
               let kinoEntry = kinoData.get(film);
               let newMessage = "";
