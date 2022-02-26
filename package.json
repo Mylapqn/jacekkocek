@@ -21,6 +21,6 @@
     "jimp": "^0.16.1",
     "libsodium-wrappers": "^0.7.9",
     "process": "^0.11.10",
-    "ytdl-core": "^4.10.0"
+    "ytdl-core": "^4.10.1"
   }
 }
