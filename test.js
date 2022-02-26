@@ -748,10 +748,14 @@ client.on('messageCreate', message => {
           break;
 
         case "zobrazit":
+          message.channel.send("No longer supported!");
+          break;
           startGoogleSearch(argument, message, 0);
 
           break;
         case "w2g":
+          message.channel.send("No longer supported!");
+          break;
           httpPost("https://w2g.tv/rooms/create.json").then(parsed => { message.channel.send(parsed) });
 
           break;
@@ -871,6 +875,8 @@ client.on('messageCreate', message => {
           break;
         }
         case "kinoReset": {
+          message.channel.send("No longer supported! Use the slash command instead.");
+          break;
           message.delete();
           if (argument) {
             let film = argument.toLowerCase();
@@ -892,6 +898,8 @@ client.on('messageCreate', message => {
           break;
         }
         case "kinoRemind": {
+          message.channel.send("No longer supported! Use the slash command instead.");
+          break;
           message.delete();
           if (argument) {
             let film = argument.toLowerCase();
@@ -916,6 +924,8 @@ client.on('messageCreate', message => {
         case "suggestions":
         case "playlist":
         case "kinoPlaylist": {
+          message.channel.send("No longer supported! Use the slash command instead.");
+          break;
           message.delete();
           if (kinoPlaylist.size > 0) {
             //let newMessage = "**Film suggestions:**\n✅ - Watched, <:white_cross:767907092907687956> - Not watched\n\n";
@@ -941,6 +951,8 @@ client.on('messageCreate', message => {
         }
         case "suggest":
         case "kinoSuggest": {
+          message.channel.send("No longer supported! Use the slash command instead.");
+          break;
           message.delete();
           if (argument) {
             let filmName = argument.toLowerCase();
@@ -1122,6 +1134,8 @@ client.on('messageCreate', message => {
 
         case "youtube":
         case "yt": {
+          message.channel.send("No longer supported! Use the slash command instead.");
+          break;
           message.delete();
           if (message.member.voice.channel && argument) {
             joinVoiceChannel(message.member.voice.channel);
@@ -1146,8 +1160,8 @@ client.on('messageCreate', message => {
         }
         case "skip": {
           message.delete();
-          if (nextYoutube) {
-            let voice = message.guild.voice.connection;
+          if (nextYoutube && youtubeAutoplay) {
+            let voice = message.guild.me.voice.connection;
             if (voice) {
               if (argument && youtubePlaylist.length > 0) {
                 let num = parseInt(argument);
