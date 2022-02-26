@@ -460,12 +460,12 @@ client.on('interactionCreate', interaction => {
             else {
               let newSug = {
                 name: toTitleCase(filmName),
-                suggestedBy: message.author.username,
+                suggestedBy: interaction.user.username,
                 watched: false
               }
               kinoPlaylist.set(filmName, newSug);
               savePlaylist();
-              interaction.reply("**" + message.author.username + "** added ***" + newSug.name + "*** to film suggestions.");
+              interaction.reply("**" + interaction.user.username + "** added ***" + newSug.name + "*** to film suggestions.");
             }
             break;
           }
