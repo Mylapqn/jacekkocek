@@ -517,32 +517,35 @@ client.on('messageCreate', message => {
       message.channel.send(client.emojis.cache.get("772234862652424203").toString());
 
     }
-    else if (message.type == "REPLY" && message.content.toLowerCase() == "usmažit prosím") {
-      message.channel.messages.fetch(message.reference.messageId).then(msg => {
-        let url = null;
-        if (msg.attachments.size > 0) {
-          url = msg.attachments.first().proxyURL;
-        }
-        else if (msg.content.includes("http")) {
-          url = msg.content.substr(msg.content.indexOf("http"));
-        }
-        if (url != null) {
-          Jimp.read(url).then(image => {
-            console.log("jimp start");
-            let kernelSharpen = [[0, -3, 0], [-3, 13, -3], [0, -3, 0]];
-            image
-              .quality(10)
-              .convolute(kernelSharpen)
-              .contrast(.99)
-              .color([{ apply: "saturate", params: [70] }])
-              .convolute(kernelSharpen)
-              .writeAsync("./outputImg.jpg").then(e => {
-                console.log("jimp done")
-                message.reply({ files: ["./outputImg.jpg"] }).then(e => { fs.unlink("./outputImg.jpg") });
-              });
-          })
-        }
-      });
+    else if (message.type == "REPLY") {
+      let lowerCase = message.content.toLowerCase();
+      if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
+        message.channel.messages.fetch(message.reference.messageId).then(msg => {
+          let url = null;
+          if (msg.attachments.size > 0) {
+            url = msg.attachments.first().proxyURL;
+          }
+          else if (msg.content.includes("http")) {
+            url = msg.content.substr(msg.content.indexOf("http"));
+          }
+          if (url != null) {
+            Jimp.read(url).then(image => {
+              console.log("jimp start");
+              let kernelSharpen = [[0, -3, 0], [-3, 13, -3], [0, -3, 0]];
+              image
+                .quality(10)
+                .convolute(kernelSharpen)
+                .contrast(.99)
+                .color([{ apply: "saturate", params: [70] }])
+                .convolute(kernelSharpen)
+                .writeAsync("./outputImg.jpg").then(e => {
+                  console.log("jimp done")
+                  message.reply({ files: ["./outputImg.jpg"] }).then(e => { fs.unlink("./outputImg.jpg") });
+                });
+            })
+          }
+        });
+      }
     }
     else if (message.content.startsWith(prefix)) {
       var withoutPrefix = message.content.slice(prefix.length);
