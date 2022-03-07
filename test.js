@@ -296,6 +296,9 @@ client.on('ready', () => {
       stockMessage = message;
     });
   });*/
+  
+  client.application?.commands.fetch().then(e=>{console.log(e)});
+  console.log(client.application?.commands);
 
   setupReminders();
   setInterval(() => {
