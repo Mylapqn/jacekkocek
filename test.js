@@ -1465,10 +1465,10 @@ function setupCommands() {
     let globalCommands = JSON.parse(fs.readFileSync("globalCommands.json"));
     let guildCommands = JSON.parse(fs.readFileSync("guildCommands.json"));
     if (updateGlobalCommands) {
-      client.application?.commands.create(globalCommands);
+      client.application?.commands.set(globalCommands);
       console.log("Updated global commands.");
     }
-    client.guilds.cache.get('549589656606343178').commands.create(guildCommands);
+    client.guilds.cache.get('549589656606343178').commands.set(guildCommands);
     console.log("Updated guild commands.");
   } catch (error) {
     console.log("Could not load commands!");
