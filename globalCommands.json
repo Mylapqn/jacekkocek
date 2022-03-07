@@ -1,0 +1,95 @@
+[
+    {
+        "name": "remind",
+        "description": "Create a reminder with a specified delay",
+        "options": [
+            {
+                "type": 3,
+                "name": "delay",
+                "description": "The delay after which the reminder will execute",
+                "required": true
+            },
+            {
+                "type": 3,
+                "name": "text",
+                "description": "The text of the reminder",
+                "required": true
+            }
+        ],
+        "defaultPermission": true,
+        "version": "950518835067379782"
+    },
+    {
+        "name": "radio",
+        "description": "Play radio in the voice chat",
+        "options": [
+            {
+                "type": 1,
+                "name": "play",
+                "description": "Play a radio station in the voice chat",
+                "options": [
+                    {
+                        "type": 4,
+                        "name": "station",
+                        "description": "Station name",
+                        "required": true,
+                        "choices": [
+                            {
+                                "name": "Evropa 2",
+                                "value": 0
+                            },
+                            {
+                                "name": "Anime Radio 1",
+                                "value": 1
+                            },
+                            {
+                                "name": "Spacesynth",
+                                "value": 2
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "custom",
+                "description": "Play a custom radio station in the voice chat",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "url",
+                        "description": "URL of custom stst",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "list",
+                "description": "List all radio station presets"
+            }
+        ],
+        "defaultPermission": true,
+        "version": "946897344723554404"
+    },
+    {
+        "name": "youtube",
+        "description": "Play youtube songs in the voice chat",
+        "options": [
+            {
+                "type": 3,
+                "name": "video",
+                "description": "The link to the video or search keyword",
+                "required": true
+            },
+            {
+                "type": 5,
+                "name": "autoplay",
+                "description": "Whether to continue with playing similar videos",
+                "required": false
+            }
+        ],
+        "defaultPermission": true,
+        "version": "947236413164904450"
+    }
+]

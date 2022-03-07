@@ -299,15 +299,7 @@ client.on('ready', () => {
   });
   */
 
-  //client.application?.commands.fetch().then(e => { console.log(JSON.stringify(e)) });
-  let guild = client.guilds.cache.get('549589656606343178');
-  guild.commands.fetch().then(e => {
-    e.forEach(command => {
-      if (command.name != "kino")
-        guild.commands.delete(command)
-    });
-    //console.log(JSON.stringify(e))
-  });
+  setupCommands();
 
   setupReminders();
   setInterval(() => {
@@ -1464,6 +1456,22 @@ function loadReminders() {
     cleanupReminders();
   } catch (error) {
     console.log("Could not load reminders!");
+    console.log(error);
+  }
+}
+
+function setupCommands() {
+  try {
+    let globalCommands = JSON.parse(fs.readFileSync("globalCommands.json"));
+    let guildCommands = JSON.parse(fs.readFileSync("guildCommands.json"));
+    if (updateGlobalCommands) {
+      client.application?.commands.create(globalCommands);
+      console.log("Updated global commands.");
+    }
+    client.guilds.cache.get('549589656606343178').commands.create(guildCommands);
+    console.log("Updated guild commands.");
+  } catch (error) {
+    console.log("Could not load commands!");
     console.log(error);
   }
 }

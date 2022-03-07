@@ -1,0 +1,84 @@
+[
+    {
+        "name": "kino",
+        "description": "Bude?",
+        "options": [
+            {
+                "type": 1,
+                "name": "suggestuuuuuuuuuu",
+                "description": "Suggest a new film to watch",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "film",
+                        "description": "The name of the film",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "playlist",
+                "description": "See the film suggestions"
+            },
+            {
+                "type": 1,
+                "name": "remind",
+                "description": "Remind all people who want to watch the film",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "film",
+                        "description": "The name of the film",
+                        "required": true
+                    },
+                    {
+                        "type": 3,
+                        "name": "when",
+                        "description": "When to remind (default: now)",
+                        "required": false
+                    },
+                    {
+                        "type": 5,
+                        "name": "ping",
+                        "description": "Whether to ping the users (default: yes)",
+                        "required": false
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "reset",
+                "description": "Reset the kino data for a film",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "film",
+                        "description": "The name of the film",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "watch",
+                "description": "Plan a kino session",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "film",
+                        "description": "The name of the film",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "info",
+                "description": "See the info about a film (usually CSFD page)"
+            }
+        ],
+        "defaultPermission": true,
+        "version": "946886058736488509"
+    }
+]
