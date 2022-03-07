@@ -299,8 +299,15 @@ client.on('ready', () => {
   });
   */
 
-  client.application?.commands.fetch().then(e=>{console.log(JSON.stringify(e))});
-  client.guilds.cache.get('549589656606343178')?.commands.fetch().then(e=>{console.log(JSON.stringify(e))});
+  //client.application?.commands.fetch().then(e => { console.log(JSON.stringify(e)) });
+  let guild = client.guilds.cache.get('549589656606343178');
+  guild.commands.fetch().then(e => {
+    e.forEach(command => {
+      if (command.name != "kino")
+        guild.commands.delete(command)
+    });
+    //console.log(JSON.stringify(e))
+  });
 
   setupReminders();
   setInterval(() => {
