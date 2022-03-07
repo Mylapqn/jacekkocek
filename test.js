@@ -290,12 +290,14 @@ client.on('ready', () => {
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   startDate = new Date();
 
-  /*client.guilds.fetch("549589656606343178").then(guild => {
+  /*
+  client.guilds.fetch("549589656606343178").then(guild => {
     let c = guild.channels.cache.find(channel => channel.name == "nvidia");
     c.messages.fetch("800379220517060619").then(message => {
       stockMessage = message;
     });
-  });*/
+  });
+  */
 
   client.application?.commands.fetch().then(e=>{console.log(JSON.stringify(e))});
   client.guilds.cache.get('549589656606343178')?.commands.fetch().then(e=>{console.log(JSON.stringify(e))});
