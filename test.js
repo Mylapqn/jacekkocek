@@ -296,9 +296,9 @@ client.on('ready', () => {
       stockMessage = message;
     });
   });*/
-  
-  client.application?.commands.fetch().then(e=>{console.log(e)});
-  console.log(client.application?.commands);
+
+  client.application?.commands.fetch().then(e=>{console.log(JSON.stringify(e))});
+  client.guilds.cache.get('549589656606343178')?.commands.fetch().then(e=>{console.log(JSON.stringify(e))});
 
   setupReminders();
   setInterval(() => {
