@@ -264,7 +264,7 @@ var radioTimer;
 var fluttershy = true;
 var radioApiKey;
 var radioServerPing = 0;
-radioApiKey();
+radioApiKeyGet();
 
 var nextYoutube;
 var nextYoutubeData;
@@ -1874,7 +1874,7 @@ function mlpSong(voice, index, autoplay, channel) {
 }
 
 function playRadio(voice, channel) {
-  Https.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey(), function (res) {
+  Https.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey, function (res) {
     console.log("HTTPS status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
@@ -1913,7 +1913,7 @@ function playRadio(voice, channel) {
   });
 }
 
-function radioApiKey() {
+function radioApiKeyGet() {
   Https.get("https://ponyweb.ml/api.php?keyrequest", function (res) {
     let startTime = Date.now();
     console.log("HTTPS status:" + res.statusCode);
