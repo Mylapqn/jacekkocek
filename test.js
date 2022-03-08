@@ -1089,6 +1089,7 @@ client.on('messageCreate', message => {
           break;
         }
         case "mlpMix": {
+          message.channel.send("" + fs.existsSync("mlp-mix.ogg"));
           message.delete();
           if (message.member.voice.channel) {
             voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
