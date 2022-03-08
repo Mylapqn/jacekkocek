@@ -24,8 +24,9 @@ intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
 intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
-const updateGlobalCommands=false;
-const commandsToDelete = ["amogus"];
+const updateGlobalCommands = true;
+const commandsToDeleteGlobal = [];
+const commandsToDeleteGuild = [];
 /**
  * @type {Discord.Guild}
  */
@@ -1473,14 +1474,16 @@ function setupCommands() {
     let guildCommands = JSON.parse(fs.readFileSync("guildCommands.json"));
     if (updateGlobalCommands) {
       client.application?.commands.set(globalCommands);
+      commandsToDeleteGlobal.forEach(na => {
+        afrGuild.commands.delete(na);
+      })
       console.log("Updated global commands.");
     }
     afrGuild.commands.set(guildCommands);
-    if(commandsToDelete.length > 0){
-      commandsToDelete.forEach(na=>{
-        afrGuild.commands.delete(na);
-      })
-    }
+    commandsToDeleteGuild.forEach(na => {
+      afrGuild.commands.delete(na);
+    })
+
     console.log("Updated guild commands.");
   } catch (error) {
     console.log("Could not load commands!");
