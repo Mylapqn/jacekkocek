@@ -1874,7 +1874,7 @@ function mlpSong(voice, index, autoplay, channel) {
 }
 
 function playRadio(voice, channel) {
-  Https.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey, function (res) {
+  Https.get("https://ponyweb.ml/api.php?stream&key=" + radioApiKey(), function (res) {
     console.log("HTTPS status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
