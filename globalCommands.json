@@ -15,9 +15,7 @@
                 "description": "The text of the reminder",
                 "required": true
             }
-        ],
-        "defaultPermission": true,
-        "version": "950518835067379782"
+        ]
     },
     {
         "name": "radio",
@@ -68,9 +66,7 @@
                 "name": "list",
                 "description": "List all radio station presets"
             }
-        ],
-        "defaultPermission": true,
-        "version": "946897344723554404"
+        ]
     },
     {
         "name": "youtube",
@@ -88,8 +84,6 @@
                 "description": "Whether to continue with playing similar videos",
                 "required": false
             }
-        ],
-        "defaultPermission": true,
-        "version": "947236413164904450"
+        ]
     }
 ]

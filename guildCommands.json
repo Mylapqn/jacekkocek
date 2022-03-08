@@ -77,8 +77,6 @@
                 "name": "info",
                 "description": "See the info about a film (usually CSFD page)"
             }
-        ],
-        "defaultPermission": true,
-        "version": "946886058736488509"
+        ]
     }
 ]
