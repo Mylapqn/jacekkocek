@@ -24,7 +24,7 @@ intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
 intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
-const updateGlobalCommands = false;
+const updateGlobalCommands = true;
 const commandsToDeleteGlobal = [];
 const commandsToDeleteGuild = [];
 /**
