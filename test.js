@@ -222,14 +222,14 @@ var radioStations = [
     url: "https://stream.laut.fm/sockenschuss-x"
   },
   {
-    name: "Instrumental Radio",
-    color: [67, 209, 204],
-    url: "http://agnes.torontocast.com:8151/;"
-  },
-  {
     name: "Nightdrive",
     color: [0, 0, 0],
     url: "https://stream.laut.fm/nightdrive"
+  },
+  {
+    name: "Instrumental Radio",
+    color: [67, 209, 204],
+    url: "http://agnes.torontocast.com:8151/;"
   },
   {
     name: "Radcap Synthwave",
@@ -488,7 +488,44 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "radio": {
-
+        switch (interaction.options.getSubcommand()) {
+          case "play": {
+            let voice = interaction.member.voice.channel;
+            let station = interaction.options.getInteger("station");
+            if (station < radioStations.length && station >= 0) {
+              interaction.reply(playStation(voice, station));
+            }
+            break;
+          }
+          case "custom": {
+            let voice = interaction.member.voice.channel;
+            let url = interaction.options.getString("url");
+            if (url.startsWith("http")) {
+              interaction.reply(playStation(voice, url));
+            }
+            interaction.reply()
+            break;
+          }
+          case "list": {
+            let newMessage = "";
+            for (let i = 0; i < radioStations.length; i++) {
+              const station = radioStations[i];
+              newMessage += "`" + i + "` - **" + station.name + "**\n";
+            }
+            interaction.reply({
+              embeds: [{
+                title: "JacekKocek Internet Radio",
+                fields: [
+                  {
+                    name: "List of available stations", value: newMessage
+                  }
+                ],
+                color: [24, 195, 177]
+              }]
+            })
+            break;
+          }
+        }
         break;
       }
     }
@@ -1083,7 +1120,7 @@ client.on('messageCreate', message => {
         case "mlpRadio": {
           message.delete();
           if (message.member.voice.channel)
-              playRadio(message.member.voice.channel, message.channel);
+            playRadio(message.member.voice.channel, message.channel);
           break;
         }
         case "mlpMix": {
@@ -1938,7 +1975,7 @@ function alternateFluttershyColor() {
   else return [229, 129, 177];
 }
 
-function playStation(voice, id, channel) {
+function playStation(voice, id) {
   let station;
   if (typeof (id) == "string") {
     station = {
@@ -1951,15 +1988,14 @@ function playStation(voice, id, channel) {
     station = radioStations[id];
   }
   voiceChannelPlay(voice, station.url, 0.6);
-  if (channel) {
-    channel.send({
-      embeds: [{
-        title: "♫ " + station.name,
-        color: station.color,
-        footer: { text: "Now playing" }
-      }]
-    });
-  }
+  return ({
+    embeds: [{
+      title: "♫ " + station.name,
+      color: station.color,
+      footer: { text: "Now playing" }
+    }]
+  });
+
 }
 
 //#endregion

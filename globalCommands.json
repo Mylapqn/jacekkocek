@@ -41,8 +41,36 @@
                                 "value": 1
                             },
                             {
-                                "name": "Spacesynth",
+                                "name": "Anime Radio 2",
                                 "value": 2
+                            },
+                            {
+                                "name": "Anime Radio 3",
+                                "value": 3
+                            },
+                            {
+                                "name": "Sockenschuss X",
+                                "value": 4
+                            },
+                            {
+                                "name": "Nightdrive",
+                                "value": 5
+                            },
+                            {
+                                "name": "Instrumental Radio",
+                                "value": 6
+                            },
+                            {
+                                "name": "Radcap Synthwave",
+                                "value": 7
+                            },
+                            {
+                                "name": "Radcap Space",
+                                "value": 8
+                            },
+                            {
+                                "name": "Radcap Spacesynth",
+                                "value": 9
                             }
                         ]
                     }
@@ -56,7 +84,7 @@
                     {
                         "type": 3,
                         "name": "url",
-                        "description": "URL of custom stst",
+                        "description": "URL of custom station",
                         "required": true
                     }
                 ]
