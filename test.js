@@ -1083,9 +1083,7 @@ client.on('messageCreate', message => {
         case "mlpRadio": {
           message.delete();
           if (message.member.voice.channel)
-            message.member.voice.channel.join().then(voice => {
-              playRadio(voice, message.channel);
-            }, function (e) { console.log("REJECTED!!!", e) });
+              playRadio(message.member.voice.channel, message.channel);
           break;
         }
         case "mlpMix": {
@@ -1894,7 +1892,7 @@ function playRadio(voice, channel) {
 
         console.log("Playing radio");
 
-        voicePlay(voice, "https://ponyweb.ml/" + parsed.current.Source, { seek: seektime, volume: 0.5 });
+        voiceChannelPlay(voice, "https://ponyweb.ml/" + parsed.current.Source, .5);
 
         if (radioTimer) clearTimeout(radioTimer);
         if (channel) {
