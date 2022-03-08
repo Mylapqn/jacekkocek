@@ -1089,9 +1089,9 @@ client.on('messageCreate', message => {
           break;
         }
         case "mlpMix": {
-          message.channel.send("" + fs.existsSync("mlp-mix.ogg"));
           message.delete();
           if (message.member.voice.channel) {
+            fs.existsSync("mlp-mix.ogg");
             voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
             //voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
             message.channel.send({
@@ -1850,7 +1850,7 @@ function mlpSong(voice, index, autoplay, channel) {
         if (radioTimer) clearTimeout(radioTimer);
         console.log("Playing song, argument: " + id + " data:");
         nextSong = songData.length;
-        //console.log(songData.video);
+        console.log(songData.video);
         if (channel) {
           channel.send({
             embeds: [{
@@ -1860,7 +1860,7 @@ function mlpSong(voice, index, autoplay, channel) {
             }]
           });
         }
-        voiceChannelPlay(voice, ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
+        voiceChannelPlay(voice, ytdl(songData.video, { filter: "audioonly" }), 0.5);
         if (autoplay) {
           radioTimer = setTimeout(function () {
             mlpSong(voice, "", true, channel);
