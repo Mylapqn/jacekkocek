@@ -25,6 +25,11 @@ intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
 const updateGlobalCommands=false;
+const commandsToDelete = ["amogus"];
+/**
+ * @type {Discord.Guild}
+ */
+let afrGuild;
 
 let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
 var kocek = 0;
@@ -285,6 +290,7 @@ loadReminders();
 client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
+  afrGuild = client.guilds.cache.get('549589656606343178');
 
   console.log('' + new Date() + ' I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
@@ -298,6 +304,7 @@ client.on('ready', () => {
     });
   });
   */
+
 
   setupCommands();
 
@@ -1468,7 +1475,12 @@ function setupCommands() {
       client.application?.commands.set(globalCommands);
       console.log("Updated global commands.");
     }
-    client.guilds.cache.get('549589656606343178').commands.set(guildCommands);
+    afrGuild.commands.set(guildCommands);
+    if(commandsToDelete.length > 0){
+      commandsToDelete.forEach(na=>{
+        afrGuild.commands.delete(na);
+      })
+    }
     console.log("Updated guild commands.");
   } catch (error) {
     console.log("Could not load commands!");
