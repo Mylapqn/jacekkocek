@@ -24,7 +24,7 @@ intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
 intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
-const updateGlobalCommands = true;
+const updateGlobalCommands = false;
 const commandsToDeleteGlobal = [];
 const commandsToDeleteGuild = [];
 /**
@@ -321,10 +321,6 @@ client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isCommand()) {
     switch (interaction.commandName) {
-      case "amogus": {
-        interaction.reply({ content: "Successfully created " + interaction.options.getString("color") + " mogus." });
-        break;
-      }
       case "kino": {
         switch (interaction.options.getSubcommand()) {
           case "suggest": {
@@ -489,6 +485,10 @@ client.on('interactionCreate', interaction => {
           }
 
         }
+        break;
+      }
+      case "radio": {
+
         break;
       }
     }
@@ -1071,17 +1071,13 @@ client.on('messageCreate', message => {
         case "song": {
           message.delete();
           if (message.member.voice.channel)
-            message.member.voice.channel.join().then(voice => {
-              mlpSong(voice, argument, false, message.channel);
-            }, function (e) { console.log("REJECTED!!!", e) });
+            mlpSong(message.member.voice.channel, argument, false, message.channel);
           break;
         }
         case "songs": {
           message.delete();
           if (message.member.voice.channel)
-            message.member.voice.channel.join().then(voice => {
-              mlpSong(voice, argument, true, message.channel);
-            }, function (e) { console.log("REJECTED!!!", e) });
+            mlpSong(message.member.voice.channel, argument, true, message.channel);
           break;
         }
         case "mlpRadio": {
@@ -1094,18 +1090,17 @@ client.on('messageCreate', message => {
         }
         case "mlpMix": {
           message.delete();
-          if (message.member.voice.channel)
-            message.member.voice.channel.join().then(voice => {
-              voicePlay(voice, "mlp-mix.ogg", { volume: 0.5 });
-              voicePlay(voice, "mlp-mix.ogg", { volume: 0.5 });
-              message.channel.send({
-                embeds: [{
-                  title: "► " + "MLP Mix",
-                  color: [159, 101, 224],
-                  description: '4:17 | From *Andrej*'
-                }]
-              });
-            }, function (e) { console.log("REJECTED!!!", e) });
+          if (message.member.voice.channel) {
+            voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
+            //voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
+            message.channel.send({
+              embeds: [{
+                title: "► " + "MLP Mix",
+                color: [159, 101, 224],
+                description: '4:17 | From *Andrej*'
+              }]
+            });
+          }
           break;
         }
 
@@ -1864,7 +1859,7 @@ function mlpSong(voice, index, autoplay, channel) {
             }]
           });
         }
-        voicePlay(voice, ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
+        voiceChannelPlay(voice, ytdl(songData.video, { filter: "audioonly" }), { volume: 0.5 });
         if (autoplay) {
           radioTimer = setTimeout(function () {
             mlpSong(voice, "", true, channel);
