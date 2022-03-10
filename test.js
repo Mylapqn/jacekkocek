@@ -1212,10 +1212,13 @@ client.on('messageCreate', message => {
           break;
         }
         case "skip": {
+          console.log("Commans");
           message.delete();
           if (nextYoutube && youtubeAutoplay) {
+            console.log("Skipping");
             let voice = message.guild.me.voice.connection;
             if (voice) {
+              console.log("Voice");
               if (argument && youtubePlaylist.length > 0) {
                 let num = parseInt(argument);
                 if (num != "NaN") {
