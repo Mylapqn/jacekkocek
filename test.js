@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.16.9",
+  version: "1.16.8",
   releaseDate: "10.3.2022",
   commands: ["help"],
   changes: [
@@ -1916,7 +1916,7 @@ function updateYoutubeMessage(data){
       if(i == playInt) playingBar+="▬";
       if(i > playInt) playingBar+="━";
     }
-    playingBar = timeString(data.length/1000)
+    playingBar += timeString(data.length/1000)
     let barEmbed = new Discord.MessageEmbed()
     .setColor([255, 0, 0])
     .setTitle(playingBar);
