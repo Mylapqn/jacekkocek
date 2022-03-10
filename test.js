@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.16.9",
+  version: "1.16.7",
   releaseDate: "10.3.2022",
   commands: ["help"],
   changes: [
@@ -1711,7 +1711,7 @@ function playYoutube(videoUrl, channel) {
     }
     console.log("info" + info);
     let length = info.videoDetails.lengthSeconds;
-    let lenString=timeString(length);
+    let lenString = timeString(length);
     let embed = new Discord.MessageEmbed()
       .setColor([255, 0, 0])
       .setTitle("► " + info.videoDetails.title)
@@ -1724,19 +1724,19 @@ function playYoutube(videoUrl, channel) {
     let newPlaying = {
       //statusMsg,
       voiceChannel: channel,
-      elapsed:0,
-      length:info.videoDetails.lengthSeconds*1000,
+      elapsed: 0,
+      length: length * 1000,
       //barInterval,
       //nextUrl,
       //nextData,
-      autoplay:youtubeAutoplay,
-      embed:embed
+      autoplay: youtubeAutoplay,
+      embed: embed
     }
     newPlaying.barInterval = setInterval(() => {
       updateYoutubeMessage(newPlaying);
     }, 2000);
     try {
-      channel.send({ embeds: [embed] }).then(msg => {
+      channel.send({ embeds: [embe,generateYoutubeBarEmbed(0,length*1000,20)] }).then(msg => {
         newPlaying.statusMsg = msg;
       });
 
@@ -1904,28 +1904,31 @@ function searchYoutube(argument) {
   });
 }
 
-function updateYoutubeMessage(data){
+function updateYoutubeMessage(data) {
   data.elapsed += 2000;
-  if(data.statusMsg){
-    let playingBar = "";
-    playingBar += timeString(data.elapsed/1000);
-    let playRatio = data.elapsed/data.length;
-    let playInt = Math.floor(playRatio*20);
-    for (let i = 0; i < 20; i++) {
-      if(i < playInt) playingBar+="▬";
-      if(i == playInt) playingBar+="▬";
-      if(i > playInt) playingBar+="━";
-    }
-    playingBar += timeString(data.length/1000)
-    let barEmbed = new Discord.MessageEmbed()
-    .setColor([255, 0, 0])
-    .setTitle(playingBar);
-    data.statusMsg.edit({embeds:[data.embed,barEmbed]})
+  if (data.statusMsg) {
+    data.statusMsg.edit({ embeds: [data.embed, generateYoutubeBarEmbed(data.elapsed, data.length, 20)] })
   }
-  console.log("Played "+data.elapsed/1000+"s out of"+data.length/1000+"s");
-  if(data.elapsed >= data.length){
+  console.log("Played " + data.elapsed / 1000 + "s out of" + data.length / 1000 + "s");
+  if (data.elapsed >= data.length) {
     clearInterval(data.barInterval);
   }
+}
+
+function generateYoutubeBarEmbed(elapsed, length, count) {
+  let playingBar = "";
+  playingBar += timeString(elapsed / 1000);
+  let playRatio = elapsed / length;
+  let playInt = Math.floor(playRatio * count);
+  for (let i = 0; i < count; i++) {
+    if (i < playInt) playingBar += "▬";
+    if (i == playInt) playingBar += "▬";
+    if (i > playInt) playingBar += "━";
+  }
+  playingBar += timeString(length / 1000);
+  return new Discord.MessageEmbed()
+    .setColor([255, 0, 0])
+    .setTitle(playingBar);
 }
 
 function mlpSong(voice, index, autoplay, channel) {
@@ -2089,7 +2092,7 @@ function randomInt(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
 
-function timeString(seconds){
+function timeString(seconds) {
   let output;
   if (seconds >= 3600) {
     output = Math.floor(seconds / 3600) + ":" + addZero(Math.floor((seconds % 3600) / 60)) + ":" + addZero(seconds % 60);
