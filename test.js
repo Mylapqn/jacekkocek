@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.17.1",
+  version: "1.17.2",
   releaseDate: "11.3.2022",
   commands: ["help"],
   changes: [
@@ -1734,7 +1734,7 @@ function playYoutube(videoUrl, channel) {
     }
     newPlaying.barInterval = setInterval(() => {
       updateYoutubeMessage(newPlaying);
-    }, 2000);
+    }, 5000);
     try {
       channel.send({ embeds: [embed, generateYoutubeBarEmbed(0, length * 1000, 20)] }).then(msg => {
         newPlaying.statusMsg = msg;
