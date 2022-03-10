@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.16.8",
+  version: "1.16.9",
   releaseDate: "10.3.2022",
   commands: ["help"],
   changes: [
@@ -1910,7 +1910,7 @@ function updateYoutubeMessage(data){
     let playingBar = "";
     playingBar += timeString(data.elapsed/1000);
     let playRatio = data.elapsed/data.length;
-    let playInt = Math.ceil(playRatio*20);
+    let playInt = Math.floor(playRatio*20);
     for (let i = 0; i < 20; i++) {
       if(i < playInt) playingBar+="▬";
       if(i == playInt) playingBar+="▬";
