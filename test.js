@@ -277,6 +277,8 @@ var youtubePlaylistName = "test";
 var youtubeRecent = [];
 var youtubeRecentMax = 6;
 
+var youtubePlaying = [];
+
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
 loadPlaylist();
@@ -586,8 +588,8 @@ client.on('messageCreate', message => {
               const maxSize = 512;
               let w = image.getWidth();
               let h = image.getHeight();
-              if(w > maxSize || h > maxSize){
-                image.scaleToFit(maxSize,maxSize)
+              if (w > maxSize || h > maxSize) {
+                image.scaleToFit(maxSize, maxSize)
               }
               let kernelSharpen = [[0, -3, 0], [-3, 13, -3], [0, -3, 0]];
               image
@@ -1698,9 +1700,9 @@ function playYoutube(videoUrl, channel) {
   let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
   videoStream.on("info", (info) => {
     let vidId = info.videoDetails.videoId;
-    if(!youtubeRecent.includes(vidId)){
+    if (!youtubeRecent.includes(vidId)) {
       youtubeRecent.push(vidId);
-      if(youtubeRecent.length > youtubeRecentMax){
+      if (youtubeRecent.length > youtubeRecentMax) {
         youtubeRecent.shift();
       }
     }
@@ -1722,8 +1724,23 @@ function playYoutube(videoUrl, channel) {
     if (youtubePlaylist.length > 0) {
       embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
     }
+    let newPlaying = {
+      statusMsg,
+      voiceChannel: channel,
+      elapsed:0,
+      length:info.videoDetails.lengthSeconds*1000,
+      barInterval,
+      nextUrl,
+      nextData,
+      autoplay:youtubeAutoplay
+    }
+    newPlaying.barInterval = setInterval(() => {
+      updateYoutubeMessage(newPlaying);
+    }, 1000);
     try {
-      channel.send({ embeds: [embed] });
+      channel.send({ embeds: [embed] }).then(msg => {
+        newPlaying.statusMsg = msg;
+      });
 
     } catch (error) {
       console.log(error)
@@ -1745,7 +1762,7 @@ function playYoutube(videoUrl, channel) {
     else if (youtubeAutoplay) {
       for (let i = 0; i < info.related_videos.length; i++) {
         const nextId = info.related_videos[i].id;
-        if(!youtubeRecent.includes(nextId)){
+        if (!youtubeRecent.includes(nextId)) {
           nextVideo = nextId;
           break;
         }
@@ -1758,9 +1775,11 @@ function playYoutube(videoUrl, channel) {
       clearYoutubeTimeout();
       nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 3) * 1000);
       nextYoutubeData = { url: nextUrl, channel: channel };
+      newPlaying.nextUrl = nextYoutube;
+      newPlaying.nextData = nextYoutubeData;
     }
+    //youtubePlaying.push(newPlaying);
   })
-
 }
 
 function getYoutubePlaylist(argument) {
@@ -1885,6 +1904,15 @@ function searchYoutube(argument) {
       });
     });
   });
+}
+
+function updateYoutubeMessage(data){
+  data.elapsed += 1000;
+  data.statusMsg.edit(data.elapsed/1000)
+  console.log("Played "+data.elapsed/1000+"s out of"+data.length/1000+"s");
+  if(data.elapsed >= data.length){
+    clearInterval(data.barInterval);
+  }
 }
 
 function mlpSong(voice, index, autoplay, channel) {
