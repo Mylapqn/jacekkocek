@@ -1908,7 +1908,7 @@ function searchYoutube(argument) {
 
 function updateYoutubeMessage(data){
   if(data.statusMsg){
-    data.statusMsg.edit(data.elapsed/1000)
+    data.statusMsg.edit("Elapsed"+data.elapsed/1000)
   }
   data.elapsed += 1000;
   console.log("Played "+data.elapsed/1000+"s out of"+data.length/1000+"s");
