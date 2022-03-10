@@ -24,7 +24,7 @@ intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
 intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
-const updateGlobalCommands = true;
+const updateGlobalCommands = false;
 const commandsToDeleteGlobal = [];
 const commandsToDeleteGuild = [];
 /**
@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.16.3",
+  version: "1.16.4",
   releaseDate: "10.3.2022",
   commands: ["help"],
   changes: [
@@ -273,6 +273,9 @@ var youtubeAutoplay = false;
 var youtubePlaylist = [];
 var youtubePlaylistPosition = 0;
 var youtubePlaylistName = "test";
+
+var youtubeRecent = [];
+var youtubeRecentMax = 6;
 
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
@@ -1694,6 +1697,13 @@ function playYoutube(videoUrl, channel) {
   console.log("playing " + videoUrl);
   let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
   videoStream.on("info", (info) => {
+    let vidId = info.videoDetails.videoId;
+    if(!youtubeRecent.includes(vidId)){
+      youtubeRecent.push(vidId);
+      if(youtubeRecent.length > youtubeRecentMax){
+        youtubeRecent.shift();
+      }
+    }
     console.log("info" + info);
     let length = info.videoDetails.lengthSeconds;
     let lenString;
@@ -1733,7 +1743,13 @@ function playYoutube(videoUrl, channel) {
       }
     }
     else if (youtubeAutoplay) {
-      nextVideo = info.related_videos[0].id;
+      for (let i = 0; i < info.related_videos.length; i++) {
+        const nextId = info.related_videos[i].id;
+        if(!youtubeRecent.includes(nextId)){
+          nextVideo = nextId;
+          break;
+        }
+      }
     }
     if (nextVideo) {
       let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
