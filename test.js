@@ -1736,7 +1736,7 @@ function playYoutube(videoUrl, channel) {
       updateYoutubeMessage(newPlaying);
     }, 2000);
     try {
-      channel.send({ embeds: [embe,generateYoutubeBarEmbed(0,length*1000,20)] }).then(msg => {
+      channel.send({ embeds: [embed, generateYoutubeBarEmbed(0, length * 1000, 20)] }).then(msg => {
         newPlaying.statusMsg = msg;
       });
 
