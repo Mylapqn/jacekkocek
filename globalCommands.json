@@ -109,7 +109,7 @@
             {
                 "type": 5,
                 "name": "autoplay",
-                "description": "Whether to continue with playing similar videos",
+                "description": "Whether to autoplay similar videos after this one",
                 "required": false
             }
         ]
