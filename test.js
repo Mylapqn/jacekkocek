@@ -1725,13 +1725,13 @@ function playYoutube(videoUrl, channel) {
       embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
     }
     let newPlaying = {
-      statusMsg,
+      //statusMsg,
       voiceChannel: channel,
       elapsed:0,
       length:info.videoDetails.lengthSeconds*1000,
-      barInterval,
-      nextUrl,
-      nextData,
+      //barInterval,
+      //nextUrl,
+      //nextData,
       autoplay:youtubeAutoplay
     }
     newPlaying.barInterval = setInterval(() => {
