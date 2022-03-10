@@ -1216,7 +1216,7 @@ client.on('messageCreate', message => {
           message.delete();
           if (nextYoutube && youtubeAutoplay) {
             console.log("Skipping");
-            let voice = message.guild.me.voice.connection;
+            let voice = message.guild.me.voice.channel;
             if (voice) {
               console.log("Voice");
               if (argument && youtubePlaylist.length > 0) {
