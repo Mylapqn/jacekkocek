@@ -1913,8 +1913,8 @@ function searchYoutube(argument) {
 function updateYoutubeMessage(data){
   data.elapsed += 2000;
   if(data.statusMsg){
-    let playingBar = "";
-    playingBar = data.elapsed/1000;
+    let playingBar = ">";
+    playingBar += data.elapsed/1000;
     data.statusMsg.edit({embeds:[data.embed.addField({name:"Time:",value:playingBar})]})
   }
   console.log("Played "+data.elapsed/1000+"s out of"+data.length/1000+"s");
