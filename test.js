@@ -1915,7 +1915,10 @@ function updateYoutubeMessage(data){
   if(data.statusMsg){
     let playingBar = ">";
     playingBar += data.elapsed/1000;
-    data.statusMsg.edit({embeds:[data.embed.addField("Time:",playingBar)]})
+    let barEmbed = new Discord.MessageEmbed()
+    .setColor([255, 0, 0])
+    .setTitle("► " + playingBar);
+    data.statusMsg.edit({embeds:[data.embed,barEmbed]})
   }
   console.log("Played "+data.elapsed/1000+"s out of"+data.length/1000+"s");
   if(data.elapsed >= data.length){
