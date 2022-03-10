@@ -1711,13 +1711,7 @@ function playYoutube(videoUrl, channel) {
     }
     console.log("info" + info);
     let length = info.videoDetails.lengthSeconds;
-    let lenString;
-    if (length >= 3600) {
-      lenString = Math.floor(info.videoDetails.lengthSeconds / 3600) + ":" + addZero(Math.floor((info.videoDetails.lengthSeconds % 3600) / 60)) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
-    }
-    else {
-      lenString = Math.floor(info.videoDetails.lengthSeconds / 60) + ":" + addZero(info.videoDetails.lengthSeconds % 60);
-    }
+    let lenString=timeString(length);
     let embed = new Discord.MessageEmbed()
       .setColor([255, 0, 0])
       .setTitle("► " + info.videoDetails.title)
@@ -1913,11 +1907,19 @@ function searchYoutube(argument) {
 function updateYoutubeMessage(data){
   data.elapsed += 2000;
   if(data.statusMsg){
-    let playingBar = ">";
-    playingBar += data.elapsed/1000;
+    let playingBar = "";
+    playingBar += timeString(data.elapsed/1000);
+    let playRatio = data.elapsed/data.length;
+    let playInt = Math.ceil(playRatio*20);
+    for (let i = 0; i < 20; i++) {
+      if(i < playInt) playingBar+="▬";
+      if(i == playInt) playingBar+="▬";
+      if(i > playInt) playingBar+="━";
+    }
+    playingBar = timeString(data.length/1000)
     let barEmbed = new Discord.MessageEmbed()
     .setColor([255, 0, 0])
-    .setTitle("► " + playingBar);
+    .setTitle(playingBar);
     data.statusMsg.edit({embeds:[data.embed,barEmbed]})
   }
   console.log("Played "+data.elapsed/1000+"s out of"+data.length/1000+"s");
@@ -2085,4 +2087,15 @@ function toTitleCase(phrase) {
 
 function randomInt(min, max) {
   return Math.round(Math.random() * (max - min) + min);
+}
+
+function timeString(seconds){
+  let output;
+  if (seconds >= 3600) {
+    output = Math.floor(seconds / 3600) + ":" + addZero(Math.floor((seconds % 3600) / 60)) + ":" + addZero(seconds % 60);
+  }
+  else {
+    output = Math.floor(seconds / 60) + ":" + addZero(seconds % 60);
+  }
+  return output;
 }
