@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.16.7",
+  version: "1.16.5",
   releaseDate: "10.3.2022",
   commands: ["help"],
   changes: [
