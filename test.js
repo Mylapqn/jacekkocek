@@ -1679,6 +1679,9 @@ function joinVoiceChannel(channel) {
 }
 
 function clearYoutubeTimeout() {
+  youtubePlaying.forEach(d => {
+    clearInterval(d.barInterval);
+  })
   if (nextYoutube) clearTimeout(nextYoutube);
   nextYoutube = null;
 }
@@ -1732,11 +1735,12 @@ function playYoutube(videoUrl, channel) {
       //barInterval,
       //nextUrl,
       //nextData,
-      autoplay:youtubeAutoplay
+      autoplay:youtubeAutoplay,
+      embed:embed
     }
     newPlaying.barInterval = setInterval(() => {
       updateYoutubeMessage(newPlaying);
-    }, 1000);
+    }, 2000);
     try {
       channel.send({ embeds: [embed] }).then(msg => {
         newPlaying.statusMsg = msg;
@@ -1778,7 +1782,7 @@ function playYoutube(videoUrl, channel) {
       newPlaying.nextUrl = nextYoutube;
       newPlaying.nextData = nextYoutubeData;
     }
-    //youtubePlaying.push(newPlaying);
+    youtubePlaying.push(newPlaying);
   })
 }
 
@@ -1907,10 +1911,12 @@ function searchYoutube(argument) {
 }
 
 function updateYoutubeMessage(data){
+  data.elapsed += 2000;
   if(data.statusMsg){
-    data.statusMsg.edit("Elapsed"+data.elapsed/1000)
+    let playingBar = "";
+    playingBar = data.elapsed/1000;
+    data.statusMsg.edit({embeds:[data.embed.addField({name:"Time:",value:playingBar})]})
   }
-  data.elapsed += 1000;
   console.log("Played "+data.elapsed/1000+"s out of"+data.length/1000+"s");
   if(data.elapsed >= data.length){
     clearInterval(data.barInterval);
