@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.16.5",
+  version: "1.16.6",
   releaseDate: "10.3.2022",
   commands: ["help"],
   changes: [
@@ -1700,7 +1700,7 @@ function playYoutubePlaylist(playlistUrl, channel) {
 
 function playYoutube(videoUrl, channel) {
   console.log("playing " + videoUrl);
-  let videoStream = ytdl(videoUrl, { filter: "audioonly"/*,highWaterMark: 1<<25*/ });
+  let videoStream = ytdl(videoUrl, { filter: "audioonly",highWaterMark: 10e6 ,quality:"lowestaudio"});
   videoStream.on("info", (info) => {
     let vidId = info.videoDetails.videoId;
     if (!youtubeRecent.includes(vidId)) {
