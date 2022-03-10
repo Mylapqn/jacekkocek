@@ -1909,7 +1909,7 @@ function updateYoutubeMessage(data) {
   if (data.statusMsg) {
     data.statusMsg.edit({ embeds: [data.embed, generateYoutubeBarEmbed(data.elapsed, data.length, 20)] })
   }
-  console.log("Played " + data.elapsed / 1000 + "s out of" + data.length / 1000 + "s");
+  //console.log("Played " + data.elapsed / 1000 + "s out of" + data.length / 1000 + "s");
   if (data.elapsed >= data.length) {
     clearInterval(data.barInterval);
   }
@@ -1917,7 +1917,7 @@ function updateYoutubeMessage(data) {
 
 function generateYoutubeBarEmbed(elapsed, length, count) {
   let playingBar = "";
-  playingBar += timeString(elapsed / 1000)+" ";
+  playingBar += "`"+timeString(elapsed / 1000)+"` ";
   let playRatio = elapsed / length;
   let playInt = Math.floor(playRatio * count);
   for (let i = 0; i < count; i++) {
@@ -1925,7 +1925,7 @@ function generateYoutubeBarEmbed(elapsed, length, count) {
     if (i == playInt) playingBar += "▬";
     if (i > playInt) playingBar += "━";
   }
-  playingBar += " "+timeString(length / 1000);
+  playingBar += " `"+timeString(length / 1000)+"`";
   return new Discord.MessageEmbed()
     .setColor([255, 0, 0])
     .setTitle(playingBar);
