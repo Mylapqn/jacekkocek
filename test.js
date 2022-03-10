@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.16.7",
+  version: "1.17.0",
   releaseDate: "10.3.2022",
   commands: ["help"],
   changes: [
@@ -1905,7 +1905,7 @@ function searchYoutube(argument) {
 }
 
 function updateYoutubeMessage(data) {
-  data.elapsed += 2000;
+  data.elapsed = Math.min(data.elapsed+5000, data.length);
   if (data.statusMsg) {
     data.statusMsg.edit({ embeds: [data.embed, generateYoutubeBarEmbed(data.elapsed, data.length, 20)] })
   }
