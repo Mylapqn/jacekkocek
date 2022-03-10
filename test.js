@@ -183,8 +183,8 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.14.1",
-  releaseDate: "20.9.2021",
+  version: "1.16.2",
+  releaseDate: "10.3.2022",
   commands: ["help"],
   changes: [
     " ",
@@ -580,6 +580,12 @@ client.on('messageCreate', message => {
           if (url != null) {
             Jimp.read(url).then(image => {
               console.log("jimp start");
+              const maxSize = 512;
+              let w = image.getWidth();
+              let h = image.getHeight();
+              if(w > maxSize || h > maxSize){
+                image.scaleToFit(maxSize,maxSize)
+              }
               let kernelSharpen = [[0, -3, 0], [-3, 13, -3], [0, -3, 0]];
               image
                 .quality(10)
@@ -589,7 +595,8 @@ client.on('messageCreate', message => {
                 .convolute(kernelSharpen)
                 .writeAsync("./outputImg.jpg").then(e => {
                   console.log("jimp done")
-                  message.reply({ files: ["./outputImg.jpg"] }).then(e => { fs.unlink("./outputImg.jpg") });
+                  message.reply({ files: ["./outputImg.jpg"] }).then(
+                    function () { fs.unlink("./outputImg.jpg") });
                 });
             })
           }
@@ -1661,12 +1668,6 @@ function joinVoiceChannel(channel) {
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
   }).subscribe(audioPlayer);
-}
-
-function voicePlay(voice, audio, options) {
-  clearYoutubeTimeout();
-  if (radioTimer) clearTimeout(radioTimer);
-  voice.play(audio, options);
 }
 
 function clearYoutubeTimeout() {
