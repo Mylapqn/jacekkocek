@@ -1748,7 +1748,7 @@ function playYoutube(videoUrl, channel) {
       updateYoutubeMessage(newPlaying);
     }, 5000);
     try {
-      channel.send({ embeds: [embed, generateYoutubeBarEmbed(0, length * 1000, 20)] }).then(msg => {
+      channel.send({ embeds: [embed, generateYoutubeBarEmbed(0, length * 1000, 10)] }).then(msg => {
         newPlaying.statusMsg = msg;
       });
 
@@ -1919,7 +1919,7 @@ function searchYoutube(argument) {
 function updateYoutubeMessage(data) {
   data.elapsed = Math.min(data.elapsed+5000, data.length);
   if (data.statusMsg) {
-    data.statusMsg.edit({ embeds: [data.embed, generateYoutubeBarEmbed(data.elapsed, data.length, 20)] })
+    data.statusMsg.edit({ embeds: [data.embed, generateYoutubeBarEmbed(data.elapsed, data.length, 10)] })
   }
   //console.log("Played " + data.elapsed / 1000 + "s out of" + data.length / 1000 + "s");
   if (data.elapsed >= data.length) {
