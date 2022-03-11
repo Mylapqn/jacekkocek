@@ -71,6 +71,10 @@
                             {
                                 "name": "Radcap Spacesynth",
                                 "value": 9
+                            },
+                            {
+                                "name": "Cinemix",
+                                "value": 10
                             }
                         ]
                     }

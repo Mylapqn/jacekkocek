@@ -24,7 +24,7 @@ intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
 intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
-const updateGlobalCommands = false;
+const updateGlobalCommands = true;
 const commandsToDeleteGlobal = [];
 const commandsToDeleteGuild = [];
 /**
@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.17.2",
+  version: "1.17.3",
   releaseDate: "11.3.2022",
   commands: ["help"],
   changes: [
@@ -246,6 +246,12 @@ var radioStations = [
     color: [200, 0, 70],
     url: "http://79.120.39.202:8002/spacesynth"
   },
+  {
+    name: "Cinemix",
+    color: [25, 117, 145],
+    url: "https://kathy.torontocast.com:1825/stream"
+  },
+  
 
 ];
 
