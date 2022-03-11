@@ -1933,9 +1933,9 @@ function generateYoutubeBarEmbed(elapsed, length, count) {
   let playRatio = elapsed / length;
   let playInt = Math.floor(playRatio * count);
   for (let i = 0; i < count; i++) {
-    if (i < playInt) playingBar += "<:white_cross:767907092907687956>";
-    if (i == playInt) playingBar += "▬";
-    if (i > playInt) playingBar += "━";
+    if (i < playInt) playingBar += "<:yt4:951917157216813056>";
+    if (i == playInt) playingBar += "<:yt2:951917157275533352>";
+    if (i > playInt) playingBar += "<:yt0:951917157304926238>";
   }
   playingBar += " `"+timeString(length / 1000)+"`";
   return new Discord.MessageEmbed()
