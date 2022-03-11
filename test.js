@@ -24,7 +24,7 @@ intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
 intents.add(Intents.FLAGS.GUILD_MEMBERS);
 const client = new Discord.Client({ intents: intents });
 
-const updateGlobalCommands = true;
+const updateGlobalCommands = false;
 const commandsToDeleteGlobal = [];
 const commandsToDeleteGuild = [];
 /**
@@ -1283,6 +1283,8 @@ client.on('messageCreate', message => {
 });
 
 
+//#region REMINDERS
+
 function parseTime(inputString) {
   let units = -1;
   let unitString = inputString.match(/[a-zA-Z]+/g)[0];
@@ -1383,6 +1385,8 @@ function executeReminder(rem) {
     });
   });
 }
+
+//#endregion
 
 //#region KINO
 client.on("messageReactionAdd", (messageReaction) => {
@@ -1546,6 +1550,7 @@ function setupCommands() {
 
 
 //#endregion
+
 //#region FIND FUNCTIONS
 function findRole(cache, name) {
   array = cache.array();
@@ -1570,6 +1575,7 @@ function findCommand(name) {
   return null;
 }
 //#endregion
+
 //#region GOOGLE
 function startGoogleSearch(argument, message, type) {
 
@@ -1664,7 +1670,8 @@ function googleSearch(cx, searchTerm, message) {
   });
 }
 //#endregion
-//#region SONGS
+
+//#region SONGS AND YOUTUBE
 
 function voiceChannelPlay(channel, audio, volume) {
   if (channel != null)
@@ -1927,7 +1934,7 @@ function generateYoutubeBarEmbed(elapsed, length, count) {
   let playRatio = elapsed / length;
   let playInt = Math.floor(playRatio * count);
   for (let i = 0; i < count; i++) {
-    if (i < playInt) playingBar += "▬";
+    if (i < playInt) playingBar += "<:white_cross:767907092907687956>";
     if (i == playInt) playingBar += "▬";
     if (i > playInt) playingBar += "━";
   }
