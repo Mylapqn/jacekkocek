@@ -514,7 +514,6 @@ client.on('interactionCreate', interaction => {
             if (url.startsWith("http")) {
               interaction.reply(playStation(voice, url));
             }
-            interaction.reply()
             break;
           }
           case "list": {
