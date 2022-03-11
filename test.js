@@ -1932,9 +1932,15 @@ function generateYoutubeBarEmbed(elapsed, length, count) {
   playingBar += "`"+timeString(elapsed / 1000)+"` ";
   let playRatio = elapsed / length;
   let playInt = Math.floor(playRatio * count);
+  let modulo = Math.floor(playRatio * count*4)%4;
   for (let i = 0; i < count; i++) {
     if (i < playInt) playingBar += "<:yt4:951917157216813056>";
-    if (i == playInt) playingBar += "<:yt2:951917157275533352>";
+    if (i == playInt){
+      if(modulo == 0)playingBar += "<:yt1:951917157212622858>";
+      if(modulo == 1)playingBar += "<:yt2:951917157275533352>";
+      if(modulo == 2)playingBar += "<:yt3:951917157279756378>";
+      if(modulo == 3)playingBar += "<:yt4:951917157216813056>";
+    } 
     if (i > playInt) playingBar += "<:yt0:951917157304926238>";
   }
   playingBar += " `"+timeString(length / 1000)+"`";
