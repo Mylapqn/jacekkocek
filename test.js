@@ -183,7 +183,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.17.4",
+  version: "1.17.5",
   releaseDate: "11.3.2022",
   commands: ["help"],
   changes: [
@@ -303,6 +303,7 @@ client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
   afrGuild = client.guilds.cache.get('549589656606343178');
+  client.guilds.cache.get('728312628413333584').emojis.fetch();
 
   console.log('' + new Date() + ' I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
