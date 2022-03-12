@@ -130,7 +130,7 @@
                         "type": 6,
                         "name": "user",
                         "description": "Whose balance to check (default: you)",
-                        "required": true
+                        "required": false
                     }
                 ]
             }
