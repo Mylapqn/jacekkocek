@@ -1273,7 +1273,7 @@ client.on('messageCreate', message => {
           }
           else {
             message.react("767907092907687956");
-            message.reply("You are not permitted to mint matoshi! 1 matoshi deducted! :angry:");
+            message.reply({content:"You are not permitted to mint matoshi! 1 matoshi deducted! :angry:",allowedMentions:{repliedUser:false}});
             modifyMatoshi(message.author.id, -1);
           }
           break;
@@ -1295,13 +1295,14 @@ client.on('messageCreate', message => {
           }
           else {
             message.react("767907092907687956");
-            message.reply("Pay to _whom_???");
+            message.reply({content:"Pay to _whom_???",allowedMentions:{repliedUser:false}});
+
           }
           break;
         }
 
         case "balance": {
-          message.reply("Matoshi balance for **" + message.author.username + "**: " + getMatoshi(message.member.id) + " matoshi")
+          message.reply({content:"Matoshi balance for **" + message.author.username + "**: " + getMatoshi(message.member.id) + " matoshi",allowedMentions:{repliedUser:false}})
           break;
         }
 
