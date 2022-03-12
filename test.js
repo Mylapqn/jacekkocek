@@ -251,7 +251,7 @@ var radioStations = [
     color: [25, 117, 145],
     url: "https://kathy.torontocast.com:1825/stream"
   },
-  
+
 
 ];
 
@@ -288,6 +288,10 @@ var youtubePlaying = [];
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
 loadPlaylist();
+
+var matoshiFileName = "matoshiBalance.json";
+var matoshiBalance = new Map();
+loadMatoshi();
 
 const reminderThreshold = 3600;
 
@@ -1259,6 +1263,48 @@ client.on('messageCreate', message => {
           message.channel.send({ content: msg, allowedMentions: { parse: [] } });
           break;
         }
+        case "give": {
+          if (message.author.id = "532918953014722560") {
+            let amount = parseFloat(message.content);
+            message.mentions.members.forEach(mem => {
+              modifyMatoshi(mem.id, amount);
+            })
+            message.react("💸");
+          }
+          else {
+            message.react("767907092907687956");
+            message.reply("You are not permitted to mint matoshi! 1 matoshi deducted! :angry:");
+            modifyMatoshi(message.author.id, -1);
+          }
+          break;
+        }
+
+        case "pay": {
+          if (message.mentions.members.size > 0) {
+            let amount = parseFloat(message.content);
+            let from = message.member.id;
+            let to = message.mentions.members[0].id;
+            if (getMatoshi(user) >= amount) {
+              modifyMatoshi(from, -amount);
+              modifyMatoshi(to, amount);
+              message.react("💸");
+            }
+            else {
+              message.react("767907092907687956");
+            }
+          }
+          else {
+            message.react("767907092907687956");
+            message.reply("Pay to _whom_???");
+          }
+          break;
+        }
+
+        case "balance": {
+          message.reply("Matoshi balance for **" + message.member.nickname + "**: " + getMatoshi(message.member.id) + " matoshi")
+          break;
+        }
+
 
 
         default:
@@ -1497,6 +1543,39 @@ function loadPlaylist() {
   }
 }
 
+function loadMatoshi() {
+  try {
+    let read = fs.readFileSync(matoshiFileName);
+    matoshiBalance = new Map(JSON.parse(read));
+    console.log("Loaded matoshi.");
+  } catch (error) {
+    console.log("Could not load matoshi!");
+    console.log(error);
+  }
+}
+
+function saveMatoshi() {
+  fs.writeFile(matoshiFileName, JSON.stringify(Array.from(matoshiBalance)), (e) => { console.log("Finished writing", e) });
+}
+
+function modifyMatoshi(user, amount) {
+  if (!matoshiBalance.has(user)) {
+    matoshiBalance.set(user, 0);
+  }
+  let m = matoshiBalance.get(user);
+  matoshiBalance.set(user, m + amount);
+  console.log("User ID " + user + " matoshi modified by " + amount + ", now " + matoshiBalance.get(user));
+  saveMatoshi();
+}
+
+function getMatoshi(user) {
+  if (!matoshiBalance.has(user)) {
+    matoshiBalance.set(user, 0);
+  }
+  return matoshiBalance.get(user);
+}
+
+
 function saveReminders() {
   let f = [];
   reminders.forEach(r => {
@@ -1713,7 +1792,7 @@ function playYoutubePlaylist(playlistUrl, channel) {
 
 function playYoutube(videoUrl, channel) {
   console.log("playing " + videoUrl);
-  let videoStream = ytdl(videoUrl, { filter: "audioonly",highWaterMark: 10e6});
+  let videoStream = ytdl(videoUrl, { filter: "audioonly", highWaterMark: 10e6 });
   videoStream.on("info", (info) => {
     let vidId = info.videoDetails.videoId;
     if (!youtubeRecent.includes(vidId)) {
@@ -1918,7 +1997,7 @@ function searchYoutube(argument) {
 }
 
 function updateYoutubeMessage(data) {
-  data.elapsed = Math.min(data.elapsed+5000, data.length);
+  data.elapsed = Math.min(data.elapsed + 5000, data.length);
   if (data.statusMsg) {
     data.statusMsg.edit({ embeds: [data.embed, generateYoutubeBarEmbed(data.elapsed, data.length, 9)] })
   }
@@ -1930,21 +2009,21 @@ function updateYoutubeMessage(data) {
 
 function generateYoutubeBarEmbed(elapsed, length, count) {
   let playingBar = "";
-  playingBar += "`"+timeString(elapsed / 1000)+"` ";
+  playingBar += "`" + timeString(elapsed / 1000) + "` ";
   let playRatio = elapsed / length;
   let playInt = Math.floor(playRatio * count);
-  let modulo = Math.floor(playRatio * count*4)%4;
+  let modulo = Math.floor(playRatio * count * 4) % 4;
   for (let i = 0; i < count; i++) {
     if (i < playInt) playingBar += "<:yt4:951917157216813056>";
-    if (i == playInt){
-      if(modulo == 0)playingBar += "<:yt1:951917157212622858>";
-      if(modulo == 1)playingBar += "<:yt2:951917157275533352>";
-      if(modulo == 2)playingBar += "<:yt3:951917157279756378>";
-      if(modulo == 3)playingBar += "<:yt4:951917157216813056>";
-    } 
+    if (i == playInt) {
+      if (modulo == 0) playingBar += "<:yt1:951917157212622858>";
+      if (modulo == 1) playingBar += "<:yt2:951917157275533352>";
+      if (modulo == 2) playingBar += "<:yt3:951917157279756378>";
+      if (modulo == 3) playingBar += "<:yt4:951917157216813056>";
+    }
     if (i > playInt) playingBar += "<:yt0:951917157304926238>";
   }
-  playingBar += " `"+timeString(length / 1000)+"`";
+  playingBar += " `" + timeString(length / 1000) + "`";
   return new Discord.MessageEmbed()
     .setColor([255, 0, 0])
     .setTitle(playingBar);
