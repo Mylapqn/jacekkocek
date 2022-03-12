@@ -1555,8 +1555,10 @@ function saveMatoshi() {
 }
 
 function modifyMatoshi(user, amount) {
-  if (!matoshiBalance.has(user)) {
+  if(getMatoshi(user)==null || getMatoshi(user)==undefined || getMatoshi(user)==NaN){
     matoshiBalance.set(user, 0);
+    console.log("User ID " + user + " matoshi balance is NaN, resetting to 0");
+
   }
   let m = matoshiBalance.get(user);
   matoshiBalance.set(user, m + amount);
