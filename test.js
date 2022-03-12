@@ -1303,8 +1303,6 @@ client.on('messageCreate', message => {
           break;
         }
 
-
-
         default:
           message.channel.send("Unknown command :disappointed:");
 
