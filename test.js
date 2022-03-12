@@ -546,6 +546,7 @@ client.on('interactionCreate', interaction => {
       case "matoshi": {
         switch (interaction.options.getSubcommand()) {
           case "give": {
+            console.log(interaction.user);
             if (interaction.user.id = "532918953014722560") {
               let amount = interaction.options.getNumber("amount");
               let target = interaction.options.getUser("user");
