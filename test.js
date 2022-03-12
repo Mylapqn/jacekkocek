@@ -1282,7 +1282,7 @@ client.on('messageCreate', message => {
         case "pay": {
           if (message.mentions.members.size > 0) {
             let amount = parseFloat(message.content);
-            let from = message.member.id;
+            let from = message.author.id;
             let to = message.mentions.members[0].id;
             if (getMatoshi(user) >= amount) {
               modifyMatoshi(from, -amount);
@@ -1301,7 +1301,7 @@ client.on('messageCreate', message => {
         }
 
         case "balance": {
-          message.reply("Matoshi balance for **" + message.member.nickname + "**: " + getMatoshi(message.member.id) + " matoshi")
+          message.reply("Matoshi balance for **" + message.author.nickname + "**: " + getMatoshi(message.member.id) + " matoshi")
           break;
         }
 
