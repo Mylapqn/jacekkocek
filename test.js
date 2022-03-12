@@ -560,13 +560,13 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "pay": {
-            let from = interaction.user.id;
-            let to = interaction.options.getUser("user").id;
+            let from = interaction.user;
+            let to = interaction.options.getUser("user");
             let amount = interaction.options.getNumber("amount");
 
-            if (getMatoshi(from) >= amount && amount > 0) {
-              modifyMatoshi(from, -amount);
-              modifyMatoshi(to, amount);
+            if (getMatoshi(from.id) >= amount && amount > 0) {
+              modifyMatoshi(from.id, -amount);
+              modifyMatoshi(to.id, amount);
               interaction.reply({ content: "Successfully paid " + amount + " matoshi to " + to.username, ephemeral: false });
 
             }
