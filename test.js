@@ -567,6 +567,8 @@ client.on('interactionCreate', interaction => {
             if (getMatoshi(from) >= amount && amount > 0) {
               modifyMatoshi(from, -amount);
               modifyMatoshi(to, amount);
+              interaction.reply({ content: "Successfully paid " + amount + " matoshi to " + to.username, ephemeral: false });
+
             }
             else {
               interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
