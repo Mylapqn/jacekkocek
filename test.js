@@ -543,6 +543,45 @@ client.on('interactionCreate', interaction => {
         }
         break;
       }
+      case "matoshi": {
+        switch (interaction.options.getSubcommand()) {
+          case "give": {
+            if (interaction.user.id = "532918953014722560") {
+              let amount = interaction.options.getNumber("amount");
+              let target = interaction.options.getUser("user");
+              modifyMatoshi(target.id, amount);
+              interaction.reply({ content: "Successfully gave " + amount + " matoshi to " + target.username, ephemeral: false });
+            }
+            else {
+              interaction.reply({ content: "You are not permitted to mint matoshi! 1 matoshi deducted! :angry:", ephemeral: false });
+              modifyMatoshi(interaction.user.id, -1);
+            }
+            break;
+          }
+          case "pay": {
+            let from = interaction.user.id;
+            let to = interaction.options.getUser("user").id;
+            let amount = interaction.options.getNumber("amount");
+
+            if (getMatoshi(from) >= amount && amount > 0) {
+              modifyMatoshi(from, -amount);
+              modifyMatoshi(to, amount);
+            }
+            else {
+              interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
+            }
+            break;
+          }
+          case "balance": {
+            let user = interaction.options.getUser("user");
+            if (!user) user = interaction.user;
+            let balance = getMatoshi(user.id);
+            interaction.reply({ content: "Matoshi balance for **" + user.username + "**: " + balance + " matoshi", ephemeral: false });
+            break;
+          }
+        }
+        break;
+      }
     }
   }
 });
@@ -1261,48 +1300,6 @@ client.on('messageCreate', message => {
             msg += "• **" + rem.text + "** at <t:" + rem.timestamp + ">\n";
           });
           message.channel.send({ content: msg, allowedMentions: { parse: [] } });
-          break;
-        }
-        case "give": {
-          if (message.author.id = "532918953014722560") {
-            let amount = parseFloat(message.content);
-            message.mentions.members.forEach(mem => {
-              modifyMatoshi(mem.id, amount);
-            })
-            message.react("💸");
-          }
-          else {
-            message.react("767907092907687956");
-            message.reply({content:"You are not permitted to mint matoshi! 1 matoshi deducted! :angry:",allowedMentions:{repliedUser:false}});
-            modifyMatoshi(message.author.id, -1);
-          }
-          break;
-        }
-
-        case "pay": {
-          if (message.mentions.members.size > 0) {
-            let amount = parseFloat(message.content);
-            let from = message.author.id;
-            let to = message.mentions.members[0].id;
-            if (getMatoshi(user) >= amount && amount > 0) {
-              modifyMatoshi(from, -amount);
-              modifyMatoshi(to, amount);
-              message.react("💸");
-            }
-            else {
-              message.react("767907092907687956");
-            }
-          }
-          else {
-            message.react("767907092907687956");
-            message.reply({content:"Pay to _whom_???",allowedMentions:{repliedUser:false}});
-
-          }
-          break;
-        }
-
-        case "balance": {
-          message.reply({content:"Matoshi balance for **" + message.author.username + "**: " + getMatoshi(message.member.id) + " matoshi",allowedMentions:{repliedUser:false}})
           break;
         }
 

@@ -78,5 +78,62 @@
                 "description": "See the info about a film (usually CSFD page)"
             }
         ]
+    },
+    {
+        "name": "matoshi",
+        "description": "Matoshi",
+        "options": [
+            {
+                "type": 1,
+                "name": "give",
+                "description": "(Mylapqn only) Give a user new matoshi",
+                "options": [
+                    {
+                        "type": 6,
+                        "name": "user",
+                        "description": "The recipient of the matoshi",
+                        "required": true
+                    },
+                    {
+                        "type": 10,
+                        "name": "amount",
+                        "description": "The amount to give",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "pay",
+                "description": "Pay someone with your matoshi",
+                "options": [
+                    {
+                        "type": 6,
+                        "name": "user",
+                        "description": "The recipient of the matoshi",
+                        "required": true
+                    },
+                    {
+                        "type": 10,
+                        "name": "amount",
+                        "description": "The amount to pay",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "balance",
+                "description": "Check the matoshi balance of you or someone else",
+                "options": [
+                    {
+                        "type": 6,
+                        "name": "user",
+                        "description": "Whose balance to check (default: you)",
+                        "required": true
+                    }
+                ]
+            }
+        ]
     }
 ]
