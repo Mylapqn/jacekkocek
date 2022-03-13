@@ -1586,7 +1586,7 @@ function payMatoshi(from, to, amount) {
 function costMatoshi(guild, user, amount) {
   if (guild == "549589656606343178") {
     if (getMatoshi(user) > amount) {
-      modifyMatoshi(user, amount);
+      modifyMatoshi(user, -amount);
       return true;
     }
     else return false;
