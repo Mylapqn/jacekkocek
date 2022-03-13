@@ -85,8 +85,8 @@
         "options": [
             {
                 "type": 1,
-                "name": "give",
-                "description": "(Mylapqn only) Give a user new matoshi",
+                "name": "award",
+                "description": "(Mylapqn only) Award a user new matoshi",
                 "options": [
                     {
                         "type": 6,
@@ -97,7 +97,7 @@
                     {
                         "type": 4,
                         "name": "amount",
-                        "description": "The amount to give",
+                        "description": "The amount to award",
                         "required": true
                     }
                 ]

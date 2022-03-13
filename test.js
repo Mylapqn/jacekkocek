@@ -546,13 +546,13 @@ client.on('interactionCreate', interaction => {
       }
       case "matoshi": {
         switch (interaction.options.getSubcommand()) {
-          case "give": {
+          case "award": {
             console.log(interaction.user);
             if (interaction.user.id == "532918953014722560") {
               let amount = interaction.options.getInteger("amount");
               let target = interaction.options.getUser("user");
               modifyMatoshi(target.id, amount);
-              interaction.reply({ content: "Successfully gave " + amount + " ₥ to **" + target.username + "**", ephemeral: false });
+              interaction.reply({ content: "Successfully awarded " + amount + " ₥ to **" + target.username + "**", ephemeral: false });
             }
             else {
               interaction.reply({ content: "You are not permitted to mint matoshi! 1 ₥ deducted! :angry:", ephemeral: false });
