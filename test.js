@@ -1656,7 +1656,7 @@ async function matoshiList() {
 }
 
 async function matoshiPaymentMessage(data) {
-  let channel = afrGuild.channels.fetch("753323827093569588");
+  let channel = await afrGuild.channels.fetch("753323827093569588");
   let from = await afrGuild.members.fetch(data.from);
   let to = await afrGuild.members.fetch(data.to);
   channel.send("Payment request: " + data.amount + " ₥\nFrom: **" + from.displayName + "**\nTo: **" + to.displayName + "**\nDescription: " + data.description + "\nReact to confirm").then(msg => {
