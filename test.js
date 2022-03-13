@@ -1605,8 +1605,9 @@ async function matoshiList(members) {
   let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
   let msg = "Matoshi balance leaderboard:\n";
   for (let i = 0; i < sorted.length && i < 10; i++) {
-    let usr = (await members.fetch(sorted[i])?.user?.username);
+    let usr = await members.fetch(sorted[i]);
     if (!usr) usr = "Unknown user";
+    else usr = usr.user.username;
     msg += "`" + (i + 1) + "` " + "**" + usr + "**: " + matoshiBalance.get(sorted[i]) + " ₥\n";
   }
   return msg;
