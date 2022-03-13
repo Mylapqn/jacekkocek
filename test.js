@@ -580,7 +580,7 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "list": {
-            matoshiList(interaction.guild).then(msg => { interaction.reply({ content: msg, ephemeral: false }); });
+            matoshiList(interaction.guild.members).then(msg => { interaction.reply({ content: msg, ephemeral: false }); });
             break;
           }
         }
@@ -1577,11 +1577,11 @@ function payMatoshi(from,to,amount){
   else return false;
 }
 
-async function matoshiList(guild) {
+async function matoshiList(members) {
   let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
   let msg = "Matoshi balance leaderboard:\n";
   for (let i = 0; i < sorted.length && i < 10; i++) {
-    msg +="`"+ (i + 1) + "`. " + ("**"+await guild.members.fetch(sorted[i])).user.username + "**: " + matoshiBalance.get(sorted[i])+"\n";
+    msg +="`"+ (i + 1) + "`. " + ("**"+(await members.fetch(sorted[i])).user.username) + "**: " + matoshiBalance.get(sorted[i])+"\n";
   }
   return msg;
 }
