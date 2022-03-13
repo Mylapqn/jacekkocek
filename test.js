@@ -1476,7 +1476,7 @@ client.on("messageReactionAdd", (messageReaction) => {
   let paymentData = paymentMessages.get(reactionMessage.id);
   if (paymentData != undefined) {
     if (reactionUser.id == paymentData.from) {
-      if (emojiName == "white_check_mark") {
+      if (emojiName == "✅") {
         if (payMatoshi(paymentData.from, paymentData.to, paymentData.amount)) {
           reactionMessage.reply("Payment successful!");
         }
@@ -1484,8 +1484,7 @@ client.on("messageReactionAdd", (messageReaction) => {
           reactionMessage.reply("Insufficient matoshi!");
         }
         paymentMessages.delete(reactionMessage.id);
-      }
-      if (emojiName == "white_cross") {
+      }else if (emojiName == "white_cross") {
         reactionMessage.reply("Payment cancelled");
         paymentMessages.delete(reactionMessage.id);
       }
