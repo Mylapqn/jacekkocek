@@ -133,6 +133,11 @@
                         "required": false
                     }
                 ]
+            },
+            {
+                "type": 1,
+                "name": "list",
+                "description": "Display everyone's matoshi balance"
             }
         ]
     }
