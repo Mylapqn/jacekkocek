@@ -1664,7 +1664,7 @@ async function matoshiPaymentMessage(data) {
     .addField("Amount",data.amount+" ₥",false)
     .addField("From", from.displayName, true)
     .addField("To", to.displayName, true)
-    .setFooter({ text: "React to confirm or cancel payment" })
+    .setFooter({ text: "Only "+from.displayName+" can confirm this payment." })
     .setColor([24, 195, 177])
   let newActionRow = new Discord.MessageActionRow().addComponents([
     new Discord.MessageButton()
@@ -1676,8 +1676,7 @@ async function matoshiPaymentMessage(data) {
       .setLabel("Decline")
       .setStyle("DANGER"),
   ]);
-
-  channel.send({ embeds: [newEmbed], components: [newActionRow] }).then(msg => {
+  channel.send({ content:"<@"+from.id+">",embeds: [newEmbed], components: [newActionRow] }).then(msg => {
     //msg.react("✅");
     //msg.react("767907092907687956");
     paymentMessages.set(msg.id, data);
