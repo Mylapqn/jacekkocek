@@ -47,7 +47,8 @@ httpServer.use(express.json());
 
 httpServer.post("/matoshi/payment", (req, res) => {
   console.log(req.body);
-  let data = JSON.parse(req.body);
+  //let data = JSON.parse(req.body);
+  let data = req.body;
   if (data.from.id != client.user.id)
     matoshiPaymentMessage(data).then(() => {
       res.send("ok");
