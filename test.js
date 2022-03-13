@@ -594,7 +594,7 @@ client.on('interactionCreate', interaction => {
 });
 
 async function matoshiList(guild) {
-  let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(a) - matoshiBalance.get(b); });
+  let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
   let msg = "Matoshi balance leaderboard:\n";
   for (let i = 0; i < sorted.length && i < 10; i++) {
     msg += i + 1 + ". " + (await guild.members.fetch(sorted[i])).user.username + ": " + matoshiBalance.get(sorted[i])+"\n";
