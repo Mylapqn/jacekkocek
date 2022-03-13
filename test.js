@@ -551,7 +551,7 @@ client.on('interactionCreate', interaction => {
               let amount = interaction.options.getNumber("amount");
               let target = interaction.options.getUser("user");
               modifyMatoshi(target.id, amount);
-              interaction.reply({ content: "Successfully gave " + amount + " matoshi to " + target.username, ephemeral: false });
+              interaction.reply({ content: "Successfully gave " + amount + " matoshi to **" + target.username+"**", ephemeral: false });
             }
             else {
               interaction.reply({ content: "You are not permitted to mint matoshi! 1 matoshi deducted! :angry:", ephemeral: false });
@@ -1581,7 +1581,7 @@ async function matoshiList(members) {
   let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
   let msg = "Matoshi balance leaderboard:\n";
   for (let i = 0; i < sorted.length && i < 10; i++) {
-    msg +="`"+ (i + 1) + "`. " + ("**"+(await members.fetch(sorted[i])).user.username) + "**: " + matoshiBalance.get(sorted[i])+"\n";
+    msg +="`"+ (i + 1) + "` " + ("**"+(await members.fetch(sorted[i])).user.username) + "**: " + matoshiBalance.get(sorted[i])+"\n";
   }
   return msg;
 }
