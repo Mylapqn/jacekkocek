@@ -614,6 +614,35 @@ client.on('interactionCreate', interaction => {
       }
     }
   }
+  if (interaction.isButton()) {
+    switch (interaction.customId) {
+      case "acceptPayment": {
+        let paymentData = paymentMessages.get(interaction.message.id);
+        if (paymentData != undefined) {
+          if (interaction.user.id == paymentData.from) {
+            if (payMatoshi(paymentData.from, paymentData.to, paymentData.amount)) {
+              interaction.reply("Payment successful!");
+            }
+            else {
+              interaction.reply("Insufficient matoshi!");
+            }
+            paymentMessages.delete(interaction.message.id);
+          }
+        }
+        break;
+      }
+      case "declinePayment": {
+        let paymentData = paymentMessages.get(interaction.message.id);
+        if (paymentData != undefined) {
+          if (interaction.user.id == paymentData.from) {
+            interaction.reply("Payment cancelled");
+            paymentMessages.delete(interaction.message.id);
+          }
+        }
+        break;
+      }
+    }
+  }
 });
 
 
@@ -1661,10 +1690,10 @@ async function matoshiPaymentMessage(data) {
   let newEmbed = new Discord.MessageEmbed()
     .setTitle("Payment request")
     .setDescription(data.description)
-    .addField("Amount",data.amount+" ₥",false)
+    .addField("Amount", data.amount + " ₥", false)
     .addField("From", from.displayName, true)
     .addField("To", to.displayName, true)
-    .setFooter({ text: "Only "+from.displayName+" can confirm this payment." })
+    .setFooter({ text: "Only " + from.displayName + " can confirm this payment." })
     .setColor([24, 195, 177])
   let newActionRow = new Discord.MessageActionRow().addComponents([
     new Discord.MessageButton()
@@ -1676,7 +1705,7 @@ async function matoshiPaymentMessage(data) {
       .setLabel("Decline")
       .setStyle("DANGER"),
   ]);
-  channel.send({ content:"<@"+from.id+">",embeds: [newEmbed], components: [newActionRow] }).then(msg => {
+  channel.send({ content: "<@" + from.id + ">", embeds: [newEmbed], components: [newActionRow] }).then(msg => {
     //msg.react("✅");
     //msg.react("767907092907687956");
     paymentMessages.set(msg.id, data);
