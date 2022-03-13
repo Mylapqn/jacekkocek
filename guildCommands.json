@@ -105,7 +105,7 @@
             {
                 "type": 1,
                 "name": "pay",
-                "description": "Pay someone with your matoshi (fee: 1 matoshi)",
+                "description": "Pay someone with your matoshi (fee: 1 ₥)",
                 "options": [
                     {
                         "type": 6,
@@ -116,7 +116,7 @@
                     {
                         "type": 4,
                         "name": "amount",
-                        "description": "The amount to pay (minimum: 2 matoshi)",
+                        "description": "The amount to pay (minimum: 2 ₥, subject to fee)",
                         "required": true
                     }
                 ]

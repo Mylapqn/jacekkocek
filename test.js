@@ -551,10 +551,10 @@ client.on('interactionCreate', interaction => {
               let amount = interaction.options.getInteger("amount");
               let target = interaction.options.getUser("user");
               modifyMatoshi(target.id, amount);
-              interaction.reply({ content: "Successfully gave " + amount + " matoshi to **" + target.username+"**", ephemeral: false });
+              interaction.reply({ content: "Successfully gave " + amount + " ₥ to **" + target.username+"**", ephemeral: false });
             }
             else {
-              interaction.reply({ content: "You are not permitted to mint matoshi! 1 matoshi deducted! :angry:", ephemeral: false });
+              interaction.reply({ content: "You are not permitted to mint matoshi! 1 ₥ deducted! :angry:", ephemeral: false });
               modifyMatoshi(interaction.user.id, -1);
             }
             break;
@@ -565,7 +565,7 @@ client.on('interactionCreate', interaction => {
             let amount = interaction.options.getInteger("amount");
 
             if (payMatoshi(from.id,to.id,amount)) {
-              interaction.reply({ content: "Successfully paid **" + amount + "** matoshi to **" + to.username+"** (fee 1 matoshi)", ephemeral: false });
+              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username+"** (fee 1 matoshi)", ephemeral: false });
             }
             else {
               interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
@@ -576,7 +576,7 @@ client.on('interactionCreate', interaction => {
             let user = interaction.options.getUser("user");
             if (!user) user = interaction.user;
             let balance = getMatoshi(user.id);
-            interaction.reply({ content: "Matoshi balance for **" + user.username + "**: " + balance + " matoshi", ephemeral: false });
+            interaction.reply({ content: "Matoshi balance for **" + user.username + "**: " + balance + " ₥", ephemeral: false });
             break;
           }
           case "list": {
@@ -1581,7 +1581,7 @@ async function matoshiList(members) {
   let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
   let msg = "Matoshi balance leaderboard:\n";
   for (let i = 0; i < sorted.length && i < 10; i++) {
-    msg +="`"+ (i + 1) + "` " + ("**"+(await members.fetch(sorted[i])).user.username) + "**: " + matoshiBalance.get(sorted[i])+"\n";
+    msg +="`"+ (i + 1) + "` " + ("**"+(await members.fetch(sorted[i])).user.username) + "**: " + matoshiBalance.get(sorted[i])+" ₥\n";
   }
   return msg;
 }
