@@ -1658,7 +1658,15 @@ async function matoshiPaymentMessage(data) {
   let channel = await afrGuild.channels.fetch("753323827093569588");
   let from = await afrGuild.members.fetch(data.from);
   let to = await afrGuild.members.fetch(data.to);
-  channel.send("Payment request: " + data.amount + " ₥\nFrom: **" + from.displayName + "**\nTo: **" + to.displayName + "**\nDescription: " + data.description + "\nReact to confirm").then(msg => {
+  let newEmbed = new Discord.MessageEmbed()
+  .setTitle("Payment request")
+  .setDescription(data.amount+" ₥")
+  .addField("from",from.displayName,true)
+  .addField("to",to.displayName,true)
+  .setFooter({text:"React to confirm or cancel payment"})
+  .setColor([24, 195, 177])
+
+  channel.send({embeds:[newEmbed]}).then(msg => {
     msg.react("✅");
     msg.react("767907092907687956");
     paymentMessages.set(msg.id, data);
