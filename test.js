@@ -8,6 +8,8 @@ const fs = require('fs');
 const cheerio = require('cheerio');
 const axios = require('axios');
 const Canvas = require('canvas');
+const express = require("express");
+
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
 //const { env } = require('process');
@@ -38,6 +40,14 @@ var lastSearchResults = null;
 const prefix = "$";
 var startDate;
 var defaultTimeZone = "Europe/Prague";
+
+const httpServer = express();
+httpServer.use(express.json());
+
+httpServer.post("/matoshi/payment", (req, res)=>{
+    console.log(req.body);
+    res.send("ok");
+});
 
 var helpCommands = [
   {
