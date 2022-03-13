@@ -16,6 +16,7 @@
     "cheerio": "^1.0.0-rc.5",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
+    "express": "^4.17.3",
     "ffmpeg-static": "^4.4.0",
     "https": "^1.0.0",
     "jimp": "^0.16.1",
