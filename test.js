@@ -1680,9 +1680,9 @@ async function matoshiPaymentMessage(data) {
     .setTitle("Confirm payment")
     .addField("Message",data.description)
     .addField("Amount", data.amount + " ₥", false)
-    .addField("From >>", from.displayName, true)
+    .addField("From >>", "<@" + from.id + ">", true)
     .addField(">> To", to.displayName, true)
-    .setFooter({ text: "Only **" + from.displayName + "** can confirm this payment." })
+    .setFooter({ text: "Only " + from.displayName + " can confirm this payment." })
     .setColor([24, 195, 177])
   let newActionRow = new Discord.MessageActionRow().addComponents([
     new Discord.MessageButton()
