@@ -41,6 +41,7 @@ const prefix = "$";
 var startDate;
 var defaultTimeZone = "Europe/Prague";
 
+const port = process.env.PORT;
 const httpServer = express();
 httpServer.use(express.json());
 
@@ -316,12 +317,19 @@ loadReminders();
 client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
+  
+  httpServer.listen(port,()=>{
+    console.log("HTTP Listening on port "+port);
+  })
+
   afrGuild = client.guilds.cache.get('549589656606343178');
   client.guilds.cache.get('728312628413333584').emojis.fetch();
 
   console.log('' + new Date() + ' I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   startDate = new Date();
+
+
 
   /*
   client.guilds.fetch("549589656606343178").then(guild => {
