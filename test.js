@@ -624,9 +624,14 @@ client.on('interactionCreate', interaction => {
               interaction.reply("Payment successful!");
             }
             else {
-              interaction.reply("Insufficient matoshi!");
+              interaction.reply("Payment failed!");
             }
             paymentMessages.delete(interaction.message.id);
+            let msg = interaction.message;
+            let comp = msg.components;
+            comp[0].components[0].setDisabled(true);
+            comp[0].components[1].setDisabled(true);
+            msg.edit({content:msg.content,embeds:msg.embeds,components:comp})
           }
         }
         break;
@@ -637,6 +642,11 @@ client.on('interactionCreate', interaction => {
           if (interaction.user.id == paymentData.from) {
             interaction.reply("Payment cancelled");
             paymentMessages.delete(interaction.message.id);
+            let msg = interaction.message;
+            let comp = msg.components;
+            comp[0].components[0].setDisabled(true);
+            comp[0].components[1].setDisabled(true);
+            msg.edit({content:msg.content,embeds:msg.embeds,components:comp})
           }
         }
         break;
@@ -1501,52 +1511,31 @@ client.on("messageReactionAdd", (messageReaction) => {
   let emojiName = messageReaction.emoji.name;
   let reactionUser = messageReaction.users.cache.last();
   let reactionMessage = messageReaction.message;
-
-  let paymentData = paymentMessages.get(reactionMessage.id);
-  if (paymentData != undefined) {
-    if (reactionUser.id == paymentData.from) {
-      if (emojiName == "✅") {
-        if (payMatoshi(paymentData.from, paymentData.to, paymentData.amount)) {
-          reactionMessage.reply("Payment successful!");
-        }
-        else {
-          reactionMessage.reply("Insufficient matoshi!");
-        }
-        paymentMessages.delete(reactionMessage.id);
-      } else if (emojiName == "white_cross") {
-        reactionMessage.reply("Payment cancelled");
-        paymentMessages.delete(reactionMessage.id);
-      }
+  let kinoEntry = -1;
+  kinoData.forEach(obj => {
+    if (obj.message.id == messageReaction.message.id) {
+      kinoEntry = obj;
+      return;
     }
-  }
-  else {
-    let kinoEntry = -1;
+  });
 
-    kinoData.forEach(obj => {
-      if (obj.message.id == messageReaction.message.id) {
-        kinoEntry = obj;
-        return;
+  if (kinoEntry != -1) {
+    let kinoUser = kinoEntry.users.get(reactionUser.username);
+    if (reactionUser != client.user) {
+
+      kinoUser.reactionCount++;
+      console.log("Reaction " + emojiName);
+
+      if (weekDayNames.indexOf(emojiName) != -1) {
+        //console.log("Current count: " + kinoUser.reactionCount);
+        kinoUser.response = 1;
       }
-    });
-
-    if (kinoEntry != -1) {
-      let kinoUser = kinoEntry.users.get(reactionUser.username);
-      if (reactionUser != client.user) {
-
-        kinoUser.reactionCount++;
-        console.log("Reaction " + emojiName);
-
-        if (weekDayNames.indexOf(emojiName) != -1) {
-          //console.log("Current count: " + kinoUser.reactionCount);
-          kinoUser.response = 1;
-        }
-        if (emojiName == "white_cross") {
-          kinoUser.response = 2;
-        }
-
-        updateKinoMessage(kinoEntry);
-
+      if (emojiName == "white_cross") {
+        kinoUser.response = 2;
       }
+
+      updateKinoMessage(kinoEntry);
+
     }
   }
 });
