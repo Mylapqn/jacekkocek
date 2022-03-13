@@ -95,7 +95,7 @@
                         "required": true
                     },
                     {
-                        "type": 10,
+                        "type": 4,
                         "name": "amount",
                         "description": "The amount to give",
                         "required": true
@@ -114,9 +114,9 @@
                         "required": true
                     },
                     {
-                        "type": 10,
+                        "type": 4,
                         "name": "amount",
-                        "description": "The amount to pay",
+                        "description": "The amount to pay (minimum: 2 matoshi)",
                         "required": true
                     }
                 ]

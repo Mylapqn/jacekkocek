@@ -548,7 +548,7 @@ client.on('interactionCreate', interaction => {
           case "give": {
             console.log(interaction.user);
             if (interaction.user.id == "532918953014722560") {
-              let amount = interaction.options.getNumber("amount");
+              let amount = interaction.options.getInteger("amount");
               let target = interaction.options.getUser("user");
               modifyMatoshi(target.id, amount);
               interaction.reply({ content: "Successfully gave " + amount + " matoshi to **" + target.username+"**", ephemeral: false });
@@ -562,7 +562,7 @@ client.on('interactionCreate', interaction => {
           case "pay": {
             let from = interaction.user;
             let to = interaction.options.getUser("user");
-            let amount = interaction.options.getNumber("amount");
+            let amount = interaction.options.getInteger("amount");
 
             if (payMatoshi(from.id,to.id,amount)) {
               interaction.reply({ content: "Successfully paid **" + amount + "** matoshi to **" + to.username+"** (fee 1 matoshi)", ephemeral: false });
