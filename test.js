@@ -547,7 +547,7 @@ client.on('interactionCreate', interaction => {
       case "matoshi": {
         switch (interaction.options.getSubcommand()) {
           case "award": {
-            console.log(interaction.user);
+            //console.log(interaction.user);
             if (interaction.user.id == "532918953014722560") {
               let amount = interaction.options.getInteger("amount");
               let target = interaction.options.getUser("user");
@@ -581,7 +581,7 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "list": {
-            matoshiList(interaction.guild.members).then(msg => { interaction.reply({ content: msg, ephemeral: false }); });
+            matoshiList().then(msg => { interaction.reply({ content: msg, ephemeral: false }); });
             break;
           }
         }
@@ -1587,6 +1587,7 @@ function costMatoshi(guild, user, amount) {
   if (guild == "549589656606343178") {
     if (getMatoshi(user) > amount) {
       modifyMatoshi(user, -amount);
+      modifyMatoshi(client.user.id, amount);
       return true;
     }
     else return false;
@@ -1601,11 +1602,11 @@ function awardMatoshi(guild, user, amount) {
   return true;
 }
 
-async function matoshiList(members) {
+async function matoshiList() {
   let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
   let msg = "Matoshi balance leaderboard:\n";
   for (let i = 0; i < sorted.length && i < 10; i++) {
-    let usr = await members.fetch(sorted[i]);
+    let usr = await afrGuild.members.fetch(sorted[i]);
     if (!usr) usr = "Unknown user";
     else usr = usr.user.username;
     msg += "`" + (i + 1) + "` " + "**" + usr + "**: " + matoshiBalance.get(sorted[i]) + " ₥\n";
@@ -1618,7 +1619,7 @@ function getMatoshi(user) {
     matoshiBalance.set(user, 0);
   }
   let b = matoshiBalance.get(user);
-  if (b == null || b == undefined || b == NaN || !b) {
+  if (b == null || b == undefined || b == NaN) {
     matoshiBalance.set(user, 0);
     console.log("User ID " + user + " matoshi balance is NaN, resetting to 0");
   }
