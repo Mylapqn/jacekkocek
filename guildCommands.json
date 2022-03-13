@@ -105,7 +105,7 @@
             {
                 "type": 1,
                 "name": "pay",
-                "description": "Pay someone with your matoshi",
+                "description": "Pay someone with your matoshi (fee: 1 matoshi)",
                 "options": [
                     {
                         "type": 6,

@@ -564,11 +564,8 @@ client.on('interactionCreate', interaction => {
             let to = interaction.options.getUser("user");
             let amount = interaction.options.getNumber("amount");
 
-            if (getMatoshi(from.id) >= amount && amount > 0) {
-              modifyMatoshi(from.id, -amount);
-              modifyMatoshi(to.id, amount);
-              interaction.reply({ content: "Successfully paid " + amount + " matoshi to " + to.username, ephemeral: false });
-
+            if (payMatoshi(from.id,to.id,amount)) {
+              interaction.reply({ content: "Successfully paid **" + amount + "** matoshi to **" + to.username+"** (fee 1 matoshi)", ephemeral: false });
             }
             else {
               interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
@@ -593,14 +590,7 @@ client.on('interactionCreate', interaction => {
   }
 });
 
-async function matoshiList(guild) {
-  let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
-  let msg = "Matoshi balance leaderboard:\n";
-  for (let i = 0; i < sorted.length && i < 10; i++) {
-    msg += i + 1 + ". " + (await guild.members.fetch(sorted[i])).user.username + ": " + matoshiBalance.get(sorted[i])+"\n";
-  }
-  return msg;
-}
+
 
 
 client.on('messageCreate', message => {
@@ -1575,6 +1565,25 @@ function modifyMatoshi(user, amount) {
   matoshiBalance.set(user, m + amount);
   console.log("User ID " + user + " matoshi modified by " + amount + ", now " + matoshiBalance.get(user));
   saveMatoshi();
+}
+
+function payMatoshi(from,to,amount){
+  if (getMatoshi(from) >= amount && amount > 1) {
+    modifyMatoshi(from, -amount);
+    modifyMatoshi(to, amount-1);
+    modifyMatoshi(client.user.id,1);
+    return true;
+  }
+  else return false;
+}
+
+async function matoshiList(guild) {
+  let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
+  let msg = "Matoshi balance leaderboard:\n";
+  for (let i = 0; i < sorted.length && i < 10; i++) {
+    msg +="`"+ (i + 1) + "`. " + ("**"+await guild.members.fetch(sorted[i])).user.username + "**: " + matoshiBalance.get(sorted[i])+"\n";
+  }
+  return msg;
 }
 
 function getMatoshi(user) {
