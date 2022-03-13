@@ -45,10 +45,16 @@ const port = process.env.PORT;
 const httpServer = express();
 httpServer.use(express.json());
 
-httpServer.post("/matoshi/payment", (req, res)=>{
-    console.log(req.body);
-    res.send("ok");
+httpServer.post("/matoshi/payment", (req, res) => {
+  console.log(req.body);
+  let data = JSON.parse(req.body);
+  if (data.from.id != client.user.id)
+    matoshiPaymentMessage(data).then(() => {
+      res.send("ok");
+    });
 });
+
+let paymentMessages = new Map();
 
 var helpCommands = [
   {
@@ -317,9 +323,9 @@ loadReminders();
 client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
-  
-  httpServer.listen(port,()=>{
-    console.log("HTTP Listening on port "+port);
+
+  httpServer.listen(port, () => {
+    console.log("HTTP Listening on port " + port);
   })
 
   afrGuild = client.guilds.cache.get('549589656606343178');
@@ -374,7 +380,7 @@ client.on('interactionCreate', interaction => {
               kinoPlaylist.set(filmName, newSug);
               savePlaylist();
               interaction.reply("**" + interaction.user.username + "** added ***" + newSug.name + "*** to film suggestions. Reward: 10 ₥");
-              awardMatoshi(interaction.guildId,interaction.user.id, 10);
+              awardMatoshi(interaction.guildId, interaction.user.id, 10);
             }
             break;
           }
@@ -1466,7 +1472,23 @@ client.on("messageReactionAdd", (messageReaction) => {
   let reactionUser = messageReaction.users.cache.last();
   let reactionMessage = messageReaction.message;
 
-  if (emojiName == "🍳") {
+  let paymentData = paymentMessages.get(reactionMessage.id);
+  if (paymentData != undefined) {
+    if (reactionUser.id == paymentData.from) {
+      if (emojiName == "white_check_mark") {
+        if (payMatoshi(paymentData.from, paymentData.to, paymentData.amount)) {
+          reactionMessage.reply("Payment successful!");
+        }
+        else {
+          reactionMessage.reply("Insufficient matoshi!");
+        }
+        paymentMessages.delete(reactionMessage.id);
+      }
+      if (emojiName == "white_cross") {
+        reactionMessage.reply("Payment cancelled");
+        paymentMessages.delete(reactionMessage.id);
+      }
+    }
   }
   else {
     let kinoEntry = -1;
@@ -1630,6 +1652,18 @@ async function matoshiList() {
     msg += "`" + (i + 1) + "` " + "**" + usr + "**: " + matoshiBalance.get(sorted[i]) + " ₥\n";
   }
   return msg;
+}
+
+async function matoshiPaymentMessage(data) {
+  let channel = afrGuild.channels.fetch("753323827093569588");
+  let from = await afrGuild.members.fetch(data.from);
+  let to = await afrGuild.members.fetch(data.to);
+  channel.send("Payment request: " + data.amount + " ₥\nFrom: **" + from.displayName + "**\nTo: **" + to.displayName + "**\nDescription: " + data.description + "\nReact to confirm").then(msg => {
+    msg.react("✅");
+    msg.react("767907092907687956");
+    paymentMessages.set(msg.id, data);
+  });
+  return true;
 }
 
 function getMatoshi(user) {
