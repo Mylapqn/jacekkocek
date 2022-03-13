@@ -355,7 +355,8 @@ client.on('interactionCreate', interaction => {
               }
               kinoPlaylist.set(filmName, newSug);
               savePlaylist();
-              interaction.reply("**" + interaction.user.username + "** added ***" + newSug.name + "*** to film suggestions.");
+              interaction.reply("**" + interaction.user.username + "** added ***" + newSug.name + "*** to film suggestions. Reward: 10 ₥");
+              awardMatoshi(interaction.guildId,interaction.user.id, 10);
             }
             break;
           }
@@ -551,7 +552,7 @@ client.on('interactionCreate', interaction => {
               let amount = interaction.options.getInteger("amount");
               let target = interaction.options.getUser("user");
               modifyMatoshi(target.id, amount);
-              interaction.reply({ content: "Successfully gave " + amount + " ₥ to **" + target.username+"**", ephemeral: false });
+              interaction.reply({ content: "Successfully gave " + amount + " ₥ to **" + target.username + "**", ephemeral: false });
             }
             else {
               interaction.reply({ content: "You are not permitted to mint matoshi! 1 ₥ deducted! :angry:", ephemeral: false });
@@ -564,8 +565,8 @@ client.on('interactionCreate', interaction => {
             let to = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
 
-            if (payMatoshi(from.id,to.id,amount)) {
-              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username+"** (fee 1 matoshi)", ephemeral: false });
+            if (payMatoshi(from.id, to.id, amount)) {
+              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee 1 matoshi)", ephemeral: false });
             }
             else {
               interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
@@ -858,8 +859,13 @@ client.on('messageCreate', message => {
           }
           break;
         case "s":
-          console.log("SEARCH!");
-          startGoogleSearch(argument, message, 1);
+          if (costMatoshi(message.guildId, message.author.id, 1)) {
+            console.log("SEARCH!");
+            startGoogleSearch(argument, message, 1);
+          }
+          else {
+            message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
+          }
           break;
         case "film":
           console.log("SEARCH!");
@@ -1567,21 +1573,41 @@ function modifyMatoshi(user, amount) {
   saveMatoshi();
 }
 
-function payMatoshi(from,to,amount){
+function payMatoshi(from, to, amount) {
   if (getMatoshi(from) >= amount && amount > 1) {
     modifyMatoshi(from, -amount);
-    modifyMatoshi(to, amount-1);
-    modifyMatoshi(client.user.id,1);
+    modifyMatoshi(to, amount - 1);
+    modifyMatoshi(client.user.id, 1);
     return true;
   }
   else return false;
+}
+
+function costMatoshi(guild, user, amount) {
+  if (guild == "549589656606343178") {
+    if (getMatoshi(user) > amount) {
+      modifyMatoshi(user, amount);
+      return true;
+    }
+    else return false;
+  }
+  else return true;
+}
+
+function awardMatoshi(guild, user, amount) {
+  if (guild == "549589656606343178") {
+    modifyMatoshi(user, amount);
+  }
+  return true;
 }
 
 async function matoshiList(members) {
   let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
   let msg = "Matoshi balance leaderboard:\n";
   for (let i = 0; i < sorted.length && i < 10; i++) {
-    msg +="`"+ (i + 1) + "` " + ("**"+(await members.fetch(sorted[i])).user.username) + "**: " + matoshiBalance.get(sorted[i])+" ₥\n";
+    let usr = (await members.fetch(sorted[i])?.user?.username);
+    if (!usr) usr = "Unknown user";
+    msg += "`" + (i + 1) + "` " + "**" + usr + "**: " + matoshiBalance.get(sorted[i]) + " ₥\n";
   }
   return msg;
 }
