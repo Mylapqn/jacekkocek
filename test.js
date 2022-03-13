@@ -1484,7 +1484,7 @@ client.on("messageReactionAdd", (messageReaction) => {
           reactionMessage.reply("Insufficient matoshi!");
         }
         paymentMessages.delete(reactionMessage.id);
-      }else if (emojiName == "white_cross") {
+      } else if (emojiName == "white_cross") {
         reactionMessage.reply("Payment cancelled");
         paymentMessages.delete(reactionMessage.id);
       }
@@ -1659,16 +1659,27 @@ async function matoshiPaymentMessage(data) {
   let from = await afrGuild.members.fetch(data.from);
   let to = await afrGuild.members.fetch(data.to);
   let newEmbed = new Discord.MessageEmbed()
-  .setTitle("Payment request")
-  .setDescription(data.amount+" ₥")
-  .addField("from",from.displayName,true)
-  .addField("to",to.displayName,true)
-  .setFooter({text:"React to confirm or cancel payment"})
-  .setColor([24, 195, 177])
+    .setTitle("Payment request")
+    .setDescription(data.description)
+    .addField("Amount",data.amount+" ₥",false)
+    .addField("From", from.displayName, true)
+    .addField("To", to.displayName, true)
+    .setFooter({ text: "React to confirm or cancel payment" })
+    .setColor([24, 195, 177])
+  let newActionRow = new Discord.MessageActionRow().addComponents([
+    new Discord.MessageButton()
+      .setCustomId("acceptPayment")
+      .setLabel("Accept")
+      .setStyle("SUCCESS"),
+    new Discord.MessageButton()
+      .setCustomId("declinePayment")
+      .setLabel("Decline")
+      .setStyle("DANGER"),
+  ]);
 
-  channel.send({embeds:[newEmbed]}).then(msg => {
-    msg.react("✅");
-    msg.react("767907092907687956");
+  channel.send({ embeds: [newEmbed], components: [newActionRow] }).then(msg => {
+    //msg.react("✅");
+    //msg.react("767907092907687956");
     paymentMessages.set(msg.id, data);
   });
   return true;
