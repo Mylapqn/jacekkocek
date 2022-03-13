@@ -1677,12 +1677,12 @@ async function matoshiPaymentMessage(data) {
   let from = await afrGuild.members.fetch(data.from);
   let to = await afrGuild.members.fetch(data.to);
   let newEmbed = new Discord.MessageEmbed()
-    .setTitle("Payment request")
-    .setDescription(data.description)
+    .setTitle("Confirm payment")
+    .addField("Message",data.description)
     .addField("Amount", data.amount + " ₥", false)
-    .addField("From", from.displayName, true)
-    .addField("To", to.displayName, true)
-    .setFooter({ text: "Only " + from.displayName + " can confirm this payment." })
+    .addField("From >>", from.displayName, true)
+    .addField(">> To", to.displayName, true)
+    .setFooter({ text: "Only **" + from.displayName + "** can confirm this payment." })
     .setColor([24, 195, 177])
   let newActionRow = new Discord.MessageActionRow().addComponents([
     new Discord.MessageButton()
