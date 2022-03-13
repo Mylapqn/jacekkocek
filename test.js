@@ -583,12 +583,7 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "list": {
-            let sorted = Array.from(matoshiBalance.keys()).sort((a,b)=>{return matoshiBalance.get(a)-matoshiBalance.get(b);});
-            let msg = "Matoshi balance leaderboard:\n";
-            for (let i = 0; i < sorted.length && i < 10; i++) {
-              msg += i+1+". "+(await (interaction.guild.members.fetch(sorted[i]))).user.username+": "+matoshiBalance.get(sorted[i]+"\n");              
-            }
-            interaction.reply({ content: msg, ephemeral: false });
+            matoshiList().then(msg => { interaction.reply({ content: msg, ephemeral: false }); });
             break;
           }
         }
@@ -597,6 +592,15 @@ client.on('interactionCreate', interaction => {
     }
   }
 });
+
+async function matoshiList() {
+  let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(a) - matoshiBalance.get(b); });
+  let msg = "Matoshi balance leaderboard:\n";
+  for (let i = 0; i < sorted.length && i < 10; i++) {
+    msg += i + 1 + ". " + (await interaction.guild.members.fetch(sorted[i])).user.username + ": " + matoshiBalance.get(sorted[i] + "\n");
+  }
+  return msg;
+}
 
 
 client.on('messageCreate', message => {
