@@ -1385,10 +1385,10 @@ client.on('messageCreate', message => {
           ctx.fillRect(0, 0, 600, 300);
           ctx.strokeStyle = "#18C3B2";
           ctx.lineWidth = 2;
-          ctx.moveTo(0,300);
+          ctx.moveTo(0,100);
           let y = 150;
           for (let x = 0; x < 600; x+=10) {
-            y+=randomInt(-5,5);
+            y+=randomInt(-6,8);
             ctx.lineTo(x,y);
           }
           ctx.stroke();
