@@ -1386,8 +1386,8 @@ client.on('messageCreate', message => {
           ctx.strokeStyle = "#18C3B2";
           ctx.lineWidth = 2;
           ctx.moveTo(0,300);
-          let y = 300
-          for (let x = 0; x < 300; x+=10) {
+          let y = 150;
+          for (let x = 0; x < 600; x+=10) {
             y+=randomInt(-5,5);
             ctx.lineTo(x,y);
           }
