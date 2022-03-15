@@ -1460,7 +1460,7 @@ function stockGraph(stockName) {
   let max = Math.max(...stockHistory);
   console.log(stockHistory);
 
-  ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
+  //ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
   for (let i = 1; i <= stockHistory.length; i++) {
     let y = (stockHistory[stockHistory.length - i]-min)/(max-min)*250+25;
     if(min == max) y=150;
