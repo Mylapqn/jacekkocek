@@ -642,7 +642,7 @@ client.on('interactionCreate', interaction => {
           case "info": {
             if(stockData.has(stockName)){
               let buf = stockGraph(stockName);
-              interaction.reply({ content: "Corn prices for <t:" + now() + ">", files: [buf] });
+              interaction.reply({ content: stockName+" prices for <t:" + now() + ">", files: [buf] });
             }
             else {
               interaction.reply("Invalid stock!");
