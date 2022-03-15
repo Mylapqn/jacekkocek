@@ -364,7 +364,7 @@ const stockNames = ["CORN", "BTC-USD"];
 
 const stockHistoryLength = 24;
 
-const stockUpdatesPerHour = 600;
+const stockUpdatesPerHour = 4;
 
 let stockData = new Map();
 
