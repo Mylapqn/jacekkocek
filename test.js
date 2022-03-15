@@ -1391,6 +1391,7 @@ client.on('messageCreate', message => {
             y+=randomInt(-5,5);
             ctx.lineTo(x,y);
           }
+          ctx.stroke();
           let buf = can.createPNGStream();
           message.channel.send({ files: [buf] });
           break;
