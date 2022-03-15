@@ -1381,7 +1381,7 @@ client.on('messageCreate', message => {
         case "graph": {
           let can = Canvas.createCanvas(600, 300);
           let ctx = can.getContext("2d");
-          ctx.fillStyle = "#36393F";
+          ctx.fillStyle = "#32353B";
           ctx.fillRect(0, 0, 600, 300);
           ctx.strokeStyle = "#18C3B2";
           ctx.lineWidth = 2;
