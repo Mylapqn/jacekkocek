@@ -1384,7 +1384,7 @@ client.on('messageCreate', message => {
           ctx.fillStyle = "#32353B";
           ctx.fillRect(0, 0, 600, 300);
           ctx.strokeStyle = "#18C3B2";
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 3;
           let y = 200;
           ctx.moveTo(0,y);
           for (let x = 0; x < 600; x+=10) {
@@ -1393,7 +1393,7 @@ client.on('messageCreate', message => {
           }
           ctx.stroke();
           let buf = can.createPNGStream();
-          message.channel.send({ files: [buf] });
+          message.channel.send({ content:"Nethereum prices for <t:"+now()+">",files: [buf] });
           break;
         }
 
