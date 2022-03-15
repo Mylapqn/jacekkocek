@@ -1462,7 +1462,8 @@ function stockGraph(stockName) {
 
   ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
   for (let i = 1; i <= stockHistory.length; i++) {
-    const y = (stockHistory[stockHistory.length - i]-min)/(max-min)*250+25;
+    let y = (stockHistory[stockHistory.length - i]-min)/(max-min)*250+25;
+    if(min == max) y=150;
     ctx.lineTo(600 - i * (600 / stockHistoryLength), 300 - y);
   }
   ctx.stroke();
