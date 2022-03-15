@@ -374,7 +374,7 @@ stockNames.forEach(name => {
 
 setInterval(() => {
   getStockInfo();
-}, 3600000/stockUpdatesPerHour);
+}, 3600000 / stockUpdatesPerHour);
 
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
@@ -1414,7 +1414,7 @@ client.on('messageCreate', message => {
           break;
         }
         case "graph": {
-          let buf = stockGraph("CORN");
+          let buf = stockGraph("BTC-USD");
           message.channel.send({ content: "Corn prices for <t:" + now() + ">", files: [buf] });
           break;
         }
@@ -1455,10 +1455,14 @@ function stockGraph(stockName) {
   ctx.fillRect(0, 0, 600, 300);
   ctx.strokeStyle = "#18C3B2";
   ctx.lineWidth = 3;
-  ctx.moveTo(600, 300-stockHistory[stockHistory.length-1]);
+
+  let min = Math.min(...stockHistory);
+  let max = Math.max(...stockHistory);
+
+  ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
   for (let i = 1; i <= stockHistory.length; i++) {
-    const element = stockHistory[stockHistory.length-i];
-    ctx.lineTo(600-i*(600/stockHistoryLength),300-stockHistory[i]);
+    const y = (stockHistory[stockHistory.length - i]-min)/(max-min)*300;
+    ctx.lineTo(600 - i * (600 / stockHistoryLength), 300 - y);
   }
   ctx.stroke();
   return can.createPNGStream();
