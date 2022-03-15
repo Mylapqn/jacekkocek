@@ -1448,6 +1448,7 @@ function updateStockHistory(stockName, value) {
 }
 
 function stockGraph(stockName) {
+  let stockHistory = stockData.get(stockName);
   let can = Canvas.createCanvas(600, 300);
   let ctx = can.getContext("2d");
   ctx.fillStyle = "#32353B";
@@ -1455,7 +1456,6 @@ function stockGraph(stockName) {
   ctx.strokeStyle = "#18C3B2";
   ctx.lineWidth = 3;
   ctx.moveTo(600, 300-stockHistory[stockHistory.length-1]);
-  let stockHistory = stockData.get(stockName);
   for (let i = 1; i <= stockHistory.length; i++) {
     const element = stockHistory[stockHistory.length-i];
     ctx.lineTo(600-i*(600/stockHistoryLength),300-stockHistory[i]);
