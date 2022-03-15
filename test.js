@@ -1458,12 +1458,12 @@ function stockGraph(stockName) {
 
   let min = Math.min(...stockHistory);
   let max = Math.max(...stockHistory);
+  console.log(stockHistory);
 
   ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
   for (let i = 1; i <= stockHistory.length; i++) {
     const y = (stockHistory[stockHistory.length - i]-min)/(max-min)*250+25;
     ctx.lineTo(600 - i * (600 / stockHistoryLength), 300 - y);
-    console.log(y);
   }
   ctx.stroke();
   return can.createPNGStream();
