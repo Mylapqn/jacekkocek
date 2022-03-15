@@ -612,6 +612,23 @@ client.on('interactionCreate', interaction => {
         }
         break;
       }
+      case "stocks": {
+        switch (interaction.options.getSubcommand()) {
+          case "buy": {
+            break;
+          }
+          case "sell": {
+            break;
+          }
+          case "info": {
+            break;
+          }
+          case "list": {
+            break;
+          }
+        }
+        break;
+      }
     }
   }
   if (interaction.isButton()) {

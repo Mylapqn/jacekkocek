@@ -140,5 +140,67 @@
                 "description": "Display everyone's matoshi balance"
             }
         ]
+    },
+    {
+        "name": "stocks",
+        "description": "Stocks",
+        "options": [
+            {
+                "type": 1,
+                "name": "buy",
+                "description": "Buy a stock with matoshi",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "stock",
+                        "description": "The ID of the stock",
+                        "required": true
+                    },
+                    {
+                        "type": 4,
+                        "name": "amount",
+                        "description": "The amount to buy",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "sell",
+                "description": "Sell a stock for matoshi",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "stock",
+                        "description": "The ID of the stock",
+                        "required": true
+                    },
+                    {
+                        "type": 4,
+                        "name": "amount",
+                        "description": "The amount to sell",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "info",
+                "description": "Check the info and price of a stock",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "stock",
+                        "description": "The ID of the stock",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "list",
+                "description": "Display the list of available stocks"
+            }
+        ]
     }
 ]
