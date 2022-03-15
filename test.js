@@ -356,7 +356,25 @@ client.on('ready', () => {
   }, reminderThreshold * 1000);
   console.log(upcomingReminders);
 
+
 });
+const stockApiKey = "c8oe5maad3iatn99i470";
+
+const stockNames = ["CORN", "BTC-USD"];
+
+const stockHistoryLength = 24;
+
+const stockUpdatesPerHour = 600;
+
+let stockData = new Map();
+
+stockNames.forEach(name => {
+  stockData.set(name, []);
+})
+
+setInterval(() => {
+  getStockInfo();
+}, 3600000/stockUpdatesPerHour);
 
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
@@ -1396,21 +1414,8 @@ client.on('messageCreate', message => {
           break;
         }
         case "graph": {
-          let can = Canvas.createCanvas(600, 300);
-          let ctx = can.getContext("2d");
-          ctx.fillStyle = "#32353B";
-          ctx.fillRect(0, 0, 600, 300);
-          ctx.strokeStyle = "#18C3B2";
-          ctx.lineWidth = 3;
-          let y = 200;
-          ctx.moveTo(0,y);
-          for (let x = 0; x < 600; x+=10) {
-            y+=randomInt(-8,6);
-            ctx.lineTo(x,y);
-          }
-          ctx.stroke();
-          let buf = can.createPNGStream();
-          message.channel.send({ content:"Nethereum prices for <t:"+now()+">",files: [buf] });
+          let buf = stockGraph("CORN");
+          message.channel.send({ content: "Corn prices for <t:" + now() + ">", files: [buf] });
           break;
         }
 
@@ -1434,6 +1439,47 @@ client.on('messageCreate', message => {
     }
   }
 });
+
+function updateStockHistory(stockName, value) {
+  let hist = stockData.get(stockName);
+  if (hist.length > stockHistoryLength)
+    hist.shift();
+  hist.push(value);
+}
+
+function stockGraph(stockName) {
+  let can = Canvas.createCanvas(600, 300);
+  let ctx = can.getContext("2d");
+  ctx.fillStyle = "#32353B";
+  ctx.fillRect(0, 0, 600, 300);
+  ctx.strokeStyle = "#18C3B2";
+  ctx.lineWidth = 3;
+  ctx.moveTo(600, 300-stockHistory[stockHistory.length-1]);
+  let stockHistory = stockData.get(stockName);
+  for (let i = 1; i <= stockHistory.length; i++) {
+    const element = stockHistory[stockHistory.length-i];
+    ctx.lineTo(600-i*(600/stockHistoryLength),300-stockHistory[i]);
+  }
+  ctx.stroke();
+  return can.createPNGStream();
+}
+
+function stockPrice(stockName) {
+  return stockData.get(stockName)[stockData.get(stockName).length - 1];
+}
+
+
+function getStockInfo() {
+  for (let i = 0; i < stockNames.length; i++) {
+    const stock = stockNames[i];
+    axios.get(`https://finnhub.io/api/v1/quote?symbol=${stock}&token=${stockApiKey}`).then((res) => {
+      updateStockHistory(stock, res.data.c);
+      if (i == stockNames.length - 1) {
+        console.log("Updated stocks.");
+      }
+    });
+  }
+}
 
 
 //#region REMINDERS
