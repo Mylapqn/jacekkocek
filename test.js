@@ -631,6 +631,7 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "stocks": {
+        let stockName = interaction.options.getString("stock");
         switch (interaction.options.getSubcommand()) {
           case "buy": {
             break;
@@ -639,6 +640,13 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "info": {
+            if(stockData.has(stockName)){
+              let buf = stockGraph(stockName);
+              interaction.reply({ content: "Corn prices for <t:" + now() + ">", files: [buf] });
+            }
+            else {
+              interaction.reply("Invalid stock!");
+            }
             break;
           }
           case "list": {
