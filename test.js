@@ -1490,7 +1490,7 @@ function setupReminders() {
 }
 
 function now() {
-  return Date.now() / 1000;
+  return Math.round(Date.now() / 1000);
 }
 
 function executeReminder(rem) {
