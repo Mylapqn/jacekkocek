@@ -631,7 +631,7 @@ client.on('interactionCreate', interaction => {
             let comp = msg.components;
             comp[0].components[0].setDisabled(true);
             comp[0].components[1].setDisabled(true);
-            msg.edit({content:msg.content,embeds:msg.embeds,components:comp})
+            msg.edit({ content: msg.content, embeds: msg.embeds, components: comp })
           }
         }
         break;
@@ -646,7 +646,7 @@ client.on('interactionCreate', interaction => {
             let comp = msg.components;
             comp[0].components[0].setDisabled(true);
             comp[0].components[1].setDisabled(true);
-            msg.edit({content:msg.content,embeds:msg.embeds,components:comp})
+            msg.edit({ content: msg.content, embeds: msg.embeds, components: comp })
           }
         }
         break;
@@ -1378,6 +1378,23 @@ client.on('messageCreate', message => {
           message.channel.send({ content: msg, allowedMentions: { parse: [] } });
           break;
         }
+        case "graph": {
+          let can = Canvas.createCanvas(600, 300);
+          let ctx = can.getContext("2d");
+          ctx.fillStyle = "#36393F";
+          ctx.fillRect(0, 0, 600, 300);
+          ctx.strokeStyle = "#18C3B2";
+          ctx.lineWidth = 2;
+          ctx.moveTo(0,300);
+          let y = 300
+          for (let x = 0; x < 300; x+=10) {
+            y+=randomInt(-5,5);
+            ctx.lineTo(x,y);
+          }
+          let buf = can.createPNGStream();
+          message.channel.send({ files: [buf] });
+          break;
+        }
 
         default:
           message.channel.send("Unknown command :disappointed:");
@@ -1678,7 +1695,7 @@ async function matoshiPaymentMessage(data) {
   let to = await afrGuild.members.fetch(data.to);
   let newEmbed = new Discord.MessageEmbed()
     .setTitle("Confirm payment")
-    .addField("Message",data.description)
+    .addField("Message", data.description)
     .addField("Amount", data.amount + " ₥", false)
     .addField("From >>", "<@" + from.id + ">", true)
     .addField(">> To", "<@" + to.id + ">", true)
