@@ -1463,6 +1463,7 @@ function stockGraph(stockName) {
   for (let i = 1; i <= stockHistory.length; i++) {
     const y = (stockHistory[stockHistory.length - i]-min)/(max-min)*250+25;
     ctx.lineTo(600 - i * (600 / stockHistoryLength), 300 - y);
+    console.log(y);
   }
   ctx.stroke();
   return can.createPNGStream();
