@@ -1421,12 +1421,6 @@ client.on('messageCreate', message => {
           message.channel.send({ content: msg, allowedMentions: { parse: [] } });
           break;
         }
-        case "graph": {
-          let buf = stockGraph("BTC-USD");
-          message.channel.send({ content: "Corn prices for <t:" + now() + ">", files: [buf] });
-          break;
-        }
-
         default:
           message.channel.send("Unknown command :disappointed:");
 
