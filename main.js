@@ -1,14 +1,12 @@
-const Discord = require('discord.js');
-const DiscordVoice = require("@discordjs/voice");
-const Jimp = require('jimp');
-const Https = require('https');
-const Http = require('http');
-const ytdl = require('ytdl-core');
-const fs = require('fs');
-const cheerio = require('cheerio');
-const axios = require('axios');
-const Canvas = require('canvas');
-const express = require("express");
+import * as Discord from "discord.js";
+import * as DiscordVoice from "@discordjs/voice";
+import * as Jimp from "jimp";
+import * as Https from "https";
+import * as ytdl from "ytdl-core";
+import * as fs from "fs";
+import * as axios from "axios";
+import * as Canvas from "canvas";
+import * as express from "express";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
