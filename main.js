@@ -2,11 +2,11 @@ import * as Discord from "discord.js";
 import * as DiscordVoice from "@discordjs/voice";
 import * as Jimp from "jimp";
 import * as Https from "https";
-import * as ytdl from "ytdl-core";
-import * as fs from "fs";
-import * as axios from "axios";
 import * as Canvas from "canvas";
-import * as express from "express";
+import ytdl from "ytdl-core";
+import fs from "fs";
+import axios from "axios";
+import express from "express";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
