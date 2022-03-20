@@ -43,7 +43,7 @@ export function generateGraph(stockName) {
     const width = 600;
     const height = 300;
     const padding = 5;
-    const axisOffetX = 50;
+    const axisOffetX = 5;
     const axisOffsetY = 25;
     const graphWidth = width - axisOffetX;
     const graphHeight = height - axisOffsetY*2;
