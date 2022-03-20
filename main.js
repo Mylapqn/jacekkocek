@@ -7,7 +7,7 @@ import ytdl from "ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
-import { getUser,init } from "./database.js";
+import { getUser,init, setUser } from "./database.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -360,8 +360,6 @@ client.on('ready', () => {
 
 });
 const stockApiKey = "c8oe5maad3iatn99i470";
-
-const stockNames = ["CORN", "BTC-USD"];
 
 const stockHistoryLength = 24;
 
@@ -1422,10 +1420,16 @@ client.on('messageCreate', message => {
           message.channel.send({ content: msg, allowedMentions: { parse: [] } });
           break;
         }
-        case "database": {
-          getUser(argument).then(f => {
+        case "getuser": {
+          getUser(message.author.id).then(f => {
             console.log(f);
-            message.channel.send(f);
+          })
+          break;
+        }
+        case "setuser": {
+          getUser(message.author.id).then(f => {
+            f.wallets.set("CORN",5.6);
+            setUser(f);
           })
           break;
         }
