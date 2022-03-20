@@ -92,12 +92,16 @@ export function currentPrice(stockName) {
 }
 
 function getStockInfo() {
+    console.log("Updating stocks...");
     for (let i = 0; i < stockNames.length; i++) {
         const stock = stockNames[i];
+        console.log("Updating "+stock);
         axios.get(`https://finnhub.io/api/v1/quote?symbol=${stock}&token=${stockApiKey}`).then((res) => {
+            console.log("Received data about "+stock);
             updateStockHistory(stock, res.data.c);
+            console.log("Updated "+stock);
             if (i == stockNames.length - 1) {
-                console.log("Updated stocks.");
+                console.log("Updated all stocks.");
             }
         });
     }
