@@ -3,6 +3,7 @@ import * as Discord from "discord.js";
 import * as DiscordVoice from "@discordjs/voice";
 import * as Https from "https";
 import * as Main from "./main.js";
+import * as Utilities from "./utilities.js";
 
 
 var nextYoutube;
@@ -83,7 +84,7 @@ function playYoutube(videoUrl, channel) {
         }
         console.log("info" + info);
         let length = info.videoDetails.lengthSeconds;
-        let lenString = timeString(length);
+        let lenString = Utilities.timeString(length);
         let embed = new Discord.MessageEmbed()
             .setColor([255, 0, 0])
             .setTitle("► " + info.videoDetails.title)
@@ -249,7 +250,7 @@ function updateMessage(data) {
 
 function generateProgressBar(elapsed, length, count) {
     let playingBar = "";
-    playingBar += "`" + timeString(elapsed / 1000) + "` ";
+    playingBar += "`" + Utilities.timeString(elapsed / 1000) + "` ";
     let playRatio = elapsed / length;
     let playInt = Math.floor(playRatio * count);
     let modulo = Math.floor(playRatio * count * 4) % 4;
@@ -263,7 +264,7 @@ function generateProgressBar(elapsed, length, count) {
         }
         if (i > playInt) playingBar += "<:yt0:951917157304926238>";
     }
-    playingBar += " `" + timeString(length / 1000) + "`";
+    playingBar += " `" + Utilities.timeString(length / 1000) + "`";
     return new Discord.MessageEmbed()
         .setColor([255, 0, 0])
         .setTitle(playingBar);

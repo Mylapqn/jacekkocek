@@ -11,6 +11,7 @@ import * as Database from "./database.js";
 import * as Stocks from "./stocks.js";
 import * as Matoshi from "./matoshi.js";
 import * as Youtube from "./youtube.js";
+import * as Utilities from "./utilities.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -354,14 +355,14 @@ client.on('interactionCreate', interaction => {
           case "suggest": {
             let filmName = interaction.options.getString("film").toLowerCase();
             if (kinoPlaylist.has(filmName)) {
-              interaction.reply({ content: "***" + toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.", ephemeral: true });
+              interaction.reply({ content: "***" + Utilities.toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.", ephemeral: true });
             }
             else if (kinoData.has(filmName)) {
-              interaction.reply({ content: "There is already a plan to watch ***" + toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
+              interaction.reply({ content: "There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
             }
             else {
               let newSug = {
-                name: toTitleCase(filmName),
+                name: Utilities.toTitleCase(filmName),
                 suggestedBy: interaction.user.username,
                 watched: false
               }
@@ -418,7 +419,7 @@ client.on('interactionCreate', interaction => {
                 }
                 createReminder(newRem);
                 interaction.reply({
-                  content: "Added reminder for **_" + toTitleCase(film) + "_** at <t:" + newRem.timestamp + ">",
+                  content: "Added reminder for **_" + Utilities.toTitleCase(film) + "_** at <t:" + newRem.timestamp + ">",
                   allowedMentions: { parse: [] },
                   ephemeral: true
                 });
@@ -428,7 +429,7 @@ client.on('interactionCreate', interaction => {
               }
             }
             else {
-              interaction.reply({ content: "Cannot find any vote for ***" + toTitleCase(film) + "*** :disappointed:", ephemeral: true });
+              interaction.reply({ content: "Cannot find any vote for ***" + Utilities.toTitleCase(film) + "*** :disappointed:", ephemeral: true });
             }
             break;
           }
@@ -436,15 +437,15 @@ client.on('interactionCreate', interaction => {
             let film = interaction.options.getString("film").toLowerCase();
             if (kinoData.has(film)) {
               kinoData.delete(film);
-              interaction.reply("The data for ***" + toTitleCase(film) + "*** was successfully reset.");
+              interaction.reply("The data for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
             }
             if (kinoPlaylist.has(film)) {
               kinoPlaylist.delete(film);
               savePlaylist();
-              interaction.reply("The suggestion for ***" + toTitleCase(film) + "*** was successfully reset.");
+              interaction.reply("The suggestion for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
             }
             else {
-              interaction.reply({ content: "Cannot find any vote or suggestion for ***" + toTitleCase(film) + "*** :disappointed:", ephemeral: true });
+              interaction.reply({ content: "Cannot find any vote or suggestion for ***" + Utilities.toTitleCase(film) + "*** :disappointed:", ephemeral: true });
             }
             break;
           }
@@ -978,7 +979,7 @@ client.on('messageCreate', message => {
 
             let film = argument.toLowerCase();
             if (kinoData.has(film)) {
-              message.channel.send("There is already a vote on ***" + toTitleCase(film) + "***! Use `$kinoReset " + film + "` to reset the vote.");
+              message.channel.send("There is already a vote on ***" + Utilities.toTitleCase(film) + "***! Use `$kinoReset " + film + "` to reset the vote.");
             }
             else {
               startGoogleSearch(argument, message, 2);
@@ -986,7 +987,7 @@ client.on('messageCreate', message => {
               let m = {};
 
               let obj = {
-                filmName: toTitleCase(film),
+                filmName: Utilities.toTitleCase(film),
                 message: message,
                 users: new Map()
               }
@@ -1032,7 +1033,7 @@ client.on('messageCreate', message => {
                 else {
                   console.log("Creating film in suggestions.");
                   kinoPlaylist.set(film, {
-                    name: toTitleCase(film),
+                    name: Utilities.toTitleCase(film),
                     suggestedBy: message.author.username,
                     watched: true
                   });
@@ -1055,15 +1056,15 @@ client.on('messageCreate', message => {
             let film = argument.toLowerCase();
             if (kinoData.has(film)) {
               kinoData.delete(film);
-              message.channel.send("The data for ***" + toTitleCase(film) + "*** was successfully reset.");
+              message.channel.send("The data for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
             }
             if (kinoPlaylist.has(film)) {
               kinoPlaylist.delete(film);
               savePlaylist();
-              message.channel.send("The suggestion for ***" + toTitleCase(film) + "*** was successfully reset.");
+              message.channel.send("The suggestion for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
             }
             else {
-              message.channel.send("Cannot find any vote or suggestion for ***" + toTitleCase(film) + "*** :disappointed:");
+              message.channel.send("Cannot find any vote or suggestion for ***" + Utilities.toTitleCase(film) + "*** :disappointed:");
             }
           } else {
             message.channel.send("You need to specify a film! :angry:");
@@ -1087,7 +1088,7 @@ client.on('messageCreate', message => {
               message.channel.send(newMessage + "Bude ***" + kinoEntry.filmName + "***?\n" + kinoEntry.message.url);
             }
             else {
-              message.channel.send("Cannot find any vote for ***" + toTitleCase(film) + "*** :disappointed:");
+              message.channel.send("Cannot find any vote for ***" + Utilities.toTitleCase(film) + "*** :disappointed:");
             }
           } else {
             message.channel.send("You need to specify a film! :angry:");
@@ -1130,14 +1131,14 @@ client.on('messageCreate', message => {
           if (argument) {
             let filmName = argument.toLowerCase();
             if (kinoPlaylist.has(filmName)) {
-              message.channel.send("***" + toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
+              message.channel.send("***" + Utilities.toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
             }
             else if (kinoData.has(filmName)) {
-              message.channel.send("There is already a plan to watch ***" + toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url);
+              message.channel.send("There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url);
             }
             else {
               let newSug = {
-                name: toTitleCase(filmName),
+                name: Utilities.toTitleCase(filmName),
                 suggestedBy: message.author.username,
                 watched: false
               }
@@ -1293,7 +1294,7 @@ client.on('messageCreate', message => {
           break;
         }
         case "time": {
-          message.channel.send(dateString(new Date(Date.now() - getTimeOffset(new Date(), defaultTimeZone))));
+          message.channel.send(Utilities.dateString(new Date(Date.now() - Utilities.getTimeOffset(new Date(), defaultTimeZone))));
           message.channel.send(new Date().toString());
           break;
         }
@@ -1901,41 +1902,3 @@ function playStation(voice, id) {
 
 //#endregion
 
-function dateString(inputDate) {
-  var minutes = inputDate.getMinutes();
-  var hours = inputDate.getHours();
-  var day = inputDate.getDate();
-  var month = inputDate.getMonth() + 1;
-  var year = inputDate.getFullYear();
-  return (day + "." + month + "." + year + " " + hours + ":" + minutes);
-}
-
-function getTimeOffset(date, timeZone) {
-  const tz = date.toLocaleString("en", { timeZone, timeStyle: "long" }).split(" ").slice(-1)[0];
-  const dateString = date.toString();
-  let offset = Date.parse(`${dateString} ${tz}`) - Date.parse(`${dateString} UTC`);
-  return offset;
-}
-
-function toTitleCase(phrase) {
-  return phrase
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
-function randomInt(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
-}
-
-function timeString(seconds) {
-  let output;
-  if (seconds >= 3600) {
-    output = Math.floor(seconds / 3600) + ":" + addZero(Math.floor((seconds % 3600) / 60)) + ":" + addZero(seconds % 60);
-  }
-  else {
-    output = Math.floor(seconds / 60) + ":" + addZero(seconds % 60);
-  }
-  return output;
-}
