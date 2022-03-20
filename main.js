@@ -1,8 +1,8 @@
 import * as Discord from "discord.js";
 import * as DiscordVoice from "@discordjs/voice";
-import * as Jimp from "jimp";
 import * as Https from "https";
-import * as Canvas from "canvas";
+import Canvas from "canvas";
+import Jimp from "jimp";
 import ytdl from "ytdl-core";
 import fs from "fs";
 import axios from "axios";
