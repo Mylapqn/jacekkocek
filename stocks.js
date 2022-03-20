@@ -6,7 +6,7 @@ import * as Utilities from "./utilities.js";
 const stockApiKey = "c8oe5maad3iatn99i470";
 
 const stockHistoryLength = 24;
-const stockUpdatesPerHour = 4;
+const stockUpdatesPerHour = 60*6;
 
 export const stockNames = ["CORN", "BTC"];
 export let stockData = new Map();
@@ -59,8 +59,8 @@ export function generateGraph(stockName) {
     ctx.lineWidth = 3;
 
     ctx.beginPath();
-    ctx.moveTo(axisOffetX+5, 0);
-    ctx.lineTo(axisOffetX+5, height);
+    ctx.moveTo(axisOffetX, 0);
+    ctx.lineTo(axisOffetX, height);
     ctx.stroke();
 
     ctx.beginPath();
@@ -72,9 +72,9 @@ export function generateGraph(stockName) {
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
-    ctx.fillText(min, axisOffetX, height - padding);
+    ctx.fillText(min, axisOffetX-5, height - padding);
     ctx.textBaseline = "top";
-    ctx.fillText(max, axisOffetX, padding);
+    ctx.fillText(max, axisOffetX-5, padding);
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
     ctx.fillText(Utilities.dateString(new Date()), width - padding, height - padding);
