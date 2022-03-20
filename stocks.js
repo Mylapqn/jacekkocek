@@ -29,11 +29,17 @@ function updateStockHistory(stockName, value) {
 }
 
 export function generateGraph(stockName) {
+    const width = 600;
+    const height = 300;
+    const padding = 5;
+    const graphPadding = 25;
+    const axisOffetX = 50;
+    const axisOffsetY = 5;
     let stockHistory = stockData.get(stockName);
-    let can = Canvas.createCanvas(600, 300);
+    let can = Canvas.createCanvas(width, height);
     let ctx = can.getContext("2d");
     ctx.fillStyle = "#32353B";
-    ctx.fillRect(0, 0, 600, 300);
+    ctx.fillRect(0, 0, width, height);
     ctx.strokeStyle = "#18C3B2";
     ctx.lineWidth = 3;
 
@@ -43,23 +49,37 @@ export function generateGraph(stockName) {
 
     //ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
     for (let i = 0; i < stockHistory.length; i++) {
-        let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * 250 + 25;
-        if (min == max) y = 150;
-        ctx.lineTo(600 - i * (600 / stockHistoryLength), 300 - y);
+        let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * (height - graphPadding * 2) + graphPadding;
+        if (min == max) y = height / 2;
+        ctx.lineTo(width - i * (width / stockHistoryLength), height - y);
     }
     ctx.stroke();
 
-    ctx.fillStyle="#FFFFFF";
+    ctx.strokeStyle = "#5E5E5E";
+    ctx.lineWidth = 3;
+    
+    ctx.beginPath();
+    ctx.moveTo(axisOffetX, 0);
+    ctx.lineTo(axisOffetX, height);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, height - axisOffsetY);
+    ctx.lineTo(width, height - axisOffsetY);
+    ctx.stroke();
+
+
+    ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "right";
-    ctx.textBaseline="bottom";
-    ctx.fillText(min,30,295);
-    ctx.textBaseline="top";
-    ctx.fillText(max,30,5);
+    ctx.textBaseline = "bottom";
+    ctx.fillText(min, axisOffetX, height - padding);
+    ctx.textBaseline = "top";
+    ctx.fillText(max, axisOffetX, padding);
     ctx.textAlign = "right";
-    ctx.textBaseline="bottom";
-    ctx.fillText(Utilities.dateString(new Date()),595,295);
+    ctx.textBaseline = "bottom";
+    ctx.fillText(Utilities.dateString(new Date()), width - padding, height - padding);
     ctx.textAlign = "left";
-    ctx.fillText(Utilities.dateString(new Date(Date.now()-stockHistoryLength/stockUpdatesPerHour*3600000)),35,295);
+    ctx.fillText(Utilities.dateString(new Date(Date.now() - stockHistoryLength / stockUpdatesPerHour * 3600000)), width + axisOffetX + 5, height - padding);
     return can.createPNGStream();
 }
 
