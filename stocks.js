@@ -7,7 +7,7 @@ import * as Utilities from "./utilities.js";
 const stockApiKey = "c8oe5maad3iatn99i470";
 
 const stockHistoryLength = 24;
-const stockUpdatesPerHour = 60*6;
+const stockUpdatesPerHour = 60*60;
 
 export const stockNames = ["CORN", "BTC"];
 export let stockData = new Map();
@@ -34,6 +34,8 @@ export function generateGraph(stockName) {
     const height = 300;
     const padding = 5;
     const graphPadding = 25;
+    const graphWidth = width-axisOffetX;
+    const graphHeight = height-graphPadding*2-axisOffsetY;
     const axisOffetX = 50;
     const axisOffsetY = 25;
     let stockHistory = stockData.get(stockName);
@@ -50,9 +52,9 @@ export function generateGraph(stockName) {
 
     //ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
     for (let i = 0; i < stockHistory.length; i++) {
-        let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * (height - graphPadding * 2) + graphPadding;
-        if (min == max) y = height / 2;
-        ctx.lineTo(width - i * (width / stockHistoryLength), height - y);
+        let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * graphHeight + graphPadding;
+        if (min == max) y = graphHeight / 2+graphPadding;
+        ctx.lineTo(graphWidth - i * (graphWidth / stockHistoryLength), height - y);
     }
     ctx.stroke();
 
