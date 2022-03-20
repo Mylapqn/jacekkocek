@@ -318,6 +318,7 @@ client.on('ready', () => {
 
   Stocks.init();
   Database.init();
+  Matoshi.init();
 
   httpServer.listen(port, () => {
     console.log("HTTP Listening on port " + port);

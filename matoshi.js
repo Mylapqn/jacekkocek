@@ -83,7 +83,7 @@ export async function generateLeaderboard() {
     let sorted = Array.from(matoshiData.keys()).sort((a, b) => { return matoshiData.get(b) - matoshiData.get(a); });
     let msg = "Matoshi balance leaderboard:\n";
     for (let i = 0; i < sorted.length && i < 10; i++) {
-        let usr = await afrGuild.members.fetch(sorted[i]);
+        let usr = await Main.afrGuild.members.fetch(sorted[i]);
         if (!usr) usr = "Unknown user";
         else usr = usr.user.username;
         msg += "`" + (i + 1) + "` " + "**" + usr + "**: " + matoshiData.get(sorted[i]) + " ₥\n";
