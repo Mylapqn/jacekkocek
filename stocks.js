@@ -9,7 +9,11 @@ const stockApiKey = "c8oe5maad3iatn99i470";
 const stockHistoryLength = 24;
 const stockUpdatesPerHour = 4;
 
-export const stockNames = ["CORN", "BTC"];
+const stockAliases = new Map([
+    ["CORN","CORN"],
+    ["BTC","BTC-USD"],
+])
+export const stockNames = Array.from(stockAliases.keys());
 export let stockData = new Map();
 
 
@@ -96,7 +100,7 @@ function getStockInfo() {
     for (let i = 0; i < stockNames.length; i++) {
         const stock = stockNames[i];
         console.log("Updating "+stock);
-        axios.get(`https://finnhub.io/api/v1/quote?symbol=${stock}&token=${stockApiKey}`).then((res) => {
+        axios.get(`https://finnhub.io/api/v1/quote?symbol=${stockAliases.get(stock)}&token=${stockApiKey}`).then((res) => {
             console.log("Received data about "+stock);
             updateStockHistory(stock, res.data.c);
             console.log("Updated "+stock);
