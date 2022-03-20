@@ -131,3 +131,10 @@ export async function sell(user, stock, amount) {
     }
     else return false;
 }
+
+export async function balance(user, stock) {
+    let data = await Database.getUser(user);
+    let currentStock = data.wallets.get(stock);
+    return currentStock;
+}
+

@@ -12,6 +12,7 @@ import * as Stocks from "./stocks.js";
 import * as Matoshi from "./matoshi.js";
 import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
+import { userInfo } from "os";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -576,23 +577,23 @@ client.on('interactionCreate', interaction => {
         let stockName = interaction.options.getString("stock");
         switch (interaction.options.getSubcommand()) {
           case "buy": {
-            Stocks.buy(interaction.user.id,stockName,interaction.options.getInteger("amount")).then(res=>{
-              if(res){
-                interaction.reply("Successfully purchased "+stockName+" for "+interaction.options.getInteger("amount")+" ₥.");
+            Stocks.buy(interaction.user.id, stockName, interaction.options.getInteger("amount")).then(res => {
+              if (res) {
+                interaction.reply("Successfully purchased " + stockName + " for " + interaction.options.getInteger("amount") + " ₥.");
               }
               else {
-                interaction.reply("Purchase of "+stockName+" failed.");
+                interaction.reply("Purchase of " + stockName + " failed.");
               }
             })
             break;
           }
           case "sell": {
-            Stocks.sell(interaction.user.id,stockName,interaction.options.getInteger("amount")).then(res=>{
-              if(res){
-                interaction.reply("Successfully sold "+stockName+" for "+interaction.options.getInteger("amount")+" ₥.");
+            Stocks.sell(interaction.user.id, stockName, interaction.options.getInteger("amount")).then(res => {
+              if (res) {
+                interaction.reply("Successfully sold " + stockName + " for " + interaction.options.getInteger("amount") + " ₥.");
               }
               else {
-                interaction.reply("Sell of "+stockName+" failed.");
+                interaction.reply("Sell of " + stockName + " failed.");
               }
             })
             break;
@@ -600,7 +601,7 @@ client.on('interactionCreate', interaction => {
           case "info": {
             if (Stocks.stockData.has(stockName)) {
               let buf = Stocks.generateGraph(stockName);
-              interaction.reply({ content: stockName + " prices for <t:" + nowSeconds() + "> - Current "+Stocks.currentPrice(stockName), files: [buf] });
+              interaction.reply({ content: stockName + " prices for <t:" + nowSeconds() + "> - Current " + Stocks.currentPrice(stockName), files: [buf] });
             }
             else {
               interaction.reply("Invalid stock!");
@@ -608,6 +609,16 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "list": {
+            break;
+          }
+          case "balance": {
+            let user = interaction.options.getUser("user");
+            if (!user) user = interaction.user;
+            Stocks.balance(interaction.user.id, stockName).then(balance => {
+              Stocks.currentPrice(stockName).then(price=>{
+                interaction.reply(stockName + " balance for " + user + ": " + balance + " (worth "+balance*price+" ₥)");
+              });
+            });
             break;
           }
         }
