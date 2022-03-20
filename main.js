@@ -379,6 +379,7 @@ setInterval(() => {
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isCommand()) {
+    console.log("Slash command by "+interaction.user.username+": "+interaction.commandName+", arguments: " + interaction.options.data.toString())
     switch (interaction.commandName) {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
