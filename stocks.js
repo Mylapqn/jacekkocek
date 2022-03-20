@@ -1,3 +1,5 @@
+import Canvas from "canvas";
+
 const stockApiKey = "c8oe5maad3iatn99i470";
 
 const stockHistoryLength = 24;
