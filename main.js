@@ -576,9 +576,25 @@ client.on('interactionCreate', interaction => {
         let stockName = interaction.options.getString("stock");
         switch (interaction.options.getSubcommand()) {
           case "buy": {
+            Stocks.buy(interaction.user.id,stockName,interaction.options.getInteger("amount")).then(res=>{
+              if(res){
+                interaction.reply("Successfully purchased "+stockName+" for "+interaction.options.getInteger("amount")+" ₥.");
+              }
+              else {
+                interaction.reply("Purchase of "+stockName+" failed.");
+              }
+            })
             break;
           }
           case "sell": {
+            Stocks.sell(interaction.user.id,stockName,interaction.options.getInteger("amount")).then(res=>{
+              if(res){
+                interaction.reply("Successfully sold "+stockName+" for "+interaction.options.getInteger("amount")+" ₥.");
+              }
+              else {
+                interaction.reply("Sell of "+stockName+" failed.");
+              }
+            })
             break;
           }
           case "info": {
@@ -908,7 +924,7 @@ client.on('messageCreate', message => {
           }
           break;
         case "s":
-          if (Matoshi.cost(message.guildId, message.author.id, 1)) {
+          if (Matoshi.cost(message.author.id, 1, message.guildId)) {
             console.log("SEARCH!");
             startGoogleSearch(argument, message, 1);
           }
@@ -1309,7 +1325,7 @@ client.on('messageCreate', message => {
           message.delete();
           let num = parseInt(argument);
           if (!isNaN(num)) {
-            Youtube.skip(message.guild,num);
+            Youtube.skip(message.guild, num);
           }
           else {
             Youtube.skip(message.guild);

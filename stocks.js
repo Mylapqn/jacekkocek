@@ -37,8 +37,8 @@ export function generateGraph(stockName) {
     const graphPadding = 25;
     const axisOffetX = 50;
     const axisOffsetY = 25;
-    const graphWidth = width-axisOffetX;
-    const graphHeight = height-graphPadding*2-axisOffsetY;
+    const graphWidth = width - axisOffetX;
+    const graphHeight = height - graphPadding * 2 - axisOffsetY;
     let stockHistory = stockData.get(stockName);
     let can = Canvas.createCanvas(width, height);
     let ctx = can.getContext("2d");
@@ -54,7 +54,7 @@ export function generateGraph(stockName) {
     //ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
     for (let i = 0; i < stockHistory.length; i++) {
         let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * graphHeight + graphPadding;
-        if (min == max) y = graphHeight / 2+graphPadding;
+        if (min == max) y = graphHeight / 2 + graphPadding;
         ctx.lineTo(width - i * (graphWidth / stockHistoryLength), height - y);
     }
     ctx.stroke();
@@ -76,9 +76,9 @@ export function generateGraph(stockName) {
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
-    ctx.fillText(min, axisOffetX-5, height - padding);
+    ctx.fillText(min, axisOffetX - 5, height - padding);
     ctx.textBaseline = "top";
-    ctx.fillText(max, axisOffetX-5, padding);
+    ctx.fillText(max, axisOffetX - 5, padding);
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
     ctx.fillText(Utilities.dateString(new Date()), width - padding, height - padding);
@@ -91,7 +91,6 @@ function stockPrice(stockName) {
     return stockData.get(stockName)[stockData.get(stockName).length - 1];
 }
 
-
 function getStockInfo() {
     for (let i = 0; i < stockNames.length; i++) {
         const stock = stockNames[i];
@@ -102,4 +101,29 @@ function getStockInfo() {
             }
         });
     }
+}
+
+export async function buy(user, stock, amount) {
+    if (Matoshi.cost(user, amount)) {
+        let data = await Database.getUser(user);
+        let currentStock = data.wallets.get(stock);
+        currentStock += amount / stockPrice(stock);
+        data.wallets.set(stock, currentStock);
+        await Database.setUser(data);
+        return true;
+    }
+    else return false;
+}
+
+export async function sell(user, stock, amount) {
+    let data = await Database.getUser(user);
+    let currentStock = data.wallets.get(stock);
+    if (currentStock >= amount / stockPrice(stock)) {
+        currentStock -= amount / stockPrice(stock);
+        Matoshi.modify(user, amount);
+        data.wallets.set(stock, currentStock);
+        await Database.setUser(data);
+        return true;
+    }
+    else return false;
 }

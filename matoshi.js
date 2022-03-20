@@ -20,9 +20,9 @@ export function init() {
 
 function load() {
     try {
-        //let read = fs.readFileSync(matoshiFileName);
-        //matoshiData = new Map(JSON.parse(read));
-        matoshiData = new Map(JSON.parse('[["532918953014722560", 96675],["645206726097764364", 3911],["500632024831492100", 3027],["271729772357222410", 1169],["728313132619137124", 26],["245616926485643264", 0],["658686795076206603", 0],["691718942049173524", -1]]'));
+        let read = fs.readFileSync(matoshiFileName);
+        matoshiData = new Map(JSON.parse(read));
+        //matoshiData = new Map(JSON.parse('[["532918953014722560", 96675],["645206726097764364", 3911],["500632024831492100", 3027],["271729772357222410", 1169],["728313132619137124", 26],["245616926485643264", 0],["658686795076206603", 0],["691718942049173524", -1]]'));
         console.log("Loaded matoshi.");
     } catch (error) {
         console.log("Could not load matoshi!");
@@ -63,8 +63,8 @@ export function pay(from, to, amount) {
     else return false;
 }
 
-export function cost(guild, user, amount) {
-    if (guild == "549589656606343178") {
+export function cost(user, amount, guild) {
+    if (guild == "549589656606343178" || guild == undefined) {
         if (balance(user) > amount) {
             modify(user, -amount);
             modify(Main.client.user.id, amount);
