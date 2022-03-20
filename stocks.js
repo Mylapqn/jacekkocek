@@ -7,7 +7,7 @@ import * as Main from "./main.js";
 
 const stockApiKey = "c8oe5maad3iatn99i470";
 
-const stockHistoryLength = 24;
+const stockHistoryHours = 24;
 const stockUpdatesPerHour = 4;
 
 const resolutions = {
@@ -64,7 +64,7 @@ export function generateGraph(stockName) {
     for (let i = 0; i < stockHistory.length; i++) {
         let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * graphHeight + graphPadding;
         if (min == max) y = graphHeight / 2 + graphPadding;
-        ctx.lineTo(width - i * (graphWidth / stockHistoryLength), height - y);
+        ctx.lineTo(width - i * (graphWidth / stockHistory.length), height - y);
     }
     ctx.stroke();
 
@@ -92,7 +92,7 @@ export function generateGraph(stockName) {
     ctx.textBaseline = "bottom";
     ctx.fillText(Utilities.dateString(new Date()), width - padding, height - padding);
     ctx.textAlign = "left";
-    ctx.fillText(Utilities.dateString(new Date(Date.now() - stockHistoryLength / stockUpdatesPerHour * 3600000)), axisOffetX + 5, height - padding);
+    ctx.fillText(Utilities.dateString(new Date(Date.now() - stockHistoryHours * 3600000)), axisOffetX + 5, height - padding);
     return can.createPNGStream();
 }
 
@@ -102,23 +102,9 @@ export function currentPrice(stockName) {
 
 function getStockInfo() {
     console.log("Updating stocks...");
-    /*
-    for (let i = 0; i < stockNames.length; i++) {
-        const stock = stockNames[i];
-        console.log("Updating "+stock);
-        axios.get(`https://finnhub.io/api/v1/quote?symbol=${stockAliases.get(stock)}&token=${stockApiKey}`).then((res) => {
-            console.log("Received data about "+stock);
-            updateStockHistory(stock, res.data.c);
-            console.log("Updated "+stock);
-            if (i == stockNames.length - 1) {
-                console.log("Updated all stocks.");
-            }
-        });
-    }
-    */
     let info = {};
     let to = Main.nowSeconds();
-    let from = to - stockHistoryLength / stockUpdatesPerHour*3600;
+    let from = to - stockHistoryHours*3600;
     for (let i = 0; i < stockNames.length; i++) {
         const stock = stockNames[i];
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
@@ -132,12 +118,6 @@ function getStockInfo() {
     }
 }
 
-function updateStockHistory(stockName, value) {
-    let hist = stockData.get(stockName);
-    if (hist.length > stockHistoryLength)
-        hist.shift();
-    hist.push(value);
-}
 
 export async function buy(user, stock, amount) {
     if (Matoshi.cost(user, amount)) {
