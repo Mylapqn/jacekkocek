@@ -11,7 +11,7 @@ export function init() {
         console.log(req.body);
         //let data = JSON.parse(req.body);
         let data = req.body;
-        if (data.from.id != client.user.id)
+        if (data.from.id != Main.client.user.id)
             paymentMessage(data).then(() => {
                 res.send("ok");
             });
@@ -56,7 +56,7 @@ export function pay(from, to, amount) {
     if (balance(from) >= amount && amount > 1) {
         modify(from, -amount);
         modify(to, amount - 1);
-        modify(client.user.id, 1);
+        modify(Main.client.user.id, 1);
         return true;
     }
     else return false;
@@ -66,7 +66,7 @@ export function cost(guild, user, amount) {
     if (guild == "549589656606343178") {
         if (balance(user) > amount) {
             modify(user, -amount);
-            modify(client.user.id, amount);
+            modify(Main.client.user.id, amount);
             return true;
         }
         else return false;
