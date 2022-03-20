@@ -17,6 +17,7 @@ export function init() {
             });
     });
 }
+
 function load() {
     try {
         let read = fs.readFileSync(matoshiFileName);
