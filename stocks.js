@@ -57,9 +57,9 @@ export function generateGraph(stockName) {
     ctx.fillText(max,5,5);
     ctx.textAlign = "right";
     ctx.textBaseline="bottom";
-    ctx.fillText(Utilities.dateString(Date.now()),595,295);
+    ctx.fillText(Utilities.dateString(new Date()),595,295);
     ctx.textAlign = "left";
-    ctx.fillText(Utilities.dateString(Date.now()-stockHistoryLength/stockUpdatesPerHour*3600000),5,295);
+    ctx.fillText(Utilities.dateString(new Date(Date.now()-stockHistoryLength/stockUpdatesPerHour*3600000)),5,295);
     return can.createPNGStream();
 }
 
