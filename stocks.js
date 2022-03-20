@@ -88,10 +88,10 @@ export function generateGraph(stockName) {
 
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "right";
-    ctx.textBaseline = "top";
+    ctx.textBaseline = "bottom";
     ctx.fillText(min, axisOffetX - 5, height - padding-axisOffsetY);
-    ctx.textBaseline = "top";
-    ctx.fillText(max, axisOffetX - 5, padding);
+    ctx.textBaseline = "bottom";
+    ctx.fillText(max, axisOffetX - 5, axisOffsetY-padding);
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
     ctx.fillText(Utilities.dateString(new Date()), width - padding, height - padding);
