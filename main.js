@@ -7,7 +7,7 @@ import ytdl from "ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
-import { getUser } from "./database";
+import { getUser } from "./database.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
