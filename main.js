@@ -27,7 +27,7 @@ intents.add(Intents.FLAGS.GUILDS);
 intents.add(Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS);
 intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
 intents.add(Intents.FLAGS.GUILD_MEMBERS);
-const client = new Discord.Client({ intents: intents });
+export const client = new Discord.Client({ intents: intents });
 
 const updateGlobalCommands = false;
 const commandsToDeleteGlobal = [];
