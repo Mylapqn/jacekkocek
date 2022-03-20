@@ -615,9 +615,8 @@ client.on('interactionCreate', interaction => {
             let user = interaction.options.getUser("user");
             if (!user) user = interaction.user;
             Stocks.balance(interaction.user.id, stockName).then(balance => {
-              Stocks.currentPrice(stockName).then(price=>{
-                interaction.reply(stockName + " balance for " + user + ": " + balance + " (worth "+balance*price+" ₥)");
-              });
+              let price = Stocks.currentPrice(stockName);
+              interaction.reply(stockName + " balance for " + user + ": " + balance + " (worth " + balance * price + " ₥)");
             });
             break;
           }
