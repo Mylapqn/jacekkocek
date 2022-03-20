@@ -1459,7 +1459,7 @@ function setupReminders() {
     console.log("Set up " + upcomingReminders.length + " reminders.")
 }
 
-function nowSeconds() {
+export function nowSeconds() {
   return Math.round(Date.now() / 1000);
 }
 
