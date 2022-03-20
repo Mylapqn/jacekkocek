@@ -118,7 +118,7 @@ function getStockInfo() {
     */
     let info = {};
     let to = Main.nowSeconds();
-    let from = to - (stockHistoryLength-10) * stockUpdatesPerHour*3600;
+    let from = to - stockHistoryLength / stockUpdatesPerHour*3600;
     for (let i = 0; i < stockNames.length; i++) {
         const stock = stockNames[i];
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
