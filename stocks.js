@@ -108,6 +108,7 @@ function getStockInfo() {
     for (let i = 0; i < stockNames.length; i++) {
         const stock = stockNames[i];
         console.log(stock);
+        console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
             console.log(stock + " Length: "+res.data.c.length);
             info[stock] = res.data.c;
