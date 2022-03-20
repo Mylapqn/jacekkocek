@@ -40,8 +40,8 @@ export function init() {
 }
 
 export function generateGraph(stockName) {
-    const width = 3840;
-    const height = 1080;
+    const width = 200;
+    const height = 1500;
     const padding = 5;
     const axisOffetX = 0;
     const axisOffsetY = 25;
