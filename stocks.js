@@ -64,7 +64,7 @@ export function generateGraph(stockName) {
     for (let i = 0; i < stockHistory.length; i++) {
         let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * graphHeight + graphPadding;
         if (min == max) y = graphHeight / 2 + graphPadding;
-        ctx.lineTo(width - i * (graphWidth / stockHistory.length), height - y);
+        ctx.lineTo(width - i * (graphWidth / (stockHistory.length-1)), height - y);
     }
     ctx.stroke();
 
