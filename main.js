@@ -7,7 +7,7 @@ import ytdl from "ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
-import { getUser } from "./database.js";
+import { getUser,init } from "./database.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -323,6 +323,8 @@ loadReminders();
 client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
+
+  init();
 
   httpServer.listen(port, () => {
     console.log("HTTP Listening on port " + port);
