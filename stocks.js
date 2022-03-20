@@ -50,16 +50,16 @@ export function generateGraph(stockName) {
     ctx.stroke();
 
     ctx.fillStyle="#FFFFFF";
-    ctx.textAlign = "left";
+    ctx.textAlign = "right";
     ctx.textBaseline="bottom";
-    ctx.fillText(min,5,295);
+    ctx.fillText(min,30,295);
     ctx.textBaseline="top";
-    ctx.fillText(max,5,5);
+    ctx.fillText(max,30,5);
     ctx.textAlign = "right";
     ctx.textBaseline="bottom";
     ctx.fillText(Utilities.dateString(new Date()),595,295);
     ctx.textAlign = "left";
-    ctx.fillText(Utilities.dateString(new Date(Date.now()-stockHistoryLength/stockUpdatesPerHour*3600000)),5,295);
+    ctx.fillText(Utilities.dateString(new Date(Date.now()-stockHistoryLength/stockUpdatesPerHour*3600000)),35,295);
     return can.createPNGStream();
 }
 
