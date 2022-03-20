@@ -7,8 +7,9 @@ import ytdl from "ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
-import { getUser, init, setUser } from "./database.js";
-import { stockNames } from "./stocks.js";
+import * as Database from "./database.js";
+import * as Stocks from "./stocks.js";
+import * as Matoshi from "./matoshi.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -32,7 +33,7 @@ const commandsToDeleteGuild = [];
 /**
  * @type {Discord.Guild}
  */
-let afrGuild;
+export let afrGuild;
 
 let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
 var kocek = 0;
@@ -41,19 +42,11 @@ const prefix = "$";
 var startDate;
 var defaultTimeZone = "Europe/Prague";
 
-const port = process.env.PORT;
-const httpServer = express();
+export const port = process.env.PORT;
+export const httpServer = express();
 httpServer.use(express.json());
 
-httpServer.post("/matoshi/payment", (req, res) => {
-  console.log(req.body);
-  //let data = JSON.parse(req.body);
-  let data = req.body;
-  if (data.from.id != client.user.id)
-    matoshiPaymentMessage(data).then(() => {
-      res.send("ok");
-    });
-});
+
 
 let paymentMessages = new Map();
 
@@ -307,9 +300,7 @@ var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
 loadPlaylist();
 
-var matoshiFileName = "matoshiBalance.json";
-var matoshiBalance = new Map();
-loadMatoshi();
+
 
 const reminderThreshold = 3600;
 
@@ -325,7 +316,8 @@ client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
 
-  init();
+  Stocks.init();
+  Database.init();
 
   httpServer.listen(port, () => {
     console.log("HTTP Listening on port " + port);
@@ -360,26 +352,11 @@ client.on('ready', () => {
 
 
 });
-const stockApiKey = "c8oe5maad3iatn99i470";
-
-const stockHistoryLength = 24;
-
-const stockUpdatesPerHour = 4;
-
-let stockData = new Map();
-
-stockNames.forEach(name => {
-  stockData.set(name, []);
-})
-
-setInterval(() => {
-  getStockInfo();
-}, 3600000 / stockUpdatesPerHour);
 
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isCommand()) {
-    console.log("Slash command by "+interaction.user.username+": "+interaction.commandName+", arguments: " + interaction.options.data.join(", "))
+    console.log("Slash command by " + interaction.user.username + ": " + interaction.commandName);
     switch (interaction.commandName) {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
@@ -625,7 +602,7 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "list": {
-            matoshiList().then(msg => { interaction.reply({ content: msg, ephemeral: false }); });
+            Matoshi.generateLeaderboard().then(msg => { interaction.reply({ content: msg, ephemeral: false }); });
             break;
           }
         }
@@ -641,8 +618,8 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "info": {
-            if (stockData.has(stockName)) {
-              let buf = stockGraph(stockName);
+            if (Stocks.stockData.has(stockName)) {
+              let buf = Stocks.generateGraph(stockName);
               interaction.reply({ content: stockName + " prices for <t:" + now() + ">", files: [buf] });
             }
             else {
@@ -664,7 +641,7 @@ client.on('interactionCreate', interaction => {
         let paymentData = paymentMessages.get(interaction.message.id);
         if (paymentData != undefined) {
           if (interaction.user.id == paymentData.from) {
-            if (payMatoshi(paymentData.from, paymentData.to, paymentData.amount)) {
+            if (Matoshi.payMatoshi(paymentData.from, paymentData.to, paymentData.amount)) {
               interaction.reply("Payment successful!");
             }
             else {
@@ -967,7 +944,7 @@ client.on('messageCreate', message => {
           }
           break;
         case "s":
-          if (costMatoshi(message.guildId, message.author.id, 1)) {
+          if (Matoshi.costMatoshi(message.guildId, message.author.id, 1)) {
             console.log("SEARCH!");
             startGoogleSearch(argument, message, 1);
           }
@@ -1423,13 +1400,13 @@ client.on('messageCreate', message => {
           break;
         }
         case "getuser": {
-          getUser(message.author.id).then(f => {
+          Database.getUser(message.author.id).then(f => {
             console.log(f);
           });
           break;
         }
         case "setuser": {
-          getUser(message.author.id).then(f => {
+          Database.getUser(message.author.id).then(f => {
             f.wallets.set("CORN", 5.6);
             setUser(f);
           });
@@ -1456,52 +1433,7 @@ client.on('messageCreate', message => {
   }
 });
 
-function updateStockHistory(stockName, value) {
-  let hist = stockData.get(stockName);
-  if (hist.length > stockHistoryLength)
-    hist.shift();
-  hist.push(value);
-}
 
-function stockGraph(stockName) {
-  let stockHistory = stockData.get(stockName);
-  let can = Canvas.createCanvas(600, 300);
-  let ctx = can.getContext("2d");
-  ctx.fillStyle = "#32353B";
-  ctx.fillRect(0, 0, 600, 300);
-  ctx.strokeStyle = "#18C3B2";
-  ctx.lineWidth = 3;
-
-  let min = Math.min(...stockHistory);
-  let max = Math.max(...stockHistory);
-  console.log(stockHistory);
-
-  //ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
-  for (let i = 0; i < stockHistory.length; i++) {
-    let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * 250 + 25;
-    if (min == max) y = 150;
-    ctx.lineTo(600 - i * (600 / stockHistoryLength), 300 - y);
-  }
-  ctx.stroke();
-  return can.createPNGStream();
-}
-
-function stockPrice(stockName) {
-  return stockData.get(stockName)[stockData.get(stockName).length - 1];
-}
-
-
-function getStockInfo() {
-  for (let i = 0; i < stockNames.length; i++) {
-    const stock = stockNames[i];
-    axios.get(`https://finnhub.io/api/v1/quote?symbol=${stock}&token=${stockApiKey}`).then((res) => {
-      updateStockHistory(stock, res.data.c);
-      if (i == stockNames.length - 1) {
-        console.log("Updated stocks.");
-      }
-    });
-  }
-}
 
 
 //#region REMINDERS
@@ -1712,110 +1644,7 @@ function loadPlaylist() {
   }
 }
 
-function loadMatoshi() {
-  try {
-    let read = fs.readFileSync(matoshiFileName);
-    matoshiBalance = new Map(JSON.parse(read));
-    console.log("Loaded matoshi.");
-  } catch (error) {
-    console.log("Could not load matoshi!");
-    console.log(error);
-  }
-}
 
-function saveMatoshi() {
-  fs.writeFile(matoshiFileName, JSON.stringify(Array.from(matoshiBalance)), (e) => { console.log("Finished writing", e) });
-}
-
-function modifyMatoshi(user, amount) {
-  let m = getMatoshi(user);
-  matoshiBalance.set(user, m + amount);
-  console.log("User ID " + user + " matoshi modified by " + amount + ", now " + matoshiBalance.get(user));
-  saveMatoshi();
-}
-
-function payMatoshi(from, to, amount) {
-  if (getMatoshi(from) >= amount && amount > 1) {
-    modifyMatoshi(from, -amount);
-    modifyMatoshi(to, amount - 1);
-    modifyMatoshi(client.user.id, 1);
-    return true;
-  }
-  else return false;
-}
-
-function costMatoshi(guild, user, amount) {
-  if (guild == "549589656606343178") {
-    if (getMatoshi(user) > amount) {
-      modifyMatoshi(user, -amount);
-      modifyMatoshi(client.user.id, amount);
-      return true;
-    }
-    else return false;
-  }
-  else return true;
-}
-
-function awardMatoshi(guild, user, amount) {
-  if (guild == "549589656606343178") {
-    modifyMatoshi(user, amount);
-  }
-  return true;
-}
-
-async function matoshiList() {
-  let sorted = Array.from(matoshiBalance.keys()).sort((a, b) => { return matoshiBalance.get(b) - matoshiBalance.get(a); });
-  let msg = "Matoshi balance leaderboard:\n";
-  for (let i = 0; i < sorted.length && i < 10; i++) {
-    let usr = await afrGuild.members.fetch(sorted[i]);
-    if (!usr) usr = "Unknown user";
-    else usr = usr.user.username;
-    msg += "`" + (i + 1) + "` " + "**" + usr + "**: " + matoshiBalance.get(sorted[i]) + " ₥\n";
-  }
-  return msg;
-}
-
-async function matoshiPaymentMessage(data) {
-  let channel = await afrGuild.channels.fetch("753323827093569588");
-  let from = await afrGuild.members.fetch(data.from);
-  let to = await afrGuild.members.fetch(data.to);
-  let newEmbed = new Discord.MessageEmbed()
-    .setTitle("Confirm payment")
-    .addField("Message", data.description)
-    .addField("Amount", data.amount + " ₥", false)
-    .addField("From >>", "<@" + from.id + ">", true)
-    .addField(">> To", "<@" + to.id + ">", true)
-    .setFooter({ text: "Only " + from.displayName + " can confirm this payment." })
-    .setColor([24, 195, 177])
-  let newActionRow = new Discord.MessageActionRow().addComponents([
-    new Discord.MessageButton()
-      .setCustomId("acceptPayment")
-      .setLabel("Accept")
-      .setStyle("SUCCESS"),
-    new Discord.MessageButton()
-      .setCustomId("declinePayment")
-      .setLabel("Decline")
-      .setStyle("DANGER"),
-  ]);
-  channel.send({ content: "<@" + from.id + ">", embeds: [newEmbed], components: [newActionRow] }).then(msg => {
-    //msg.react("✅");
-    //msg.react("767907092907687956");
-    paymentMessages.set(msg.id, data);
-  });
-  return true;
-}
-
-function getMatoshi(user) {
-  if (!matoshiBalance.has(user)) {
-    matoshiBalance.set(user, 0);
-  }
-  let b = matoshiBalance.get(user);
-  if (b == null || b == undefined || b == NaN) {
-    matoshiBalance.set(user, 0);
-    console.log("User ID " + user + " matoshi balance is NaN, resetting to 0");
-  }
-  return matoshiBalance.get(user);
-}
 
 
 function saveReminders() {
