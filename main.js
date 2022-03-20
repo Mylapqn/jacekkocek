@@ -1749,7 +1749,7 @@ function googleSearch(cx, searchTerm, message) {
 
 //#region SONGS AND YOUTUBE
 
-function voiceChannelPlay(channel, audio, volume) {
+export function voiceChannelPlay(channel, audio, volume) {
   if (channel != null)
     joinVoiceChannel(channel);
   let res = DiscordVoice.createAudioResource(audio, { inlineVolume: true });
@@ -1759,7 +1759,7 @@ function voiceChannelPlay(channel, audio, volume) {
   audioPlayer.play(res);
 }
 
-function joinVoiceChannel(channel) {
+export function joinVoiceChannel(channel) {
   DiscordVoice.joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guild.id,
