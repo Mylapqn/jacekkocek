@@ -34,10 +34,10 @@ export function generateGraph(stockName) {
     const height = 300;
     const padding = 5;
     const graphPadding = 25;
-    const graphWidth = width-axisOffetX;
-    const graphHeight = height-graphPadding*2-axisOffsetY;
     const axisOffetX = 50;
     const axisOffsetY = 25;
+    const graphWidth = width-axisOffetX;
+    const graphHeight = height-graphPadding*2-axisOffsetY;
     let stockHistory = stockData.get(stockName);
     let can = Canvas.createCanvas(width, height);
     let ctx = can.getContext("2d");
