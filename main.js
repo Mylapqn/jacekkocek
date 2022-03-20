@@ -8,6 +8,7 @@ import fs from "fs";
 import axios from "axios";
 import express from "express";
 import { getUser, init, setUser } from "./database.js";
+import { stockNames } from "./stocks.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
