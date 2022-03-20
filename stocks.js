@@ -85,19 +85,29 @@ export function generateGraph(stockName) {
     ctx.lineTo(width, axisOffsetY);
     ctx.stroke();
 
+    ctx.font = "12px Arial";
 
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "bottom";
-    ctx.fillText(min.toPrecision(3), axisOffetX + 5, height - padding-axisOffsetY);
+    ctx.fillText(formatCurrency(min), axisOffetX + 5, height - padding-axisOffsetY);
     ctx.textBaseline = "top";
-    ctx.fillText(max.toPrecision(3), axisOffetX + 5, axisOffsetY+5);
+    ctx.fillText(formatCurrency(max), axisOffetX + 5, axisOffsetY+5);
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
     ctx.fillText(Utilities.dateString(new Date()), width - padding, height - padding);
     ctx.textAlign = "left";
     ctx.fillText(Utilities.dateString(new Date(Date.now() - stockHistoryHours * 3600000)), axisOffetX + 5, height - padding);
     return can.createPNGStream();
+}
+
+function formatCurrency(num){
+    if(num >= 100){
+        return Math.round(num);
+    }
+    else {
+        return num.toFixed(3);
+    }
 }
 
 export function currentPrice(stockName) {
