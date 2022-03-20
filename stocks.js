@@ -67,6 +67,14 @@ export function generateGraph(stockName) {
     }
     ctx.stroke();
 
+    ctx.lineTo(axisOffetX,height);
+    ctx.lineTo(width,height);
+    let gradient = ctx.createLinearGradient(0,axisOffsetY,0,height);
+    gradient.addColorStop(0,"#18C3B2");
+    gradient.addColorStop(1,"#32353B");
+    ctx.fillStyle=gradient;
+    ctx.fill();
+
     ctx.strokeStyle = "#5E5E5E";
     ctx.lineWidth = 2;
 
