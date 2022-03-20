@@ -414,7 +414,7 @@ client.on('interactionCreate', interaction => {
                   guild: interaction.guildId,
                   channel: interaction.channelId,
                   text: remText,
-                  timestamp: Math.round(now() + time),
+                  timestamp: Math.round(nowSeconds() + time),
                   mentions: []
                 }
                 createReminder(newRem);
@@ -471,7 +471,7 @@ client.on('interactionCreate', interaction => {
             guild: interaction.guildId,
             channel: interaction.channelId,
             text: remText,
-            timestamp: Math.round(now() + time),
+            timestamp: Math.round(nowSeconds() + time),
             mentions: []
           }
           createReminder(newRem);
@@ -584,7 +584,7 @@ client.on('interactionCreate', interaction => {
           case "info": {
             if (Stocks.stockData.has(stockName)) {
               let buf = Stocks.generateGraph(stockName);
-              interaction.reply({ content: stockName + " prices for <t:" + now() + ">", files: [buf] });
+              interaction.reply({ content: stockName + " prices for <t:" + nowSeconds() + ">", files: [buf] });
             }
             else {
               interaction.reply("Invalid stock!");
@@ -1391,7 +1391,7 @@ function parseTime(inputString) {
 }
 
 function createReminder(newRem) {
-  let time = newRem.timestamp - now();
+  let time = newRem.timestamp - nowSeconds();
   if (time <= reminderThreshold) {
     newRem.timeout = setTimeout(() => {
       executeReminder(newRem);
@@ -1406,7 +1406,7 @@ function createReminder(newRem) {
 function cleanupReminders() {
   for (let i = 0; i < reminders.length; i++) {
     let rem = reminders[i];
-    if (rem.timestamp < now()) {
+    if (rem.timestamp < nowSeconds()) {
       reminders.splice(i, 1);
     }
   }
@@ -1417,10 +1417,10 @@ function setupReminders() {
   upcomingReminders = [];
   for (let i = 0; i < reminders.length; i++) {
     let rem = reminders[i];
-    if (rem.timestamp > now() && rem.timestamp <= now() + reminderThreshold) {
+    if (rem.timestamp > nowSeconds() && rem.timestamp <= nowSeconds() + reminderThreshold) {
       let timeout = setTimeout(() => {
         executeReminder(rem);
-      }, (rem.timestamp - now()) * 1000);
+      }, (rem.timestamp - nowSeconds()) * 1000);
       if (rem.timeout) {
         clearTimeout(rem.timeout);
       }
@@ -1433,7 +1433,7 @@ function setupReminders() {
     console.log("Set up " + upcomingReminders.length + " reminders.")
 }
 
-function now() {
+function nowSeconds() {
   return Math.round(Date.now() / 1000);
 }
 
@@ -1629,21 +1629,6 @@ function setupCommands() {
 //#endregion
 
 //#region FIND FUNCTIONS
-function findRole(cache, name) {
-  array = cache.array();
-  for (var i = 0; i < array.length; i++) {
-    if (array[i].name == name) return array[i];
-  }
-  return null;
-}
-
-function findMember(guild, name) {
-  array = guild.members.cache.array();
-  for (var i = 0; i < array.length; i++) {
-    if (array[i].name == name) return array[i];
-  }
-  return null;
-}
 
 function findCommand(name) {
   for (var i = 0; i < helpCommands.length; i++) {

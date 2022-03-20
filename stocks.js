@@ -1,4 +1,7 @@
 import Canvas from "canvas";
+import * as Database from "./database.js";
+import * as Matoshi from "./matoshi.js";
+import * as Utilities from "./utilities.js";
 
 const stockApiKey = "c8oe5maad3iatn99i470";
 
@@ -45,6 +48,18 @@ export function generateGraph(stockName) {
         ctx.lineTo(600 - i * (600 / stockHistoryLength), 300 - y);
     }
     ctx.stroke();
+
+    ctx.fillStyle="#FFFFFF";
+    ctx.textAlign = "left";
+    ctx.textBaseline="bottom";
+    ctx.fillText(min,5,295);
+    ctx.textBaseline="top";
+    ctx.fillText(max,5,5);
+    ctx.textAlign = "right";
+    ctx.textBaseline="bottom";
+    ctx.fillText(Utilities.dateString(Date.now()),595,295);
+    ctx.textAlign = "left";
+    ctx.fillText(Utilities.dateString(Date.now()-stockHistoryLength/stockUpdatesPerHour*3600000),5,295);
     return can.createPNGStream();
 }
 
