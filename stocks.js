@@ -1,4 +1,5 @@
 import Canvas from "canvas";
+import axios from "axios";
 import * as Database from "./database.js";
 import * as Matoshi from "./matoshi.js";
 import * as Utilities from "./utilities.js";
