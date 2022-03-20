@@ -46,7 +46,7 @@ export function generateGraph(stockName) {
     const axisOffetX = 5;
     const axisOffsetY = 25;
     const graphWidth = width - axisOffetX;
-    const graphHeight = height - axisOffsetY*2;
+    const graphHeight = height - axisOffsetY * 2;
     let stockHistory = stockData.get(stockName);
     let can = Canvas.createCanvas(width, height);
     let ctx = can.getContext("2d");
@@ -63,17 +63,17 @@ export function generateGraph(stockName) {
     for (let i = 0; i < stockHistory.length; i++) {
         let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * graphHeight + axisOffsetY;
         if (min == max) y = graphHeight / 2 + axisOffsetY;
-        ctx.lineTo(width - i * (graphWidth / (stockHistory.length-1)), height - y);
+        ctx.lineTo(width - i * (graphWidth / (stockHistory.length - 1)), height - y);
     }
     ctx.stroke();
 
     ctx.strokeStyle = "#5E5E5E";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2;
 
-    ctx.beginPath();
+    /*ctx.beginPath();
     ctx.moveTo(axisOffetX, 0);
     ctx.lineTo(axisOffetX, height);
-    ctx.stroke();
+    ctx.stroke();*/
 
     ctx.beginPath();
     ctx.moveTo(0, height - axisOffsetY);
@@ -85,14 +85,23 @@ export function generateGraph(stockName) {
     ctx.lineTo(width, axisOffsetY);
     ctx.stroke();
 
+
+    let y = height - (stockHistory[stockHistory.length - 1] - min) / (max - min) * graphHeight + axisOffsetY;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+
     ctx.font = "12px Arial";
 
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "bottom";
-    ctx.fillText(formatCurrency(min), axisOffetX + 5, height - padding-axisOffsetY);
+    ctx.fillText(formatCurrency(min), axisOffetX + 5, height - padding - axisOffsetY);
     ctx.textBaseline = "top";
-    ctx.fillText(formatCurrency(max), axisOffetX + 5, axisOffsetY+5);
+    ctx.fillText(formatCurrency(max), axisOffetX + 5, axisOffsetY + 5);
+    ctx.textBaseline = "top";
+    ctx.fillText(formatCurrency(stockHistory[stockHistory.length - 1]), axisOffetX + 5, y + 5);
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
     ctx.fillText(Utilities.dateString(new Date()), width - padding, height - padding);
@@ -101,8 +110,8 @@ export function generateGraph(stockName) {
     return can.createPNGStream();
 }
 
-function formatCurrency(num){
-    if(num >= 100){
+function formatCurrency(num) {
+    if (num >= 100) {
         return Math.round(num);
     }
     else {
@@ -118,15 +127,15 @@ function getStockInfo() {
     console.log("Updating stocks...");
     let info = {};
     let to = Main.nowSeconds();
-    let from = to - stockHistoryHours*3600;
+    let from = to - stockHistoryHours * 3600;
     for (let i = 0; i < stockNames.length; i++) {
         const stock = stockNames[i];
         console.log(stock);
         console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
-            console.log(stock + " Length: "+res.data.c.length);
+            console.log(stock + " Length: " + res.data.c.length);
             info[stock] = res.data.c;
-            stockData.set(stock,res.data.c);
+            stockData.set(stock, res.data.c);
             if (i == stockNames.length - 1) {
                 console.log("Updated all stocks.");
             }
