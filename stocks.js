@@ -43,11 +43,10 @@ export function generateGraph(stockName) {
     const width = 600;
     const height = 300;
     const padding = 5;
-    const graphPadding = 25;
     const axisOffetX = 50;
     const axisOffsetY = 25;
     const graphWidth = width - axisOffetX;
-    const graphHeight = height - graphPadding * 2 - axisOffsetY;
+    const graphHeight = height - axisOffsetY*2;
     let stockHistory = stockData.get(stockName);
     let can = Canvas.createCanvas(width, height);
     let ctx = can.getContext("2d");
@@ -62,8 +61,8 @@ export function generateGraph(stockName) {
 
     //ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
     for (let i = 0; i < stockHistory.length; i++) {
-        let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * graphHeight + graphPadding;
-        if (min == max) y = graphHeight / 2 + graphPadding;
+        let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * graphHeight + axisOffsetY;
+        if (min == max) y = graphHeight / 2 + axisOffsetY;
         ctx.lineTo(width - i * (graphWidth / (stockHistory.length-1)), height - y);
     }
     ctx.stroke();
@@ -81,11 +80,16 @@ export function generateGraph(stockName) {
     ctx.lineTo(width, height - axisOffsetY);
     ctx.stroke();
 
+    ctx.beginPath();
+    ctx.moveTo(0, axisOffsetY);
+    ctx.lineTo(width, axisOffsetY);
+    ctx.stroke();
+
 
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "right";
-    ctx.textBaseline = "bottom";
-    ctx.fillText(min, axisOffetX - 5, height - padding);
+    ctx.textBaseline = "top";
+    ctx.fillText(min, axisOffetX - 5, height - padding-axisOffsetY);
     ctx.textBaseline = "top";
     ctx.fillText(max, axisOffetX - 5, padding);
     ctx.textAlign = "right";
