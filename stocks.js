@@ -87,7 +87,7 @@ export function generateGraph(stockName) {
     return can.createPNGStream();
 }
 
-function stockPrice(stockName) {
+export function currentPrice(stockName) {
     return stockData.get(stockName)[stockData.get(stockName).length - 1];
 }
 
@@ -107,7 +107,7 @@ export async function buy(user, stock, amount) {
     if (Matoshi.cost(user, amount)) {
         let data = await Database.getUser(user);
         let currentStock = data.wallets.get(stock);
-        currentStock += amount / stockPrice(stock);
+        currentStock += amount / currentPrice(stock);
         data.wallets.set(stock, currentStock);
         await Database.setUser(data);
         return true;
@@ -118,8 +118,8 @@ export async function buy(user, stock, amount) {
 export async function sell(user, stock, amount) {
     let data = await Database.getUser(user);
     let currentStock = data.wallets.get(stock);
-    if (currentStock >= amount / stockPrice(stock)) {
-        currentStock -= amount / stockPrice(stock);
+    if (currentStock >= amount / currentPrice(stock)) {
+        currentStock -= amount / currentPrice(stock);
         Matoshi.modify(user, amount);
         data.wallets.set(stock, currentStock);
         await Database.setUser(data);
