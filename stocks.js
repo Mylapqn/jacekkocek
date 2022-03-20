@@ -86,7 +86,7 @@ export function generateGraph(stockName) {
     ctx.stroke();
 
 
-    let y = height - (stockHistory[stockHistory.length - 1] - min) / (max - min) * graphHeight + axisOffsetY;
+    let y = height - ((stockHistory[stockHistory.length - 1] - min) / (max - min) * graphHeight + axisOffsetY);
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(width, y);
