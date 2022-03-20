@@ -22,8 +22,8 @@ const resolutions = {
 }
 
 const stockAliases = new Map([
-    ["CORN", "CORN"],
     ["BTC", "BTC-USD"],
+    ["CORN", "CORN"],
 ])
 export const stockNames = Array.from(stockAliases.keys());
 export let stockData = new Map();
@@ -109,7 +109,7 @@ function getStockInfo() {
         const stock = stockNames[i];
         console.log(stock);
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
-            console.log("Length: "+res.data.c.length);
+            console.log(stock + " Length: "+res.data.c.length);
             info[stock] = res.data.c;
             stockData.set(stock,res.data.c);
             if (i == stockNames.length - 1) {
