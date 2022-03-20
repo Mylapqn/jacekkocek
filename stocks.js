@@ -34,7 +34,7 @@ export function generateGraph(stockName) {
     const padding = 5;
     const graphPadding = 25;
     const axisOffetX = 50;
-    const axisOffsetY = 5;
+    const axisOffsetY = 25;
     let stockHistory = stockData.get(stockName);
     let can = Canvas.createCanvas(width, height);
     let ctx = can.getContext("2d");
@@ -57,10 +57,10 @@ export function generateGraph(stockName) {
 
     ctx.strokeStyle = "#5E5E5E";
     ctx.lineWidth = 3;
-    
+
     ctx.beginPath();
-    ctx.moveTo(axisOffetX, 0);
-    ctx.lineTo(axisOffetX, height);
+    ctx.moveTo(axisOffetX+5, 0);
+    ctx.lineTo(axisOffetX+5, height);
     ctx.stroke();
 
     ctx.beginPath();
@@ -79,7 +79,7 @@ export function generateGraph(stockName) {
     ctx.textBaseline = "bottom";
     ctx.fillText(Utilities.dateString(new Date()), width - padding, height - padding);
     ctx.textAlign = "left";
-    ctx.fillText(Utilities.dateString(new Date(Date.now() - stockHistoryLength / stockUpdatesPerHour * 3600000)), width + axisOffetX + 5, height - padding);
+    ctx.fillText(Utilities.dateString(new Date(Date.now() - stockHistoryLength / stockUpdatesPerHour * 3600000)), axisOffetX + 5, height - padding);
     return can.createPNGStream();
 }
 
