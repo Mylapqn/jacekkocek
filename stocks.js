@@ -20,6 +20,7 @@ export function init() {
     setInterval(() => {
         getStockInfo();
     }, 3600000 / stockUpdatesPerHour);
+    getStockInfo();
 }
 
 function updateStockHistory(stockName, value) {
