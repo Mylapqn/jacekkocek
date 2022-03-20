@@ -70,8 +70,8 @@ export function generateGraph(stockName) {
     ctx.lineTo(axisOffetX,height);
     ctx.lineTo(width,height);
     let gradient = ctx.createLinearGradient(0,axisOffsetY,0,height);
-    gradient.addColorStop(0,"#18C3B2");
-    gradient.addColorStop(1,"#32353B");
+    gradient.addColorStop(0,"#27716D");
+    gradient.addColorStop(1,"#313C41");
     ctx.fillStyle=gradient;
     ctx.fill();
 
