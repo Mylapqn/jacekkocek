@@ -33,6 +33,7 @@ export async function getUser(id) {
 export async function setUser(user){
     connection.query(`UPDATE Users SET matoshi=${user.matoshi} WHERE id=\"${user.id}\"`);
     user.wallets.forEach(wallet => {
+        console.log(wallet);
         connection.query(`UPDATE Wallet SET amount=${wallet.amount} WHERE user=\"${user.id}\" AND currency=\"${wallet.currency}\"`);
     });
 }
