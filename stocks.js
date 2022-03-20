@@ -9,9 +9,20 @@ const stockApiKey = "c8oe5maad3iatn99i470";
 const stockHistoryLength = 24;
 const stockUpdatesPerHour = 4;
 
+const resolutions = {
+    m1: 1,
+    m5: 5,
+    m15: 15,
+    m30: 30,
+    hour: 60,
+    day: "D",
+    week: "W",
+    month: "M",
+}
+
 const stockAliases = new Map([
-    ["CORN","CORN"],
-    ["BTC","BTC-USD"],
+    ["CORN", "CORN"],
+    ["BTC", "BTC-USD"],
 ])
 export const stockNames = Array.from(stockAliases.keys());
 export let stockData = new Map();
@@ -25,13 +36,6 @@ export function init() {
         getStockInfo();
     }, 3600000 / stockUpdatesPerHour);
     getStockInfo();
-}
-
-function updateStockHistory(stockName, value) {
-    let hist = stockData.get(stockName);
-    if (hist.length > stockHistoryLength)
-        hist.shift();
-    hist.push(value);
 }
 
 export function generateGraph(stockName) {
@@ -97,6 +101,7 @@ export function currentPrice(stockName) {
 
 function getStockInfo() {
     console.log("Updating stocks...");
+    /*
     for (let i = 0; i < stockNames.length; i++) {
         const stock = stockNames[i];
         console.log("Updating "+stock);
@@ -109,6 +114,27 @@ function getStockInfo() {
             }
         });
     }
+    */
+    let info = {};
+    let to = Date.now();
+    let from = to - stockHistoryLength * stockUpdatesPerHour*3600000;
+    for (let i = 0; i < stockNames.length; i++) {
+        const stock = stockNames[i];
+        axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${apikey}`).then((res) => {
+            info[stock] = res.data.c;
+            stockData.get(stock) = res.data.c;
+            if (i == stockNames.length - 1) {
+                console.log("Updated all stocks.");
+            }
+        });
+    }
+}
+
+function updateStockHistory(stockName, value) {
+    let hist = stockData.get(stockName);
+    if (hist.length > stockHistoryLength)
+        hist.shift();
+    hist.push(value);
 }
 
 export async function buy(user, stock, amount) {
