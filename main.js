@@ -1792,7 +1792,7 @@ function mlpSong(voice, index, autoplay, channel) {
           channel.send({
             embeds: [{
               title: "► " + songData.name,
-              description: Math.floor(songData.length / 60) + ":" + addZero(songData.length % 60) + " | From *" + songData.episode + "*",
+              description: Math.floor(songData.length / 60) + ":" + Utilities.addZero(songData.length % 60) + " | From *" + songData.episode + "*",
               color: alternateFluttershyColor()
             }]
           });
@@ -1837,7 +1837,7 @@ function playRadio(voice, channel) {
         if (channel) {
           channel.send({
             embeds: [{
-              title: "♫ " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
+              title: "♫ " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + Utilities.addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
               color: alternateFluttershyColor(),
               footer: { text: "Next: " + parsed.next.Name }
             }]
@@ -1868,9 +1868,7 @@ function radioApiKeyGet() {
     });
   });
 }
-function addZero(x) {
-  return String("0" + x).slice(-2);
-}
+
 function alternateFluttershyColor() {
   fluttershy = !fluttershy;
   if (fluttershy) return [243, 228, 136];

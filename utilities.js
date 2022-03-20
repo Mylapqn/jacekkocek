@@ -36,3 +36,7 @@ export function dateString(inputDate) {
     }
     return output;
   }
+
+  export function addZero(x) {
+    return String(x).padStart(2,"0");
+  }
