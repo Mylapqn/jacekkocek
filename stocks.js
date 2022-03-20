@@ -43,7 +43,7 @@ export function generateGraph(stockName) {
     const width = 600;
     const height = 300;
     const padding = 5;
-    const axisOffetX = 5;
+    const axisOffetX = 0;
     const axisOffsetY = 25;
     const graphWidth = width - axisOffetX;
     const graphHeight = height - axisOffsetY * 2;
@@ -71,7 +71,7 @@ export function generateGraph(stockName) {
     ctx.lineTo(width,height);
     let gradient = ctx.createLinearGradient(0,axisOffsetY,0,height);
     gradient.addColorStop(0,"#27716D");
-    gradient.addColorStop(1,"#313C41");
+    gradient.addColorStop(1,"#32353B");
     ctx.fillStyle=gradient;
     ctx.fill();
 
