@@ -7,6 +7,7 @@ import ytdl from "ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
+import { getUser } from "./database";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -638,9 +639,9 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "info": {
-            if(stockData.has(stockName)){
+            if (stockData.has(stockName)) {
               let buf = stockGraph(stockName);
-              interaction.reply({ content: stockName+" prices for <t:" + now() + ">", files: [buf] });
+              interaction.reply({ content: stockName + " prices for <t:" + now() + ">", files: [buf] });
             }
             else {
               interaction.reply("Invalid stock!");
@@ -1417,6 +1418,13 @@ client.on('messageCreate', message => {
             msg += "• **" + rem.text + "** at <t:" + rem.timestamp + ">\n";
           });
           message.channel.send({ content: msg, allowedMentions: { parse: [] } });
+          break;
+        }
+        case "database": {
+          getUser(argument).then(f => {
+            console.log(f);
+            message.channel.send(f);
+          })
           break;
         }
         default:
