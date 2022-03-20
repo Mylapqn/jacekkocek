@@ -1,5 +1,6 @@
 import * as Main from "./main.js";
 import * as Discord from "discord.js";
+import fs from "fs";
 
 var matoshiFileName = "matoshiBalance.json";
 var matoshiData = new Map();
