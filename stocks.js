@@ -7,7 +7,7 @@ import * as Utilities from "./utilities.js";
 const stockApiKey = "c8oe5maad3iatn99i470";
 
 const stockHistoryLength = 24;
-const stockUpdatesPerHour = 60*60;
+const stockUpdatesPerHour = 4;
 
 export const stockNames = ["CORN", "BTC"];
 export let stockData = new Map();
