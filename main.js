@@ -377,7 +377,7 @@ client.on('interactionCreate', interaction => {
               kinoPlaylist.set(filmName, newSug);
               savePlaylist();
               interaction.reply("**" + interaction.user.username + "** added ***" + newSug.name + "*** to film suggestions. Reward: 10 ₥");
-              awardMatoshi(interaction.guildId, interaction.user.id, 10);
+              Matoshi.award(interaction.guildId, interaction.user.id, 10);
             }
             break;
           }
@@ -572,12 +572,12 @@ client.on('interactionCreate', interaction => {
             if (interaction.user.id == "532918953014722560") {
               let amount = interaction.options.getInteger("amount");
               let target = interaction.options.getUser("user");
-              modifyMatoshi(target.id, amount);
+              Matoshi.modify(target.id, amount);
               interaction.reply({ content: "Successfully awarded " + amount + " ₥ to **" + target.username + "**", ephemeral: false });
             }
             else {
               interaction.reply({ content: "You are not permitted to mint matoshi! 1 ₥ deducted! :angry:", ephemeral: false });
-              modifyMatoshi(interaction.user.id, -1);
+              Matoshi.modify(interaction.user.id, -1);
             }
             break;
           }
@@ -586,7 +586,7 @@ client.on('interactionCreate', interaction => {
             let to = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
 
-            if (payMatoshi(from.id, to.id, amount)) {
+            if (Matoshi.pay(from.id, to.id, amount)) {
               interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee 1 matoshi)", ephemeral: false });
             }
             else {
@@ -597,7 +597,7 @@ client.on('interactionCreate', interaction => {
           case "balance": {
             let user = interaction.options.getUser("user");
             if (!user) user = interaction.user;
-            let balance = getMatoshi(user.id);
+            let balance = Matoshi.balance(user.id);
             interaction.reply({ content: "Matoshi balance for **" + user.username + "**: " + balance + " ₥", ephemeral: false });
             break;
           }
@@ -641,7 +641,7 @@ client.on('interactionCreate', interaction => {
         let paymentData = paymentMessages.get(interaction.message.id);
         if (paymentData != undefined) {
           if (interaction.user.id == paymentData.from) {
-            if (Matoshi.payMatoshi(paymentData.from, paymentData.to, paymentData.amount)) {
+            if (Matoshi.pay(paymentData.from, paymentData.to, paymentData.amount)) {
               interaction.reply("Payment successful!");
             }
             else {
@@ -944,7 +944,7 @@ client.on('messageCreate', message => {
           }
           break;
         case "s":
-          if (Matoshi.costMatoshi(message.guildId, message.author.id, 1)) {
+          if (Matoshi.cost(message.guildId, message.author.id, 1)) {
             console.log("SEARCH!");
             startGoogleSearch(argument, message, 1);
           }
