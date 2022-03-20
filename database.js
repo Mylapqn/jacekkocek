@@ -3,7 +3,7 @@ import mysql from "promise-mysql";
 /**@type {mysql.Connection} */
 let connection;
 export async function init() {
-    connection = await mysql.createConnection({ host: "", user: "", password: "", database: "" });
+    connection = await mysql.createConnection({ host: "localhost", user: "jacekkocek", password: process.env.DBPASSWORD, database: "jacekkocek" });
 }
 
 async function createUser(id) {
