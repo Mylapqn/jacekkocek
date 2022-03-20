@@ -47,6 +47,7 @@ export function balance(user) {
 }
 
 export function modify(user, amount) {
+    amount = Math.round(amount);
     let m = balance(user);
     matoshiData.set(user, m + amount);
     console.log("User ID " + user + " matoshi modified by " + amount + ", now " + matoshiData.get(user));
@@ -54,6 +55,7 @@ export function modify(user, amount) {
 }
 
 export function pay(from, to, amount) {
+    amount = Math.round(amount);
     if (balance(from) >= amount && amount > 1) {
         modify(from, -amount);
         modify(to, amount - 1);
@@ -64,6 +66,7 @@ export function pay(from, to, amount) {
 }
 
 export function cost(user, amount, guild) {
+    amount = Math.round(amount);
     if (guild == "549589656606343178" || guild == undefined) {
         if (balance(user) > amount) {
             modify(user, -amount);
@@ -77,6 +80,7 @@ export function cost(user, amount, guild) {
 
 export function award(guild, user, amount) {
     if (guild == "549589656606343178") {
+        amount = Math.round(amount);
         modify(user, amount);
     }
     return true;
