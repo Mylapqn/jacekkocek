@@ -2,6 +2,7 @@ import ytdl from "ytdl-core";
 import * as Discord from "discord.js";
 import * as DiscordVoice from "@discordjs/voice";
 import * as Https from "https";
+import * as Main from "./main.js";
 
 
 var nextYoutube;
@@ -20,7 +21,7 @@ var youtubePlaying = [];
 export function play(interaction) {
     let vid = interaction.options.getString("video");
     if (interaction.member.voice.channel) {
-        joinVoiceChannel(interaction.member.voice.channel);
+        Main.joinVoiceChannel(interaction.member.voice.channel);
         if (interaction.options.getBoolean("autoplay")) {
             youtubeAutoplay = true;
         }
@@ -115,7 +116,7 @@ function playYoutube(videoUrl, channel) {
             console.log(error)
         }
         //console.log(info);
-        voiceChannelPlay(null, videoStream, 0.8)
+        Main.voiceChannelPlay(null, videoStream, 0.8)
         //voicePlay(voice, videoStream, { volume: 0.8 });
         let nextVideo;
         if (youtubePlaylist.length > 0) {
