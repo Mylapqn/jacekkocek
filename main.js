@@ -7,7 +7,7 @@ import ytdl from "ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
-import { getUser,init, setUser } from "./database.js";
+import { getUser, init, setUser } from "./database.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -1423,14 +1423,14 @@ client.on('messageCreate', message => {
         case "getuser": {
           getUser(message.author.id).then(f => {
             console.log(f);
-          })
+          });
           break;
         }
         case "setuser": {
           getUser(message.author.id).then(f => {
-            f.wallets.set("CORN",5.6);
+            f.wallets.set("CORN", 5.6);
             setUser(f);
-          })
+          });
           break;
         }
         default:

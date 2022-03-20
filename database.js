@@ -1,5 +1,5 @@
 import mysql from "promise-mysql";
-import { stockNames } from "./stocks";
+import { stockNames } from "./stocks.js";
 
 /**@type {mysql.Connection} */
 let connection;
