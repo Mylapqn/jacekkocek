@@ -148,7 +148,7 @@
             {
                 "type": 1,
                 "name": "buy",
-                "description": "Buy a stock with matoshi",
+                "description": "Buy a stock with matoshi (fee: 0.5 %)",
                 "options": [
                     {
                         "type": 3,
@@ -167,7 +167,7 @@
             {
                 "type": 1,
                 "name": "sell",
-                "description": "Sell a stock for matoshi",
+                "description": "Sell a stock for matoshi (fee: 0.5 %)",
                 "options": [
                     {
                         "type": 3,

@@ -10,6 +10,8 @@ const stockApiKey = "c8oe5maad3iatn99i470";
 const stockHistoryHours = 24;
 const stockUpdatesPerHour = 4;
 
+const tradingFee = .005;
+
 const resolutions = {
     m1: 1,
     m5: 5,
@@ -67,12 +69,12 @@ export function generateGraph(stockName) {
     }
     ctx.stroke();
 
-    ctx.lineTo(axisOffetX,height);
-    ctx.lineTo(width,height);
-    let gradient = ctx.createLinearGradient(0,axisOffsetY,0,height);
-    gradient.addColorStop(0,"#27716D");
-    gradient.addColorStop(1,"#32353B");
-    ctx.fillStyle=gradient;
+    ctx.lineTo(axisOffetX, height);
+    ctx.lineTo(width, height);
+    let gradient = ctx.createLinearGradient(0, axisOffsetY, 0, height);
+    gradient.addColorStop(0, "#27716D");
+    gradient.addColorStop(1, "#32353B");
+    ctx.fillStyle = gradient;
     ctx.fill();
 
     ctx.strokeStyle = "#5E5E5E";
@@ -153,10 +155,10 @@ function getStockInfo() {
 
 
 export async function buy(user, stock, amount) {
-    if (Matoshi.cost(user, amount)) {
+    if (Matoshi.pay(user, Main.client.user.id, amount, 0)) {
         let data = await Database.getUser(user);
         let currentStock = data.wallets.get(stock);
-        currentStock += amount / currentPrice(stock);
+        currentStock += amount * (1-tradingFee) / currentPrice(stock);
         data.wallets.set(stock, currentStock);
         await Database.setUser(data);
         return true;
@@ -169,10 +171,12 @@ export async function sell(user, stock, amount) {
     let currentStock = data.wallets.get(stock);
     if (currentStock >= amount / currentPrice(stock)) {
         currentStock -= amount / currentPrice(stock);
-        Matoshi.modify(user, amount);
-        data.wallets.set(stock, currentStock);
-        await Database.setUser(data);
-        return true;
+        if (Matoshi.pay(Main.client.user.id, user, Math.floor(amount * (1-tradingFee)), 0)) {
+            data.wallets.set(stock, currentStock);
+            await Database.setUser(data);
+            return true;
+        }
+        else return false;
     }
     else return false;
 }

@@ -54,12 +54,13 @@ export function modify(user, amount) {
     save();
 }
 
-export function pay(from, to, amount) {
+export function pay(from, to, amount, fee) {
+    if(fee == undefined) fee = 1;
     amount = Math.round(amount);
-    if (balance(from) >= amount && amount > 1) {
+    if (balance(from) >= amount && amount > fee) {
         modify(from, -amount);
-        modify(to, amount - 1);
-        modify(Main.client.user.id, 1);
+        modify(to, amount - fee);
+        modify(Main.client.user.id, fee);
         return true;
     }
     else return false;
