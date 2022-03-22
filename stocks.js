@@ -138,7 +138,7 @@ export function currentPrice(stockName) {
 
 function getStockData() {
     console.log("Updating stocks...");
-    let info = {};
+    //let info = {};
     let to = Main.nowSeconds();
     let from = to - stockHistoryHours * 3600;
     for (let i = 0; i < stockPresets.length; i++) {
@@ -146,8 +146,8 @@ function getStockData() {
         //console.log(stock.id);
         //console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
-            //console.log(stock.id + " Length: " + res.data.c.length);
-            info[stock.id] = res.data.c;
+            console.log(stock.id + " First: " + res.data.c[0]);
+            //info[stock.id] = res.data.c;
             stockData.set(stock.id, res.data.c);
             if (i == stockPresets.length - 1) {
                 console.log("Updated all stocks.");

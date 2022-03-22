@@ -12,7 +12,7 @@ import * as Stocks from "./stocks.js";
 import * as Matoshi from "./matoshi.js";
 import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
-import {stockPresets} from "./stockPresets.js";
+import { stockPresets } from "./stockPresets.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -574,9 +574,12 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "stocks": {
-        let stockId = interaction.options.getString("stock").toUpperCase();
-        let stockName = Stocks.findStockPreset(stockId).name || "Unknown";
-        let displayString = stockName+" ("+stockId+")";
+        let stockId = interaction.options.getString("stock")?.toUpperCase();
+        let stockName, displayString;
+        if (stockId) {
+          stockName = Stocks.findStockPreset(stockId).name || "Unknown";
+          displayString = stockName + " (" + stockId + ")";
+        }
         switch (interaction.options.getSubcommand()) {
           case "buy": {
             Stocks.buy(interaction.user.id, stockId, interaction.options.getInteger("amount")).then(res => {
