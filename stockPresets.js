@@ -10,11 +10,6 @@ export const stockPresets = [
         name: "Corn"
     },
     {
-        id: "FDEV",
-        symbol: "FDEV.L",
-        name: "Frontier Developments"
-    },
-    {
         id: "ETH",
         symbol: "ETH-USD",
         name: "Ethereum"

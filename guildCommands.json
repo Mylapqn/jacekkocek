@@ -157,23 +157,19 @@
                         "required": true,
                         "choices": [
                             {
-                                "name": "Bitcoin",
+                                "name": "BTC",
                                 "value": "BTC"
                             },
                             {
-                                "name": "Ethereum",
+                                "name": "ETH",
                                 "value": "ETH"
                             },
                             {
-                                "name": "Tesla",
+                                "name": "TSLA",
                                 "value": "TSLA"
                             },
                             {
-                                "name": "Frontier Developments",
-                                "value": "FDEV"
-                            },
-                            {
-                                "name": "Corn",
+                                "name": "CORN",
                                 "value": "CORN"
                             }
                         ]
@@ -198,23 +194,19 @@
                         "required": true,
                         "choices": [
                             {
-                                "name": "Bitcoin",
+                                "name": "BTC",
                                 "value": "BTC"
                             },
                             {
-                                "name": "Ethereum",
+                                "name": "ETH",
                                 "value": "ETH"
                             },
                             {
-                                "name": "Tesla",
+                                "name": "TSLA",
                                 "value": "TSLA"
                             },
                             {
-                                "name": "Frontier Developments",
-                                "value": "FDEV"
-                            },
-                            {
-                                "name": "Corn",
+                                "name": "CORN",
                                 "value": "CORN"
                             }
                         ]
@@ -239,23 +231,19 @@
                         "required": true,
                         "choices": [
                             {
-                                "name": "Bitcoin",
+                                "name": "BTC",
                                 "value": "BTC"
                             },
                             {
-                                "name": "Ethereum",
+                                "name": "ETH",
                                 "value": "ETH"
                             },
                             {
-                                "name": "Tesla",
+                                "name": "TSLA",
                                 "value": "TSLA"
                             },
                             {
-                                "name": "Frontier Developments",
-                                "value": "FDEV"
-                            },
-                            {
-                                "name": "Corn",
+                                "name": "CORN",
                                 "value": "CORN"
                             }
                         ]
@@ -274,23 +262,19 @@
                         "required": true,
                         "choices": [
                             {
-                                "name": "Bitcoin",
+                                "name": "BTC",
                                 "value": "BTC"
                             },
                             {
-                                "name": "Ethereum",
+                                "name": "ETH",
                                 "value": "ETH"
                             },
                             {
-                                "name": "Tesla",
+                                "name": "TSLA",
                                 "value": "TSLA"
                             },
                             {
-                                "name": "Frontier Developments",
-                                "value": "FDEV"
-                            },
-                            {
-                                "name": "Corn",
+                                "name": "CORN",
                                 "value": "CORN"
                             }
                         ]
