@@ -12,7 +12,7 @@ import * as Stocks from "./stocks.js";
 import * as Matoshi from "./matoshi.js";
 import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
-import { userInfo } from "os";
+import stockPresets from "./stockPresets.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -574,34 +574,36 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "stocks": {
-        let stockName = interaction.options.getString("stock");
+        let stockId = interaction.options.getString("stock").toUpperCase();
+        let stockName = Stocks.findStockPreset(stockId).name || "Unknown";
+        let displayString = stockName+" ("+stockId+")";
         switch (interaction.options.getSubcommand()) {
           case "buy": {
-            Stocks.buy(interaction.user.id, stockName, interaction.options.getInteger("amount")).then(res => {
+            Stocks.buy(interaction.user.id, stockId, interaction.options.getInteger("amount")).then(res => {
               if (res) {
-                interaction.reply("Successfully purchased " + stockName + " for " + interaction.options.getInteger("amount") + " ₥.");
+                interaction.reply("Successfully purchased " + displayString + " for " + interaction.options.getInteger("amount") + " ₥.");
               }
               else {
-                interaction.reply("Purchase of " + stockName + " failed.");
+                interaction.reply("Purchase of " + displayString + " failed.");
               }
             })
             break;
           }
           case "sell": {
-            Stocks.sell(interaction.user.id, stockName, interaction.options.getInteger("amount")).then(res => {
+            Stocks.sell(interaction.user.id, stockId, interaction.options.getInteger("amount")).then(res => {
               if (res) {
-                interaction.reply("Successfully sold " + stockName + " for " + interaction.options.getInteger("amount") + " ₥.");
+                interaction.reply("Successfully sold " + displayString + " for " + interaction.options.getInteger("amount") + " ₥.");
               }
               else {
-                interaction.reply("Sell of " + stockName + " failed.");
+                interaction.reply("Sell of " + displayString + " failed.");
               }
             })
             break;
           }
           case "info": {
-            if (Stocks.stockData.has(stockName)) {
-              let buf = Stocks.generateGraph(stockName);
-              interaction.reply({ content: stockName + " prices for <t:" + nowSeconds() + "> - Current " + Stocks.currentPrice(stockName), files: [buf] });
+            if (Stocks.stockData.has(stockId)) {
+              let buf = Stocks.generateGraph(stockId);
+              interaction.reply({ content: displayString + " prices for <t:" + nowSeconds() + "> - Current " + Stocks.currentPrice(stockId), files: [buf] });
             }
             else {
               interaction.reply("Invalid stock!");
@@ -609,14 +611,15 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "list": {
+            interaction.reply(Stocks.list());
             break;
           }
           case "balance": {
             let user = interaction.options.getUser("user");
             if (!user) user = interaction.user;
-            Stocks.balance(user.id, stockName).then(balance => {
-              let price = Stocks.currentPrice(stockName);
-              interaction.reply(stockName + " balance for **" + user.username + "**: " + balance + " (worth " + Math.round(balance * price) + " ₥)");
+            Stocks.balance(user.id, stockId).then(balance => {
+              let price = Stocks.currentPrice(stockId);
+              interaction.reply(displayString + " balance for **" + user.username + "**: " + balance + " (worth " + Math.round(balance * price) + " ₥)");
             });
             break;
           }

@@ -154,7 +154,29 @@
                         "type": 3,
                         "name": "stock",
                         "description": "The ID of the stock",
-                        "required": true
+                        "required": true,
+                        "choices": [
+                            {
+                                "name": "Bitcoin",
+                                "value": "BTC"
+                            },
+                            {
+                                "name": "Ethereum",
+                                "value": "ETH"
+                            },
+                            {
+                                "name": "Tesla",
+                                "value": "TSLA"
+                            },
+                            {
+                                "name": "Frontier Developments",
+                                "value": "FDEV"
+                            },
+                            {
+                                "name": "Corn",
+                                "value": "CORN"
+                            }
+                        ]
                     },
                     {
                         "type": 4,
@@ -173,7 +195,29 @@
                         "type": 3,
                         "name": "stock",
                         "description": "The ID of the stock",
-                        "required": true
+                        "required": true,
+                        "choices": [
+                            {
+                                "name": "Bitcoin",
+                                "value": "BTC"
+                            },
+                            {
+                                "name": "Ethereum",
+                                "value": "ETH"
+                            },
+                            {
+                                "name": "Tesla",
+                                "value": "TSLA"
+                            },
+                            {
+                                "name": "Frontier Developments",
+                                "value": "FDEV"
+                            },
+                            {
+                                "name": "Corn",
+                                "value": "CORN"
+                            }
+                        ]
                     },
                     {
                         "type": 4,
@@ -192,7 +236,29 @@
                         "type": 3,
                         "name": "stock",
                         "description": "The ID of the stock",
-                        "required": true
+                        "required": true,
+                        "choices": [
+                            {
+                                "name": "Bitcoin",
+                                "value": "BTC"
+                            },
+                            {
+                                "name": "Ethereum",
+                                "value": "ETH"
+                            },
+                            {
+                                "name": "Tesla",
+                                "value": "TSLA"
+                            },
+                            {
+                                "name": "Frontier Developments",
+                                "value": "FDEV"
+                            },
+                            {
+                                "name": "Corn",
+                                "value": "CORN"
+                            }
+                        ]
                     }
                 ]
             },
@@ -205,7 +271,29 @@
                         "type": 3,
                         "name": "stock",
                         "description": "The ID of the stock",
-                        "required": true
+                        "required": true,
+                        "choices": [
+                            {
+                                "name": "Bitcoin",
+                                "value": "BTC"
+                            },
+                            {
+                                "name": "Ethereum",
+                                "value": "ETH"
+                            },
+                            {
+                                "name": "Tesla",
+                                "value": "TSLA"
+                            },
+                            {
+                                "name": "Frontier Developments",
+                                "value": "FDEV"
+                            },
+                            {
+                                "name": "Corn",
+                                "value": "CORN"
+                            }
+                        ]
                     },
                     {
                         "type": 6,

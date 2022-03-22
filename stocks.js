@@ -4,6 +4,7 @@ import * as Database from "./database.js";
 import * as Matoshi from "./matoshi.js";
 import * as Utilities from "./utilities.js";
 import * as Main from "./main.js";
+import stockPresets from "./stockPresets.js";
 
 const stockApiKey = "c8oe5maad3iatn99i470";
 
@@ -23,25 +24,27 @@ const resolutions = {
     month: "M",
 }
 
-const stockAliases = new Map([
-    ["BTC", "BTC-USD"],
-    ["CORN", "CORN"],
-])
-export const stockNames = Array.from(stockAliases.keys());
 export let stockData = new Map();
 
-
 export function init() {
-    stockNames.forEach(name => {
-        stockData.set(name, []);
+    stockPresets.forEach(preset => {
+        stockData.set(preset.id, []);
     })
     setInterval(() => {
-        getStockInfo();
+        getStockData();
     }, 3600000 / stockUpdatesPerHour);
-    getStockInfo();
+    getStockData();
 }
 
-export function generateGraph(stockName) {
+export function findStockPreset(id) {
+    for (let i = 0; i < stockPresets.length; i++) {
+        const s = stockPresets[i];
+        if (s.id == id) return s;
+    }
+    return false;
+}
+
+export function generateGraph(stockId) {
     const width = 600;
     const height = 300;
     const padding = 5;
@@ -49,7 +52,7 @@ export function generateGraph(stockName) {
     const axisOffsetY = 25;
     const graphWidth = width - axisOffetX;
     const graphHeight = height - axisOffsetY * 2;
-    let stockHistory = stockData.get(stockName);
+    let stockHistory = stockData.get(stockId);
     let can = Canvas.createCanvas(width, height);
     let ctx = can.getContext("2d");
     ctx.fillStyle = "#32353B";
@@ -133,35 +136,46 @@ export function currentPrice(stockName) {
     return stockData.get(stockName)[stockData.get(stockName).length - 1];
 }
 
-function getStockInfo() {
+function getStockData() {
     console.log("Updating stocks...");
     let info = {};
     let to = Main.nowSeconds();
     let from = to - stockHistoryHours * 3600;
-    for (let i = 0; i < stockNames.length; i++) {
-        const stock = stockNames[i];
-        console.log(stock);
-        console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
-        axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stockAliases.get(stock)}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
-            console.log(stock + " Length: " + res.data.c.length);
-            info[stock] = res.data.c;
-            stockData.set(stock, res.data.c);
-            if (i == stockNames.length - 1) {
+    for (let i = 0; i < stockPresets.length; i++) {
+        const stock = stockPresets[i];
+        //console.log(stock.id);
+        //console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
+        axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
+            //console.log(stock.id + " Length: " + res.data.c.length);
+            info[stock.id] = res.data.c;
+            stockData.set(stock.id, res.data.c);
+            if (i == stockPresets.length - 1) {
                 console.log("Updated all stocks.");
             }
         });
     }
 }
 
+export function list(){
+    let str = "Available stocks:\n"
+    stockPresets.forEach(stock => {
+        str+=stock.name+" ("+stock.id+")\n"
+    });
+    return str;
+}
+
 
 export async function buy(user, stock, amount) {
-    if (Matoshi.pay(user, Main.client.user.id, amount, 0)) {
-        let data = await Database.getUser(user);
-        let currentStock = data.wallets.get(stock);
-        currentStock += amount * (1-tradingFee) / currentPrice(stock);
-        data.wallets.set(stock, currentStock);
-        await Database.setUser(data);
-        return true;
+    if (currentPrice(stock) != undefined && !isNaN(currentPrice(stock))) {
+        if (Matoshi.pay(user, Main.client.user.id, amount, 0)) {
+            let data = await Database.getUser(user);
+            let currentStock = data.wallets.get(stock);
+            currentStock += amount * (1 - tradingFee) / currentPrice(stock);
+            data.wallets.set(stock, currentStock);
+            await Database.setUser(data);
+            return true;
+        }
+        else return false;
     }
     else return false;
 }
@@ -169,9 +183,9 @@ export async function buy(user, stock, amount) {
 export async function sell(user, stock, amount) {
     let data = await Database.getUser(user);
     let currentStock = data.wallets.get(stock);
-    if (currentStock >= amount / currentPrice(stock)) {
+    if (currentStock >= amount / currentPrice(stock) && currentStock != undefined && !isNaN(currentStock)) {
         currentStock -= amount / currentPrice(stock);
-        if (Matoshi.pay(Main.client.user.id, user, Math.floor(amount * (1-tradingFee)), 0)) {
+        if (Matoshi.pay(Main.client.user.id, user, Math.floor(amount * (1 - tradingFee)), 0)) {
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
             return true;

@@ -1,5 +1,5 @@
 import mysql from "promise-mysql";
-import { stockNames } from "./stocks.js";
+import { stockPresets } from "./stockPresets.js";
 
 /**@type {mysql.Connection} */
 let connection;
@@ -9,8 +9,8 @@ export async function init() {
 
 async function createUser(id) {
     await connection.query(`INSERT INTO Users VALUES (\"${id}\",0)`);
-    for (const stockName of stockNames) {
-        await connection.query(`INSERT INTO Wallet (user, currency, amount) VALUES (\"${id}\",\"${stockName}\",0)`);
+    for (const stockPreset of stockPresets) {
+        await connection.query(`INSERT INTO Wallet (user, currency, amount) VALUES (\"${id}\",\"${stockPreset.id}\",0)`);
     }
     return await connection.query(`SELECT * FROM Users WHERE id=\"${id}\"`);
 }
