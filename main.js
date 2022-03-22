@@ -12,7 +12,7 @@ import * as Stocks from "./stocks.js";
 import * as Matoshi from "./matoshi.js";
 import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
-import stockPresets from "./stockPresets.js";
+import {stockPresets} from "./stockPresets.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
