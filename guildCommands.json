@@ -161,16 +161,16 @@
                                 "value": "BTC"
                             },
                             {
-                                "name": "ETH",
-                                "value": "ETH"
-                            },
-                            {
                                 "name": "TSLA",
                                 "value": "TSLA"
                             },
                             {
                                 "name": "CORN",
                                 "value": "CORN"
+                            },
+                            {
+                                "name": "NVDA",
+                                "value": "NVDA"
                             }
                         ]
                     },
@@ -198,16 +198,16 @@
                                 "value": "BTC"
                             },
                             {
-                                "name": "ETH",
-                                "value": "ETH"
-                            },
-                            {
                                 "name": "TSLA",
                                 "value": "TSLA"
                             },
                             {
                                 "name": "CORN",
                                 "value": "CORN"
+                            },
+                            {
+                                "name": "NVDA",
+                                "value": "NVDA"
                             }
                         ]
                     },
@@ -235,16 +235,16 @@
                                 "value": "BTC"
                             },
                             {
-                                "name": "ETH",
-                                "value": "ETH"
-                            },
-                            {
                                 "name": "TSLA",
                                 "value": "TSLA"
                             },
                             {
                                 "name": "CORN",
                                 "value": "CORN"
+                            },
+                            {
+                                "name": "NVDA",
+                                "value": "NVDA"
                             }
                         ]
                     }
@@ -266,16 +266,16 @@
                                 "value": "BTC"
                             },
                             {
-                                "name": "ETH",
-                                "value": "ETH"
-                            },
-                            {
                                 "name": "TSLA",
                                 "value": "TSLA"
                             },
                             {
                                 "name": "CORN",
                                 "value": "CORN"
+                            },
+                            {
+                                "name": "NVDA",
+                                "value": "NVDA"
                             }
                         ]
                     },

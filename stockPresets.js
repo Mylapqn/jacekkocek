@@ -10,13 +10,13 @@ export const stockPresets = [
         name: "Corn"
     },
     {
-        id: "ETH",
-        symbol: "ETH-USD",
-        name: "Ethereum"
-    },
-    {
         id: "TSLA",
         symbol: "TSLA",
         name: "Tesla"
+    },
+    {
+        id: "NVDA",
+        symbol: "NVDA",
+        name: "Nvidia"
     },
 ]
