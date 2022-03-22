@@ -6,22 +6,22 @@ export const stockPresets = [
     },
     {
         id: "CORN",
-        symbol: "BTC-USD",
+        symbol: "CORN",
         name: "Corn"
     },
     {
         id: "FDEV",
-        symbol: "BTC-USD",
+        symbol: "FDEV.L",
         name: "Frontier Developments"
     },
     {
         id: "ETH",
-        symbol: "BTC-USD",
+        symbol: "ETH-USD",
         name: "Ethereum"
     },
     {
         id: "TSLA",
-        symbol: "BTC-USD",
+        symbol: "TSLA",
         name: "Tesla"
     },
 ]
