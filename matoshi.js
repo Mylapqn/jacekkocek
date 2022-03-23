@@ -22,6 +22,7 @@ export function init() {
 function load() {
     try {
         let read = fs.readFileSync(matoshiFileName);
+        console.log(read);
         matoshiData = new Map(JSON.parse(read));
         //matoshiData = new Map(JSON.parse('[["532918953014722560", 96675],["645206726097764364", 3911],["500632024831492100", 3027],["271729772357222410", 1169],["728313132619137124", 26],["245616926485643264", 0],["658686795076206603", 0],["691718942049173524", -1]]'));
         console.log("Loaded matoshi.");
@@ -32,7 +33,7 @@ function load() {
 }
 
 function save() {
-    fs.writeFile(matoshiFileName, JSON.stringify(Array.from(matoshiData)), (e) => { console.log("Finished writing", e) });
+    fs.writeFile(matoshiFileName, JSON.stringify(Array.from(matoshiData)), (e) => { console.log("Finished writing Matoshi") });
 }
 
 export function balance(user) {
