@@ -159,7 +159,7 @@ function getStockData() {
 export function list() {
     let str = "Available stocks:\n"
     stockPresets.forEach(stock => {
-        str += stock.name + " (" + stock.id + ")\n"
+        str += stock.name + " (" + stock.id + ") - Current price: "+formatCurrency(currentPrice(stock.id))+"₥\n"
     });
     return str;
 }
