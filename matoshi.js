@@ -4,6 +4,7 @@ import fs from "fs";
 
 var matoshiFileName = "matoshiBalance.json";
 var matoshiData = new Map();
+export let paymentMessages = new Map();
 
 export function init() {
     load();

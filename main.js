@@ -51,7 +51,7 @@ httpServer.use(express.json());
 
 
 
-let paymentMessages = new Map();
+
 
 var helpCommands = [
   {
@@ -634,7 +634,7 @@ client.on('interactionCreate', interaction => {
   if (interaction.isButton()) {
     switch (interaction.customId) {
       case "acceptPayment": {
-        let paymentData = paymentMessages.get(interaction.message.id);
+        let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData != undefined) {
           if (interaction.user.id == paymentData.from) {
             if (Matoshi.pay(paymentData.from, paymentData.to, paymentData.amount)) {
@@ -654,11 +654,11 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "declinePayment": {
-        let paymentData = paymentMessages.get(interaction.message.id);
+        let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData != undefined) {
           if (interaction.user.id == paymentData.from) {
             interaction.reply("Payment cancelled");
-            paymentMessages.delete(interaction.message.id);
+            Matoshi.paymentMessages.delete(interaction.message.id);
             let msg = interaction.message;
             let comp = msg.components;
             comp[0].components[0].setDisabled(true);
