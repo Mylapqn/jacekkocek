@@ -40,3 +40,8 @@ export function timeString(seconds) {
 export function addZero(x) {
     return String(x).padStart(2, "0");
 }
+
+export function isValid(x){
+    if(x == undefined || isNaN(x)) return false;
+    else return true;
+}

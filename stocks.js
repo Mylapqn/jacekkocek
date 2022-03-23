@@ -166,12 +166,12 @@ export function list() {
 
 
 export async function buy(user, stock, amount) {
-    if (currentPrice(stock) != undefined && !isNaN(currentPrice(stock))) {
+    let price = currentPrice(stock);
+    if (Utilities.isValid(price)) {
         if (Matoshi.pay(user, Main.client.user.id, amount, 0)) {
             let data = await Database.getUser(user);
-            let currentStock = data.wallets.get(stock);
-            if (currentStock == undefined || isNaN(currentStock)) currentStock = 0;
-            currentStock += amount * (1 - tradingFee) / currentPrice(stock);
+            let currentStock = data.wallets.get(stock) || 0;
+            currentStock += amount * (1 - tradingFee) / price;
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
             return true;
@@ -182,10 +182,11 @@ export async function buy(user, stock, amount) {
 }
 
 export async function sell(user, stock, amount) {
+    let price = currentPrice(stock);
     let data = await Database.getUser(user);
     let currentStock = data.wallets.get(stock);
-    if (currentStock >= amount / currentPrice(stock) && currentStock != undefined && !isNaN(currentStock)) {
-        currentStock -= amount / currentPrice(stock);
+    if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
+        currentStock -= amount / price;
         if (Matoshi.pay(Main.client.user.id, user, Math.floor(amount * (1 - tradingFee)), 0)) {
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
