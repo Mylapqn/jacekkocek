@@ -69,7 +69,7 @@ export function pay(from, to, amount, fee) {
 export function cost(user, amount, guild) {
     amount = Math.round(amount);
     if (guild == "549589656606343178" || guild == undefined) {
-        if (balance(user) > amount) {
+        if (balance(user) >= amount) {
             modify(user, -amount);
             modify(Main.client.user.id, amount);
             return true;
