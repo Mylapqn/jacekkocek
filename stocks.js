@@ -4,7 +4,7 @@ import * as Database from "./database.js";
 import * as Matoshi from "./matoshi.js";
 import * as Utilities from "./utilities.js";
 import * as Main from "./main.js";
-import {stockPresets} from "./stockPresets.js";
+import { stockPresets } from "./stockPresets.js";
 
 const stockApiKey = "c8oe5maad3iatn99i470";
 
@@ -156,10 +156,10 @@ function getStockData() {
     }
 }
 
-export function list(){
+export function list() {
     let str = "Available stocks:\n"
     stockPresets.forEach(stock => {
-        str+=stock.name+" ("+stock.id+")\n"
+        str += stock.name + " (" + stock.id + ")\n"
     });
     return str;
 }
@@ -170,6 +170,7 @@ export async function buy(user, stock, amount) {
         if (Matoshi.pay(user, Main.client.user.id, amount, 0)) {
             let data = await Database.getUser(user);
             let currentStock = data.wallets.get(stock);
+            if (currentStock == undefined || isNaN(currentStock)) currentStock = 0;
             currentStock += amount * (1 - tradingFee) / currentPrice(stock);
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
