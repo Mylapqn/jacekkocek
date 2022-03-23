@@ -643,7 +643,7 @@ client.on('interactionCreate', interaction => {
             else {
               interaction.reply("Payment failed!");
             }
-            paymentMessages.delete(interaction.message.id);
+            Matoshi.paymentMessages.delete(interaction.message.id);
             let msg = interaction.message;
             let comp = msg.components;
             comp[0].components[0].setDisabled(true);
