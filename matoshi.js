@@ -23,8 +23,8 @@ function load() {
     try {
         let read = fs.readFileSync(matoshiFileName);
         //console.log(read.toString());
-        //matoshiData = new Map(JSON.parse(read));
-        matoshiData = new Map(JSON.parse('[["532918953014722560", 77840],["645206726097764364", 423],["500632024831492100", 275],["271729772357222410", 1166],["728313132619137124", 110963],["245616926485643264", 0],["658686795076206603", 0],["691718942049173524", 1]]'));
+        matoshiData = new Map(JSON.parse(read));
+        //matoshiData = new Map(JSON.parse('[["532918953014722560", 77840],["645206726097764364", 423],["500632024831492100", 275],["271729772357222410", 1166],["728313132619137124", 110963],["245616926485643264", 0],["658686795076206603", 0],["691718942049173524", 1]]'));
         console.log("Loaded matoshi.");
     } catch (error) {
         console.log("Could not load matoshi!");
