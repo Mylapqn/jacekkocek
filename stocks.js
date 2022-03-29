@@ -133,7 +133,12 @@ function formatCurrency(num) {
 }
 
 export function currentPrice(stockName) {
-    return stockData.get(stockName)[stockData.get(stockName).length - 1];
+    if (stockData.has(stockName)) {
+        let data = stockData.get(stockName);
+        if (data.length >= 1)
+            return data[data.length - 1];
+    }
+    return undefined;
 }
 
 function getStockData() {
@@ -146,7 +151,12 @@ function getStockData() {
         //console.log(stock.id);
         //console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
-            console.log(stock.id + " First: " + res.data.c[0]);
+            if (res.data.c && Utilities.isValid(res.data.c[0])) {
+                console.log(stock.id + " First: " + res.data.c[0]);
+            }
+            else {
+                console.log(stock.id + " INVALID DATA");
+            }
             //info[stock.id] = res.data.c;
             stockData.set(stock.id, res.data.c);
             if (i == stockPresets.length - 1) {
@@ -159,7 +169,7 @@ function getStockData() {
 export function list() {
     let str = "Available stocks:\n"
     stockPresets.forEach(stock => {
-        str += stock.name + " (" + stock.id + ") - Current price: "+formatCurrency(currentPrice(stock.id))+"₥\n"
+        str += stock.name + " (" + stock.id + ") - Current price: " + formatCurrency(currentPrice(stock.id)) + "₥\n"
     });
     return str;
 }
