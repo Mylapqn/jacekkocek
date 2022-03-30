@@ -162,6 +162,8 @@ function getStockData() {
             if (i == stockPresets.length - 1) {
                 console.log("Updated all stocks.");
             }
+        }).catch(e => {
+            console.error("Error updating stocks (" + stock.symbol + "): " + e.response.status + " " + e.response.statusText + " on " + e.config.url + " " + e.response.headers.date);
         });
     }
 }
