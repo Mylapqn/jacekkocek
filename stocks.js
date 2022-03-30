@@ -142,7 +142,7 @@ export function currentPrice(stockName) {
 }
 
 function getStockData() {
-    console.log("Updating stocks...");
+    //console.log("Updating stocks...");
     //let info = {};
     let to = Main.nowSeconds();
     let from = to - stockHistoryHours * 3600;
@@ -152,7 +152,7 @@ function getStockData() {
         //console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
             if (res.data.c && Utilities.isValid(res.data.c[0])) {
-                console.log(stock.id + " First: " + res.data.c[0]);
+                //console.log(stock.id + " First: " + res.data.c[0]);
             }
             else {
                 console.log(stock.id + " INVALID DATA");
