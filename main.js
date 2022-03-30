@@ -275,7 +275,7 @@ var letterEmoji = {
   "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣", "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣"
 };
 
-console.log("--------------------------------------\nStarting up!")
+console.log("\n-----------RESTART-----------")
 
 var kinoData = new Map();
 var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
@@ -319,7 +319,6 @@ client.on('ready', () => {
   afrGuild = client.guilds.cache.get('549589656606343178');
   client.guilds.cache.get('728312628413333584').emojis.fetch();
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
-  console.log('' + new Date().toUTCString() + ' I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   startDate = new Date();
 
@@ -341,9 +340,10 @@ client.on('ready', () => {
   setInterval(() => {
     setupReminders();
   }, reminderThreshold * 1000);
-  console.log(upcomingReminders);
+  //console.log(upcomingReminders);
 
 
+  console.log('' + new Date().toUTCString() + ' I am ready!\n');
 });
 
 client.on('interactionCreate', interaction => {
@@ -1625,7 +1625,7 @@ function loadReminders() {
     let read = fs.readFileSync(remindersFileName);
     reminders = JSON.parse(read);
     console.log("Loaded reminders.");
-    console.log(reminders);
+    //console.log(reminders);
     cleanupReminders();
   } catch (error) {
     console.log("Could not load reminders!");
@@ -1872,7 +1872,7 @@ function playRadio(voice, channel) {
 function radioApiKeyGet() {
   Https.get("https://ponyweb.ml/api.php?keyrequest", function (res) {
     let startTime = Date.now();
-    console.log("HTTPS status:" + res.statusCode);
+    //console.log("HTTPS status:" + res.statusCode);
     var body;
     res.on("data", function (data) {
       body += data;
@@ -1881,7 +1881,7 @@ function radioApiKeyGet() {
       var parsed = JSON.parse(body.substring(9, body.length));
       radioApiKey = parsed.key;
       radioServerPing = parsed.time - startTime;
-      console.log("Server ping: " + radioServerPing);
+      //console.log("Server ping: " + radioServerPing);
     });
   });
 }
