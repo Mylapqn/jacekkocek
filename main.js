@@ -343,7 +343,7 @@ client.on('ready', () => {
   //console.log(upcomingReminders);
 
 
-  console.log('' + new Date().toUTCString() + ' I am ready!\n');
+  console.log('' + new Date().toUTCString() + ' I am ready!');
 });
 
 client.on('interactionCreate', interaction => {
