@@ -318,7 +318,7 @@ client.on('ready', () => {
 
   afrGuild = client.guilds.cache.get('549589656606343178');
   client.guilds.cache.get('728312628413333584').emojis.fetch();
-  console.error("\n---------------------");
+  console.error("\n-----------RESTART----------\n"+new Date()+"\n");
   console.log('' + new Date() + ' I am ready!');
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   startDate = new Date();
