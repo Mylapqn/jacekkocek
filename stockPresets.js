@@ -19,4 +19,9 @@ export const stockPresets = [
         symbol: "NVDA",
         name: "Nvidia"
     },
+    {
+        id: "AMD",
+        symbol: "AMD",
+        name: "AMD"
+    },
 ]

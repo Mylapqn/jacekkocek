@@ -171,6 +171,10 @@
                             {
                                 "name": "NVDA",
                                 "value": "NVDA"
+                            },
+                            {
+                                "name": "AMD",
+                                "value": "AMD"
                             }
                         ]
                     },
@@ -208,6 +212,10 @@
                             {
                                 "name": "NVDA",
                                 "value": "NVDA"
+                            },
+                            {
+                                "name": "AMD",
+                                "value": "AMD"
                             }
                         ]
                     },
@@ -245,6 +253,10 @@
                             {
                                 "name": "NVDA",
                                 "value": "NVDA"
+                            },
+                            {
+                                "name": "AMD",
+                                "value": "AMD"
                             }
                         ]
                     }
@@ -276,6 +288,10 @@
                             {
                                 "name": "NVDA",
                                 "value": "NVDA"
+                            },
+                            {
+                                "name": "AMD",
+                                "value": "AMD"
                             }
                         ]
                     },
