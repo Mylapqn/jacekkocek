@@ -1926,7 +1926,7 @@ function playStation(voice, id) {
       footer: { text: "Now playing" },
       author: {
         name: `Next station`,
-        url: baseUrl+"/radio/play?station="+(id+1)
+        url: baseUrl+`/radio/play?station=${id+1}&guild=${voice.guildId}&channel=${voice.id}`
       }
     }]
   });
