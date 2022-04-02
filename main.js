@@ -302,7 +302,7 @@ let upcomingReminders = [];
 const remindersFileName = "reminders.json";
 loadReminders();
 
-let baseUrl = "jacekkocek.coal.games";
+let baseUrl = "https://jacekkocek.coal.games";
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
@@ -1926,7 +1926,7 @@ function playStation(voice, id) {
       footer: { text: "Now playing" },
       author: {
         name: `Next station`,
-        url: baseUrl+"/radio/play?station"+(id+1)
+        url: baseUrl+"/radio/play?station="+(id+1)
       }
     }]
   });
