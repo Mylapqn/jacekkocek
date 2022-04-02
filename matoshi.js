@@ -19,7 +19,7 @@ export function init() {
     });
     Main.httpServer.get("/", (req, res) => {
         console.log("GOT REQUEST");
-        console.log(req.body);
+        console.log(req);
         //let data = JSON.parse(req.body);
         res.send("OK");
     });
