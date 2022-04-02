@@ -13,6 +13,7 @@ import * as Matoshi from "./matoshi.js";
 import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
 import { stockPresets } from "./stockPresets.js";
+import { error } from "console";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -315,15 +316,19 @@ client.on('ready', () => {
   Matoshi.init();
 
   httpServer.get("/radio/play", (req, res) => {
-    console.log(req.query);
-    if (req.query.guild) {
-      let guild = client.guilds.cache.get(req.query.guild);
-      let voiceChannel = guild.channels.cache.get(req.query.channel);
-      let radioId = parseInt(req.query.station);
-      playStation(voiceChannel, radioId);
+    try {
+      console.log(req.query);
+      if (req.query.guild) {
+        let guild = client.guilds.cache.get(req.query.guild);
+        let voiceChannel = guild.channels.cache.get(req.query.channel);
+        let radioId = parseInt(req.query.station);
+        playStation(voiceChannel, radioId);
+      }
+      //let data = JSON.parse(req.body);
+      res.send("OK");
+    } catch (e) {
+      throw new error("Something went wrong");
     }
-    //let data = JSON.parse(req.body);
-    res.send("OK");
   });
 
   httpServer.listen(port, () => {
@@ -1924,10 +1929,6 @@ function playStation(voice, id) {
       title: "♫ " + station.name,
       color: station.color,
       footer: { text: "Now playing" },
-      author: {
-        name: `Next station`,
-        url: baseUrl+`/radio/play?station=${id+1}&guild=${voice.guildId}&channel=${voice.id}`
-      }
     }]
   });
 
