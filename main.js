@@ -302,6 +302,8 @@ let upcomingReminders = [];
 const remindersFileName = "reminders.json";
 loadReminders();
 
+let baseUrl = "jacekkocek.coal.games";
+
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
 client.login(process.env.DISCORD_API_KEY);
@@ -311,6 +313,18 @@ client.on('ready', () => {
   Stocks.init();
   Database.init();
   Matoshi.init();
+
+  httpServer.get("/radio/play", (req, res) => {
+    console.log(req.query);
+    if (req.query.guild) {
+      let guild = client.guilds.cache.get(req.query.guild);
+      let voiceChannel = guild.channels.cache.get(req.query.channel);
+      let radioId = req.query.station;
+      playStation(voiceChannel, radioId);
+    }
+    //let data = JSON.parse(req.body);
+    res.send("OK");
+  });
 
   httpServer.listen(port, () => {
     console.log("HTTP Listening on port " + port);
@@ -1909,7 +1923,11 @@ function playStation(voice, id) {
     embeds: [{
       title: "♫ " + station.name,
       color: station.color,
-      footer: { text: "Now playing" }
+      footer: { text: "Now playing" },
+      author: {
+        name: `Next station`,
+        url: baseUrl+"/radio/play?station"+(id+1)
+      }
     }]
   });
 

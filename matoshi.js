@@ -17,12 +17,7 @@ export function init() {
                 res.send("ok");
             });
     });
-    Main.httpServer.get("/", (req, res) => {
-        console.log("GOT REQUEST");
-        console.log(req);
-        //let data = JSON.parse(req.body);
-        res.send("OK");
-    });
+    
 }
 
 function load() {
