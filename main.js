@@ -319,8 +319,7 @@ client.on('ready', () => {
     if (req.query.guild) {
       let guild = client.guilds.cache.get(req.query.guild);
       let voiceChannel = guild.channels.cache.get(req.query.channel);
-      let radioId = req.query.station;
-      console.log("Playing station");
+      let radioId = parseInt(req.query.station);
       playStation(voiceChannel, radioId);
     }
     //let data = JSON.parse(req.body);
@@ -1919,7 +1918,6 @@ function playStation(voice, id) {
   else {
     station = radioStations[id];
   }
-  console.log(voice,station);
   voiceChannelPlay(voice, station.url, 0.6);
   return ({
     embeds: [{
