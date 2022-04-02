@@ -327,7 +327,7 @@ client.on('ready', () => {
       //let data = JSON.parse(req.body);
       res.send("OK");
     } catch (e) {
-      throw new error("Something went wrong");
+      throw new Error("Something went wrong");
     }
   });
 
