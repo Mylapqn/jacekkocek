@@ -1102,48 +1102,9 @@ client.on('messageCreate', message => {
         case "kinoReset": {
           message.channel.send("No longer supported! Use the slash command instead.");
           break;
-          message.delete();
-          if (argument) {
-            let film = argument.toLowerCase();
-            if (kinoData.has(film)) {
-              kinoData.delete(film);
-              message.channel.send("The data for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
-            }
-            if (kinoPlaylist.has(film)) {
-              kinoPlaylist.delete(film);
-              savePlaylist();
-              message.channel.send("The suggestion for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
-            }
-            else {
-              message.channel.send("Cannot find any vote or suggestion for ***" + Utilities.toTitleCase(film) + "*** :disappointed:");
-            }
-          } else {
-            message.channel.send("You need to specify a film! :angry:");
-          }
-          break;
         }
         case "kinoRemind": {
           message.channel.send("No longer supported! Use the slash command instead.");
-          break;
-          message.delete();
-          if (argument) {
-            let film = argument.toLowerCase();
-            if (kinoData.has(film)) {
-              let kinoEntry = kinoData.get(film);
-              let newMessage = "";
-
-              kinoEntry.users.forEach(u => {
-                if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
-                newMessage = newMessage + "\n";
-              });
-              message.channel.send(newMessage + "Bude ***" + kinoEntry.filmName + "***?\n" + kinoEntry.message.url);
-            }
-            else {
-              message.channel.send("Cannot find any vote for ***" + Utilities.toTitleCase(film) + "*** :disappointed:");
-            }
-          } else {
-            message.channel.send("You need to specify a film! :angry:");
-          }
           break;
         }
         case "suggestions":
@@ -1151,56 +1112,10 @@ client.on('messageCreate', message => {
         case "kinoPlaylist": {
           message.channel.send("No longer supported! Use the slash command instead.");
           break;
-          message.delete();
-          if (kinoPlaylist.size > 0) {
-            //let newMessage = "**Film suggestions:**\n✅ - Watched, <:white_cross:767907092907687956> - Not watched\n\n";
-            let newMessage = "**__Film suggestions:__**\n";
-            /*kinoPlaylist.forEach(f => {
-              if (f.watched) newMessage += "✅ "
-              else newMessage += "<:white_cross:767907092907687956> ";
-              newMessage += "*"+f.name + "* - by **"+f.suggestedBy+"**\n";
-            });*/
-            kinoPlaylist.forEach(f => {
-              newMessage += "• ";
-              if (f.watched) newMessage += "~~*" + f.name + "*~~";
-              else newMessage += "***" + f.name + "***";
-              newMessage += "\n";
-
-            });
-            message.channel.send(newMessage);
-          }
-          else {
-            message.channel.send("The playlist is empty!");
-          }
-          break;
         }
         case "suggest":
         case "kinoSuggest": {
           message.channel.send("No longer supported! Use the slash command instead.");
-          break;
-          message.delete();
-          if (argument) {
-            let filmName = argument.toLowerCase();
-            if (kinoPlaylist.has(filmName)) {
-              message.channel.send("***" + Utilities.toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.");
-            }
-            else if (kinoData.has(filmName)) {
-              message.channel.send("There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url);
-            }
-            else {
-              let newSug = {
-                name: Utilities.toTitleCase(filmName),
-                suggestedBy: message.author.username,
-                watched: false
-              }
-              kinoPlaylist.set(filmName, newSug);
-              savePlaylist();
-              message.channel.send("**" + message.author.username + "** added ***" + newSug.name + "*** to film suggestions.");
-            }
-          }
-          else {
-            message.channel.send("Suggest WHAT???");
-          }
           break;
         }
 
@@ -1315,6 +1230,7 @@ client.on('messageCreate', message => {
 
         case "stop": {
           let connection = DiscordVoice.getVoiceConnection(message.guildId);
+          audioPlayer.stop(true);
           if (connection) {
             connection.disconnect();
             message.delete();
@@ -1793,6 +1709,7 @@ export function voiceChannelPlay(channel, audio, volume) {
   let v = volume ?? 1;
   v = Math.min(Math.abs(v), 5);
   res.volume.volume = v;
+  audioPlayer.stop(true);
   audioPlayer.play(res);
 }
 
