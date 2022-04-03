@@ -1233,7 +1233,7 @@ client.on('messageCreate', message => {
         case "stop": {
           let connection = DiscordVoice.getVoiceConnection(message.guildId);
           audioPlayer.stop(true);
-          voiceListeners.forEach(l=>{
+          voiceListeners.forEach(l => {
             l.destroy();
           })
           if (connection) {
@@ -1248,6 +1248,10 @@ client.on('messageCreate', message => {
         case "listen": {
           if (message.member.voice.channel) {
             let channel = message.member.voice.channel;
+            let target = message.member.user;
+            if (message.mentions.users.size > 0) {
+              target = message.mentions.users.first();
+            }
             let connection = DiscordVoice.joinVoiceChannel({
               channelId: channel.id,
               guildId: channel.guild.id,
@@ -1257,7 +1261,7 @@ client.on('messageCreate', message => {
             //let receiver = new DiscordVoice.VoiceReceiver(connection);
             //connection.subscribe(audioPlayer);
             let receiver = connection.receiver;
-            let audioStream = receiver.subscribe(message.member.user.id);
+            let audioStream = receiver.subscribe(target.id);
             voiceListeners.push(audioStream.on("data", (data) => {
               connection.playOpusPacket(data);
             }));
