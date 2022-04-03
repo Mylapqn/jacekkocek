@@ -46,6 +46,8 @@ const prefix = "$";
 var startDate;
 var defaultTimeZone = "Europe/Prague";
 
+let voiceListeners = [];
+
 export const port = process.env.PORT;
 export const httpServer = express();
 httpServer.use(express.json());
@@ -1231,6 +1233,9 @@ client.on('messageCreate', message => {
         case "stop": {
           let connection = DiscordVoice.getVoiceConnection(message.guildId);
           audioPlayer.stop(true);
+          voiceListeners.forEach(l=>{
+            l.destroy();
+          })
           if (connection) {
             connection.disconnect();
             message.delete();
@@ -1253,9 +1258,9 @@ client.on('messageCreate', message => {
             //connection.subscribe(audioPlayer);
             let receiver = connection.receiver;
             let audioStream = receiver.subscribe(message.member.user.id);
-            audioStream.on("data", (data) => {
+            voiceListeners.push(audioStream.on("data", (data) => {
               connection.playOpusPacket(data);
-            });
+            }));
             //receiver.onWsPacket((p)=>{console.log("data!!");connection.playOpusPacket(p)});
           }
           break;
