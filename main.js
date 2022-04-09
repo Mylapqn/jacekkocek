@@ -694,8 +694,6 @@ client.on('interactionCreate', interaction => {
 });
 
 
-
-
 client.on('messageCreate', message => {
   if (message.author.id != client.user.id) {
 
@@ -731,6 +729,7 @@ client.on('messageCreate', message => {
     }
     else if (message.type == "REPLY") {
       let lowerCase = message.content.toLowerCase();
+      console.log(lowerCase);
       if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
         message.channel.messages.fetch(message.reference.messageId).then(msg => {
           let url = null;
