@@ -697,8 +697,7 @@ client.on('interactionCreate', interaction => {
 client.on('messageCreate', message => {
   if (message.author.id != client.user.id) {
 
-    if (message.mentions.has(client.user)) {
-      if (message.type != "REPLY")
+    if (message.mentions.has(client.user) && message.type != "REPLY") {
         message.channel.send(message.author.toString());
     }
     else if (message.content === ':gif2:') {
@@ -729,7 +728,7 @@ client.on('messageCreate', message => {
     }
     else if (message.type == "REPLY") {
       let lowerCase = message.content.toLowerCase();
-      console.log(lowerCase);
+      //console.log(lowerCase);
       if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
         message.channel.messages.fetch(message.reference.messageId).then(msg => {
           let url = null;
