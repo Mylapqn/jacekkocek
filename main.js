@@ -627,7 +627,12 @@ client.on('interactionCreate', interaction => {
           case "info": {
             if (Stocks.stockData.has(stockId)) {
               let buf = Stocks.generateGraph(stockId);
-              interaction.reply({ content: displayString + " prices for <t:" + nowSeconds() + "> - Current " + Stocks.currentPrice(stockId), files: [buf] });
+              if (buf) {
+                interaction.reply({ content: displayString + " prices for <t:" + nowSeconds() + "> - Current " + Stocks.currentPrice(stockId), files: [buf] });
+              }
+              else {
+                interaction.reply("Failed to create graph!");
+              }
             }
             else {
               interaction.reply("Invalid stock!");
@@ -698,7 +703,7 @@ client.on('messageCreate', message => {
   if (message.author.id != client.user.id) {
 
     if (message.mentions.has(client.user) && message.type != "REPLY") {
-        message.channel.send(message.author.toString());
+      message.channel.send(message.author.toString());
     }
     else if (message.content === ':gif2:') {
 
