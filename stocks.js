@@ -157,7 +157,7 @@ function getStockData() {
         const stock = stockPresets[i];
         //console.log(stock.id);
         //console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
-        axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
+        axios.get(`https://finnhub.io/api/v1/${stock.type}/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
             if (res.data.c && Utilities.isValid(res.data.c[0])) {
                 //console.log(stock.id + " First: " + res.data.c[0]);
             }
