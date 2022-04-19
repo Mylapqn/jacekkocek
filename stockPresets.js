@@ -2,7 +2,7 @@ export const stockPresets = [
     {
         id: "BTC",
         type: "crypto",
-        symbol: "BTC-USD",
+        symbol: "BIANCE:BTCUSDT",
         name: "Bitcoin"
     },
     {
