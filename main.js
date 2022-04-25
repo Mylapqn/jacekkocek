@@ -14,6 +14,7 @@ import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
 import { stockPresets } from "./stockPresets.js";
 import { error } from "console";
+import { calc, isCalc } from "./calc.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -698,7 +699,6 @@ client.on('interactionCreate', interaction => {
   }
 });
 
-
 client.on('messageCreate', message => {
   if (message.author.id != client.user.id) {
 
@@ -1335,6 +1335,10 @@ client.on('messageCreate', message => {
         message.channel.send({ files: [buf] });
       }
 
+    }
+    else if(isCalc(message.content)){
+      let result = calc(message);
+      if(result) message.channel.send(result);
     }
   }
 });
