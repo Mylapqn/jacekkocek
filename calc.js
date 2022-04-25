@@ -17,7 +17,7 @@ export function calc(message) {
     try {
         let value = new Function("return " + ctxText + s)();
         context.set(message.channelId, value);
-        return value;
+        return value.toString();
     } catch (error) {
         return false
     }
