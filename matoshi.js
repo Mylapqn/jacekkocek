@@ -42,7 +42,7 @@ export function balance(user) {
         matoshiData.set(user, 0);
     }
     let b = matoshiData.get(user);
-    if (b == null || b == undefined || b == NaN) {
+    if (b == null || b == undefined || isNaN(b)) {
         matoshiData.set(user, 0);
         console.log("User ID " + user + " matoshi balance is NaN, resetting to 0");
     }
