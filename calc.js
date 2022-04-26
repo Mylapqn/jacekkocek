@@ -22,3 +22,7 @@ export function calc(message) {
         return false
     }
 }
+
+export function setCalcContext(value, channelId){
+    context.set(value, channelId);
+}
