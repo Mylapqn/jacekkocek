@@ -14,7 +14,7 @@ import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
 import { stockPresets } from "./stockPresets.js";
 import { error } from "console";
-import { calc, isCalc, setContext } from "./calc.js";
+import { calc, isCalc, setCalcContext } from "./calc.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -586,7 +586,7 @@ client.on('interactionCreate', interaction => {
             if (!user) user = interaction.user;
             let balance = Matoshi.balance(user.id);
             interaction.reply({ content: "Matoshi balance for **" + user.username + "**: " + balance + " ₥", ephemeral: false });
-            setContext(balance, interaction.channelId);
+            setCalcContext(balance, interaction.channelId);
             break;
           }
           case "list": {
@@ -652,7 +652,7 @@ client.on('interactionCreate', interaction => {
               let price = Stocks.currentPrice(stockId);
               let stockBalanceMatoshi = Math.floor(balance * price);
               interaction.reply(displayString + " balance for **" + user.username + "**: " + balance + " (worth " + stockBalanceMatoshi + " ₥)");
-              setContext(stockBalanceMatoshi, interaction.channelId);
+              setCalcContext(stockBalanceMatoshi, interaction.channelId);
             });
             break;
           }
