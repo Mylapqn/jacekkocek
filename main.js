@@ -1321,6 +1321,17 @@ client.on('messageCreate', message => {
           });
           break;
         }
+        case "restart": {
+          if (message.author.id == "532918953014722560") {
+            message.delete().then(() => {
+              process.exit()
+          });
+          }
+          else {
+            message.channel.send("insufficient permissions!");
+          }
+          break;
+        }
         default:
           message.channel.send("Unknown command :disappointed:");
 
