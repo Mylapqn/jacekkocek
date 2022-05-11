@@ -117,6 +117,7 @@ function playYoutube(videoUrl, channel) {
             console.log(error)
         }
         //console.log(info);
+        stop();
         Main.voiceChannelPlay(null, videoStream, 0.8)
         //voicePlay(voice, videoStream, { volume: 0.8 });
         let nextVideo;
