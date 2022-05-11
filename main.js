@@ -1722,15 +1722,15 @@ function googleSearch(cx, searchTerm, message) {
 //#region SONGS AND YOUTUBE
 
 export function voiceChannelPlay(channel, audio, volume) {
+  if (channel != null) {
+    //audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
+    joinVoiceChannel(channel);
+  }
   let res = DiscordVoice.createAudioResource(audio, { inlineVolume: true });
   let v = volume ?? 1;
   v = Math.min(Math.abs(v), 5);
   res.volume.volume = v;
   audioPlayer.stop();
-  if (channel != null) {
-    audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
-    joinVoiceChannel(channel);
-  }
   audioPlayer.play(res);
 }
 
