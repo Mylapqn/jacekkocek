@@ -40,7 +40,7 @@ const commandsToDeleteGuild = [];
  */
 export let afrGuild;
 
-let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
+let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "stop" } });
 var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
