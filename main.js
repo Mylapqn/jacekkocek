@@ -1728,7 +1728,7 @@ export function voiceChannelPlay(channel, audio, volume) {
   let v = volume ?? 1;
   v = Math.min(Math.abs(v), 5);
   res.volume.volume = v;
-  console.log("WILL STOP " + audioPlayer.stop());
+  audioPlayer.stop();
   audioPlayer.play(res);
 }
 
