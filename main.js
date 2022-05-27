@@ -473,7 +473,7 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "watch": {
-            interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
+            //interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
             let film = interaction.options.getString("film").toLowerCase();
 
             if (kinoData.has(film)) {
