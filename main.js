@@ -463,9 +463,9 @@ client.on('interactionCreate', interaction => {
               interaction.reply("The data for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
             }
             if (kinoPlaylist.has(film)) {
-              //kinoPlaylist.delete(film);
-              //savePlaylist();
-              //interaction.reply("The suggestion for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
+              kinoPlaylist.delete(film);
+              savePlaylist();
+              interaction.reply("The suggestion for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
             }
             else {
               interaction.reply({ content: "Cannot find any vote or suggestion for ***" + Utilities.toTitleCase(film) + "*** :disappointed:", ephemeral: true });
