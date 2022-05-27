@@ -541,7 +541,7 @@ client.on('interactionCreate', interaction => {
 
             }
 
-
+            break;
           }
           case "info": {
             interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
