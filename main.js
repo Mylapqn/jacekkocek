@@ -508,7 +508,7 @@ client.on('interactionCreate', interaction => {
                 });
                 //kinoMessageUsers.push({users:m,film:argument});
 
-                interaction.reply("Bude ***" + obj.filmName + "***?\n" + newMessage).then((m) => {
+                interaction.reply({content:"Bude ***" + obj.filmName + "***?\n" + newMessage,fetchReply:true}).then((m) => {
                   console.log("Kino message sent.");
                   m.react("767907091469828106");
                   m.react("767907090709872661");
