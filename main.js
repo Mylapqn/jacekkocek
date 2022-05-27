@@ -474,7 +474,74 @@ client.on('interactionCreate', interaction => {
           }
           case "watch": {
             interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
-            break;
+            let film = interaction.options.getString("film").toLowerCase();
+
+            if (kinoData.has(film)) {
+              interaction.reply("There is already a vote on ***" + Utilities.toTitleCase(film) + "***! Use `$kinoReset " + film + "` to reset the vote.");
+            }
+            else {
+              startGoogleSearch(argument, interaction, 2);
+              let newMessage = "";
+              let m = {};
+
+              let obj = {
+                filmName: Utilities.toTitleCase(film),
+                message: message,
+                users: new Map()
+              }
+
+              interaction.guild.members.fetch().then(function (membersList) {
+                membersList.each(u => {
+                  if (u.user != client.user) {
+                    console.log("User: " + u.user.username);
+                    //m[u.user.username] = {response:0,mention:u.toString()};
+                    obj.users.set(u.user.username, { response: 0, reactionCount: 0, mention: u.toString() });
+                  }
+                });
+                //console.log(m);
+                obj.users.forEach(u => {
+                  if (u.response == 0) newMessage = newMessage + "❓ ";
+                  if (u.response == 1) newMessage = newMessage + "✅ ";
+                  if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
+                  newMessage = newMessage + u.mention;
+                  newMessage = newMessage + "\n";
+                });
+                //kinoMessageUsers.push({users:m,film:argument});
+
+                interaction.reply("Bude ***" + obj.filmName + "***?\n" + newMessage).then((m) => {
+                  console.log("Kino message sent.");
+                  m.react("767907091469828106");
+                  m.react("767907090709872661");
+                  m.react("767907091125895178");
+                  m.react("767907091880476732");
+                  m.react("767907093205614622");
+                  m.react("767907093222916126");
+                  m.react("767907093352153118");
+                  m.react("767907092907687956");
+                  //kinoMessages.push(m);
+                  obj.message = m;
+                  console.log("Message reactions added.");
+                });
+                kinoData.set(film, obj);
+                if (kinoPlaylist.has(film)) {
+                  console.log("Found film in suggestions.");
+                  kinoPlaylist.get(film).watched = true;
+                  savePlaylist();
+                }
+                else {
+                  console.log("Creating film in suggestions.");
+                  kinoPlaylist.set(film, {
+                    name: Utilities.toTitleCase(film),
+                    suggestedBy: message.author.username,
+                    watched: true
+                  });
+                }
+                console.log("Kino done.");
+              }).catch(console.log);
+
+            }
+
+
           }
           case "info": {
             interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
@@ -1325,7 +1392,7 @@ client.on('messageCreate', message => {
           if (message.author.id == "532918953014722560") {
             message.delete().then(() => {
               process.exit()
-          });
+            });
           }
           else {
             message.channel.send("insufficient permissions!");
