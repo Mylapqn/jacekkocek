@@ -486,7 +486,7 @@ client.on('interactionCreate', interaction => {
 
               let obj = {
                 filmName: Utilities.toTitleCase(film),
-                message: message,
+                message: null,
                 users: new Map()
               }
 
