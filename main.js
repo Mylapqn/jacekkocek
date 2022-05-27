@@ -480,7 +480,7 @@ client.on('interactionCreate', interaction => {
               interaction.reply("There is already a vote on ***" + Utilities.toTitleCase(film) + "***! Use `$kinoReset " + film + "` to reset the vote.");
             }
             else {
-              startGoogleSearch(argument, interaction, 2);
+              startGoogleSearch(film, interaction, 2);
               let newMessage = "";
               let m = {};
 
