@@ -19,7 +19,7 @@ var youtubeRecentMax = 6;
 
 var youtubePlaying = [];
 
-let barUpdateInterval = 1000;
+let barUpdateInterval = 2500;
 
 export function play(interaction) {
     let vid = interaction.options.getString("video");
