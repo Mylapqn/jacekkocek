@@ -19,6 +19,8 @@ var youtubeRecentMax = 6;
 
 var youtubePlaying = [];
 
+let barUpdateInterval = 1000;
+
 export function play(interaction) {
     let vid = interaction.options.getString("video");
     if (interaction.member.voice.channel) {
@@ -113,7 +115,7 @@ function playYoutube(videoUrl, channel) {
         }
         newPlaying.barInterval = setInterval(() => {
             updateMessage(newPlaying);
-        }, 5000);
+        }, barUpdateInterval);
         try {
             channel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)] }).then(msg => {
                 newPlaying.statusMsg = msg;
@@ -245,7 +247,7 @@ function search(argument) {
 }
 
 function updateMessage(data) {
-    data.elapsed = Math.min(data.elapsed + 5000, data.length);
+    data.elapsed = Math.min(data.elapsed + barUpdateInterval, data.length);
     if (data.statusMsg) {
         data.statusMsg.edit({ embeds: [data.embed, generateProgressBar(data.elapsed, data.length, 9)] })
     }
