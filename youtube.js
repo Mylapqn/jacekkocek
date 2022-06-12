@@ -98,7 +98,7 @@ function playYoutube(videoUrl, channel) {
             .setURL(videoUrl);
 
         if (youtubePlaylist.length > 0) {
-            embed.setFooter({text:youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName});
+            embed.setFooter({ text: youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName });
         }
         let newPlaying = {
             //statusMsg,
@@ -277,7 +277,7 @@ function generateProgressBar(elapsed, length, count) {
         .setTitle(playingBar);
 }
 
-export function skip(guild, amount) {
+export function skip(guild, amount, textChannel) {
     if (nextYoutube && (youtubeAutoplay || youtubePlaylist.length > 0)) {
         let voice = guild.me.voice.channel;
         if (voice) {
@@ -291,7 +291,7 @@ export function skip(guild, amount) {
                         nextYoutubeData.url = "https://www.youtube.com/watch?v=" + youtubePlaylist[youtubePlaylistPosition];
                     }
                     else {
-                        message.channel.send("Cannot skip outside of playlist!");
+                        textChannel.send("Cannot skip outside of playlist!");
                         youtubePlaylistPosition -= (num - 1);
                     }
                 }

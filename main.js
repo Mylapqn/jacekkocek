@@ -508,7 +508,7 @@ client.on('interactionCreate', interaction => {
                 });
                 //kinoMessageUsers.push({users:m,film:argument});
 
-                interaction.reply({content:"Bude ***" + obj.filmName + "***?\n" + newMessage,fetchReply:true}).then((m) => {
+                interaction.reply({ content: "Bude ***" + obj.filmName + "***?\n" + newMessage, fetchReply: true }).then((m) => {
                   console.log("Kino message sent.");
                   m.react("767907091469828106");
                   m.react("767907090709872661");
@@ -1285,10 +1285,10 @@ client.on('messageCreate', message => {
           message.delete();
           let num = parseInt(argument);
           if (!isNaN(num)) {
-            Youtube.skip(message.guild, num);
+            Youtube.skip(message.guild, num, message.channel);
           }
           else {
-            Youtube.skip(message.guild);
+            Youtube.skip(message.guild, 1, message.channel);
           }
           break;
         }
