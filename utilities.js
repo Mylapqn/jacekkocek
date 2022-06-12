@@ -29,7 +29,7 @@ export function randomInt(min, max) {
 export function timeString(seconds) {
     let output;
     if (seconds >= 3600) {
-        output = Math.floor(seconds / 3600) + ":" + addZero(Math.floor((seconds % 3600) / 60)) + ":" + addZero(seconds % 60);
+        output = Math.floor(seconds / 3600) + ":" + addZero(Math.floor((seconds % 3600) / 60)) + ":" + addZero(Math.floor(seconds % 60));
     }
     else {
         output = Math.floor(seconds / 60) + ":" + addZero(seconds % 60);
