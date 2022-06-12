@@ -293,6 +293,7 @@ export function skip(guild, amount, textChannel) {
                     else {
                         textChannel.send("Cannot skip outside of playlist!");
                         youtubePlaylistPosition -= (num - 1);
+                        return;
                     }
                 }
             }
