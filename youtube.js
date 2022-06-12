@@ -59,15 +59,20 @@ function clearNextTimeout() {
     nextYoutube = null;
 }
 youtubePlaylistName = "Unknown Playlist";
+
 function playPlaylist(playlistUrl, channel) {
     getPlaylistName(playlistUrl).then(title => {
         youtubePlaylistName = title;
     })
+    let n = playlistUrl.indexOf("index=");
+    let listPos = 0;
+    if(n >= 0){
+        listPos = parseInt(playlistUrl.slice(n + 6));
+    }
     getPlaylist(playlistUrl).then((items) => {
         youtubePlaylist = items.map(x => x.contentDetails.videoId);
-        youtubePlaylistPosition = 0;
         console.log(youtubePlaylist);
-        playYoutube("https://www.youtube.com/watch?v=" + youtubePlaylist[0], channel);
+        playYoutube("https://www.youtube.com/watch?v=" + youtubePlaylist[listPos], channel);
     })
 }
 
