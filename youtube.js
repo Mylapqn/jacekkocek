@@ -123,8 +123,7 @@ function playYoutube(videoUrl, channel) {
             console.log(error)
         }
         //console.log(info);
-        //stop();
-        Main.voiceChannelPlay(null, videoStream, 0.8)
+
         //voicePlay(voice, videoStream, { volume: 0.8 });
         let nextVideo;
         if (youtubePlaylist.length > 0) {
@@ -146,11 +145,12 @@ function playYoutube(videoUrl, channel) {
                 }
             }
         }
+        clearNextTimeout();
+        Main.voiceChannelPlay(null, videoStream, 0.8)
         if (nextVideo) {
             let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
             videoStream.on("finish", () => {
             });
-            clearNextTimeout();
             nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 3) * 1000);
             nextYoutubeData = { url: nextUrl, channel: channel };
             newPlaying.nextUrl = nextYoutube;
