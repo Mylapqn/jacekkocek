@@ -66,8 +66,8 @@ function playPlaylist(playlistUrl, channel) {
     })
     let n = playlistUrl.indexOf("index=");
     let listPos = 0;
-    if(n >= 0){
-        listPos = parseInt(playlistUrl.slice(n + 6))-1;
+    if (n >= 0) {
+        listPos = parseInt(playlistUrl.slice(n + 6)) - 1;
     }
     getPlaylist(playlistUrl).then((items) => {
         youtubePlaylist = items.map(x => x.contentDetails.videoId);
@@ -98,7 +98,7 @@ function playYoutube(videoUrl, channel) {
             .setURL(videoUrl);
 
         if (youtubePlaylist.length > 0) {
-            embed.setFooter(youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName);
+            embed.setFooter({text:youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName});
         }
         let newPlaying = {
             //statusMsg,
@@ -278,11 +278,12 @@ function generateProgressBar(elapsed, length, count) {
 }
 
 export function skip(guild, amount) {
-    if (nextYoutube && youtubeAutoplay) {
+    if (nextYoutube && (youtubeAutoplay || youtubePlaylist.length > 0)) {
         let voice = guild.me.voice.channel;
         if (voice) {
             if (amount && youtubePlaylist.length > 0) {
-                let num = parseInt(amount);
+                //let num = parseInt(amount);
+                let num = amount;
                 if (!isNaN(num)) {
                     //message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
                     youtubePlaylistPosition += (num - 1);
