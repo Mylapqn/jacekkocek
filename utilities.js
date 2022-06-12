@@ -32,7 +32,7 @@ export function timeString(seconds) {
         output = Math.floor(seconds / 3600) + ":" + addZero(Math.floor((seconds % 3600) / 60)) + ":" + addZero(Math.floor(seconds % 60));
     }
     else {
-        output = Math.floor(seconds / 60) + ":" + addZero(seconds % 60);
+        output = Math.floor(seconds / 60) + ":" + Math.floor(seconds % 60);
     }
     return output;
 }
