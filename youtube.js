@@ -67,10 +67,11 @@ function playPlaylist(playlistUrl, channel) {
     let n = playlistUrl.indexOf("index=");
     let listPos = 0;
     if(n >= 0){
-        listPos = parseInt(playlistUrl.slice(n + 6));
+        listPos = parseInt(playlistUrl.slice(n + 6))-1;
     }
     getPlaylist(playlistUrl).then((items) => {
         youtubePlaylist = items.map(x => x.contentDetails.videoId);
+        youtubePlaylistPosition = listPos;
         console.log(youtubePlaylist);
         playYoutube("https://www.youtube.com/watch?v=" + youtubePlaylist[listPos], channel);
     })
