@@ -425,7 +425,7 @@ client.on('interactionCreate', interaction => {
                 if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
                 newMessage = newMessage + "\n";
               });
-              let time = 1000;
+              let time = 3;
               if (interaction.options.getString("when")) {
                 time = parseTime(interaction.options.getString("when"));
               }
