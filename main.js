@@ -15,6 +15,7 @@ import * as Utilities from "./utilities.js";
 import { stockPresets } from "./stockPresets.js";
 import { calc, isCalc, setCalcContext } from "./calc.js";
 import * as Polls from "./polls.js";
+import { reactionFilters } from "./reactions.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -281,7 +282,7 @@ export var letterEmoji = {
 
 console.log("\n-----------RESTART-----------")
 
-var kinoData = new Map();
+export var kinoData = new Map();
 var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 var radioTimer;
@@ -356,7 +357,6 @@ client.on('ready', () => {
 
 
   setupCommands();
-
   setupReminders();
   setInterval(() => {
     setupReminders();
@@ -803,6 +803,14 @@ client.on('messageCreate', message => {
     else if (message.type == "REPLY") {
       let lowerCase = message.content.toLowerCase();
       //console.log(lowerCase);
+      let poll = reactionFilters.poll(message);
+      if (poll != undefined) {
+        try {
+          poll.addOption(message.content);
+        } catch (error) {
+          message.channel.send(error.name + ": " + error.message);
+        }
+      }
       if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
         message.channel.messages.fetch(message.reference.messageId).then(msg => {
           let url = null;
@@ -1045,13 +1053,6 @@ client.on('messageCreate', message => {
           console.log("SEARCH!");
           startGoogleSearch(argument, message, 2);
           break;
-
-        case "zobrazit":
-          message.channel.send("No longer supported!");
-          break;
-          startGoogleSearch(argument, message, 0);
-
-          break;
         case "w2g":
           message.channel.send("No longer supported!");
           break;
@@ -1096,29 +1097,6 @@ client.on('messageCreate', message => {
             message.channel.send("cringe");
           }
           break;
-        case "kino": {
-          message.channel.send("No longer supported! Use the slash command instead.");
-          break;
-        }
-        case "kinoReset": {
-          message.channel.send("No longer supported! Use the slash command instead.");
-          break;
-        }
-        case "kinoRemind": {
-          message.channel.send("No longer supported! Use the slash command instead.");
-          break;
-        }
-        case "suggestions":
-        case "playlist":
-        case "kinoPlaylist": {
-          message.channel.send("No longer supported! Use the slash command instead.");
-          break;
-        }
-        case "suggest":
-        case "kinoSuggest": {
-          message.channel.send("No longer supported! Use the slash command instead.");
-          break;
-        }
 
         case "noise": {
           if (message.member.voice.channel) {
@@ -1142,55 +1120,6 @@ client.on('messageCreate', message => {
             let v = 1.2;
             if (argument && !isNaN(argument)) v = argument;
             voiceChannelPlay(message.member.voice.channel, "tududum.mp3", v);
-          }
-          break;
-        }
-        case "radio": {
-          message.delete();
-          if (argument == "stations" || argument == "list" || argument == "" || argument == null) {
-            let newMessage = "";
-            for (let i = 0; i < radioStations.length; i++) {
-              const station = radioStations[i];
-              newMessage += "`" + i + "` - **" + station.name + "**\n";
-            }
-            message.channel.send({
-              embeds: [{
-                title: "JacekKocek Internet Radio",
-                fields: [
-                  {
-                    name: "List of available stations", value: newMessage
-                  },
-                  {
-                    name: "How to use", value: "Type `$radio` followed by the station number or name.\nYou can also use a custom radio URL."
-                  },
-                ],
-                color: [24, 195, 177]
-              }]
-            });
-          }
-          else if (message.member.voice.channel) {
-            let voice = message.member.voice.channel;
-            //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-            //voicePlay(voice,"http://us4.internet-radio.com:8197/stream", { volume: 0.3 });
-            let num = parseInt(argument);
-            //console.log(num);
-            if (!isNaN(num)) {
-              if (num < radioStations.length && num >= 0)
-                playStation(voice, num, message.channel);
-              else message.channel.send('Station number "' + num + '" not found. :disappointed:');
-            }
-            else if (argument.startsWith("http")) {
-              playStation(voice, argument, message.channel);
-            }
-            else {
-              let st = radioStations.findIndex(element => element.name.toLowerCase().includes(argument.toLowerCase()));
-              if (st != -1) playStation(voice, st, message.channel);
-              else message.channel.send('Station "' + argument + '" not found. :disappointed:');
-              //console.log(radioStations[0].name);
-              //console.log(radioStations[0].name.includes("Evropa"));
-            }
-
-
           }
           break;
         }
@@ -1273,13 +1202,6 @@ client.on('messageCreate', message => {
           message.channel.send(new Date().toString());
           break;
         }
-
-        case "youtube":
-        case "yt": {
-          message.channel.send("No longer supported! Use the slash command instead.");
-          break;
-        }
-
         case "skip": {
           message.delete();
           let num = parseInt(argument);
@@ -1299,19 +1221,6 @@ client.on('messageCreate', message => {
             msg += "• **" + rem.text + "** at <t:" + rem.timestamp + ">\n";
           });
           message.channel.send({ content: msg, allowedMentions: { parse: [] } });
-          break;
-        }
-        case "getuser": {
-          Database.getUser(message.author.id).then(f => {
-            console.log(f);
-          });
-          break;
-        }
-        case "setuser": {
-          Database.getUser(message.author.id).then(f => {
-            f.wallets.set("CORN", 5.6);
-            setUser(f);
-          });
           break;
         }
         case "restart": {
@@ -1467,129 +1376,8 @@ function executeReminder(rem) {
 
 //#region KINO
 
-export let reactionFilters = {
-  kino: msg => { return Array.from(kinoData.values).find(element => { return element.message.id == msg.id }) },
-  poll: msg => { return Polls.Poll.list.find(element => { return element.message === msg }) },
-  /**
-   * @param {Discord.Message} msg
-   */
-  koce: msg => { return msg.content.toLowerCase().includes("koče") },
-}
 
-export let reactionAddHandlers = {
-  kino: (data) => {
-    let kinoData = data.handler;
-    let emojiName = data.emoji;
-    let user = data.user;
-    let kinoUser = kinoData.users.get(user.username);
-    if (user != client.user) {
-
-      kinoUser.reactionCount++;
-      console.log("Reaction " + emojiName);
-
-      if (weekDayNames.indexOf(emojiName) != -1) {
-        //console.log("Current count: " + kinoUser.reactionCount);
-        kinoUser.response = 1;
-      }
-      if (emojiName == "white_cross") {
-        kinoUser.response = 2;
-      }
-
-      updateKinoMessage(kinoData);
-    }
-
-  },
-  poll: (data) => {
-    /**
-     * @type {Polls.Poll}
-     */
-    let poll = data.handler;
-    console.log("Handled poll, data:", data);
-  },
-  koce: (data) => {
-    data.message.reply("koče");
-  }
-}
-
-export let reactionRemoveHandlers = {
-  kino: (data) => {
-    let kinoData = data.handler;
-    let emojiName = data.emoji;
-    let user = data.user;
-    let kinoUser = kinoData.users.get(user.username);
-    if (user != client.user) {
-      kinoUser.reactionCount -= 1;
-      console.log("Reaction removed " + emojiName);
-      //console.log("Current count: " + kinoUser.reactionCount);
-      if (emojiName == "white_cross") {
-        if (kinoUser.reactionCount >= 1) {
-          kinoUser.response = 1;
-        }
-      }
-      if (kinoUser.reactionCount <= 0) {
-        kinoUser.response = 0;
-        kinoUser.reactionCount = 0;
-      }
-      updateKinoMessage(kinoData);
-    }
-
-  },
-  poll: (data) => {
-    /**
-     * @type {Polls.Poll}
-     */
-    let poll = data.handler;
-    console.log("Handled poll remove, data:", data);
-  },
-  koce: (data) => {
-    data.message.reply("koče removed");
-  }
-}
-
-function handleMessageReaction(messageReaction, user, remove) {
-  let emojiName = messageReaction.emoji.name;
-  let message = messageReaction.message;
-  if (user != client.user) {
-    /**
-       * @type {Function}
-       */
-    let handler;
-    for (const p in reactionFilters) {
-      if (Object.hasOwnProperty.call(reactionFilters, p)) {
-        /**
-         * @type {Function}
-         */
-        const filter = reactionFilters[p]
-        handler = filter(message);
-        console.log(p, handler)
-        if (handler != undefined && handler) {
-          let data = {
-            handler: handler,
-            emoji: emojiName,
-            message: message,
-            user: user
-          }
-          console.log("Handling reaction: " + p + ", remove:", remove);
-          if (remove)
-            reactionRemoveHandlers[p](data);
-          else
-            reactionAddHandlers[p](data);
-          return;
-        }
-      }
-    }
-  }
-}
-
-client.on("messageReactionAdd", (messageReaction, user) => {
-  handleMessageReaction(messageReaction, user, false);
-});
-
-client.on("messageReactionRemove", (messageReaction, user) => {
-  handleMessageReaction(messageReaction, user, true);
-});
-
-function updateKinoMessage(kinoEntry) {
+export function updateKinoMessage(kinoEntry) {
   let newMessage = "";
   kinoEntry.users.forEach(u => {
     if (u.response == 0) newMessage = newMessage + "❓ ";
@@ -1703,54 +1491,6 @@ function startGoogleSearch(argument, message, type) {
     cx = "003836403838224750691:axl53a8emck";
     searchTerm = argument;
     googleSearch(cx, searchTerm, message);
-  }
-  else if (type == 0) {
-    var previousMessage;
-    message.channel.messages.fetch({ limit: 2 }).then(messages => {
-
-      previousMessage = messages.array()[1];
-
-      searchTerm = previousMessage.content;
-      if (argument == null) {
-        cx = "003836403838224750691:wcw78s5sqwm";
-      }
-      else if (argument == "vše") {
-        cx = "003836403838224750691:axl53a8emck";
-        console.log("AKKKKKKKKKK");
-      }
-      else if (argument == "více") {
-        cx = "003836403838224750691:axl53a8emck";
-        index = 1;
-        console.log("AKKKKKKKKKK");
-      }
-      else if (argument.startsWith("ještě")) {
-        tempArg = argument;
-        while (tempArg.startsWith("ještě")) {
-          tempArg = tempArg.slice("ještě ".length);
-          index++;
-        }
-        if (tempArg == "více") {
-          index++;
-        }
-        else {
-          message.channel.send(argument + " is not a valid argument! :angry:", { tts: true });
-          return;
-        }
-      }
-      else {
-        message.channel.send(argument + " is not a valid argument! :angry:", { tts: true });
-        return;
-      }
-      if (index == 0) {
-        googleSearch(cx, searchTerm, message);
-      }
-      else {
-        if (lastSearchResults != null && lastSearchResults[index] != null)
-          message.channel.send(lastSearchResults[index].title + "\n" + lastSearchResults[index].snippet + "\n" + lastSearchResults[index].link, { tts: false });
-        else
-          message.channel.send("No results :disappointed:", { tts: true });
-      }
-    });
   }
 }
 function googleSearch(cx, searchTerm, message) {

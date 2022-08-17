@@ -20,8 +20,13 @@ export class Poll {
     }
 
     addOption(name) {
+        if (this.options.length >= 9) throw new Error("Options limit reached");
         let newOption = new PollOption(this.options.length, this, name);
         this.options.push(newOption);
+        if (this.message != undefined) {
+            this.updateMessage();
+            this.message.react(Main.letterEmoji[this.options.length.toString()]);
+        }
     }
     generateMessage() {
         let newMessage = "Poll: **" + this.name + "**";
