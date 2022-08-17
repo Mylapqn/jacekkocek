@@ -90,7 +90,7 @@ export function handleMessageReaction(reaction, user, remove) {
                 }
                 if (remove) reactionRemoveHandlers[p](data);
                 else reactionAddHandlers[p](data);
-                return;
+                //return;
             }
         }
     }
