@@ -1,4 +1,4 @@
-import { InviteGuild, Message, TextChannel } from "discord.js";
+import { InviteGuild, Message, MessageEmbed, TextChannel } from "discord.js";
 import * as Main from "./main.js";
 import * as Utilities from "./utilities.js"
 
@@ -32,15 +32,16 @@ export class Poll {
         }
     }
     generateMessage() {
-        let newMessage = "__**" + this.name + "**__";
+        let embed = new MessageEmbed().setColor([24, 195, 177]).setTitle(this.name)
+        embed.description = "__**" + this.name + "**__";
         /*for (const option of this.options) {
             newMessage += "\n`" + (option.index + 1) + "`: " + option.name
         }*/
-        if (this.options.length < 9) newMessage += "\n*Reply to add custom options*";
+        if (this.options.length < 9) embed.setFooter({ text: "Reply to this message to add custom options" });
         for (const option of this.options) {
-            newMessage += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name
+            embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name
         }
-        return newMessage;
+        return { embeds: [embed] };
     }
     updateMessage() {
         this.message.edit(this.generateMessage());
