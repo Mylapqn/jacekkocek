@@ -1570,9 +1570,9 @@ function handleMessageReaction(messageReaction, user, remove) {
           }
           console.log("Handling " + p + ", removing:", remove);
           if (remove)
-            reactionAddHandlers[p](data);
-          else
             reactionRemoveHandlers[p](data);
+          else
+            reactionAddHandlers[p](data);
           return;
         }
       }
