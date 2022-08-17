@@ -1568,7 +1568,7 @@ function handleMessageReaction(messageReaction, user, remove) {
             message: message,
             user: user
           }
-          console.log("Handling " + p + ", data:", data);
+          console.log("Handling " + p + ", removing:", remove);
           if (remove)
             reactionAddHandlers[p](data);
           else
