@@ -21,6 +21,7 @@ export class Poll {
 
     addOption(name) {
         if (this.options.length >= 9) throw new Error("Options limit reached");
+        if (this.options.some(option => option.name == name)) throw new Error("Option already exists");
         let newOption = new PollOption(this.options.length, this, name);
         this.options.push(newOption);
         if (this.message != undefined) {
