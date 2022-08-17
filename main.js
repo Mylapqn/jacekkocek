@@ -804,6 +804,7 @@ client.on('messageCreate', message => {
       let lowerCase = message.content.toLowerCase();
       //console.log(lowerCase);
       let poll = reactionFilters.poll(message);
+      console.log(poll);
       if (poll != undefined) {
         try {
           poll.addOption(message.content);
