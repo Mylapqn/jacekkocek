@@ -1469,7 +1469,7 @@ function executeReminder(rem) {
 
 export let reactionFilters = {
   kino: msg => { Array.from(kinoData.values).find(element => { return element.message.id == msg.id }) },
-  poll: msg => { Polls.Poll.list.find(element => { return element.message === msg }) },
+  poll: msg => { Polls.Poll.list.find(element => { console.log(element.message,msg); return element.message == msg }) },
   /**
    * @param {Discord.Message} msg
    */
