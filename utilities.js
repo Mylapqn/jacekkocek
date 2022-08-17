@@ -54,5 +54,5 @@ export async function fetchMessage(guildId,channelId,messageId){
     let message = await channel.messages.fetch(messageId);
 }
 export async function testFetch(){
-    return await Main.client.guilds.fetch("1546846");
+    return await (await Main.client.guilds.fetch("549589656606343178")).channels.fetch("123");
 }
