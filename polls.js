@@ -1,4 +1,4 @@
-import { Message, TextChannel } from "discord.js";
+import { InviteGuild, Message, TextChannel } from "discord.js";
 import * as Main from "./main.js";
 import * as Utilities from "./utilities.js"
 
@@ -36,6 +36,7 @@ export class Poll {
         /*for (const option of this.options) {
             newMessage += "\n`" + (option.index + 1) + "`: " + option.name
         }*/
+        if (this.options.length < 9) newMessage += "\n*Reply to add custom options*";
         for (const option of this.options) {
             newMessage += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name
         }
