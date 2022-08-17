@@ -1561,6 +1561,7 @@ function handleMessageReaction(messageReaction, user, remove) {
          */
         const filter = reactionFilters[p]
         handler = filter(message);
+        console.log(p,handler)
         if (handler != undefined && handler) {
           let data = {
             handler: handler,
