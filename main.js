@@ -1507,7 +1507,7 @@ export let reactionAddHandlers = {
     console.log("Handled poll, data:", data);
   },
   koce: (data) => {
-    data.message.channel.send("koče");
+    data.message.reply("koče");
   }
 }
 
@@ -1542,7 +1542,7 @@ export let reactionRemoveHandlers = {
     console.log("Handled poll remove, data:", data);
   },
   koce: (data) => {
-    data.message.channel.send("koče removed");
+    data.message.reply("koče removed");
   }
 }
 
@@ -1568,7 +1568,7 @@ function handleMessageReaction(messageReaction, user, remove) {
             message: message,
             user: user
           }
-          console.log("Handling " + p + ", removing:", remove);
+          console.log("Handling reaction: " + p + ", remove:", remove);
           if (remove)
             reactionRemoveHandlers[p](data);
           else
