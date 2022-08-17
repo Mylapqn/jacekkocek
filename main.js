@@ -807,6 +807,7 @@ client.on('messageCreate', message => {
         if (poll != undefined) {
           try {
             poll.addOption(message.content);
+            message.delete();
           } catch (error) {
             message.channel.send(error.name + ": " + error.message);
           }
