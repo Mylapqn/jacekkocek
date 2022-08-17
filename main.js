@@ -1238,8 +1238,8 @@ client.on('messageCreate', message => {
         }
         case "poll": {
           let newPoll = new Polls.Poll(argument);
-          newPoll.addOption("Koče");
-          newPoll.addOption("Bloče");
+          //newPoll.addOption("Koče");
+          //newPoll.addOption("Bloče");
           newPoll.sendMessage(message.channel);
           break;
         }
