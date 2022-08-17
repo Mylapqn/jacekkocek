@@ -53,12 +53,12 @@ export async function fetchMessage(guildId,channelId,messageId){
     try {
         guild = await Main.client.guilds.fetch(guildId);
     } catch (error) {
-        throw "Cannot fetch guild"
+        throw new Error("Cannot fetch guild");
     }
     try {
         channel = await guild.channels.fetch(channelId);
     } catch (error) {
-        throw "Cannot fetch channel"
+        throw new Error("Cannot fetch channel");
     }
     try {
         message = await channel.messages.fetch(messageId);
@@ -66,7 +66,4 @@ export async function fetchMessage(guildId,channelId,messageId){
         throw new Error("Cannot fetch message");
     }
     return message;
-}
-export async function testFetch(){
-    return await fetchMessage("549589656606343178","767355244111331338","006148627485446224");
 }

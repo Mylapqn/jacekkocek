@@ -14,6 +14,7 @@ import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
 import { stockPresets } from "./stockPresets.js";
 import { calc, isCalc, setCalcContext } from "./calc.js";
+import * as Polls from "./polls.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -272,7 +273,7 @@ var radioStations = [
 
 ];
 
-var letterEmoji = {
+export var letterEmoji = {
   a: "🇦", b: "🇧", c: "🇨", d: "🇩", e: "🇪", f: "🇫", g: "🇬", h: "🇭", i: "🇮", j: "🇯", k: "🇰", l: "🇱", m: "🇲", n: "🇳", o: "🇴", p: "🇵", q: "🇶", r: "🇷", s: "🇸", t: "🇹", u: "🇺", v: "🇻", w: "🇼", x: "🇽", y: "🇾", z: "🇿",
   "#": "#️⃣",
   "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣", "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣"
@@ -342,8 +343,6 @@ client.on('ready', () => {
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   startDate = new Date();
-
-  Utilities.testFetch().then(a=>{console.log(a)});
 
 
   /*
@@ -1324,6 +1323,13 @@ client.on('messageCreate', message => {
           else {
             message.channel.send("insufficient permissions!");
           }
+          break;
+        }
+        case "poll": {
+          let newPoll = new Polls.Poll(argument);
+          newPoll.addOption("Koče");
+          newPoll.addOption("Bloče");
+          newPoll.sendMessage(message.channel);
           break;
         }
         default:

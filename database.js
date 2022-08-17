@@ -101,6 +101,10 @@ export class KinoDatabase {
         await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${dateToSql(event.date)}, date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
     }
 }
+export class PollDatabase {
+    
+}
+
 
 /**
  * @param {Date} date
