@@ -801,25 +801,24 @@ client.on('messageCreate', message => {
 
     }
     else if (message.type == "REPLY") {
-      let lowerCase = message.content.toLowerCase();
-      //console.log(lowerCase);
-      let poll = reactionFilters.poll(message);
-      console.log(poll);
-      if (poll != undefined) {
-        try {
-          poll.addOption(message.content);
-        } catch (error) {
-          message.channel.send(error.name + ": " + error.message);
-        }
-      }
-      if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
-        message.channel.messages.fetch(message.reference.messageId).then(msg => {
-          let url = null;
-          if (msg.attachments.size > 0) {
-            url = msg.attachments.first().proxyURL;
+      message.channel.messages.fetch(message.reference.messageId).then(repliedMessage => {
+        let lowerCase = message.content.toLowerCase();
+        let poll = reactionFilters.poll(repliedMessage);
+        if (poll != undefined) {
+          try {
+            poll.addOption(message.content);
+          } catch (error) {
+            message.channel.send(error.name + ": " + error.message);
           }
-          else if (msg.content.includes("http")) {
-            url = msg.content.substr(msg.content.indexOf("http"));
+        }
+        if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
+
+          let url = null;
+          if (repliedMessage.attachments.size > 0) {
+            url = repliedMessage.attachments.first().proxyURL;
+          }
+          else if (repliedMessage.content.includes("http")) {
+            url = repliedMessage.content.substr(repliedMessage.content.indexOf("http"));
           }
           if (url != null) {
             Jimp.read(url).then(image => {
@@ -842,10 +841,11 @@ client.on('messageCreate', message => {
                   message.reply({ files: ["./outputImg.jpg"] }).then(
                     function () { fs.unlink("./outputImg.jpg") });
                 });
-            })
+            }).catch(error => { message.channel.send(error.name + ": " + error.message) })
           }
-        });
-      }
+
+        }
+      });
     }
     else if (message.content.startsWith(prefix)) {
       var withoutPrefix = message.content.slice(prefix.length);
@@ -1107,9 +1107,9 @@ client.on('messageCreate', message => {
             message.member.voice.channel.join().then(voice => {
               message.delete();
               //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-
+    
               voicePlay(voice, "http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
-
+    
             }, function (e) { console.log("REJECTED!!!", e) });
             */
 
