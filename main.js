@@ -1476,7 +1476,7 @@ export let reactionFilters = {
   koce: msg => { return msg.content.toLowerCase().includes("koče") },
 }
 
-export let reactionHandlers = {
+export let reactionAddHandlers = {
   kino: (data) => {
     let kinoData = data.handler;
     let emojiName = data.emoji;
@@ -1511,42 +1511,12 @@ export let reactionHandlers = {
   }
 }
 
-client.on("messageReactionAdd", (messageReaction) => {
-  let emojiName = messageReaction.emoji.name;
-  let user = messageReaction.users.cache.last();
-  let message = messageReaction.message;
-  /**
-   * @type {Function}
-   */
-  let handler;
-  for (const p in reactionFilters) {
-    if (Object.hasOwnProperty.call(reactionFilters, p)) {
-      /**
-       * @type {Function}
-       */
-      const filter = reactionFilters[p]
-      handler = filter(message);
-      if (handler != undefined && handler) {
-        let data = {
-          handler: handler,
-          emoji: emojiName,
-          message: message,
-          user: user
-        }
-        console.log("Handling " + p + ", data:", data);
-        reactionHandlers[p](data);
-        return;
-      }
-    }
-  }
-});
-
-client.on("messageReactionRemove", (messageReaction, user) => {
-  //let ind = kinoMessages.indexOf(messageReaction.message);
-  let reactionHandler;
-  if ((reactionHandler = kinoData.find(kinoEntry => { return kinoEntry.message.id == reactionMessage.id })) != undefined) {
-    let emojiName = messageReaction.emoji.name;
-    let kinoUser = reactionHandler.users.get(user.username);
+export let reactionRemoveHandlers = {
+  kino: (data) => {
+    let kinoData = data.handler;
+    let emojiName = data.emoji;
+    let user = data.user;
+    let kinoUser = kinoData.users.get(user.username);
     if (user != client.user) {
       kinoUser.reactionCount -= 1;
       console.log("Reaction removed " + emojiName);
@@ -1560,10 +1530,62 @@ client.on("messageReactionRemove", (messageReaction, user) => {
         kinoUser.response = 0;
         kinoUser.reactionCount = 0;
       }
-      updateKinoMessage(reactionHandler);
+      updateKinoMessage(kinoData);
+    }
+
+  },
+  poll: (data) => {
+    /**
+     * @type {Polls.Poll}
+     */
+    let poll = data.handler;
+    console.log("Handled poll remove, data:", data);
+  },
+  koce: (data) => {
+    data.message.channel.send("koče removed");
+  }
+}
+
+function handleMessageReaction(messageReaction, user, remove) {
+  let emojiName = messageReaction.emoji.name;
+  let message = messageReaction.message;
+  if (user != client.user) {
+    /**
+       * @type {Function}
+       */
+    let handler;
+    for (const p in reactionFilters) {
+      if (Object.hasOwnProperty.call(reactionFilters, p)) {
+        /**
+         * @type {Function}
+         */
+        const filter = reactionFilters[p]
+        handler = filter(message);
+        if (handler != undefined && handler) {
+          let data = {
+            handler: handler,
+            emoji: emojiName,
+            message: message,
+            user: user
+          }
+          console.log("Handling " + p + ", data:", data);
+          if (remove)
+            reactionAddHandlers[p](data);
+          else
+            reactionRemoveHandlers[p](data);
+          return;
+        }
+      }
     }
   }
+}
 
+client.on("messageReactionAdd", (messageReaction, user) => {
+  handleMessageReaction(messageReaction, user, false);
+});
+
+client.on("messageReactionRemove", (messageReaction, user) => {
+  handleMessageReaction(messageReaction, user, true);
 });
 
 function updateKinoMessage(kinoEntry) {
