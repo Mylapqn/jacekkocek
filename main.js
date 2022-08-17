@@ -1468,8 +1468,8 @@ function executeReminder(rem) {
 //#region KINO
 
 export let reactionFilters = {
-  kino: msg => { Array.from(kinoData.values).find(element => { return element.message.id == msg.id }) },
-  poll: msg => { Polls.Poll.list.find(element => { return Utilities.matchMessages(element.message, msg) }) },
+  kino: msg => { return Array.from(kinoData.values).find(element => { return element.message.id == msg.id }) },
+  poll: msg => { return Polls.Poll.list.find(element => { return element.message === msg }) },
   /**
    * @param {Discord.Message} msg
    */

@@ -73,7 +73,5 @@ export async function fetchMessage(guildId, channelId, messageId) {
  * @param {Message} b
  */
 export function matchMessages(a, b) {
-    console.log("id:"+a.id + " c:" + a.channelId + " g:" +a.guildId);
-    console.log("id:"+b.id + " c:" + b.channelId + " g:" +b.guildId);
     return a.id == b.id && a.channelId == b.channelId && a.guildId == b.guildId
 }
