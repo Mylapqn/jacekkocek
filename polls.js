@@ -16,7 +16,7 @@ export class Poll {
     votes = [];
 
     constructor(name) {
-        if (Utilities.isValid(name))
+        if (name && name != null)
             this.name = name;
         Poll.list.push(this);
     }
