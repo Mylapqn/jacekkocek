@@ -49,10 +49,24 @@ export function isValid(x){
 }
 
 export async function fetchMessage(guildId,channelId,messageId){
-    let guild = await Main.client.guilds.fetch(guildId);
-    let channel = await guild.channels.fetch(channelId);
-    let message = await channel.messages.fetch(messageId);
+    let guild, channel, message
+    try {
+        guild = await Main.client.guilds.fetch(guildId);
+    } catch (error) {
+        throw "Cannot fetch guild"
+    }
+    try {
+        channel = await guild.channels.fetch(channelId);
+    } catch (error) {
+        throw "Cannot fetch channel"
+    }
+    try {
+        message = await channel.messages.fetch(messageId);
+    } catch (error) {
+        throw "Cannot fetch message"
+    }
+    return message;
 }
 export async function testFetch(){
-    return await (await Main.client.guilds.fetch("549589656606343178")).channels.fetch("123");
+    return await fetchMessage("549589656606343178","767355244111331338","1006148627485446224");
 }
