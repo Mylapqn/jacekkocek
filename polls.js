@@ -33,10 +33,11 @@ export class Poll {
     }
     generateMessage() {
         let embed = new MessageEmbed().setColor([24, 195, 177]).setTitle(this.name)
-        embed.description = "__**" + this.name + "**__";
+        embed.description = "";
         /*for (const option of this.options) {
             newMessage += "\n`" + (option.index + 1) + "`: " + option.name
         }*/
+        if (this.options.length == 0) embed.description += "No options yet";
         if (this.options.length < 9) embed.setFooter({ text: "Reply to this message to add custom options" });
         for (const option of this.options) {
             embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name
