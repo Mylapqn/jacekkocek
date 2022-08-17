@@ -1,4 +1,4 @@
-import { client } from "./main";
+import * as Main from "./main.js";
 
 export function dateString(inputDate) {
     var minutes = inputDate.getMinutes();
@@ -49,10 +49,10 @@ export function isValid(x){
 }
 
 export async function fetchMessage(guildId,channelId,messageId){
-    let guild = await client.guilds.fetch(guildId);
+    let guild = await Main.client.guilds.fetch(guildId);
     let channel = await guild.channels.fetch(channelId);
     let message = await channel.messages.fetch(messageId);
 }
 export async function testFetch(){
-    return await client.guilds.fetch("1546846");
+    return await Main.client.guilds.fetch("1546846");
 }
