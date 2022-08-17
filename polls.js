@@ -41,13 +41,6 @@ export class Poll {
         for (let i = 1; i <= this.options.length && i <= 9; i++) {
             this.message.react(Main.letterEmoji[i.toString()]);
         }
-        this.message.awaitReactions()
-            .then(collected => {
-                console.log(collected)
-            })
-            .catch(collected => {
-                message.reply('You reacted with neither a thumbs up, nor a thumbs down.');
-            });
         return this.message;
     }
 
