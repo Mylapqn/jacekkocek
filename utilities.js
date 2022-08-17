@@ -1,3 +1,4 @@
+import { Message } from "discord.js";
 import * as Main from "./main.js";
 
 export function dateString(inputDate) {
@@ -43,12 +44,12 @@ export function addZero(x) {
     return String(x).padStart(2, "0");
 }
 
-export function isValid(x){
-    if(x == undefined || isNaN(x)) return false;
+export function isValid(x) {
+    if (x == undefined || isNaN(x)) return false;
     else return true;
 }
 
-export async function fetchMessage(guildId,channelId,messageId){
+export async function fetchMessage(guildId, channelId, messageId) {
     let guild, channel, message
     try {
         guild = await Main.client.guilds.fetch(guildId);
@@ -66,4 +67,11 @@ export async function fetchMessage(guildId,channelId,messageId){
         throw new Error("Cannot fetch message");
     }
     return message;
+}
+/**
+ * @param {Message} a
+ * @param {Message} b
+ */
+export function matchMessages(a, b) {
+    return a.id == b.id && a.channel.id == b.channel.id && a.guildId == b.guildId
 }

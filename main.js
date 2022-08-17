@@ -1469,7 +1469,7 @@ function executeReminder(rem) {
 
 export let reactionFilters = {
   kino: msg => { Array.from(kinoData.values).find(element => { return element.message.id == msg.id }) },
-  poll: msg => { Polls.Poll.list.find(element => { console.log(element.message,msg); return element.message == msg }) },
+  poll: msg => { Polls.Poll.list.find(element => { return Utilities.matchMessages(element.message, msg) }) },
   /**
    * @param {Discord.Message} msg
    */
@@ -1561,7 +1561,7 @@ function handleMessageReaction(messageReaction, user, remove) {
          */
         const filter = reactionFilters[p]
         handler = filter(message);
-        console.log(p,handler)
+        console.log(p, handler)
         if (handler != undefined && handler) {
           let data = {
             handler: handler,
