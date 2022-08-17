@@ -7,7 +7,7 @@ export class Poll {
      * @type {Message}
      */
     message;
-    name;
+    name = "Unnamed poll";
     /**
      * @type {PollOption[]}
      */
@@ -30,10 +30,10 @@ export class Poll {
         }
     }
     generateMessage() {
-        let newMessage = "Poll: **" + this.name + "**";
-        for (const option of this.options) {
+        let newMessage = "__**" + this.name + "**__";
+        /*for (const option of this.options) {
             newMessage += "\n`" + (option.index + 1) + "`: " + option.name
-        }
+        }*/
         for (const option of this.options) {
             newMessage += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name
         }
