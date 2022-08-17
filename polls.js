@@ -1,5 +1,6 @@
 import { Message, TextChannel } from "discord.js";
 import * as Main from "./main.js";
+import * as Utilities from "./utilities.js"
 
 export class Poll {
     id;
@@ -15,7 +16,8 @@ export class Poll {
     votes = [];
 
     constructor(name) {
-        this.name = name;
+        if (Utilities.isValid(name))
+            this.name = name;
         Poll.list.push(this);
     }
 
