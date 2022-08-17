@@ -1,4 +1,4 @@
--- Adminer 4.8.1 MySQL 5.5.5-10.5.15-MariaDB-1:10.5.15+maria~buster dump
+-- Adminer 4.8.1 MySQL 5.5.5-10.5.16-MariaDB-1:10.5.16+maria~buster dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -7,9 +7,29 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
 
-DROP DATABASE IF EXISTS `jacekkocek`;
-CREATE DATABASE `jacekkocek` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
-USE `jacekkocek`;
+DROP TABLE IF EXISTS `Films`;
+CREATE TABLE `Films` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) NOT NULL,
+  `suggested_by` varchar(18) DEFAULT NULL,
+  `watched` bit(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `KinoEvent`;
+CREATE TABLE `KinoEvent` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `film` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `date_locked` bit(1) DEFAULT NULL,
+  `watched` bit(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `film` (`film`),
+  CONSTRAINT `KinoEvent_ibfk_2` FOREIGN KEY (`film`) REFERENCES `Films` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 DROP TABLE IF EXISTS `Users`;
 CREATE TABLE `Users` (
@@ -26,9 +46,9 @@ CREATE TABLE `Wallet` (
   `currency` varchar(4) NOT NULL,
   `amount` double NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `user` (`user`),
+  UNIQUE KEY `user_currency` (`user`,`currency`),
   CONSTRAINT `Wallet_ibfk_1` FOREIGN KEY (`user`) REFERENCES `Users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=513 DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-03-20 00:01:35
+-- 2022-08-16 19:13:53

@@ -13,7 +13,6 @@ import * as Matoshi from "./matoshi.js";
 import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
 import { stockPresets } from "./stockPresets.js";
-import { error } from "console";
 import { calc, isCalc, setCalcContext } from "./calc.js";
 
 //const icecastParser = require("icecast-parser");
@@ -344,6 +343,7 @@ client.on('ready', () => {
   client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
   startDate = new Date();
 
+  Utilities.testFetch().then(a=>{console.log(a)});
 
 
   /*

@@ -1,3 +1,5 @@
+import { client } from "./main";
+
 export function dateString(inputDate) {
     var minutes = inputDate.getMinutes();
     var hours = inputDate.getHours();
@@ -44,4 +46,13 @@ export function addZero(x) {
 export function isValid(x){
     if(x == undefined || isNaN(x)) return false;
     else return true;
+}
+
+export async function fetchMessage(guildId,channelId,messageId){
+    let guild = await client.guilds.fetch(guildId);
+    let channel = await guild.channels.fetch(channelId);
+    let message = await channel.messages.fetch(messageId);
+}
+export async function testFetch(){
+    return await client.guilds.fetch("1546846");
 }
