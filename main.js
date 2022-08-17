@@ -1527,13 +1527,14 @@ client.on("messageReactionAdd", (messageReaction) => {
       const filter = reactionFilters[p]
       handler = filter(message);
       if (handler != undefined && handler) {
-        console.log("Handling " + p + ", data:", data);
-        reactionHandlers[p]({
+        let data = {
           handler: handler,
           emoji: emojiName,
           message: message,
           user: user
-        });
+        }
+        console.log("Handling " + p + ", data:", data);
+        reactionHandlers[p](data);
         return;
       }
     }
