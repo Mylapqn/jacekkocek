@@ -15,7 +15,7 @@ import * as Utilities from "./utilities.js";
 import { stockPresets } from "./stockPresets.js";
 import { calc, isCalc, setCalcContext } from "./calc.js";
 import * as Polls from "./polls.js";
-import { reactionFilters } from "./reactions.js";
+import { handleMessageReaction, reactionFilters } from "./reactions.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -1264,6 +1264,14 @@ client.on('messageCreate', message => {
       if (result) message.channel.send(result);
     }
   }
+});
+
+client.on("messageReactionAdd", (messageReaction, user) => {
+  handleMessageReaction(messageReaction, user, false);
+});
+
+client.on("messageReactionRemove", (messageReaction, user) => {
+  handleMessageReaction(messageReaction, user, true);
 });
 
 

@@ -74,7 +74,7 @@ export let reactionRemoveHandlers = {
     }
 }
 
-function handleMessageReaction(reaction, user, remove) {
+export function handleMessageReaction(reaction, user, remove) {
     let emojiName = reaction.emoji.name;
     let message = reaction.message;
     if (user != client.user) {
@@ -95,11 +95,3 @@ function handleMessageReaction(reaction, user, remove) {
         }
     }
 }
-
-client.on("messageReactionAdd", (messageReaction, user) => {
-    handleMessageReaction(messageReaction, user, false);
-});
-
-client.on("messageReactionRemove", (messageReaction, user) => {
-    handleMessageReaction(messageReaction, user, true);
-});
