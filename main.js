@@ -531,7 +531,7 @@ client.on('interactionCreate', interaction => {
                   console.log("Creating film in suggestions.");
                   kinoPlaylist.set(film, {
                     name: Utilities.toTitleCase(film),
-                    suggestedBy: message.author.username,
+                    suggestedBy: interaction.user.username,
                     watched: true
                   });
                 }
