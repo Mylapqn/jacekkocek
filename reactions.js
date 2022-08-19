@@ -2,7 +2,7 @@ import { client, updateKinoMessage, kinoData } from "./main.js"
 import * as Polls from "./polls.js"
 
 export let reactionFilters = {
-    kino: msg => { return Array.from(kinoData.values).find(element => { return element.message.id == msg.id }) },
+    kino: msg => { return Array.from(kinoData.values()).find(element => { return element.message.id == msg.id }) },
     poll: msg => { return Polls.Poll.list.find(element => { return element.message === msg }) },
     koce: msg => { return msg.content.toLowerCase().includes("koče") },
 }
