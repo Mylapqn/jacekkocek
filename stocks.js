@@ -167,10 +167,10 @@ function getStockData() {
             //info[stock.id] = res.data.c;
             stockData.set(stock.id, res.data.c);
             if (i == stockPresets.length - 1) {
-                console.log("Updated all stocks.");
+                //console.log("Updated all stocks.");
             }
         }).catch(e => {
-            console.error("Error updating stocks (" + stock.symbol + "): " + e.response.status + " " + e.response.statusText + " on " + e.config.url + " " + e.response.headers.date);
+            throw new Error("Error updating stocks (" + stock.symbol + "): " + e.response.status + " " + e.response.statusText + " on " + e.config.url + " " + e.response.headers.date);
         });
     }
 }

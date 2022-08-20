@@ -274,7 +274,7 @@ var radioStations = [
 
 ];
 
-export var letterEmoji = {
+export let letterEmoji = {
   a: "🇦", b: "🇧", c: "🇨", d: "🇩", e: "🇪", f: "🇫", g: "🇬", h: "🇭", i: "🇮", j: "🇯", k: "🇰", l: "🇱", m: "🇲", n: "🇳", o: "🇴", p: "🇵", q: "🇶", r: "🇷", s: "🇸", t: "🇹", u: "🇺", v: "🇻", w: "🇼", x: "🇽", y: "🇾", z: "🇿",
   "#": "#️⃣",
   "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣", "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣"
@@ -1219,9 +1219,9 @@ client.on('messageCreate', message => {
           cleanupReminders();
           saveReminders();
           let msg = "__Reminders:__\n";
-          reminders.forEach(rem => {
+          for (const rem of reminders) {
             msg += "• **" + rem.text + "** at <t:" + rem.timestamp + ">\n";
-          });
+          }
           message.channel.send({ content: msg, allowedMentions: { parse: [] } });
           break;
         }
@@ -1331,8 +1331,7 @@ function cleanupReminders() {
 function setupReminders() {
   cleanupReminders();
   upcomingReminders = [];
-  for (let i = 0; i < reminders.length; i++) {
-    let rem = reminders[i];
+  for (const rem of reminders) {
     if (rem.timestamp > nowSeconds() && rem.timestamp <= nowSeconds() + reminderThreshold) {
       let timeout = setTimeout(() => {
         executeReminder(rem);
@@ -1343,7 +1342,6 @@ function setupReminders() {
       rem.timeout = timeout;
       upcomingReminders.push(rem);
     }
-
   }
   if (upcomingReminders.length > 0)
     console.log("Set up " + upcomingReminders.length + " reminders.")
@@ -1353,33 +1351,27 @@ export function nowSeconds() {
   return Math.round(Date.now() / 1000);
 }
 
-function executeReminder(rem) {
-  client.guilds.fetch(rem.guild).then(guild => {
-    guild.channels.fetch(rem.channel).then(channel => {
-      let mentions = "";
-      if (rem.mentions) {
-        rem.mentions.forEach(m => {
-          mentions += "<@!" + m + "> ";
-        });
-      }
-
-      let toSend = "**Reminder: **" + rem.text;
-      /*let toSend = {
-        embeds: [{
-          title: "Reminder",
-          color: [24, 195, 177],
-          description: rem.text
-        }]
-        if (mentions != "") {
-          toSend.content = mentions
-        }
-      }*/
-
-      channel.send(toSend);
-
-      reminders.splice(reminders.indexOf(rem), 1);
+async function executeReminder(rem) {
+  let channel = await Utilities.fetchChannel(rem.guild, rem.channel);
+  let toSend = "**Reminder: **" + rem.text;
+  /*let mentions = "";
+  if (rem.mentions) {
+    rem.mentions.forEach(m => {
+      mentions += "<@!" + m + "> ";
     });
-  });
+  }
+  let toSend = {
+    embeds: [{
+      title: "Reminder",
+      color: [24, 195, 177],
+      description: rem.text
+    }]
+    if (mentions != "") {
+      toSend.content = mentions
+    }
+  }*/
+  channel.send(toSend);
+  reminders.splice(reminders.indexOf(rem), 1);
 }
 
 //#endregion
@@ -1421,7 +1413,7 @@ function loadPlaylist() {
 
 function saveReminders() {
   let f = [];
-  reminders.forEach(r => {
+  for (const r of reminders) {
     f.push({
       guild: r.guild,
       channel: r.channel,
@@ -1429,7 +1421,7 @@ function saveReminders() {
       timestamp: r.timestamp,
       mentions: r.mentions
     })
-  });
+  }
   fs.writeFile(remindersFileName, JSON.stringify(f), (e) => { console.log("Finished writing", e) });
 }
 

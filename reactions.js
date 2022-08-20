@@ -1,5 +1,6 @@
-import { client, updateKinoMessage, kinoData } from "./main.js"
+import { client, updateKinoMessage, kinoData, letterEmoji } from "./main.js"
 import * as Polls from "./polls.js"
+import * as Utilities from "./utilities.js"
 
 export let reactionFilters = {
     kino: msg => { return Array.from(kinoData.values()).find(element => { return element.message.id == msg.id }) },
@@ -34,6 +35,14 @@ export let reactionAddHandlers = {
          * @type {Polls.Poll}
          */
         let poll = data.handler;
+        try {
+            let index = parseInt(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji })[0]);
+            if (Utilities.isValid(index)) {
+                poll.addVote(index, data.user.id);
+            }
+        } catch (error) {
+            throw new Error("Couldn't translate reaction to number");
+        }
     },
     koce: data => {
         data.message.reply("koče");
@@ -68,6 +77,14 @@ export let reactionRemoveHandlers = {
          * @type {Polls.Poll}
          */
         let poll = data.handler;
+        try {
+            let index = parseInt(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji })[0]);
+            if (Utilities.isValid(index)) {
+                poll.removeVote(index, data.user.id);
+            }
+        } catch (error) {
+            throw new Error("Couldn't translate reaction to number");
+        }
     },
     koce: data => {
         data.message.reply("koče removed");

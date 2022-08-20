@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Channel, Guild, Message, TextChannel } from "discord.js";
 import * as Main from "./main.js";
 
 export function dateString(inputDate) {
@@ -16,7 +16,9 @@ export function getTimeOffset(date, timeZone) {
     let offset = Date.parse(`${dateString} ${tz}`) - Date.parse(`${dateString} UTC`);
     return offset;
 }
-
+/**
+ * @param {String} phrase
+ */
 export function toTitleCase(phrase) {
     return phrase
         .toLowerCase()
@@ -49,24 +51,33 @@ export function isValid(x) {
     else return true;
 }
 
-export async function fetchMessage(guildId, channelId, messageId) {
-    let guild, channel, message
+/**
+ * @return {Promise<TextChannel>}
+ */
+export async function fetchChannel(guildId, channelId) {
+    let guild;
     try {
         guild = await Main.client.guilds.fetch(guildId);
     } catch (error) {
         throw new Error("Cannot fetch guild");
     }
     try {
-        channel = await guild.channels.fetch(channelId);
+        return await guild.channels.fetch(channelId);
     } catch (error) {
         throw new Error("Cannot fetch channel");
     }
+}
+
+/**
+ * @return {Promise<Message>}
+ */
+export async function fetchMessage(guildId, channelId, messageId) {
+    let channel = await fetchChannel(guildId, channelId);
     try {
-        message = await channel.messages.fetch(messageId);
+        return await channel.messages.fetch(messageId);
     } catch (error) {
         throw new Error("Cannot fetch message");
     }
-    return message;
 }
 /**
  * @param {Message} a
