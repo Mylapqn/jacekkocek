@@ -29,7 +29,7 @@ export class Poll {
         if (this.options.length == 0) embed.description += "No options yet";
         if (this.options.length < 9) embed.setFooter({ text: "Reply to this message to add custom options" });
         for (const option of this.options) {
-            embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name + " (" + option.votes.length + " votes - " + (option.votes.length / (this.totalVotes ?? 1) * 100).toFixed(0) + "%)"
+            embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name + " (" + option.votes.length + " votes - " + (option.votes.length / (this.totalVotes || 1) * 100).toFixed(0) + "%)"
         }
         return { embeds: [embed] };
     }
@@ -66,13 +66,15 @@ export class Poll {
         }
     }
     removeVote(optionIndex, userId) {
-        for (let i = 0; i < this.options[optionIndex].votes.length; i++) {
-            const vote = this.options[optionIndex].votes[i];
-            if (vote.userId == userId) {
-                this.options[optionIndex].votes.splice(i, 1);
-                this.totalVotes--;
-                this.updateMessage();
-                break;
+        if (optionIndex < this.options.length && optionIndex >= 0) {
+            for (let i = 0; i < this.options[optionIndex].votes.length; i++) {
+                const vote = this.options[optionIndex].votes[i];
+                if (vote.userId == userId) {
+                    this.options[optionIndex].votes.splice(i, 1);
+                    this.totalVotes--;
+                    this.updateMessage();
+                    break;
+                }
             }
         }
         console.log(`Removed vote from poll "${this.name}" from user ${userId} for option ${optionIndex}`);
