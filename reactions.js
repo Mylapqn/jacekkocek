@@ -36,7 +36,9 @@ export let reactionAddHandlers = {
          */
         let poll = data.handler;
         try {
+            console.log(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji }));
             let index = parseInt(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji })[0]);
+            console.log(index);
             if (Utilities.isValid(index)) {
                 poll.addVote(index, data.user.id);
             }
@@ -105,8 +107,12 @@ export function handleMessageReaction(reaction, user, remove) {
                     message: message,
                     user: user
                 }
-                if (remove) reactionRemoveHandlers[p](data);
-                else reactionAddHandlers[p](data);
+                try {
+                    if (remove) reactionRemoveHandlers[p](data);
+                    else reactionAddHandlers[p](data);
+                } catch (error) {
+                    console.error(error);
+                }
                 //return;
             }
         }
