@@ -40,7 +40,11 @@ export let reactionAddHandlers = {
             let index = parseInt(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji })[0]);
             console.log(index);
             if (Utilities.isValid(index)) {
-                poll.addVote(index, data.user.id);
+                try {
+                    poll.addVote(index, data.user.id);
+                } catch (error) {
+                    console.error(error)
+                }
             }
         } catch (error) {
             throw new Error("Couldn't translate reaction to number");

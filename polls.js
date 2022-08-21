@@ -29,7 +29,7 @@ export class Poll {
         if (this.options.length == 0) embed.description += "No options yet";
         if (this.options.length < 9) embed.setFooter({ text: "Reply to this message to add custom options" });
         for (const option of this.options) {
-            embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name + " (" + option.votes.length + " votes - " + (option.votes.length / this.totalVotes * 100).toFixed(0) + "%)"
+            embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name + " (" + option.votes.length + " votes - " + (option.votes.length / (this.totalVotes ?? 1) * 100).toFixed(0) + "%)"
         }
         return { embeds: [embed] };
     }
@@ -58,10 +58,12 @@ export class Poll {
         console.log(`Added option to poll "${this.name}" with name ${name}`);
     }
     addVote(optionIndex, userId) {
-        this.options[optionIndex].votes.push(new PollVote(this, optionIndex, userId));
-        this.totalVotes++;
-        this.updateMessage();
-        console.log(`Added vote to poll "${this.name}" from user ${userId} for option ${optionIndex}`);
+        if (optionIndex < this.options.length && optionIndex >= 0) {
+            this.options[optionIndex].votes.push(new PollVote(this, optionIndex, userId));
+            this.totalVotes++;
+            this.updateMessage();
+            console.log(`Added vote to poll "${this.name}" from user ${userId} for option ${optionIndex}`);
+        }
     }
     removeVote(optionIndex, userId) {
         for (let i = 0; i < this.options[optionIndex].votes.length; i++) {
