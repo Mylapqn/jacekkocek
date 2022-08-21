@@ -3,8 +3,7 @@ import { stockPresets } from "./stockPresets.js";
 import * as Utilities from "./utilities.js";
 import * as Kino from "./kino.js";
 
-/**@type {mysql.Connection} */
-let connection;
+let connection: mysql.Connection;
 export async function init() {
     connection = await mysql.createConnection({ host: "localhost", user: "jacekkocek", password: process.env.DBPASSWORD, database: "jacekkocek" });
 
@@ -51,10 +50,7 @@ export async function setUser(user) {
 }
 
 export class KinoDatabase {
-    /**
-     * @param {Kino.Film} film
-     */
-    static async createFilm(film) {
+    static async createFilm(film: Kino.Film) {
         await connection.query(`INSERT INTO Films (name, suggested_by) VALUES (\"${film.name}\",\"${film.suggestedBy}\")`).catch(e => { console.log("Film creation error: ", e) });
         film.id = await connection.query("SELECT LAST_INSERT_ID()")["LAST_INSERT_ID()"];
         console.log("Created film ", film);
@@ -70,34 +66,21 @@ export class KinoDatabase {
         return filmData;
     }
 
-    /**
-     * @param {Kino.Film} film
-     */
-    static async setFilm(film) {
+    static async setFilm(film: Kino.Film) {
         await connection.query(`UPDATE Films SET watched=${film.watched} WHERE id=${film.id}`);
     }
 
-    /**
-     * @param {Kino.Event} event
-     */
-    static async createEvent(event) {
+    static async createEvent(event: Kino.Event) {
         await connection.query(`INSERT INTO KinoEvent (watched) VALUES (${event.watched})`).catch(e => { console.log("KinoEvent creation error: ", e) });
         event.id = await connection.query("SELECT LAST_INSERT_ID()")["LAST_INSERT_ID()"];
         console.log("Created event ", event);
     }
 
-    static async getEvent() {
-        let eventData;
-        if (eventData.length == 0) {
-            console.log("There is no film with id " + id);
-        }
-        eventData = eventData[0];
+    static async getEvent(id) {
+        throw new Error("not implemented");
     }
 
-    /**
-     * @param {Kino.Event} event
-     */
-    static async setEvent(event) {
+    static async setEvent(event: Kino.Event) {
         await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${dateToSql(event.date)}, date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
     }
 }

@@ -41,7 +41,7 @@ export function findStockPreset(id) {
         const s = stockPresets[i];
         if (s.id == id) return s;
     }
-    return false;
+    return undefined;
 }
 
 export function generateGraph(stockId) {

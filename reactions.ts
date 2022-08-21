@@ -1,4 +1,4 @@
-import { client, updateKinoMessage, kinoData, letterEmoji } from "./main.js"
+import { client, updateKinoMessage, kinoData, letterEmoji, weekDayNames } from "./main.js"
 import * as Polls from "./polls.js"
 import * as Utilities from "./utilities.js"
 

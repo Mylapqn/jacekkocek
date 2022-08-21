@@ -1,4 +1,4 @@
-import { InviteGuild, Message, MessageEmbed, TextChannel, User } from "discord.js";
+import { InviteGuild, Message, EmbedBuilder, TextChannel, User } from "discord.js";
 import * as Main from "./main.js";
 import * as Utilities from "./utilities.js"
 import * as Youtube from "./youtube.js"
@@ -22,18 +22,19 @@ export class Poll {
         Poll.list.push(this);
     }
     generateMessage() {
-        let embed = new MessageEmbed().setColor([24, 195, 177]).setTitle(this.name)
-        embed.description = "";
+        let embed = new EmbedBuilder().setColor([24, 195, 177]).setTitle(this.name)
+        let description = "";
         /*for (const option of this.options) {
             newMessage += "\n`" + (option.index + 1) + "`: " + option.name
         }*/
-        if (this.options.length == 0) embed.description += "No options yet";
+        if (this.options.length == 0) description += "No options yet";
         if (this.options.length < 9) embed.setFooter({ text: "Reply to this message to add custom options" });
         for (const option of this.options) {
             let votes = option.votes.length;
             let percentage = Math.round((votes / (this.totalVotes || 1) * 100));
-            embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + Youtube.progressEmoji(Math.round(percentage / 25)) + " **" + option.name + "** (" + votes + " votes - " + percentage + "%)"
+            description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + Youtube.progressEmoji(Math.round(percentage / 25)) + " **" + option.name + "** (" + votes + " votes - " + percentage + "%)"
         }
+        embed.setDescription(description);
         return { embeds: [embed] };
     }
     updateMessage() {

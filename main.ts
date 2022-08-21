@@ -12,10 +12,9 @@ import * as Stocks from "./stocks.js";
 import * as Matoshi from "./matoshi.js";
 import * as Youtube from "./youtube.js";
 import * as Utilities from "./utilities.js";
-import { stockPresets } from "./stockPresets.js";
 import { calc, isCalc, setCalcContext } from "./calc.js";
 import * as Polls from "./polls.js";
-import { handleMessageReaction, reactionFilters } from "./reactions.js";
+import { handleMessageReaction } from "./reactions.js";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -23,25 +22,23 @@ import { handleMessageReaction, reactionFilters } from "./reactions.js";
 
 //require('dotenv').config();
 
-const Intents = Discord.Intents;
-const intents = new Intents();
-intents.add(Intents.FLAGS.GUILD_MESSAGES);
-intents.add(Intents.FLAGS.GUILD_MESSAGE_REACTIONS);
-intents.add(Intents.FLAGS.GUILDS);
-intents.add(Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS);
-intents.add(Intents.FLAGS.GUILD_VOICE_STATES);
-intents.add(Intents.FLAGS.GUILD_MEMBERS);
+const Intents = Discord.GatewayIntentBits;
+const intents = new Discord.IntentsBitField();
+intents.add(Intents.GuildMessages);
+intents.add(Intents.GuildMessageReactions);
+intents.add(Intents.Guilds);
+intents.add(Intents.GuildEmojisAndStickers);
+intents.add(Intents.GuildVoiceStates);
+intents.add(Intents.GuildMembers);
 export const client = new Discord.Client({ intents: intents });
 
 const updateGlobalCommands = false;
 const commandsToDeleteGlobal = [];
 const commandsToDeleteGuild = [];
-/**
- * @type {Discord.Guild}
- */
-export let afrGuild;
 
-let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
+export let afrGuild: Discord.Guild;
+
+let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Pause } });
 var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
@@ -283,7 +280,7 @@ export let letterEmoji = {
 console.log("\n-----------RESTART-----------")
 
 export var kinoData = new Map();
-var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
+export var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 var radioTimer;
 var fluttershy = true;
@@ -342,7 +339,7 @@ client.on('ready', () => {
   afrGuild = client.guilds.cache.get('549589656606343178');
   client.guilds.cache.get('728312628413333584').emojis.fetch();
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
-  client.user.setActivity({ name: prefix + "help", type: "LISTENING" });
+  client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
   startDate = new Date();
 
 
@@ -369,7 +366,7 @@ client.on('ready', () => {
 
 client.on('interactionCreate', interaction => {
   //console.log("Interaction", interaction);
-  if (interaction.isCommand()) {
+  if (interaction.isChatInputCommand()) {
     console.log("Slash command by " + interaction.user.username + ": " + interaction.commandName);
     switch (interaction.commandName) {
       case "kino": {
@@ -507,7 +504,7 @@ client.on('interactionCreate', interaction => {
                 });
                 //kinoMessageUsers.push({users:m,film:argument});
 
-                interaction.reply({ content: "Bude ***" + obj.filmName + "***?\n" + newMessage, fetchReply: true }).then((m) => {
+                interaction.reply({ content: "Bude ***" + obj.filmName + "***?\n" + newMessage, fetchReply: true }).then((m: Discord.Message) => {
                   console.log("Kino message sent.");
                   m.react("767907091469828106");
                   m.react("767907090709872661");
@@ -579,9 +576,10 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "radio": {
+        let bember = interaction.member as Discord.GuildMember;
         switch (interaction.options.getSubcommand()) {
           case "play": {
-            let voice = interaction.member.voice.channel;
+            let voice = bember.voice.channel;
             let station = interaction.options.getInteger("station");
             if (station < radioStations.length && station >= 0) {
               interaction.reply(playStation(voice, station));
@@ -589,7 +587,7 @@ client.on('interactionCreate', interaction => {
             break;
           }
           case "custom": {
-            let voice = interaction.member.voice.channel;
+            let voice = bember.voice.channel;
             let url = interaction.options.getString("url");
             if (url.startsWith("http")) {
               interaction.reply(playStation(voice, url));
@@ -610,7 +608,7 @@ client.on('interactionCreate', interaction => {
                     name: "List of available stations", value: newMessage
                   }
                 ],
-                color: [24, 195, 177]
+                color: 0x18C3B1
               }]
             })
             break;
@@ -742,9 +740,28 @@ client.on('interactionCreate', interaction => {
             Matoshi.paymentMessages.delete(interaction.message.id);
             let msg = interaction.message;
             let comp = msg.components;
-            comp[0].components[0].setDisabled(true);
-            comp[0].components[1].setDisabled(true);
-            msg.edit({ content: msg.content, embeds: msg.embeds, components: comp })
+
+            let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
+            for (const component of comp[0].components) {
+              if (component instanceof Discord.ButtonComponent)
+                newActionRow.addComponents(new Discord.ButtonBuilder(component).setDisabled(true));
+              else
+                throw new Error("Expected only ButtonComponent");
+            }
+
+            /*let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents([
+              new Discord.ButtonBuilder()
+                .setCustomId("acceptPayment")
+                .setLabel("Accept")
+                .setStyle(Discord.ButtonStyle.Success)
+                .setDisabled(true),
+              new Discord.ButtonBuilder()
+                .setCustomId("declinePayment")
+                .setLabel("Decline")
+                .setStyle(Discord.ButtonStyle.Danger)
+                .setDisabled(true),
+            ]);*/
+            msg.edit({ content: msg.content, embeds: msg.embeds, components: [newActionRow] })
           }
         }
         break;
@@ -757,9 +774,14 @@ client.on('interactionCreate', interaction => {
             Matoshi.paymentMessages.delete(interaction.message.id);
             let msg = interaction.message;
             let comp = msg.components;
-            comp[0].components[0].setDisabled(true);
-            comp[0].components[1].setDisabled(true);
-            msg.edit({ content: msg.content, embeds: msg.embeds, components: comp })
+            let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
+            for (const component of comp[0].components) {
+              if (component instanceof Discord.ButtonComponent)
+                newActionRow.addComponents(new Discord.ButtonBuilder(component).setDisabled(true));
+              else
+                throw new Error("Expected only ButtonComponent");
+            }
+            msg.edit({ content: msg.content, embeds: msg.embeds, components: [newActionRow] })
           }
         }
         break;
@@ -769,9 +791,10 @@ client.on('interactionCreate', interaction => {
 });
 
 client.on('messageCreate', message => {
-  if (message.author.id != client.user.id) {
+  const channel = message.channel;
+  if (message.author.id != client.user.id && channel instanceof Discord.TextChannel) {
 
-    if (message.mentions.has(client.user) && message.type != "REPLY") {
+    if (message.mentions.has(client.user) && message.type != Discord.MessageType.Reply) {
       message.channel.send(message.author.toString());
     }
     else if (message.content === ':gif2:') {
@@ -800,7 +823,7 @@ client.on('messageCreate', message => {
       message.channel.send(client.emojis.cache.get("772234862652424203").toString());
 
     }
-    else if (message.type == "REPLY") {
+    else if (message.type == Discord.MessageType.Reply) {
       message.channel.messages.fetch(message.reference.messageId).then(repliedMessage => {
         let lowerCase = message.content.toLowerCase();
         let poll = Polls.Poll.getPollFromMessage(repliedMessage);
@@ -835,12 +858,12 @@ client.on('messageCreate', message => {
                 .quality(10)
                 .convolute(kernelSharpen)
                 .contrast(.99)
-                .color([{ apply: "saturate", params: [70] }])
+                //.color([{ apply: "saturate", params: [70] }])
                 .convolute(kernelSharpen)
                 .writeAsync("./outputImg.jpg").then(e => {
                   console.log("jimp done")
                   message.reply({ files: ["./outputImg.jpg"] }).then(
-                    function () { fs.unlink("./outputImg.jpg") });
+                    function () { fs.unlink("./outputImg.jpg", null) });
                 });
             }).catch(error => { message.channel.send(error.name + ": " + error.message) })
           }
@@ -866,39 +889,11 @@ client.on('messageCreate', message => {
           message.channel.send({
             embeds: [{
               title: "Cheese",
-              color: [254, 181, 2],
+              color: 0xFEB502,
               description: 'Cheese'
             }]
           });
           break;
-        case "button": {
-          message.delete();
-          const row = new Discord.MessageActionRow().addComponents(
-            new Discord.MessageButton()
-              .setCustomId('test')
-              .setLabel('Emergency meeting')
-              .setStyle('DANGER')
-          );
-          const row2 = new Discord.MessageActionRow().addComponents(
-            new Discord.MessageSelectMenu()
-              .setCustomId('select')
-              .setPlaceholder('Select your mogus')
-              .addOptions([
-                {
-                  label: 'Red mogus',
-                  description: 'common',
-                  value: 'first_option',
-                },
-                {
-                  label: 'Yellow mogus',
-                  description: 'uncommon',
-                  value: 'second_option',
-                },
-              ]),
-          );
-          message.channel.send({ content: "sus???", components: [row] })
-          break;
-        }
         case "say":
           message.delete();
           message.channel.send(argument);
@@ -909,7 +904,7 @@ client.on('messageCreate', message => {
             console.log("Sanitized argument: " + argument);
             message.channel.messages.fetch({ limit: 1 }).then(messages => {
 
-              var previousMessage = messages.array()[0];
+              var previousMessage = messages.values()[0];
               for (var i = 0; i < argument.length; i++) {
                 //message.channel.send(argument.charAt(i));
                 previousMessage.react(letterEmoji[argument.charAt(i)]);
@@ -940,14 +935,14 @@ client.on('messageCreate', message => {
           let commandChanges = "";
           let changeChanges = "";
           changelog.commands.forEach(commandName => {
-            let c = -1;
+            let c = undefined;
             helpCommands.forEach(helpEntry => {
               if (helpEntry.name == commandName) {
                 c = helpEntry;
                 return;
               }
             });
-            if (c != -1) {
+            if (c) {
               commandChanges += "`";
               if (c.prefix) commandChanges += prefix;
               commandChanges += c.name;
@@ -964,7 +959,7 @@ client.on('messageCreate', message => {
           message.channel.send({
             embeds: [
               {
-                color: [24, 195, 177],
+                color: 0x18C3B1,
                 title: "JacekKocek v" + changelog.version, description: "Released " + changelog.releaseDate, fields: [
                   {
                     name: "New commands", value: commandChanges
@@ -1005,7 +1000,7 @@ client.on('messageCreate', message => {
 
             message.channel.send({
               embeds: [{
-                color: [24, 195, 177],
+                color: 0x18C3B1,
                 title: "Help", description: "Type `" + prefix + "help <command>` to get further info on a command", fields: [
                   {
                     name: "Basic commands", value: helpBasic
@@ -1058,7 +1053,7 @@ client.on('messageCreate', message => {
         case "w2g":
           message.channel.send("No longer supported!");
           break;
-          httpPost("https://w2g.tv/rooms/create.json").then(parsed => { message.channel.send(parsed) });
+          //httpPost("https://w2g.tv/rooms/create.json").then(parsed => { message.channel.send(parsed) });
 
           break;
         case "nuke":
@@ -1069,13 +1064,12 @@ client.on('messageCreate', message => {
               if (isNaN(argNumber)) argNumber = 0;
               if (argNumber > 0) {
                 if (argNumber > 20 && message.author.tag != "Mylapqn#5546") argNumber = 20;
-                console.log("Deleting " + argNumber + " last messages in #" + message.channel.name + ", command by " + message.author.username);
-                let channel = message.channel;
+                console.log("Deleting " + argNumber + " last messages in #" + channel.name + ", command by " + message.author.username);
                 message.channel.messages.fetch({ limit: argNumber }).then(messages => {
 
                   var previousMessages = Array.from(messages.values());
                   for (var i = 0; i < argNumber; i++) {
-                    var reacts = Array.from(previousMessages[i].reactions.cache.mapValues(reaction => reaction._emoji.name).values());
+                    var reacts = Array.from(previousMessages[i].reactions.cache.mapValues(reaction => reaction.emoji.name).values());
                     //message.channel.send(argument.charAt(i));
                     previousMessages[i].delete();
                     if (reacts.includes("♋")) break;
@@ -1152,7 +1146,7 @@ client.on('messageCreate', message => {
             message.channel.send({
               embeds: [{
                 title: "► " + "MLP Mix",
-                color: [159, 101, 224],
+                color: 0x9F65E0,
                 description: '4:17 | From *Andrej*'
               }]
             });
@@ -1399,7 +1393,7 @@ function savePlaylist() {
 
 function loadPlaylist() {
   try {
-    let read = fs.readFileSync(playlistFileName);
+    let read = fs.readFileSync(playlistFileName, { encoding: 'utf8' });
     kinoPlaylist = new Map(JSON.parse(read));
     console.log("Loaded kino playlist.");
   } catch (error) {
@@ -1427,7 +1421,7 @@ function saveReminders() {
 
 function loadReminders() {
   try {
-    let read = fs.readFileSync(remindersFileName);
+    let read = fs.readFileSync(remindersFileName, { encoding: 'utf8' });
     reminders = JSON.parse(read);
     console.log("Loaded reminders.");
     //console.log(reminders);
@@ -1440,8 +1434,8 @@ function loadReminders() {
 
 function setupCommands() {
   try {
-    let globalCommands = JSON.parse(fs.readFileSync("globalCommands.json"));
-    let guildCommands = JSON.parse(fs.readFileSync("guildCommands.json"));
+    let globalCommands = JSON.parse(fs.readFileSync("globalCommands.json", { encoding: 'utf8' }));
+    let guildCommands = JSON.parse(fs.readFileSync("guildCommands.json", { encoding: 'utf8' }));
     if (updateGlobalCommands) {
       client.application?.commands.set(globalCommands);
       commandsToDeleteGlobal.forEach(na => {

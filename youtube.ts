@@ -62,16 +62,16 @@ function clearNextTimeout() {
 }
 youtubePlaylistName = "Unknown Playlist";
 
-function playPlaylist(playlistUrl, channel) {
+function playPlaylist(playlistUrl: string, channel: Discord.VoiceChannel) {
     getPlaylistName(playlistUrl).then(title => {
-        youtubePlaylistName = title;
+        youtubePlaylistName = title as string;
     })
     let n = playlistUrl.indexOf("index=");
     let listPos = 0;
     if (n >= 0) {
         listPos = parseInt(playlistUrl.slice(n + 6)) - 1;
     }
-    getPlaylist(playlistUrl).then((items) => {
+    getPlaylist(playlistUrl).then((items: any) => {
         youtubePlaylist = items.map(x => x.contentDetails.videoId);
         youtubePlaylistPosition = listPos;
         console.log(youtubePlaylist);
@@ -93,7 +93,7 @@ function playYoutube(videoUrl, channel) {
         console.log("info" + info);
         let length = info.videoDetails.lengthSeconds;
         let lenString = Utilities.timeString(length);
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
             .setColor([255, 0, 0])
             .setTitle("► " + info.videoDetails.title)
             .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*')
@@ -103,13 +103,13 @@ function playYoutube(videoUrl, channel) {
             embed.setFooter({ text: youtubePlaylistPosition + 1 + "/" + (youtubePlaylist.length) + " in " + youtubePlaylistName });
         }
         let newPlaying = {
-            //statusMsg,
+            statusMsg: undefined,
             voiceChannel: channel,
             elapsed: 0,
             length: length * 1000,
-            //barInterval,
-            //nextUrl,
-            //nextData,
+            barInterval: undefined,
+            nextUrl: undefined,
+            nextData: undefined,
             autoplay: youtubeAutoplay,
             embed: embed
         }
@@ -271,7 +271,7 @@ function generateProgressBar(elapsed, length, count) {
         if (i > playInt) playingBar += progressEmoji(0);
     }
     playingBar += " `" + Utilities.timeString(length / 1000) + "`";
-    return new Discord.MessageEmbed()
+    return new Discord.EmbedBuilder()
         .setColor([255, 0, 0])
         .setTitle(playingBar);
 }
