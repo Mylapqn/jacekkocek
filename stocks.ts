@@ -1,10 +1,10 @@
 import Canvas from "canvas";
 import axios from "axios";
-import * as Database from "./database.js";
-import * as Matoshi from "./matoshi.js";
-import * as Utilities from "./utilities.js";
-import * as Main from "./main.js";
-import { stockPresets } from "./stockPresets.js";
+import * as Database from "./database";
+import * as Matoshi from "./matoshi";
+import * as Utilities from "./utilities";
+import * as Main from "./main";
+import { stockPresets } from "./stockPresets";
 
 const stockApiKey = "c8oe5maad3iatn99i470";
 

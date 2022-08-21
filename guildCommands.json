@@ -23,6 +23,16 @@
             },
             {
                 "type": 1,
+                "name": "vote day",
+                "description": "Start a vote to choose the next kino day"
+            },
+            {
+                "type": 1,
+                "name": "vote film",
+                "description": "Start a vote to choose what to watch on the chosen kino day"
+            },
+            {
+                "type": 1,
                 "name": "remind",
                 "description": "Remind all people who want to watch the film",
                 "options": [

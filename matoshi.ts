@@ -1,4 +1,4 @@
-import * as Main from "./main.js";
+import * as Main from "./main";
 import * as Discord from "discord.js";
 import fs from "fs";
 

@@ -1,7 +1,7 @@
 import mysql from "promise-mysql";
-import { stockPresets } from "./stockPresets.js";
-import * as Utilities from "./utilities.js";
-import * as Kino from "./kino.js";
+import { stockPresets } from "./stockPresets";
+import * as Utilities from "./utilities";
+import * as Kino from "./kino";
 
 let connection: mysql.Connection;
 export async function init() {
@@ -81,7 +81,7 @@ export class KinoDatabase {
     }
 
     static async setEvent(event: Kino.Event) {
-        await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${dateToSql(event.date)}, date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
+        await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${event.date}, date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
     }
 }
 export class PollDatabase {

@@ -1,6 +1,6 @@
-import { client, updateKinoMessage, kinoData, letterEmoji, weekDayNames } from "./main.js"
-import * as Polls from "./polls.js"
-import * as Utilities from "./utilities.js"
+import { client, updateKinoMessage, kinoData, letterEmoji, weekDayNames } from "./main"
+import * as Polls from "./polls"
+import * as Utilities from "./utilities"
 
 export let reactionHandlers = {
     kino: data => {

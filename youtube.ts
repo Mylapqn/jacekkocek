@@ -2,8 +2,8 @@ import ytdl from "ytdl-core";
 import * as Discord from "discord.js";
 import * as DiscordVoice from "@discordjs/voice";
 import * as Https from "https";
-import * as Main from "./main.js";
-import * as Utilities from "./utilities.js";
+import * as Main from "./main";
+import * as Utilities from "./utilities";
 
 
 var nextYoutube;

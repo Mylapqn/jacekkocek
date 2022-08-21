@@ -1,22 +1,16 @@
 import { InviteGuild, Message, EmbedBuilder, TextChannel, User } from "discord.js";
-import * as Main from "./main.js";
-import * as Utilities from "./utilities.js"
-import * as Youtube from "./youtube.js"
+import * as Main from "./main";
+import * as Utilities from "./utilities"
+import * as Youtube from "./youtube"
 
 export class Poll {
-    id;
-    /**
-     * @type {Message}
-     */
-    message;
+    id: number;
+    message: Message;
     name = "Unnamed poll";
-    /**
-     * @type {PollOption[]}
-     */
-    options = [];
+    options: PollOption[] = [];
     totalVotes = 0;
 
-    constructor(name) {
+    constructor(name: string) {
         if (name && name != null)
             this.name = name;
         Poll.list.push(this);
@@ -40,17 +34,14 @@ export class Poll {
     updateMessage() {
         this.message.edit(this.generateMessage());
     }
-    /**
-     * @param {TextChannel} channel
-     */
-    async sendMessage(channel) {
+    async sendMessage(channel: TextChannel) {
         this.message = await channel.send(this.generateMessage());
         for (let i = 1; i <= this.options.length && i <= 9; i++) {
             this.message.react(Main.letterEmoji[i.toString()]);
         }
         return this.message;
     }
-    addOption(name) {
+    addOption(name: string) {
         if (this.options.length >= 9) throw new Error("Options limit reached");
         if (this.options.some(option => option.name == name)) throw new Error("Option already exists");
         let newOption = new PollOption(this, this.options.length, name);
@@ -61,7 +52,7 @@ export class Poll {
         }
         console.log(`Added option to poll "${this.name}" with name ${name}`);
     }
-    addVote(optionIndex, userId) {
+    addVote(optionIndex: number, userId: string) {
         if (optionIndex < this.options.length && optionIndex >= 0) {
             this.options[optionIndex].votes.push(new PollVote(this, optionIndex, userId));
             this.totalVotes++;
@@ -69,7 +60,7 @@ export class Poll {
             console.log(`Added vote to poll "${this.name}" from user ${userId} for option ${optionIndex}`);
         }
     }
-    removeVote(optionIndex, userId) {
+    removeVote(optionIndex: number, userId: string) {
         if (optionIndex < this.options.length && optionIndex >= 0) {
             for (let i = 0; i < this.options[optionIndex].votes.length; i++) {
                 const vote = this.options[optionIndex].votes[i];
@@ -86,25 +77,17 @@ export class Poll {
 
 
     static list = [];
-    static getPollFromMessage(message) {
+    static getPollFromMessage(message: Message) {
         return Poll.list.find(element => { return element.message === message });
     }
 }
 
 export class PollOption {
-    index;
-    name;
-    poll;
-    /**
-     * @type {PollVote[]}
-     */
-    votes = [];
-    /**
-     * @param {number} index
-     * @param {Poll} poll
-     * @param {string} name
-     */
-    constructor(poll, index, name) {
+    index: number;
+    name: string;
+    poll: Poll;
+    votes: PollVote[];
+    constructor(poll: Poll, index: number, name: string) {
         this.index = index;
         this.name = name;
         this.poll = poll;
@@ -112,15 +95,10 @@ export class PollOption {
 }
 
 export class PollVote {
-    option;
-    userId;
-    poll;
-    /**
-     * @param {Poll} poll
-     * @param {number} optionIndex
-     * @param {User} userId
-     */
-    constructor(poll, optionIndex, userId) {
+    option: PollOption;
+    userId: string;
+    poll: Poll;
+    constructor(poll: Poll, optionIndex: number, userId: string) {
         this.poll = poll;
         this.option = this.poll.options[optionIndex];
         this.userId = userId;

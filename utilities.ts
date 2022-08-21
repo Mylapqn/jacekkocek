@@ -1,5 +1,5 @@
 import { Channel, Guild, Message, TextChannel } from "discord.js";
-import * as Main from "./main.js";
+import * as Main from "./main";
 
 export function dateString(inputDate) {
     var minutes = inputDate.getMinutes();

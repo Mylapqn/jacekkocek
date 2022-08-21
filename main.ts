@@ -7,14 +7,15 @@ import ytdl from "ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
-import * as Database from "./database.js";
-import * as Stocks from "./stocks.js";
-import * as Matoshi from "./matoshi.js";
-import * as Youtube from "./youtube.js";
-import * as Utilities from "./utilities.js";
-import { calc, isCalc, setCalcContext } from "./calc.js";
-import * as Polls from "./polls.js";
-import { handleMessageReaction } from "./reactions.js";
+import * as Database from "./database";
+import * as Stocks from "./stocks";
+import * as Matoshi from "./matoshi";
+import * as Youtube from "./youtube";
+import * as Utilities from "./utilities";
+import { calc, isCalc, setCalcContext } from "./calc";
+import * as Polls from "./polls";
+import * as Kino from "./kino";
+import { handleMessageReaction } from "./reactions";
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -320,9 +321,9 @@ client.on('ready', () => {
     try {
       console.log(req.query);
       if (req.query.guild) {
-        let guild = client.guilds.cache.get(req.query.guild);
-        let voiceChannel = guild.channels.cache.get(req.query.channel);
-        let radioId = parseInt(req.query.station);
+        let guild = client.guilds.cache.get(req.query.guild as string);
+        let voiceChannel = guild.channels.cache.get(req.query.channel as string);
+        let radioId = parseInt(req.query.station as string);
         playStation(voiceChannel, radioId);
       }
       //let data = JSON.parse(req.body);
@@ -371,6 +372,15 @@ client.on('interactionCreate', interaction => {
     switch (interaction.commandName) {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
+          case "vote day": {
+            Kino.Event.fromCommand();
+            new Polls.Poll("");
+          }
+            break;
+          case "vote film": {
+
+          }
+            break;
           case "suggest": {
             let filmName = interaction.options.getString("film").toLowerCase();
             if (kinoPlaylist.has(filmName)) {
@@ -1192,18 +1202,18 @@ client.on('messageCreate', message => {
           break;
         }
         case "time": {
-          message.channel.send(Utilities.dateString(new Date(Date.now() - Utilities.getTimeOffset(new Date(), defaultTimeZone))));
-          message.channel.send(new Date().toString());
+          channel.send(Utilities.dateString(new Date(Date.now() - Utilities.getTimeOffset(new Date(), defaultTimeZone))));
+          channel.send(new Date().toString());
           break;
         }
         case "skip": {
           message.delete();
           let num = parseInt(argument);
           if (!isNaN(num)) {
-            Youtube.skip(message.guild, num, message.channel);
+            Youtube.skip(message.guild, num, channel);
           }
           else {
-            Youtube.skip(message.guild, 1, message.channel);
+            Youtube.skip(message.guild, 1, channel);
           }
           break;
         }
@@ -1232,7 +1242,7 @@ client.on('messageCreate', message => {
           let newPoll = new Polls.Poll(argument);
           //newPoll.addOption("Koče");
           //newPoll.addOption("Bloče");
-          newPoll.sendMessage(message.channel);
+          newPoll.sendMessage(channel);
           break;
         }
         default:
