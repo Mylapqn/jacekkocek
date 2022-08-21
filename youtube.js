@@ -266,7 +266,7 @@ function generateProgressBar(elapsed, length, count) {
     for (let i = 0; i < count; i++) {
         if (i < playInt) playingBar += progressEmoji(4);
         if (i == playInt) {
-            playingBar += progressEmoji(modulo + 1)
+            playingBar += progressEmoji(modulo + 1);
         }
         if (i > playInt) playingBar += progressEmoji(0);
     }

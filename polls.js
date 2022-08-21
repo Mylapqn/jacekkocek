@@ -32,7 +32,7 @@ export class Poll {
         for (const option of this.options) {
             let votes = option.votes.length;
             let percentage = Math.round((votes / (this.totalVotes || 1) * 100));
-            embed.description += "\n" + Youtube.progressEmoji(Math.round(percentage / 25)) + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name + " (" + votes + " votes - " + percentage + "%)"
+            embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + Youtube.progressEmoji(Math.round(percentage / 25)) + " **" + option.name + "** (" + votes + " votes - " + percentage + "%)"
         }
         return { embeds: [embed] };
     }
