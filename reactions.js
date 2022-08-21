@@ -47,7 +47,8 @@ export let reactionAddHandlers = {
                 }
             }
         } catch (error) {
-            throw new Error("Couldn't translate reaction to number");
+            console.error("Couldn't translate reaction to number");
+            //throw new Error("Couldn't translate reaction to number");
         }
     },
     koce: data => {
@@ -95,7 +96,8 @@ export let reactionRemoveHandlers = {
                 }
             }
         } catch (error) {
-            throw new Error("Couldn't translate reaction to number");
+            console.error("Couldn't translate reaction to number");
+            //throw new Error("Couldn't translate reaction to number");
         }
     },
     koce: data => {

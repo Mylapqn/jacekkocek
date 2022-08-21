@@ -264,14 +264,11 @@ function generateProgressBar(elapsed, length, count) {
     let playInt = Math.floor(playRatio * count);
     let modulo = Math.floor(playRatio * count * 4) % 4;
     for (let i = 0; i < count; i++) {
-        if (i < playInt) playingBar += "<:yt4:951917157216813056>";
+        if (i < playInt) playingBar += progressEmoji(4);
         if (i == playInt) {
-            if (modulo == 0) playingBar += "<:yt1:951917157212622858>";
-            if (modulo == 1) playingBar += "<:yt2:951917157275533352>";
-            if (modulo == 2) playingBar += "<:yt3:951917157279756378>";
-            if (modulo == 3) playingBar += "<:yt4:951917157216813056>";
+            playingBar += progressEmoji(modulo + 1)
         }
-        if (i > playInt) playingBar += "<:yt0:951917157304926238>";
+        if (i > playInt) playingBar += progressEmoji(0);
     }
     playingBar += " `" + Utilities.timeString(length / 1000) + "`";
     return new Discord.MessageEmbed()
@@ -302,6 +299,14 @@ export function skip(guild, amount, textChannel) {
             playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
         }
     }
+}
+
+export function progressEmoji(progress) {
+    if (progress == 0) return "<:yt0:951917157304926238>";
+    else if (progress == 1) return "<:yt1:951917157212622858>";
+    else if (progress == 2) return "<:yt2:951917157275533352>";
+    else if (progress == 3) return "<:yt3:951917157279756378>";
+    else if (progress == 4) return "<:yt4:951917157216813056>";
 }
 
 export function stop() {

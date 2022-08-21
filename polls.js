@@ -1,6 +1,7 @@
 import { InviteGuild, Message, MessageEmbed, TextChannel, User } from "discord.js";
 import * as Main from "./main.js";
 import * as Utilities from "./utilities.js"
+import * as Youtube from "./youtube.js"
 
 export class Poll {
     id;
@@ -29,7 +30,9 @@ export class Poll {
         if (this.options.length == 0) embed.description += "No options yet";
         if (this.options.length < 9) embed.setFooter({ text: "Reply to this message to add custom options" });
         for (const option of this.options) {
-            embed.description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name + " (" + option.votes.length + " votes - " + (option.votes.length / (this.totalVotes || 1) * 100).toFixed(0) + "%)"
+            let votes = option.votes.length;
+            let percentage = Math.round((votes / (this.totalVotes || 1) * 100));
+            embed.description += "\n" + Youtube.progressEmoji(Math.round(percentage / 25)) + Main.letterEmoji[(option.index + 1).toString()] + " " + option.name + " (" + votes + " votes - " + percentage + "%)"
         }
         return { embeds: [embed] };
     }
