@@ -803,7 +803,7 @@ client.on('messageCreate', message => {
     else if (message.type == "REPLY") {
       message.channel.messages.fetch(message.reference.messageId).then(repliedMessage => {
         let lowerCase = message.content.toLowerCase();
-        let poll = reactionFilters.poll(repliedMessage);
+        let poll = Polls.Poll.getPollFromMessage(repliedMessage);
         if (poll != undefined) {
           try {
             poll.addOption(message.content);

@@ -85,6 +85,9 @@ export class Poll {
 
 
     static list = [];
+    static getPollFromMessage(message) {
+        return Poll.list.find(element => { return element.message === message });
+    }
 }
 
 export class PollOption {
