@@ -1053,17 +1053,15 @@ client.on('messageCreate', message => {
         case "w2g":
           message.channel.send("No longer supported!");
           break;
-          //httpPost("https://w2g.tv/rooms/create.json").then(parsed => { message.channel.send(parsed) });
-
-          break;
+        //httpPost("https://w2g.tv/rooms/create.json").then(parsed => { message.channel.send(parsed) });
         case "nuke":
-          if (message.author.username != "RudolfJelin") {
+          if (message.author.id != "245616926485643264") {
             message.delete().then(() => {
               var argNumber = 1;
               argNumber = parseInt(argument);
               if (isNaN(argNumber)) argNumber = 0;
               if (argNumber > 0) {
-                if (argNumber > 20 && message.author.tag != "Mylapqn#5546") argNumber = 20;
+                if (argNumber > 20 && message.author.id != "532918953014722560") argNumber = 20;
                 console.log("Deleting " + argNumber + " last messages in #" + channel.name + ", command by " + message.author.username);
                 message.channel.messages.fetch({ limit: argNumber }).then(messages => {
 
