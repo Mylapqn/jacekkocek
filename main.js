@@ -202,11 +202,11 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.17.5",
-  releaseDate: "11.3.2022",
+  version: "1.18.1",
+  releaseDate: "21.8.2022",
   commands: ["help"],
   changes: [
-    " ",
+    "Added poll system",
   ]
 };
 
