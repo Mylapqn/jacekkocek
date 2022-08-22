@@ -805,36 +805,36 @@ client.on('messageCreate', message => {
   if (message.author.id != client.user.id && channel instanceof Discord.TextChannel) {
 
     if (message.mentions.has(client.user) && message.type != Discord.MessageType.Reply) {
-      message.channel.send(message.author.toString());
+      channel.send(message.author.toString());
     }
     else if (message.content === ':gif2:') {
 
       kocek++;
 
-      //message.channel.send(message.author.username,{files:[{attachment:message.author.displayAvatarURL()}],embed:{title:"kok",color:15158332,image:{url:message.author.displayAvatarURL()},fields:[{name:"ko",value:"text"}]}});
+      //channel.send(message.author.username,{files:[{attachment:message.author.displayAvatarURL()}],embed:{title:"kok",color:15158332,image:{url:message.author.displayAvatarURL()},fields:[{name:"ko",value:"text"}]}});
       //console.log("authro:" + message.author.username);
       //message.react("😌");
       //message.react("728583366030393414");
       message.delete();
-      message.channel.send(client.emojis.cache.get("728583366030393414").toString());
+      channel.send(client.emojis.cache.get("728583366030393414").toString());
 
 
-      //message.channel.send(client.emojis.get("728583366030393414"));
+      //channel.send(client.emojis.get("728583366030393414"));
     }
     else if (message.content === ':spin:') {
 
       message.delete();
-      message.channel.send(client.emojis.cache.get("708663999201411122").toString());
+      channel.send(client.emojis.cache.get("708663999201411122").toString());
 
     }
     else if (message.content === ':loading:') {
 
       message.delete();
-      message.channel.send(client.emojis.cache.get("772234862652424203").toString());
+      channel.send(client.emojis.cache.get("772234862652424203").toString());
 
     }
     else if (message.type == Discord.MessageType.Reply) {
-      message.channel.messages.fetch(message.reference.messageId).then(repliedMessage => {
+      channel.messages.fetch(message.reference.messageId).then(repliedMessage => {
         let lowerCase = message.content.toLowerCase();
         let poll = Polls.Poll.getPollFromMessage(repliedMessage);
         if (poll != undefined) {
@@ -842,7 +842,7 @@ client.on('messageCreate', message => {
             poll.addOption(message.content);
             message.delete();
           } catch (error) {
-            message.channel.send(error.name + ": " + error.message);
+            channel.send(error.name + ": " + error.message);
           }
         }
         if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
@@ -875,7 +875,7 @@ client.on('messageCreate', message => {
                   message.reply({ files: ["./outputImg.jpg"] }).then(
                     function () { fs.unlink("./outputImg.jpg", null) });
                 });
-            }).catch(error => { message.channel.send(error.name + ": " + error.message) })
+            }).catch(error => { channel.send(error.name + ": " + error.message) })
           }
 
         }
@@ -896,7 +896,7 @@ client.on('messageCreate', message => {
       switch (command) {
         case "cheese":
           message.delete();
-          message.channel.send({
+          channel.send({
             embeds: [{
               title: "Cheese",
               color: 0xFEB502,
@@ -906,17 +906,17 @@ client.on('messageCreate', message => {
           break;
         case "say":
           message.delete();
-          message.channel.send(argument);
+          channel.send(argument);
           break;
         case "spell":
           message.delete().then(() => {
             argument = argument.replace(/ /g, "").toLowerCase();
             console.log("Sanitized argument: " + argument);
-            message.channel.messages.fetch({ limit: 1 }).then(messages => {
+            channel.messages.fetch({ limit: 1 }).then(messages => {
 
               var previousMessage = messages.values()[0];
               for (var i = 0; i < argument.length; i++) {
-                //message.channel.send(argument.charAt(i));
+                //channel.send(argument.charAt(i));
                 previousMessage.react(letterEmoji[argument.charAt(i)]);
               }
 
@@ -935,7 +935,7 @@ client.on('messageCreate', message => {
             message.react("🆗");
             console.log(emoji.length);
           }
-          message.channel.send(result);
+          channel.send(result);
           console.log(result, emoji);
           break;
         case "changelog":
@@ -966,7 +966,7 @@ client.on('messageCreate', message => {
             changeChanges += str;
             changeChanges += "\n";
           });
-          message.channel.send({
+          channel.send({
             embeds: [
               {
                 color: 0x18C3B1,
@@ -1008,7 +1008,7 @@ client.on('messageCreate', message => {
             });
 
 
-            message.channel.send({
+            channel.send({
               embeds: [{
                 color: 0x18C3B1,
                 title: "Help", description: "Type `" + prefix + "help <command>` to get further info on a command", fields: [
@@ -1025,7 +1025,7 @@ client.on('messageCreate', message => {
 
           }
           else if (argument == "help") {
-            message.channel.send("If you use " + prefix + "help to get help for " + prefix + "help you need help");
+            channel.send("If you use " + prefix + "help to get help for " + prefix + "help you need help");
           }
           else {
             var cleanArg;
@@ -1035,7 +1035,7 @@ client.on('messageCreate', message => {
             else cleanArg = argument;
             var c = findCommand(cleanArg);
             if (c != null) {
-              message.channel.send({
+              channel.send({
                 embeds: [{
                   title: "Help - " + c.name, description: (c.longDescription != null ? c.longDescription : c.description)
                 }]
@@ -1043,7 +1043,7 @@ client.on('messageCreate', message => {
 
             }
             else {
-              message.channel.send("`" + argument + "` is not a command!");
+              channel.send("`" + argument + "` is not a command!");
             }
           }
           break;
@@ -1061,9 +1061,9 @@ client.on('messageCreate', message => {
           startGoogleSearch(argument, message, 2);
           break;
         case "w2g":
-          message.channel.send("No longer supported!");
+          channel.send("No longer supported!");
           break;
-        //httpPost("https://w2g.tv/rooms/create.json").then(parsed => { message.channel.send(parsed) });
+        //httpPost("https://w2g.tv/rooms/create.json").then(parsed => { channel.send(parsed) });
         case "nuke":
           if (message.author.id != "245616926485643264") {
             message.delete().then(() => {
@@ -1073,12 +1073,12 @@ client.on('messageCreate', message => {
               if (argNumber > 0) {
                 if (argNumber > 20 && message.author.id != "532918953014722560") argNumber = 20;
                 console.log("Deleting " + argNumber + " last messages in #" + channel.name + ", command by " + message.author.username);
-                message.channel.messages.fetch({ limit: argNumber }).then(messages => {
+                channel.messages.fetch({ limit: argNumber }).then(messages => {
 
                   var previousMessages = Array.from(messages.values());
                   for (var i = 0; i < argNumber; i++) {
                     var reacts = Array.from(previousMessages[i].reactions.cache.mapValues(reaction => reaction.emoji.name).values());
-                    //message.channel.send(argument.charAt(i));
+                    //channel.send(argument.charAt(i));
                     previousMessages[i].delete();
                     if (reacts.includes("♋")) break;
                   }
@@ -1087,7 +1087,7 @@ client.on('messageCreate', message => {
                 /*channel.fetch().then(channel => {for (var i = 0; i < argNumber; i++) {
                   let lastMessage= channel.lastMessage;
                   var reacts = lastMessage.reactions.cache.mapValues(reaction => reaction._emoji.name).array();
-                  //message.channel.send(argument.charAt(i));
+                  //channel.send(argument.charAt(i));
                   lastMessage.delete();
                   if (reacts.includes("♋")) break;
                 }});*/
@@ -1098,7 +1098,7 @@ client.on('messageCreate', message => {
             });
           }
           else {
-            message.channel.send("cringe");
+            channel.send("cringe");
           }
           break;
 
@@ -1130,19 +1130,19 @@ client.on('messageCreate', message => {
         case "song": {
           message.delete();
           if (message.member.voice.channel)
-            mlpSong(message.member.voice.channel, argument, false, message.channel);
+            mlpSong(message.member.voice.channel, argument, false, channel);
           break;
         }
         case "songs": {
           message.delete();
           if (message.member.voice.channel)
-            mlpSong(message.member.voice.channel, argument, true, message.channel);
+            mlpSong(message.member.voice.channel, argument, true, channel);
           break;
         }
         case "mlpRadio": {
           message.delete();
           if (message.member.voice.channel)
-            playRadio(message.member.voice.channel, message.channel);
+            playRadio(message.member.voice.channel, channel);
           break;
         }
         case "mlpMix": {
@@ -1151,7 +1151,7 @@ client.on('messageCreate', message => {
             fs.existsSync("mlp-mix.ogg");
             voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
             //voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
-            message.channel.send({
+            channel.send({
               embeds: [{
                 title: "► " + "MLP Mix",
                 color: 0x9F65E0,
@@ -1171,7 +1171,7 @@ client.on('messageCreate', message => {
           if (connection) {
             connection.disconnect();
             message.delete();
-            message.channel.send("Stopped.");
+            channel.send("Stopped.");
           }
           Youtube.stop();
           if (radioTimer) clearTimeout(radioTimer);
@@ -1224,7 +1224,7 @@ client.on('messageCreate', message => {
           for (const rem of reminders) {
             msg += "• **" + rem.text + "** at <t:" + rem.timestamp + ">\n";
           }
-          message.channel.send({ content: msg, allowedMentions: { parse: [] } });
+          channel.send({ content: msg, allowedMentions: { parse: [] } });
           break;
         }
         case "restart": {
@@ -1234,7 +1234,7 @@ client.on('messageCreate', message => {
             });
           }
           else {
-            message.channel.send("insufficient permissions!");
+            channel.send("insufficient permissions!");
           }
           break;
         }
@@ -1246,7 +1246,7 @@ client.on('messageCreate', message => {
           break;
         }
         default:
-          message.channel.send("Unknown command :disappointed:");
+          channel.send("Unknown command :disappointed:");
 
       }
     }
@@ -1259,13 +1259,13 @@ client.on('messageCreate', message => {
         ctx.fillStyle = message.content;
         ctx.fillRect(0, 0, 100, 100);
         let buf = can.createPNGStream();
-        message.channel.send({ files: [buf] });
+        channel.send({ files: [buf] });
       }
 
     }
     else if (isCalc(message.content)) {
       let result = calc(message);
-      if (result) message.channel.send(result);
+      if (result) channel.send(result);
     }
   }
 });
