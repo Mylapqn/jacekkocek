@@ -8,7 +8,7 @@ const spreadsheetId = "1ErCX6oRJjDnEE_jJvFbhFAekOQieHo6kuoPqwfdiPoA";
 
 function doAuth() {
     auth = new google.auth.GoogleAuth({
-        keyFile: "credentials.json",
+        keyFile: "../credentials.json",
         scopes: "https://www.googleapis.com/auth/spreadsheets",
     });
     client = auth.getClient();

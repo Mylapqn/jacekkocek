@@ -1,11 +1,10 @@
 {
-    "target": "ES2017",
-    "sourceMap": true,
     "compilerOptions": {
+        "sourceMap": true,
+        "target": "ES2017",
         "module": "commonjs",
         "esModuleInterop": true,
+        "rootDir": "src",
+        "outDir": "dist",
     },
-    "include": [
-        "*.ts"
-    ]
 }
