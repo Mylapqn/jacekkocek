@@ -200,7 +200,7 @@ var helpAdminCommands = [
 ];
 
 var changelog = {
-  version: "1.18.1",
+  version: "1.18.2",
   releaseDate: "21.8.2022",
   commands: ["help"],
   changes: [
