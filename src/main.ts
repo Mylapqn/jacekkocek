@@ -31,6 +31,7 @@ intents.add(Intents.Guilds);
 intents.add(Intents.GuildEmojisAndStickers);
 intents.add(Intents.GuildVoiceStates);
 intents.add(Intents.GuildMembers);
+intents.add(Intents.MessageContent);
 export const client = new Discord.Client({ intents: intents });
 
 const updateGlobalCommands = false;
