@@ -31,6 +31,7 @@ intents.add(Intents.Guilds);
 intents.add(Intents.GuildEmojisAndStickers);
 intents.add(Intents.GuildVoiceStates);
 intents.add(Intents.GuildMembers);
+intents.add(Intents.MessageContent);
 export const client = new Discord.Client({ intents: intents });
 
 const updateGlobalCommands = false;
@@ -338,7 +339,7 @@ client.on('ready', () => {
   })
 
   afrGuild = client.guilds.cache.get('549589656606343178');
-  client.guilds.cache.get('728312628413333584').emojis.fetch();
+  if(process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.cache.get('728312628413333584').emojis.fetch();
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
   client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
   startDate = new Date();
