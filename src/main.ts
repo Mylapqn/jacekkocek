@@ -212,61 +212,61 @@ var changelog = {
 var radioStations = [
   {
     name: "Evropa 2",
-    color: [60, 80, 220],
+    color: 0x3C50DC,
     url: "http://ice.actve.net/fm-evropa2-128"
   },
   {
     name: "Anime Radio 1 ヾ(⌒∇⌒*)♪",
-    color: [235, 135, 180],
+    color: 0xEB87B4,
     //url: "https://japanimradiotokyo.fr/8002/stream"
     //url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
     url: "https://listen.moe/stream"
   },
   {
     name: "Anime Radio 2 ♪(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
-    color: [235, 135, 180],
+    color: 0xEB87B4,
     //url: "https://japanimradiotokyo.fr/8002/stream"
     //url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
     url: "https://kathy.torontocast.com:3060/;"
   },
   {
     name: "Anime Radio 3 ☆٩(◕‿◕｡)۶☆",
-    color: [235, 135, 180],
+    color: 0xEB87B4,
     url: "http://79.111.119.111:8002/anime"
   },
   {
     name: "SOCKENSCHUSS X",
-    color: [100, 0, 180],
+    color: 0x6400B4,
     url: "https://stream.laut.fm/sockenschuss-x"
   },
   {
     name: "Nightdrive",
-    color: [0, 0, 0],
+    color: 0x000000,
     url: "https://stream.laut.fm/nightdrive"
   },
   {
     name: "Instrumental Radio",
-    color: [67, 209, 204],
+    color: 0x43D1CC,
     url: "http://agnes.torontocast.com:8151/;"
   },
   {
     name: "Radcap Synthwave",
-    color: [200, 0, 70],
+    color: 0xC80046,
     url: "http://79.120.39.202:8002/retrowave"
   },
   {
     name: "Radcap Space",
-    color: [200, 0, 70],
+    color: 0xC80046,
     url: "http://79.111.119.111:8002/spacemusic"
   },
   {
     name: "Radcap Spacesynth",
-    color: [200, 0, 70],
+    color: 0xC80046,
     url: "http://79.120.39.202:8002/spacesynth"
   },
   {
     name: "Cinemix",
-    color: [25, 117, 145],
+    color: 0x197591,
     url: "https://kathy.torontocast.com:1825/stream"
   },
 
