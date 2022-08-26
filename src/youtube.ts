@@ -79,10 +79,11 @@ function playPlaylist(playlistUrl: string, channel: Discord.VoiceChannel) {
     })
 }
 
-function playYoutube(videoUrl, channel) {
+function playYoutube(videoUrl: string, channel: Discord.VoiceChannel) {
     console.log("playing " + videoUrl);
     let videoStream = ytdl(videoUrl, { filter: "audioonly", highWaterMark: 10e6 });
-    videoStream.on("info", (info) => {
+    videoStream.on("info", (info: ytdl.videoInfo) => {
+        console.log("info" + info);
         let vidId = info.videoDetails.videoId;
         if (!youtubeRecent.includes(vidId)) {
             youtubeRecent.push(vidId);
@@ -90,8 +91,7 @@ function playYoutube(videoUrl, channel) {
                 youtubeRecent.shift();
             }
         }
-        console.log("info" + info);
-        let length = info.videoDetails.lengthSeconds;
+        let length = parseInt(info.videoDetails.lengthSeconds);
         let lenString = Utilities.timeString(length);
         let embed = new Discord.EmbedBuilder()
             .setColor([255, 0, 0])
@@ -153,7 +153,7 @@ function playYoutube(videoUrl, channel) {
             let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
             videoStream.on("finish", () => {
             });
-            nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (parseInt(length) + 3) * 1000);
+            nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (length + 3) * 1000);
             nextYoutubeData = { url: nextUrl, channel: channel };
             newPlaying.nextUrl = nextYoutube;
             newPlaying.nextData = nextYoutubeData;
