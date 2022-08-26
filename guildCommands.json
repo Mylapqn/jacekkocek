@@ -23,20 +23,13 @@
             },
             {
                 "type": 1,
-                "name": "vote",
-                "description": "Start a vote",
-                "options": [
-                    {
-                        "type": 1,
-                        "name": "day",
-                        "description": "Start a vote to choose the next kino day"
-                    },
-                    {
-                        "type": 1,
-                        "name": "film",
-                        "description": "Start a vote to choose what to watch on the chosen kino day"
-                    }
-                ]
+                "name": "vote-day",
+                "description": "Start a vote to choose the next kino day"
+            },
+            {
+                "type": 1,
+                "name": "vote-film",
+                "description": "Start a vote to choose what to watch on the chosen kino day"
             },
             {
                 "type": 1,
