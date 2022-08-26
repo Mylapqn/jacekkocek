@@ -1,4 +1,5 @@
-import { google, sheets_v4 } from "googleapis";
+import { sheets_v4, sheets } from "@googleapis/sheets";
+import { GoogleAuth } from "google-auth-library";
 
 let auth;
 let client;
@@ -7,12 +8,12 @@ const spreadsheetId = "1ErCX6oRJjDnEE_jJvFbhFAekOQieHo6kuoPqwfdiPoA";
 
 
 function doAuth() {
-    auth = new google.auth.GoogleAuth({
-        keyFile: "../credentials.json",
+    auth = new GoogleAuth({
+        keyFile: "credentials.json",
         scopes: "https://www.googleapis.com/auth/spreadsheets",
     });
     client = auth.getClient();
-    googleSheets = google.sheets({ version: "v4", auth: client });
+    googleSheets = sheets({ version: "v4", auth: client });
 }
 
 async function getTodayIndex() {
@@ -32,12 +33,12 @@ async function getTodayIndex() {
     return todayIndex;
 }
 
-async function getDayScores(){
-    let output = new Map<string,number>();
+async function getDayScores() {
+    let output = new Map<string, number>();
     let result = await googleSheets.spreadsheets.values.get({
         auth,
         spreadsheetId,
-        range: "Test!B"+await getTodayIndex()+":J",
+        range: "Test!B" + await getTodayIndex() + ":J",
         valueRenderOption: "FORMATTED_VALUE"
 
     });
