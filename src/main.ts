@@ -339,7 +339,7 @@ client.on('ready', () => {
   })
 
   afrGuild = client.guilds.cache.get('549589656606343178');
-  if(process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.cache.get('728312628413333584').emojis.fetch();
+  if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.cache.get('728312628413333584').emojis.fetch();
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
   client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
   startDate = new Date();
@@ -1092,9 +1092,6 @@ client.on('messageCreate', message => {
                   lastMessage.delete();
                   if (reacts.includes("♋")) break;
                 }});*/
-
-
-
               }
             });
           }
@@ -1366,7 +1363,7 @@ async function executeReminder(rem) {
   let toSend = {
     embeds: [{
       title: "Reminder",
-      color: [24, 195, 177],
+      color: [0x18C3B1],
       description: rem.text
     }]
     if (mentions != "") {
@@ -1653,8 +1650,8 @@ function radioApiKeyGet() {
 
 function alternateFluttershyColor() {
   fluttershy = !fluttershy;
-  if (fluttershy) return [243, 228, 136];
-  else return [229, 129, 177];
+  if (fluttershy) return 0xF3E488;
+  else return 0xE581B1;
 }
 
 function playStation(voice, id) {
@@ -1662,7 +1659,7 @@ function playStation(voice, id) {
   if (typeof (id) == "string") {
     station = {
       name: "Custom Station",
-      color: [128, 128, 128],
+      color: 0x808080,
       url: id
     };
   }

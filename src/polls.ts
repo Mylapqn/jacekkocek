@@ -16,7 +16,7 @@ export class Poll {
         Poll.list.push(this);
     }
     generateMessage() {
-        let embed = new EmbedBuilder().setColor([24, 195, 177]).setTitle(this.name)
+        let embed = new EmbedBuilder().setColor(0x18C3B1).setTitle(this.name)
         let description = "";
         /*for (const option of this.options) {
             newMessage += "\n`" + (option.index + 1) + "`: " + option.name

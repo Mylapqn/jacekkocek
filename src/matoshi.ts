@@ -114,7 +114,7 @@ async function paymentMessage(data) {
         .addFields({ name: "From >>", value: "<@" + from.id + ">", inline: true })
         .addFields({ name: ">> To", value: "<@" + to.id + ">", inline: true })
         .setFooter({ text: "Only " + from.displayName + " can confirm this payment." })
-        .setColor([24, 195, 177])
+        .setColor(0x18C3B1)
     let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents([
         new Discord.ButtonBuilder()
             .setCustomId("acceptPayment")

@@ -94,7 +94,7 @@ function playYoutube(videoUrl: string, channel: Discord.VoiceChannel) {
         let length = parseInt(info.videoDetails.lengthSeconds);
         let lenString = Utilities.timeString(length);
         let embed = new Discord.EmbedBuilder()
-            .setColor([255, 0, 0])
+            .setColor(0xFF0000)
             .setTitle("► " + info.videoDetails.title)
             .setDescription(lenString + ' | From *' + info.videoDetails.ownerChannelName + '*')
             .setURL(videoUrl);
@@ -272,13 +272,13 @@ function generateProgressBar(elapsed, length, count) {
     }
     playingBar += " `" + Utilities.timeString(length / 1000) + "`";
     return new Discord.EmbedBuilder()
-        .setColor([255, 0, 0])
+        .setColor(0xFF0000)
         .setTitle(playingBar);
 }
 
-export function skip(guild, amount, textChannel) {
+export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.TextChannel) {
     if (nextYoutube && (youtubeAutoplay || youtubePlaylist.length > 0)) {
-        let voice = guild.me.voice.channel;
+        let voice = guild.members.me.voice.channel;
         if (voice) {
             if (amount && youtubePlaylist.length > 0) {
                 //let num = parseInt(amount);
