@@ -843,6 +843,7 @@ client.on('messageCreate', message => {
             poll.addOption(message.content);
             message.delete();
           } catch (error) {
+            console.error(error);
             channel.send(error.name + ": " + error.message);
           }
         }
