@@ -1083,7 +1083,7 @@ client.on('messageCreate', message => {
                 console.log("Deleting " + argNumber + " last messages in " + channelName + ", command by " + message.author.username);
                 channel.messages.fetch({ limit: argNumber }).then(messages => {
 
-                  var previousMessages = Array.from(messages.values());
+                  var previousMessages = Array.from(messages.values()) as Discord.Message[];
                   for (var i = 0; i < argNumber; i++) {
                     var reacts = Array.from(previousMessages[i].reactions.cache.mapValues(reaction => reaction.emoji.name).values());
                     //channel.send(argument.charAt(i));
