@@ -802,8 +802,8 @@ client.on('interactionCreate', interaction => {
 });
 
 client.on('messageCreate', message => {
-  const channel = message.channel;
-  if (message.author.id != client.user.id && channel instanceof Discord.TextChannel) {
+  const channel = message.channel as Discord.TextBasedChannel;
+  if (message.author.id != client.user.id) {
 
     if (message.mentions.has(client.user) && message.type != Discord.MessageType.Reply) {
       channel.send(message.author.toString());
@@ -1074,7 +1074,13 @@ client.on('messageCreate', message => {
               if (isNaN(argNumber)) argNumber = 0;
               if (argNumber > 0) {
                 if (argNumber > 20 && message.author.id != "532918953014722560") argNumber = 20;
-                console.log("Deleting " + argNumber + " last messages in #" + channel.name + ", command by " + message.author.username);
+                let channelName = channel.id;
+                if (Utilities.isActualChannel(channel))
+                  channelName = "#" + channel.name;
+                else if (channel.isDMBased()) {
+                  channelName = "DM with " + channel.recipient.username;
+                }
+                console.log("Deleting " + argNumber + " last messages in " + channelName + ", command by " + message.author.username);
                 channel.messages.fetch({ limit: argNumber }).then(messages => {
 
                   var previousMessages = Array.from(messages.values());
@@ -1109,9 +1115,9 @@ client.on('messageCreate', message => {
             message.member.voice.channel.join().then(voice => {
               message.delete();
               //voicePlay(voice,"https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", { volume: 0.2 });
-    
+         
               voicePlay(voice, "http://uk1.internet-radio.com:8004/live", { volume: 0.063 });
-    
+         
             }, function (e) { console.log("REJECTED!!!", e) });
             */
 

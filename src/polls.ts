@@ -1,4 +1,4 @@
-import { InviteGuild, Message, EmbedBuilder, TextChannel, User } from "discord.js";
+import { InviteGuild, Message, EmbedBuilder, TextChannel, User, TextBasedChannel } from "discord.js";
 import * as Main from "./main";
 import * as Utilities from "./utilities"
 import * as Youtube from "./youtube"
@@ -34,7 +34,7 @@ export class Poll {
     updateMessage() {
         this.message.edit(this.generateMessage());
     }
-    async sendMessage(channel: TextChannel) {
+    async sendMessage(channel: TextBasedChannel) {
         this.message = await channel.send(this.generateMessage());
         for (let i = 1; i <= this.options.length && i <= 9; i++) {
             this.message.react(Main.letterEmoji[i.toString()]);

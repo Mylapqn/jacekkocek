@@ -1,4 +1,4 @@
-import { Channel, Guild, Message, TextChannel } from "discord.js";
+import { Channel, Guild, Message, TextBasedChannel, TextChannel, ThreadChannel, NewsChannel } from "discord.js";
 import * as Main from "./main";
 
 export function dateString(inputDate) {
@@ -85,4 +85,8 @@ export async function fetchMessage(guildId, channelId, messageId) {
  */
 export function matchMessages(a, b) {
     return a.id == b.id && a.channelId == b.channelId && a.guildId == b.guildId
+}
+
+export function isActualChannel(channel: any): channel is TextChannel | ThreadChannel | NewsChannel {
+    return (channel instanceof TextChannel || channel instanceof ThreadChannel || channel instanceof NewsChannel);
 }

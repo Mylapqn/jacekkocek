@@ -276,7 +276,7 @@ function generateProgressBar(elapsed, length, count) {
         .setTitle(playingBar);
 }
 
-export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.TextChannel) {
+export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.TextBasedChannel) {
     if (nextYoutube && (youtubeAutoplay || youtubePlaylist.length > 0)) {
         let voice = guild.members.me.voice.channel;
         if (voice) {
