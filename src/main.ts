@@ -339,7 +339,7 @@ client.on('ready', () => {
   })
 
   afrGuild = client.guilds.cache.get('549589656606343178');
-  if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.cache.get('728312628413333584').emojis.fetch();
+  if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
   client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
   startDate = new Date();
