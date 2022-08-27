@@ -441,7 +441,7 @@ client.on('interactionCreate', interaction => {
               else if (time > 0) {
                 let remText = newMessage;
                 let newRem = {
-                  guild: interaction.guildId,
+                  //guild: interaction.guildId,
                   channel: interaction.channelId,
                   text: remText,
                   timestamp: Math.round(nowSeconds() + time),
@@ -565,8 +565,9 @@ client.on('interactionCreate', interaction => {
           let remText = interaction.options.getString("text").trim();
           if (remText == "") remText = "Unnamed reminder";
           let newRem = {
-            guild: interaction.guildId,
+            //guild: interaction.guildId,
             channel: interaction.channelId,
+            dm: interaction.channel.id,
             text: remText,
             timestamp: Math.round(nowSeconds() + time),
             mentions: []
@@ -1359,7 +1360,7 @@ export function nowSeconds() {
 }
 
 async function executeReminder(rem) {
-  let channel = await Utilities.fetchChannel(rem.guild, rem.channel);
+  let channel = await client.channels.fetch(rem.channel) as Discord.TextBasedChannel;
   let toSend = "**Reminder: **" + rem.text;
   /*let mentions = "";
   if (rem.mentions) {
@@ -1422,7 +1423,7 @@ function saveReminders() {
   let f = [];
   for (const r of reminders) {
     f.push({
-      guild: r.guild,
+      //guild: r.guild,
       channel: r.channel,
       text: r.text,
       timestamp: r.timestamp,
