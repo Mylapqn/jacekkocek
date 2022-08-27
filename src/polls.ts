@@ -86,7 +86,7 @@ export class PollOption {
     index: number;
     name: string;
     poll: Poll;
-    votes: PollVote[];
+    votes: PollVote[] = [];
     constructor(poll: Poll, index: number, name: string) {
         this.index = index;
         this.name = name;
