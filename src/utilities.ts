@@ -1,7 +1,7 @@
 import { Channel, Guild, Message, TextBasedChannel, TextChannel, ThreadChannel, NewsChannel } from "discord.js";
 import * as Main from "./main";
 
-export function dateString(inputDate) {
+export function dateString(inputDate: Date) {
     var minutes = inputDate.getMinutes();
     var hours = inputDate.getHours();
     var day = inputDate.getDate();
@@ -10,7 +10,7 @@ export function dateString(inputDate) {
     return (day + "." + month + "." + year + " " + hours + ":" + addZero(minutes));
 }
 
-export function getTimeOffset(date, timeZone) {
+export function getTimeOffset(date: Date, timeZone: string) {
     const tz = date.toLocaleString("en", { timeZone, timeStyle: "long" }).split(" ").slice(-1)[0];
     const dateString = date.toString();
     let offset = Date.parse(`${dateString} ${tz}`) - Date.parse(`${dateString} UTC`);
@@ -19,20 +19,20 @@ export function getTimeOffset(date, timeZone) {
 /**
  * @param {String} phrase
  */
-export function toTitleCase(phrase) {
+export function toTitleCase(phrase: string) {
     return phrase
         .toLowerCase()
         .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 };
 
-export function randomInt(min, max) {
+export function randomInt(min: number, max: number) {
     return Math.round(Math.random() * (max - min) + min);
 }
 
-export function timeString(seconds) {
-    let output;
+export function timeString(seconds: number) {
+    let output: string;
     if (seconds >= 3600) {
         output = Math.floor(seconds / 3600) + ":" + addZero(Math.floor((seconds % 3600) / 60)) + ":" + addZero(Math.floor(seconds % 60));
     }
@@ -42,11 +42,11 @@ export function timeString(seconds) {
     return output;
 }
 
-export function addZero(x) {
+export function addZero(x: number) {
     return String(x).padStart(2, "0");
 }
 
-export function isValid(x) {
+export function isValid(x: number) {
     if (x == undefined || isNaN(x)) return false;
     else return true;
 }
