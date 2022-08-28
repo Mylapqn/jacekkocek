@@ -46,9 +46,9 @@ export let reactionHandlers = {
         let poll = Polls.Poll.getPollFromMessage(data.message);
         if (poll) {
             try {
-                console.log(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji }));
+                //console.log(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji }));
                 let index = parseInt(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji })[0]);
-                console.log(index);
+                //console.log(index);
                 if (Utilities.isValid(index)) {
                     try {
                         if (data.remove)
