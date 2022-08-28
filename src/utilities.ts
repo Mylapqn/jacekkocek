@@ -51,28 +51,8 @@ export function isValid(x) {
     else return true;
 }
 
-/**
- * @return {Promise<TextChannel>}
- */
-export async function fetchChannel(guildId, channelId) {
-    let guild;
-    try {
-        guild = await Main.client.guilds.fetch(guildId);
-    } catch (error) {
-        throw new Error("Cannot fetch guild");
-    }
-    try {
-        return await guild.channels.fetch(channelId);
-    } catch (error) {
-        throw new Error("Cannot fetch channel");
-    }
-}
-
-/**
- * @return {Promise<Message>}
- */
-export async function fetchMessage(guildId, channelId, messageId) {
-    let channel = await fetchChannel(guildId, channelId);
+export async function fetchMessage(channelId: string, messageId: any): Promise<Message> {
+    let channel = await Main.client.channels.fetch(channelId) as TextBasedChannel;
     try {
         return await channel.messages.fetch(messageId);
     } catch (error) {
@@ -83,8 +63,8 @@ export async function fetchMessage(guildId, channelId, messageId) {
  * @param {Message} a
  * @param {Message} b
  */
-export function matchMessages(a, b) {
-    return a.id == b.id && a.channelId == b.channelId && a.guildId == b.guildId
+export function matchMessages(a: Message, b: Message) {
+    return a.id == b.id && a.channelId == b.channelId
 }
 
 export function isActualChannel(channel: any): channel is TextChannel | ThreadChannel | NewsChannel {

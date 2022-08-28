@@ -567,7 +567,7 @@ client.on('interactionCreate', interaction => {
           let newRem = {
             //guild: interaction.guildId,
             channel: interaction.channelId,
-            dm: interaction.channel.id,
+            dm: interaction.channelId,
             text: remText,
             timestamp: Math.round(nowSeconds() + time),
             mentions: []
