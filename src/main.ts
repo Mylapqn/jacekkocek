@@ -808,12 +808,12 @@ client.on('interactionCreate', interaction => {
         interaction.channel.messages.fetch({ limit: maxDelete }).then(messages => {
           const previousMessages = Array.from(messages.values()) as Discord.Message[];
           const nukeIndex = previousMessages.findIndex(m => { return m.id == interaction.targetId });
-          if (nukeIndex < 0 || nukeIndex > maxDelete) {
+          if (nukeIndex < 0 || nukeIndex >= maxDelete) {
             interaction.reply({ content: "Cannot nuke this far!", ephemeral: true });
           }
           else {
             interaction.reply({ content: "Nuking " + (nukeIndex + 1) + " messages", ephemeral: true });
-            for (let i = 0; i < nukeIndex; i++) {
+            for (let i = 0; i <= nukeIndex; i++) {
               previousMessages[i].delete();
             }
           }
