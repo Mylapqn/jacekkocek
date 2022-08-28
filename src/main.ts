@@ -36,7 +36,7 @@ export const client = new Discord.Client({ intents: intents });
 
 const updateGlobalCommands = false;
 const commandsToDeleteGlobal = [];
-const commandsToDeleteGuild = [];
+const commandsToDeleteGuild = ["JacekKocek"];
 
 export let afrGuild: Discord.Guild;
 
@@ -737,7 +737,7 @@ client.on('interactionCreate', interaction => {
       }
     }
   }
-  if (interaction.isButton()) {
+  else if (interaction.isButton()) {
     switch (interaction.customId) {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
@@ -797,6 +797,13 @@ client.on('interactionCreate', interaction => {
           }
         }
         break;
+      }
+    }
+  }
+  else if (interaction.isContextMenuCommand()) {
+    switch (interaction.commandName) {
+      case "Nuke Here": {
+        interaction.reply("Nuked");
       }
     }
   }
