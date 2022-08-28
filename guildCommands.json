@@ -319,5 +319,13 @@
                 "description": "Display the list of available stocks"
             }
         ]
+    },
+    {
+        "name": "NukeHere",
+        "type": 3
+    },
+    {
+        "name": "JacekKocek",
+        "type": 2
     }
 ]

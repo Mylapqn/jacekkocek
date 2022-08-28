@@ -44,6 +44,11 @@ export class Poll {
     addOption(name: string) {
         if (this.options.length >= 9) throw new Error("Options limit reached");
         if (this.options.some(option => option.name == name)) throw new Error("Option already exists");
+        name = name.replace(/[\r\n]/gm, '');
+        name.trim();
+        if (name.length > 244) {
+            name = name.substring(0, 240) + "...";
+        }
         let newOption = new PollOption(this, this.options.length, name);
         this.options.push(newOption);
         if (this.message != undefined) {
