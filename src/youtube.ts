@@ -246,10 +246,15 @@ function search(argument) {
     });
 }
 
-function updateMessage(data) {
+async function updateMessage(data) {
     data.elapsed = Math.min(data.elapsed + barUpdateInterval, data.length);
-    if (data.statusMsg) {
-        data.statusMsg.edit({ embeds: [data.embed, generateProgressBar(data.elapsed, data.length, 9)] })
+    if (data.statusMsg && data.statusMsg.editable) {
+        try {
+            await data.statusMsg.edit({ embeds: [data.embed, generateProgressBar(data.elapsed, data.length, 9)] })
+        } catch (error) {
+            console.error("Youtube bar update error: ", error);
+            clearInterval(data.barInterval);
+        }
     }
     //console.log("Played " + data.elapsed / 1000 + "s out of" + data.length / 1000 + "s");
     if (data.elapsed >= data.length) {
