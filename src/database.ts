@@ -10,10 +10,13 @@ let connection: mysql.Connection;
 export async function init() {
     connection = await mysql.createConnection({ host: "localhost", user: "jacekkocek", password: process.env.DBPASSWORD, database: "jacekkocek" });
 
+    PollDatabase.loadPolls();
     //TEMP FIX FOR TIMEOUT
     setInterval(() => {
         connection.query(`SELECT * FROM Users WHERE id=\"0\"`);
     }, 1000 * 3600 * 2);
+
+
 }
 
 async function createUser(id) {
@@ -116,7 +119,7 @@ export class PollDatabase {
         }
 
         console.log(Polls.Poll.list);
-        
+
     }
 
     static async addOption(option: Polls.PollOption) {

@@ -323,7 +323,6 @@ client.on('ready', () => {
   Stocks.init();
   Database.init();
   Matoshi.init();
-  Database.PollDatabase.loadPolls();
 
   httpServer.get("/radio/play", (req, res) => {
     try {
