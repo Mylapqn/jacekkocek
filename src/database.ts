@@ -131,7 +131,7 @@ export class PollDatabase {
     }
 
     static async removeVote(vote: Polls.PollVote) {
-        await connection.query(`DELETE FROM PollVotes WHERE user=\"${vote.userId}\" poll=${vote.poll.id} AND option_index=${vote.option.index}`);
+        await connection.query(`DELETE FROM PollVotes WHERE user=\"${vote.userId}\" AND poll=${vote.poll.id} AND option_index=${vote.option.index}`);
     }
 }
 
