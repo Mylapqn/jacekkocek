@@ -19,7 +19,7 @@ export class Poll {
 
     static async fromMessage(interaction: ChatInputCommandInteraction) {
         let poll = new Poll(interaction.options.getString("name"));
-        Database.PollDatabase.createPoll(poll);
+        await Database.PollDatabase.createPoll(poll);
         for (let i = 1; i < 10; i++) {
             let optionName = interaction.options.getString("option" + i);
             if (!optionName) continue;
@@ -54,6 +54,7 @@ export class Poll {
         }
         return this.message;
     }
+
     addOption(name: string) {
         if (this.options.length >= 9) throw new Error("Options limit reached");
         if (this.options.some(option => option.name == name)) throw new Error("Option already exists");
@@ -70,7 +71,9 @@ export class Poll {
         }
         Database.PollDatabase.addOption(newOption);
         console.log(`Added option to poll "${this.name}" with name ${name}`);
+        return newOption;
     }
+
     addVote(optionIndex: number, userId: string) {
         if (optionIndex < this.options.length && optionIndex >= 0) {
             let newVote = new PollVote(this, optionIndex, userId)
