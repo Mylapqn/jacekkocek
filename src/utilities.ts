@@ -2,12 +2,18 @@ import { Channel, Guild, Message, TextBasedChannel, TextChannel, ThreadChannel, 
 import * as Main from "./main";
 
 export function dateString(inputDate: Date) {
-    var minutes = inputDate.getMinutes();
-    var hours = inputDate.getHours();
-    var day = inputDate.getDate();
-    var month = inputDate.getMonth() + 1;
-    var year = inputDate.getFullYear();
+    let minutes = inputDate.getMinutes();
+    let hours = inputDate.getHours();
+    let day = inputDate.getDate();
+    let month = inputDate.getMonth() + 1;
+    let year = inputDate.getFullYear();
     return (day + "." + month + "." + year + " " + hours + ":" + addZero(minutes));
+}
+
+export function simpleDateString(inputDate: Date) {
+    let day = inputDate.getDate();
+    let month = inputDate.getMonth() + 1;
+    return (day + "." + month + ".");
 }
 
 export function getTimeOffset(date: Date, timeZone: string) {
@@ -66,4 +72,30 @@ export function matchMessages(a: Message, b: Message) {
 
 export function isActualChannel(channel: any): channel is TextChannel | ThreadChannel | NewsChannel {
     return (channel instanceof TextChannel || channel instanceof ThreadChannel || channel instanceof NewsChannel);
+}
+
+export function dayFromKinoString(text: string): Date {
+    let day = parseInt(text.split('.')[0]);
+    let month = parseInt(text.split('.')[1]);
+    let now = new Date();
+
+    let yearOffset = 0;
+
+    if (month < now.getMonth() + 1) yearOffset++;
+
+    let output = new Date();
+    output.setFullYear(now.getFullYear() + yearOffset, month - 1, day);
+    return output;
+}
+
+export function weekdayEmoji(day) {
+    switch (day) {
+        case 1: return "<:po:767907091469828106>";
+        case 2: return "<:ut:767907090709872661>";
+        case 3: return "<:st:767907091125895178>";
+        case 4: return "<:ct:767907091880476732>";
+        case 5: return "<:pa:767907093205614622>";
+        case 6: return "<:so:767907093222916126>";
+        case 7: return "<:ne:767907093352153118>";
+    }
 }

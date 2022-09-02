@@ -25,14 +25,12 @@ export class Event {
     async dateVote(interaction: Discord.ChatInputCommandInteraction) {
         this.datePoll = await Polls.Poll.fromCommand("Kdy kino?", interaction);
         let dayScores = await Sheets.getDayScores();
-        let sortedScores = [...dayScores.values()].sort((a,b)=>a-b);
-        let scoreTreshold = sortedScores[Math.min(sortedScores.length,5)];
-        scoreTreshold = Math.max(scoreTreshold, 70); //70+ jsou žlutý
-        let count = 0;
+        let sortedScores = [...dayScores.entries()].sort((a,b)=>a[1]-b[1]);
+        sortedScores = sortedScores.slice(0,Math.min(sortedScores.length,5));
+        let days = [...new Map(sortedScores).keys()];
         for (const [day, score] of dayScores) {
-            if(score >= scoreTreshold && count < 5){
-                count++;
-                this.datePoll.addOption(`${day} (${score})`);
+            if(days.includes(day)){
+                this.datePoll.addOption(`${Utilities.weekdayEmoji(day.getDay())} ${Utilities.simpleDateString(day)} (${score})`);
             }
         }
     }

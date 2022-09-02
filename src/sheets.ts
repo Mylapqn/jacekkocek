@@ -1,5 +1,6 @@
 import { sheets_v4, sheets } from "@googleapis/sheets";
 import { GoogleAuth } from "google-auth-library";
+import * as Utilities from "./utilities";
 
 let auth;
 let client;
@@ -33,9 +34,9 @@ async function getTodayIndex() {
     return todayIndex;
 }
 
-export async function getDayScores(): Promise<Map<string, number>> {
+export async function getDayScores(): Promise<Map<Date, number>> {
     doAuth();
-    let output = new Map<string, number>();
+    let output = new Map<Date, number>();
     let result = await googleSheets.spreadsheets.values.get({
         auth,
         spreadsheetId,
@@ -44,32 +45,9 @@ export async function getDayScores(): Promise<Map<string, number>> {
 
     });
     for (const line of result.data.values) {
-        output.set(line[0], parseInt(line[8]));
+        output.set(Utilities.dayFromKinoString(line[0]), parseInt(line[8]));
     }
     return output;
 }
-
-/*
-Map(18) {
-    '2.9.' => 0,
-    '3.9.' => 0,
-    '4.9.' => 0,
-    '5.9.' => 83,
-    '6.9.' => 83,
-    '7.9.' => 83,
-    '8.9.' => 83,
-    '9.9.' => 83,
-    '10.9.' => 83,
-    '11.9.' => 83,
-    '12.9.' => 62,
-    '13.9.' => 62,
-    '14.9.' => 62,
-    '15.9.' => 62,
-    '16.9.' => 62,
-    '17.9.' => 62,
-    '18.9.' => 62,
-    '19.9.' => 63
-  }
-*/
 
 //tsc src/sheets.ts && node src/sheets.js && del "src\\sheets.js"
