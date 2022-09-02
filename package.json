@@ -6,7 +6,7 @@
     "type": "commonjs",
     "scripts": {
         "commit": "commit.bat",
-        "build": "swc src -d dist"
+        "build": "tsc"
     },
     "author": "Mylapqn",
     "license": "MIT",

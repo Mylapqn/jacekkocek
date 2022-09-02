@@ -98,7 +98,7 @@ export class Poll {
         console.log(`Removed vote from poll "${this.name}" from user ${userId} for option ${optionIndex}`);
     }
 
-    static list = new Array<Poll>;
+    static list = new Array<Poll>();
     static getPollFromMessage(message: Message) {
         return Poll.list.find(element => { return Utilities.matchMessages(element.message, message) });
     }
