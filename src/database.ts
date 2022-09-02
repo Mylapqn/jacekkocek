@@ -2,6 +2,9 @@ import mysql from "promise-mysql";
 import { stockPresets } from "./stockPresets";
 import * as Utilities from "./utilities";
 import * as Kino from "./kino";
+import * as Polls from "./polls";
+import * as Main from "./main";
+import { Message } from "discord.js";
 
 let connection: mysql.Connection;
 export async function init() {
@@ -85,13 +88,63 @@ export class KinoDatabase {
     }
 }
 export class PollDatabase {
-    
+
+    static async createPoll(poll: Polls.Poll) {
+        await connection.query(`INSERT INTO Polls (message_id, name) VALUES (${messageToUid(poll.message)}, ${poll.name})`).catch(e => { console.log("Poll creation error: ", e) });
+        poll.id = await connection.query("SELECT LAST_INSERT_ID()")["LAST_INSERT_ID()"];
+    }
+
+    static async deletePoll(poll: Polls.Poll) {
+        await connection.query(`DELETE FROM Polls WHERE id=${poll.id}`);
+    }
+
+    static async loadPolls() {
+        let pollData: Array<Array<any>> = await connection.query(`SELECT * FROM Polls`);
+        for (const pollRow of pollData) {
+            let poll = new Polls.Poll(pollRow["name"])
+            poll.id = pollRow["id"];
+            poll.message = await messageFromUid(pollRow["message_id"]);
+            let options: Array<Array<any>> = await connection.query(`SELECT * FROM PollOptions WHERE poll=${poll.id}`);
+            for (const optionRow of options) {
+                let option = new Polls.PollOption(poll, optionRow["index"], optionRow["name"]);
+                poll.options.push(option);
+                let votes: Array<Array<any>> = await connection.query(`SELECT * FROM PollVotes WHERE poll=${poll.id} AND option_index=${option.index}`);
+                for (const voteRow of votes) {
+                    option.votes.push(new Polls.PollVote(poll, option.index, voteRow["user"]));
+                }
+            }
+        }
+
+        console.log(Polls.Poll.list);
+        
+    }
+
+    static async addOption(option: Polls.PollOption) {
+        await connection.query(`INSERT INTO PollOptions (index, poll, name) VALUES (${option.index}, ${option.poll.id}, ${option.name})`).catch(e => { console.log("PollOption creation error: ", e) });
+    }
+
+    static async addVote(vote: Polls.PollVote) {
+        await connection.query(`INSERT INTO PollVotes (user, poll, option_index) VALUES (${vote.userId}, ${vote.poll.id}, ${vote.option.index})`).catch(e => { console.log("PollVote creation error: ", e) });
+    }
+
+    static async removeVote(vote: Polls.PollVote) {
+        await connection.query(`DELETE FROM PollVotes WHERE user=${vote.userId} poll=${vote.poll.id} AND option_index=${vote.option.index}`);
+    }
 }
 
 
 /**
  * @param {Date} date
  */
-function dateToSql(date) {
+function dateToSql(date: Date) {
     return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay();
+}
+
+function messageToUid(message: Message): string {
+    return message.channelId + "/" + message.id;
+}
+
+async function messageFromUid(uid: string): Promise<Message> {
+    let ids = uid.split("/")
+    return await Utilities.fetchMessage(ids[0], ids[1]);
 }

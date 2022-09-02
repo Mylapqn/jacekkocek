@@ -1,4 +1,5 @@
-import { InviteGuild, Message, EmbedBuilder, TextChannel, User, TextBasedChannel } from "discord.js";
+import { InviteGuild, Message, EmbedBuilder, TextChannel, User, TextBasedChannel, CommandInteraction, ChatInputCommandInteraction } from "discord.js";
+import * as Database from "./database";
 import * as Main from "./main";
 import * as Utilities from "./utilities"
 import * as Youtube from "./youtube"
@@ -15,6 +16,18 @@ export class Poll {
             this.name = name;
         Poll.list.push(this);
     }
+
+    static async fromMessage(interaction: ChatInputCommandInteraction) {
+        let poll = new Poll(interaction.options.getString("name"));
+        Database.PollDatabase.createPoll(poll);
+        for (let i = 1; i < 10; i++) {
+            let optionName = interaction.options.getString("option" + i);
+            if (!optionName) break;
+            poll.addOption(optionName);
+        }
+        poll.sendMessage(interaction.channel);
+    }
+
     generateMessage() {
         let embed = new EmbedBuilder().setColor(0x18C3B1).setTitle(this.name)
         let description = "";
@@ -55,13 +68,16 @@ export class Poll {
             this.updateMessage();
             this.message.react(Main.letterEmoji[this.options.length.toString()]);
         }
+        Database.PollDatabase.addOption(newOption);
         console.log(`Added option to poll "${this.name}" with name ${name}`);
     }
     addVote(optionIndex: number, userId: string) {
         if (optionIndex < this.options.length && optionIndex >= 0) {
-            this.options[optionIndex].votes.push(new PollVote(this, optionIndex, userId));
+            let newVote = new PollVote(this, optionIndex, userId)
+            this.options[optionIndex].votes.push(newVote);
             this.totalVotes++;
             this.updateMessage();
+            Database.PollDatabase.addVote(newVote);
             console.log(`Added vote to poll "${this.name}" from user ${userId} for option ${optionIndex}`);
         }
     }
@@ -73,6 +89,7 @@ export class Poll {
                     this.options[optionIndex].votes.splice(i, 1);
                     this.totalVotes--;
                     this.updateMessage();
+                    Database.PollDatabase.removeVote(vote);
                     break;
                 }
             }
@@ -80,8 +97,7 @@ export class Poll {
         console.log(`Removed vote from poll "${this.name}" from user ${userId} for option ${optionIndex}`);
     }
 
-
-    static list = [];
+    static list = new Array<Poll>;
     static getPollFromMessage(message: Message) {
         return Poll.list.find(element => { return element.message === message });
     }

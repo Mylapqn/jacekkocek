@@ -314,9 +314,16 @@ client.login(process.env.DISCORD_API_KEY);
 
 client.on('ready', () => {
 
+  afrGuild = client.guilds.cache.get('549589656606343178');
+  if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
+  console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
+  client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
+  startDate = new Date();
+
   Stocks.init();
   Database.init();
   Matoshi.init();
+  Database.PollDatabase.loadPolls();
 
   httpServer.get("/radio/play", (req, res) => {
     try {
@@ -338,13 +345,6 @@ client.on('ready', () => {
     console.log("HTTP Listening on port " + port);
   })
 
-  afrGuild = client.guilds.cache.get('549589656606343178');
-  if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
-  console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
-  client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
-  startDate = new Date();
-
-
   /*
   client.guilds.fetch("549589656606343178").then(guild => {
     let c = guild.channels.cache.find(channel => channel.name == "nvidia");
@@ -353,7 +353,6 @@ client.on('ready', () => {
     });
   });
   */
-
 
   setupCommands();
   setupReminders();
@@ -733,6 +732,10 @@ client.on('interactionCreate', interaction => {
             break;
           }
         }
+        break;
+      }
+      case "poll": {
+        Polls.Poll.fromMessage(interaction);
         break;
       }
     }

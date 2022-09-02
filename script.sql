@@ -1,4 +1,4 @@
--- Adminer 4.8.1 MySQL 5.5.5-10.5.16-MariaDB-1:10.5.16+maria~buster dump
+-- Adminer 4.8.1 MySQL 5.5.5-10.6.9-MariaDB-1:10.6.9+maria~deb11 dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -12,22 +12,52 @@ CREATE TABLE `Films` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(60) NOT NULL,
   `suggested_by` varchar(18) DEFAULT NULL,
-  `watched` bit(1) NOT NULL,
+  `watched` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `KinoEvent`;
 CREATE TABLE `KinoEvent` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `film` int(11) DEFAULT NULL,
-  `date` date DEFAULT NULL,
+  `date` varchar(6) DEFAULT NULL,
   `date_locked` bit(1) DEFAULT NULL,
-  `watched` bit(1) NOT NULL,
+  `watched` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `film` (`film`),
   CONSTRAINT `KinoEvent_ibfk_2` FOREIGN KEY (`film`) REFERENCES `Films` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `PollOptions`;
+CREATE TABLE `PollOptions` (
+  `index` int(11) NOT NULL,
+  `poll` int(11) NOT NULL,
+  `name` varchar(250) NOT NULL,
+  PRIMARY KEY (`poll`,`index`),
+  CONSTRAINT `PollOptions_ibfk_1` FOREIGN KEY (`poll`) REFERENCES `Polls` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `Polls`;
+CREATE TABLE `Polls` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `message_id` varchar(64) NOT NULL,
+  `name` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `PollVotes`;
+CREATE TABLE `PollVotes` (
+  `user` varchar(18) NOT NULL,
+  `poll` int(11) NOT NULL,
+  `option_index` int(11) NOT NULL,
+  PRIMARY KEY (`poll`,`option_index`,`user`),
+  CONSTRAINT `PollVotes_ibfk_3` FOREIGN KEY (`poll`, `option_index`) REFERENCES `PollOptions` (`poll`, `index`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `PollVotes_ibfk_5` FOREIGN KEY (`poll`) REFERENCES `Polls` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -48,7 +78,7 @@ CREATE TABLE `Wallet` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_currency` (`user`,`currency`),
   CONSTRAINT `Wallet_ibfk_1` FOREIGN KEY (`user`) REFERENCES `Users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=513 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=526 DEFAULT CHARSET=utf8mb4;
 
 
--- 2022-08-16 19:13:53
+-- 2022-09-02 14:37:06

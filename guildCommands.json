@@ -323,5 +323,71 @@
     {
         "name": "Nuke Here",
         "type": 3
+    },
+    {
+        "name": "poll",
+        "description": "Start a poll-based vote in the channel",
+        "options": [
+            {
+                "type": 3,
+                "name": "name",
+                "description": "The name of the poll",
+                "required": true
+            },
+            {
+                "type": 3,
+                "name": "option1",
+                "description": "Poll option 1",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "option2",
+                "description": "Poll option 2",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "option3",
+                "description": "Poll option 3",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "option4",
+                "description": "Poll option 4",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "option5",
+                "description": "Poll option 5",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "option6",
+                "description": "Poll option 6",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "option7",
+                "description": "Poll option 7",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "option8",
+                "description": "Poll option 8",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "option9",
+                "description": "Poll option 9",
+                "required": false
+            }
+        ]
     }
 ]
