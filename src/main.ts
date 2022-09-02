@@ -887,6 +887,7 @@ client.on('messageCreate', message => {
             }
             message.delete();
           } catch (error) {
+            console.error("KOČE KOČE BLOČE ERROR");
             console.error(error);
             channel.send(error.name + ": " + error.message);
           }
