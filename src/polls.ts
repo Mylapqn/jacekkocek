@@ -19,8 +19,11 @@ export class Poll {
 
     static async fromMessage(interaction: ChatInputCommandInteraction) {
         let poll = new Poll(interaction.options.getString("name"));
+        console.log(poll);
         await poll.sendMessage(interaction);
+        console.log(poll);
         await Database.PollDatabase.createPoll(poll);
+        console.log(poll);
         for (let i = 1; i < 10; i++) {
             let optionName = interaction.options.getString("option" + i);
             if (!optionName) continue;
@@ -63,12 +66,14 @@ export class Poll {
         if (name.length > 244) {
             name = name.substring(0, 240) + "...";
         }
+        console.log(this);
         let newOption = new PollOption(this, this.options.length, name);
         this.options.push(newOption);
         if (this.message != undefined) {
             this.updateMessage();
             this.message.react(Main.letterEmoji[this.options.length.toString()]);
         }
+        console.log(this);
         Database.PollDatabase.addOption(newOption);
         console.log(`Added option to poll "${this.name}" with name ${name}`);
         return newOption;
