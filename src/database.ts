@@ -78,7 +78,7 @@ export class KinoDatabase {
 
     static async createEvent(event: Kino.Event) {
         await connection.query(`INSERT INTO KinoEvent (watched) VALUES (${event.watched})`).catch(e => { console.log("KinoEvent creation error: ", e) });
-        event.id = await connection.query("SELECT LAST_INSERT_ID()")["LAST_INSERT_ID()"];
+        event.id = await connection.query("SELECT LAST_INSERT_ID()")[0]["LAST_INSERT_ID()"];
         console.log("Created event ", event);
     }
 
@@ -94,9 +94,7 @@ export class PollDatabase {
 
     static async createPoll(poll: Polls.Poll) {
         await connection.query(`INSERT INTO Polls (message_id, name) VALUES ("${messageToUid(poll.message)}", "${poll.name}")`).catch(e => { console.log("Poll creation error: ", e) });
-        let result = await connection.query("SELECT LAST_INSERT_ID()");
-        console.log(result);
-        poll.id = await connection.query("SELECT LAST_INSERT_ID()")["LAST_INSERT_ID()"];
+        poll.id = await connection.query("SELECT LAST_INSERT_ID()")[0]["LAST_INSERT_ID()"];
     }
 
     static async deletePoll(poll: Polls.Poll) {
