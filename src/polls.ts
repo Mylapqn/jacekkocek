@@ -19,13 +19,13 @@ export class Poll {
 
     static async fromMessage(interaction: ChatInputCommandInteraction) {
         let poll = new Poll(interaction.options.getString("name"));
+        await poll.sendMessage(interaction);
         await Database.PollDatabase.createPoll(poll);
         for (let i = 1; i < 10; i++) {
             let optionName = interaction.options.getString("option" + i);
             if (!optionName) continue;
             poll.addOption(optionName);
         }
-        poll.sendMessage(interaction);
     }
 
     generateMessage() {
