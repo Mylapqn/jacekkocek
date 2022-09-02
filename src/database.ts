@@ -93,7 +93,7 @@ export class KinoDatabase {
 export class PollDatabase {
 
     static async createPoll(poll: Polls.Poll) {
-        await connection.query(`INSERT INTO Polls (message_id, name) VALUES ("${messageToUid(poll.message)}", "${poll.name}")`).catch(e => { console.log("Poll creation error: ", e) });
+        await connection.query(`INSERT INTO Polls (message_id, name) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\")`).catch(e => { console.log("Poll creation error: ", e) });
         poll.id = (await connection.query("SELECT LAST_INSERT_ID()"))[0]["LAST_INSERT_ID()"];
     }
 

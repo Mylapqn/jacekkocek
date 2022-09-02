@@ -863,7 +863,6 @@ client.on('messageCreate', message => {
       channel.messages.fetch(message.reference.messageId).then(repliedMessage => {
         let lowerCase = message.content.toLowerCase();
         let poll = Polls.Poll.getPollFromMessage(repliedMessage);
-        console.log(poll,message,repliedMessage);
         if (poll != undefined) {
           try {
             poll.addOption(message.content);

@@ -107,7 +107,7 @@ export class Poll {
 
     static list = new Array<Poll>;
     static getPollFromMessage(message: Message) {
-        return Poll.list.find(element => { return element.message === message });
+        return Poll.list.find(element => { return element.message.reference == message.reference });
     }
 }
 
