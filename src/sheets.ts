@@ -25,11 +25,12 @@ async function getDayIndex(date = new Date()) {
         valueRenderOption: "FORMATTED_VALUE"
 
     });
-    let today = (date.getDate() + 1) + "." + (date.getMonth() + 1) + ".";
+    let today = (date.getDate()) + "." + (date.getMonth() + 1) + ".";
     let todayIndex = result.data.values.findIndex((value: string[], index, values) => {
         if (value[0] == today) return true;
         return false;
-    }) + 4;
+    }) + 5;
+    if(todayIndex == 4) throw new Error("~~Offset~~ date is outside the bounds of the ~~dataview~~ sheet");
     return todayIndex;
 }
 
