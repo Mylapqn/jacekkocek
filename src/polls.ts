@@ -22,10 +22,10 @@ export class Poll {
         Database.PollDatabase.createPoll(poll);
         for (let i = 1; i < 10; i++) {
             let optionName = interaction.options.getString("option" + i);
-            if (!optionName) break;
+            if (!optionName) continue;
             poll.addOption(optionName);
         }
-        poll.sendMessage(interaction.channel);
+        poll.sendMessage(interaction);
     }
 
     generateMessage() {
@@ -47,8 +47,8 @@ export class Poll {
     updateMessage() {
         this.message.edit(this.generateMessage());
     }
-    async sendMessage(channel: TextBasedChannel) {
-        this.message = await channel.send(this.generateMessage());
+    async sendMessage(interaction: ChatInputCommandInteraction) {
+        this.message = await interaction.reply({ embeds: this.generateMessage().embeds, fetchReply: true });
         for (let i = 1; i <= this.options.length && i <= 9; i++) {
             this.message.react(Main.letterEmoji[i.toString()]);
         }

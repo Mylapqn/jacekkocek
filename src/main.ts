@@ -1268,13 +1268,6 @@ client.on('messageCreate', message => {
           }
           break;
         }
-        case "poll": {
-          let newPoll = new Polls.Poll(argument);
-          //newPoll.addOption("Koče");
-          //newPoll.addOption("Bloče");
-          newPoll.sendMessage(channel);
-          break;
-        }
         default:
           channel.send("Unknown command :disappointed:");
 
