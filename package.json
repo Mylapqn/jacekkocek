@@ -31,8 +31,6 @@
     },
     "devDependencies": {
         "@jimp/core": "^0.16.1",
-        "@swc/cli": "^0.1.57",
-        "@swc/core": "1.2.242",
         "@types/express": "^4.17.13",
         "@types/node": "^18.7.10",
         "node-gyp": "^9.1.0",
