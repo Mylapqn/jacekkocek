@@ -24,12 +24,10 @@ export class Event {
 
     async dateVote(interaction: Discord.ChatInputCommandInteraction) {
         this.datePoll = await Polls.Poll.fromCommand("Kdy kino?", interaction);
-
         let dayScores = await Sheets.getDayScores();
         let sortedScores = [...dayScores.values()].sort((a,b)=>a-b);
-        let scoreTreshold = sortedScores[Math.min(sortedScores.length,5)][1];
+        let scoreTreshold = sortedScores[Math.min(sortedScores.length,5)];
         scoreTreshold = Math.max(scoreTreshold, 70); //70+ jsou žlutý
-
         let count = 0;
         for (const [day, score] of dayScores) {
             if(score >= scoreTreshold && count < 5){
