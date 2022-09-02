@@ -52,11 +52,12 @@ export function isValid(x: number) {
 }
 
 export async function fetchMessage(channelId: string, messageId: any): Promise<Message> {
-    let channel = await Main.client.channels.fetch(channelId) as TextBasedChannel;
     try {
+        let channel = await Main.client.channels.fetch(channelId) as TextBasedChannel;
         return await channel.messages.fetch(messageId);
     } catch (error) {
-        throw new Error("Cannot fetch message");
+        return undefined;
+        //throw new Error("Cannot fetch message");
     }
 }
 export function matchMessages(a: Message, b: Message) {

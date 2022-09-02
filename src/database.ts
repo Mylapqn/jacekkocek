@@ -107,6 +107,10 @@ export class PollDatabase {
             let poll = new Polls.Poll(pollRow["name"])
             poll.id = pollRow["id"];
             poll.message = await messageFromUid(pollRow["message_id"]);
+            if (!poll.message) {
+                PollDatabase.deletePoll(poll);
+                continue;
+            }
             let options: Array<Array<any>> = await connection.query(`SELECT * FROM PollOptions WHERE poll=${poll.id}`);
             for (const optionRow of options) {
                 let option = new Polls.PollOption(poll, optionRow["index"], optionRow["name"]);
