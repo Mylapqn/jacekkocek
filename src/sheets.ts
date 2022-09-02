@@ -61,6 +61,10 @@ export async function getDay(date: Date): Promise<number> {
             valueRenderOption: "FORMATTED_VALUE"
     
         });
+
+        console.log("Test!J" +  index);
+        console.log(result);
+        
         score = result.data.values[0][0];
     } catch (error) {
         return undefined;

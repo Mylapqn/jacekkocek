@@ -79,7 +79,9 @@ export function dateFromKinoString(text: string): Date {
         let day = parseInt(text.split('.')[0]);
         let month = parseInt(text.split('.')[1]);
         let now = new Date();
-    
+        
+        if(!(day <= 31 && day > 0 && month > 0 && month <= 12)) throw new Error("Invalid date: " + text);
+
         let yearOffset = 0;
     
         if (month < now.getMonth() + 1) yearOffset++;

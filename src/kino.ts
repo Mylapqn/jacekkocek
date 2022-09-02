@@ -51,9 +51,13 @@ export class Event {
     }
 
     async addDate(date: Date) {
-        let score = await Sheets.getDay(date);
-        if (!score) throw new Error("Invalid kino date");
-        this.datePoll.addOption(Event.dateOptionName(date, score));
+        try {
+            let score = await Sheets.getDay(date);
+            if (!score) throw new Error("Invalid kino date");
+            this.datePoll.addOption(Event.dateOptionName(date, score));
+        } catch (error) {
+            throw error;
+        }
     }
 
     private static dateOptionName(date: Date, score: number): string {
