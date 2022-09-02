@@ -877,8 +877,9 @@ client.on('messageCreate', message => {
         if (poll != undefined) {
           try {
             let event = Kino.Event.list.find(event => event.datePoll == poll);
-            let date = Utilities.dateFromKinoString(message.content);
-            if (event && date) {
+            if (event) {
+              let date = Utilities.dateFromKinoString(message.content);
+              if (!date) throw new Error("Invalid date");
               event.addDate(date);
             }
             else {
