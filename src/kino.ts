@@ -16,6 +16,10 @@ export class Event {
     filmPoll: Polls.Poll;
     dateLocked = false;
     watched = false;
+    constructor() {
+        Event.list.push(this);
+    }
+
     static fromCommand() {
         let event = new Event();
         Database.KinoDatabase.createEvent(event);
@@ -24,13 +28,13 @@ export class Event {
 
     async dateVote(interaction: Discord.ChatInputCommandInteraction) {
         this.datePoll = await Polls.Poll.fromCommand("Kdy kino?", interaction);
-        let dayScores = await Sheets.getDayScores();
-        let sortedScores = [...dayScores.entries()].sort((a,b)=>b[1]-a[1]);
-        sortedScores = sortedScores.slice(0,Math.min(sortedScores.length,5));
+        let dayScores = await Sheets.getDaysScores();
+        let sortedScores = [...dayScores.entries()].sort((a, b) => b[1] - a[1]);
+        sortedScores = sortedScores.slice(0, Math.min(sortedScores.length, 5));
         let days = [...new Map(sortedScores).keys()];
         for (const [day, score] of dayScores) {
-            if(days.includes(day)){
-                this.datePoll.addOption(`${Utilities.weekdayEmoji(day.getDay())} ${Utilities.simpleDateString(day)} (${score})`);
+            if (days.includes(day)) {
+                this.datePoll.addOption(Event.dateOptionName(day, score));
             }
         }
     }
@@ -45,6 +49,18 @@ export class Event {
         event.watched = watched;
         return event;
     }
+
+    async addDate(date: Date) {
+        let score = await Sheets.getDay(date);
+        if (!score) throw new Error("Invalid kino date");
+        this.datePoll.addOption(Event.dateOptionName(date, score));
+    }
+
+    private static dateOptionName(date: Date, score: number): string {
+        return `${Utilities.weekdayEmoji(date.getDay())} ${Utilities.simpleDateString(date)} (${score})`;
+    }
+
+    static list = new Array<Event>();
 }
 
 export class Film {
@@ -69,3 +85,4 @@ export class Film {
         film.suggestedBy = suggestedBy;
     }
 }
+

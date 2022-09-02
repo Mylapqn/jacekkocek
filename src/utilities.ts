@@ -74,18 +74,23 @@ export function isActualChannel(channel: any): channel is TextChannel | ThreadCh
     return (channel instanceof TextChannel || channel instanceof ThreadChannel || channel instanceof NewsChannel);
 }
 
-export function dayFromKinoString(text: string): Date {
-    let day = parseInt(text.split('.')[0]);
-    let month = parseInt(text.split('.')[1]);
-    let now = new Date();
+export function dateFromKinoString(text: string): Date {
+    try {
+        let day = parseInt(text.split('.')[0]);
+        let month = parseInt(text.split('.')[1]);
+        let now = new Date();
+    
+        let yearOffset = 0;
+    
+        if (month < now.getMonth() + 1) yearOffset++;
+    
+        let output = new Date();
+        output.setFullYear(now.getFullYear() + yearOffset, month - 1, day);
+        return output;
+    } catch (error) {
+        return undefined;
+    }
 
-    let yearOffset = 0;
-
-    if (month < now.getMonth() + 1) yearOffset++;
-
-    let output = new Date();
-    output.setFullYear(now.getFullYear() + yearOffset, month - 1, day);
-    return output;
 }
 
 export function weekdayEmoji(day) {

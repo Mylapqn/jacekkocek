@@ -15,6 +15,7 @@ import * as Utilities from "./utilities";
 import { calc, isCalc, setCalcContext } from "./calc";
 import * as Polls from "./polls";
 import * as Kino from "./kino";
+import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
 
 //const icecastParser = require("icecast-parser");
@@ -875,7 +876,14 @@ client.on('messageCreate', message => {
         let poll = Polls.Poll.getPollFromMessage(repliedMessage);
         if (poll != undefined) {
           try {
-            poll.addOption(message.content);
+            let event = Kino.Event.list.find(event => event.datePoll == poll);
+            let date = Utilities.dateFromKinoString(message.content);
+            if (event && date) {
+              event.addDate(date);
+            }
+            else {
+              poll.addOption(message.content);
+            }
             message.delete();
           } catch (error) {
             console.error(error);
