@@ -112,13 +112,14 @@ export class PollDatabase {
                 let option = new Polls.PollOption(poll, optionRow["index"], optionRow["name"]);
                 poll.options.push(option);
                 let votes: Array<Array<any>> = await connection.query(`SELECT * FROM PollVotes WHERE poll=${poll.id} AND option_index=${option.index}`);
+                poll.totalVotes += votes.length;
                 for (const voteRow of votes) {
                     option.votes.push(new Polls.PollVote(poll, option.index, voteRow["user"]));
                 }
             }
         }
 
-        console.log("Loaded "+Polls.Poll.list.length+" polls");
+        console.log("Loaded " + Polls.Poll.list.length + " polls");
 
     }
 
