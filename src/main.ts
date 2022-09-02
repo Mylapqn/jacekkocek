@@ -880,15 +880,16 @@ client.on('messageCreate', message => {
             if (event) {
               let date = Utilities.dateFromKinoString(message.content);
               if (!date) throw new Error("Invalid date");
-              event.addDate(date).catch((e) => { throw e; });
+              event.addDate(date).catch((e) => { 
+                Utilities.messageError(channel, e);
+               });
             }
             else {
               poll.addOption(message.content);
             }
             message.delete();
           } catch (error) {
-            console.error(error);
-            channel.send(error.name + ": " + error.message);
+            Utilities.messageError(channel, error);
           }
         }
         if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
