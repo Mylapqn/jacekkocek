@@ -368,8 +368,7 @@ client.on('interactionCreate', async interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isChatInputCommand()) {
     console.log("Slash command by " + interaction.user.username + ": " + interaction.commandName);
-    let commandName = interaction.commandName
-    switch (commandName) {
+    switch (interaction.commandName) {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
           case "vote day": {
