@@ -96,6 +96,6 @@ export function weekdayEmoji(day) {
         case 4: return "<:ct:767907091880476732>";
         case 5: return "<:pa:767907093205614622>";
         case 6: return "<:so:767907093222916126>";
-        case 7: return "<:ne:767907093352153118>";
+        case 0: return "<:ne:767907093352153118>";
     }
 }
