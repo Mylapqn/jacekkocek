@@ -552,6 +552,11 @@ client.on('interactionCreate', async interaction => {
             interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
             break;
           }
+          case "vote-day": {
+            let event = Kino.Event.fromCommand();
+            event.dateVote(interaction);
+            break;
+          }
         }
         break;
       }
