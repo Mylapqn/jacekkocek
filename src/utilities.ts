@@ -79,13 +79,13 @@ export function dateFromKinoString(text: string): Date {
         let day = parseInt(text.split('.')[0]);
         let month = parseInt(text.split('.')[1]);
         let now = new Date();
-        
-        if(!(day <= 31 && day > 0 && month > 0 && month <= 12)) throw new Error("Invalid date: " + text);
+
+        if (!(day <= 31 && day > 0 && month > 0 && month <= 12)) throw new Error("Invalid date: " + text);
 
         let yearOffset = 0;
-    
+
         if (month < now.getMonth() + 1) yearOffset++;
-    
+
         let output = new Date();
         output.setFullYear(now.getFullYear() + yearOffset, month - 1, day);
         return output;
@@ -105,4 +105,9 @@ export function weekdayEmoji(day) {
         case 6: return "<:so:767907093222916126>";
         case 0: return "<:ne:767907093352153118>";
     }
+}
+
+export function messageError(channel: TextBasedChannel, error: Error) {
+    console.error(error);
+    channel.send(error.name + ": " + error.message);
 }
