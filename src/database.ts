@@ -123,15 +123,15 @@ export class PollDatabase {
     }
 
     static async addOption(option: Polls.PollOption) {
-        await connection.query(`INSERT INTO PollOptions (index, poll, name) VALUES (${option.index}, ${option.poll.id}, "${option.name}")`).catch(e => { console.log("PollOption creation error: ", e) });
+        await connection.query(`INSERT INTO PollOptions (index, poll, name) VALUES (${option.index}, ${option.poll.id}, \"${option.name}\")`).catch(e => { console.log("PollOption creation error: ", e) });
     }
 
     static async addVote(vote: Polls.PollVote) {
-        await connection.query(`INSERT INTO PollVotes (user, poll, option_index) VALUES ("${vote.userId}", ${vote.poll.id}, ${vote.option.index})`).catch(e => { console.log("PollVote creation error: ", e) });
+        await connection.query(`INSERT INTO PollVotes (user, poll, option_index) VALUES (\"${vote.userId}\", ${vote.poll.id}, ${vote.option.index})`).catch(e => { console.log("PollVote creation error: ", e) });
     }
 
     static async removeVote(vote: Polls.PollVote) {
-        await connection.query(`DELETE FROM PollVotes WHERE user="${vote.userId}" poll=${vote.poll.id} AND option_index=${vote.option.index}`);
+        await connection.query(`DELETE FROM PollVotes WHERE user=\"${vote.userId}\" poll=${vote.poll.id} AND option_index=${vote.option.index}`);
     }
 }
 
