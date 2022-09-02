@@ -109,6 +109,7 @@ export class PollDatabase {
             poll.message = await messageFromUid(pollRow["message_id"]);
             if (!poll.message) {
                 PollDatabase.deletePoll(poll);
+                console.log("Deleted poll with missing message");
                 continue;
             }
             let options: Array<Array<any>> = await connection.query(`SELECT * FROM PollOptions WHERE poll=${poll.id}`);
