@@ -118,12 +118,12 @@ export class PollDatabase {
             }
         }
 
-        console.log(Polls.Poll.list);
+        console.log("Loaded "+Polls.Poll.list.length+" polls");
 
     }
 
     static async addOption(option: Polls.PollOption) {
-        await connection.query(`INSERT INTO PollOptions (index, poll, name) VALUES (${option.index}, ${option.poll.id}, \"${option.name}\")`).catch(e => { console.log("PollOption creation error: ", e) });
+        await connection.query(`INSERT INTO PollOptions (\`index\`, poll, name) VALUES (${option.index}, ${option.poll.id}, \"${option.name}\")`).catch(e => { console.log("PollOption creation error: ", e) });
     }
 
     static async addVote(vote: Polls.PollVote) {
