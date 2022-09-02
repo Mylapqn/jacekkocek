@@ -40,9 +40,6 @@ export let reactionHandlers = {
         }
     },
     poll: data => {
-        /**
-         * @type {Polls.Poll}
-         */
         let poll = Polls.Poll.getPollFromMessage(data.message);
         if (poll) {
             try {
