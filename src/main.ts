@@ -880,14 +880,13 @@ client.on('messageCreate', message => {
             if (event) {
               let date = Utilities.dateFromKinoString(message.content);
               if (!date) throw new Error("Invalid date");
-              event.addDate(date);
+              event.addDate(date).catch((e) => { throw e; });
             }
             else {
               poll.addOption(message.content);
             }
             message.delete();
           } catch (error) {
-            console.error("KOČE KOČE BLOČE ERROR");
             console.error(error);
             channel.send(error.name + ": " + error.message);
           }
