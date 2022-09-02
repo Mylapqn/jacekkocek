@@ -59,10 +59,6 @@ export async function fetchMessage(channelId: string, messageId: any): Promise<M
         throw new Error("Cannot fetch message");
     }
 }
-/**
- * @param {Message} a
- * @param {Message} b
- */
 export function matchMessages(a: Message, b: Message) {
     return a.id == b.id && a.channelId == b.channelId
 }
