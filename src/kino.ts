@@ -25,10 +25,8 @@ export class Event {
     async dateVote(interaction: Discord.ChatInputCommandInteraction) {
         this.datePoll = await Polls.Poll.fromCommand("Kdy kino?", interaction);
         let dayScores = await Sheets.getDayScores();
-        let sortedScores = [...dayScores.entries()].sort((a,b)=>a[1]-b[1]);
-        console.log(sortedScores);
+        let sortedScores = [...dayScores.entries()].sort((a,b)=>b[1]-a[1]);
         sortedScores = sortedScores.slice(0,Math.min(sortedScores.length,5));
-        console.log(sortedScores);
         let days = [...new Map(sortedScores).keys()];
         for (const [day, score] of dayScores) {
             if(days.includes(day)){
