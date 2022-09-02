@@ -29,11 +29,12 @@ async function getTodayIndex() {
     let todayIndex = result.data.values.findIndex((value: string[], index, values) => {
         if (value[0] == today) return true;
         return false;
-    }) + 5;
+    }) + 4;
     return todayIndex;
 }
 
-async function getDayScores() {
+export async function getDayScores(): Promise<Map<string, number>> {
+    doAuth();
     let output = new Map<string, number>();
     let result = await googleSheets.spreadsheets.values.get({
         auth,
@@ -48,9 +49,27 @@ async function getDayScores() {
     return output;
 }
 
-doAuth();
-console.log("---------");
+/*
+Map(18) {
+    '2.9.' => 0,
+    '3.9.' => 0,
+    '4.9.' => 0,
+    '5.9.' => 83,
+    '6.9.' => 83,
+    '7.9.' => 83,
+    '8.9.' => 83,
+    '9.9.' => 83,
+    '10.9.' => 83,
+    '11.9.' => 83,
+    '12.9.' => 62,
+    '13.9.' => 62,
+    '14.9.' => 62,
+    '15.9.' => 62,
+    '16.9.' => 62,
+    '17.9.' => 62,
+    '18.9.' => 62,
+    '19.9.' => 63
+  }
+*/
 
-getDayScores().then(console.log);
-
-//tsc sheets.ts && node sheets.js && del sheets.js
+//tsc src/sheets.ts && node src/sheets.js && del "src\\sheets.js"

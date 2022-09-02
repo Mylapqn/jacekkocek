@@ -4,6 +4,7 @@ import * as Main from "./main";
 import * as Utilities from "./utilities"
 import * as Youtube from "./youtube"
 
+
 export class Poll {
     id: number;
     message: Message;
@@ -17,16 +18,12 @@ export class Poll {
         Poll.list.push(this);
     }
 
-    static async fromMessage(interaction: ChatInputCommandInteraction) {
-        let poll = new Poll(interaction.options.getString("name"));
+    static async fromCommand(name: string, interaction: ChatInputCommandInteraction) {
+        let poll = new Poll(name);
         await poll.sendMessage(interaction);
         await Database.PollDatabase.createPoll(poll);
         console.log("Creating poll with id " + poll.id);
-        for (let i = 1; i < 10; i++) {
-            let optionName = interaction.options.getString("option" + i);
-            if (!optionName) continue;
-            poll.addOption(optionName);
-        }
+        return poll;
     }
 
     generateMessage() {

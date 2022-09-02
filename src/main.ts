@@ -364,7 +364,7 @@ client.on('ready', () => {
   console.log('' + new Date().toUTCString() + ' I am ready!');
 });
 
-client.on('interactionCreate', interaction => {
+client.on('interactionCreate', async interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isChatInputCommand()) {
     console.log("Slash command by " + interaction.user.username + ": " + interaction.commandName);
@@ -734,7 +734,12 @@ client.on('interactionCreate', interaction => {
         break;
       }
       case "poll": {
-        Polls.Poll.fromMessage(interaction);
+        let poll = await Polls.Poll.fromCommand(interaction.options.getString("name"), interaction);
+        for (let i = 1; i < 10; i++) {
+          let optionName = interaction.options.getString("option" + i);
+          if (!optionName) continue;
+          poll.addOption(optionName);
+        }
         break;
       }
     }
