@@ -23,7 +23,7 @@ export function calc(message: Discord.Message) {
     }
 
     try {
-        let value = new Function("return " + ctxText + s.replaceAll("$", ctxText))();
+        let value = new Function("return " + ctxText + s.replaceAll("$", ctx.toString()))();
         context.set(message.channelId, value);
         return value.toString();
     } catch (error) {
