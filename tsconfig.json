@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "sourceMap": true,
-        "target": "ES2017",
+        "target": "ES2021",
         "module": "commonjs",
         "esModuleInterop": true,
         "rootDir": "src",
