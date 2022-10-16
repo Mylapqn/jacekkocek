@@ -375,30 +375,26 @@ client.on('interactionCreate', async interaction => {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
           case "suggest": {
-            let filmName = interaction.options.getString("film").toLowerCase();
-            if (kinoPlaylist.has(filmName)) {
-              interaction.reply({ content: "***" + Utilities.toTitleCase(filmName) + "*** has already been suggested by **" + kinoPlaylist.get(filmName).suggestedBy + "**.", ephemeral: true });
+            let filmName = Utilities.toTitleCase(interaction.options.getString("film"));
+            let existingFilm = await Database.KinoDatabase.getFilmByName(filmName);
+            if (existingFilm) {
+              interaction.reply({ content: "***" + filmName + "*** has already been suggested by **" + (await client.users.fetch(existingFilm.suggestedBy)).username + "**.", ephemeral: true });
             }
-            else if (kinoData.has(filmName)) {
-              interaction.reply({ content: "There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
-            }
-            else {
-              let newSug = {
-                name: Utilities.toTitleCase(filmName),
-                suggestedBy: interaction.user.username,
-                watched: false
-              }
-              kinoPlaylist.set(filmName, newSug);
-              savePlaylist();
-              interaction.reply("**" + interaction.user.username + "** added ***" + newSug.name + "*** to film suggestions. Reward: 10 ₥");
-              Matoshi.award(interaction.guildId, interaction.user.id, 10);
+            /* IF KINOEVENT for this film
+            interaction.reply({ content: "There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
+            */
+            Kino.Film.fromCommand(filmName, interaction.user.id);
+            interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: 50 ₥");
+            if (!Matoshi.pay(client.user.id, interaction.user.id, 50, 0)) {
+              interaction.channel.send("Not enough matoshi available for reward. Sorry! :(");
             }
             break;
           }
           case "playlist": {
-            if (kinoPlaylist.size > 0) {
+            let kinoFilms = await Database.KinoDatabase.getAllFilms();
+            if (kinoFilms.length > 0) {
               let newMessage = "**__Film suggestions:__**\n";
-              kinoPlaylist.forEach(f => {
+              kinoFilms.forEach(f => {
                 newMessage += "• ";
                 if (f.watched) {
                   newMessage += "~~*" + f.name + "*~~";

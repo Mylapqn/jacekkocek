@@ -63,13 +63,28 @@ export class KinoDatabase {
     }
 
     static async getFilm(id) {
-        let filmData = await connection.query(`SELECT * FROM Films WHERE id=\"${id}\"`);
+        let filmData = await connection.query(`SELECT * FROM Films WHERE id=\"${id}\"`) as Array<Kino.Film>;
         if (filmData.length == 0) {
             //console.log("There is no film with id " + id);
             throw new Error("There is no film with id " + id);
         }
-        filmData = filmData[0]; //literally throw if ^^ is true
-        return filmData;
+        return filmData[0];
+    }
+
+    static async getFilmByName(name: string) {
+        let filmData = await connection.query(`SELECT * FROM Films WHERE UPPER(name)=\"${name.toUpperCase()}\"`) as Array<Kino.Film>;
+        if (filmData.length == 0) {
+            //console.log("There is no film with id " + id);
+            return undefined;
+        }
+        return filmData[0];
+    }
+
+    static async getAllFilms(onlyUnwatched = false) {
+        let query = `SELECT * FROM Films`;
+        if (onlyUnwatched) query += ` WHERE watched=1`
+        let filmList = await connection.query(query) as Array<Kino.Film>;
+        return filmList;
     }
 
     static async setFilm(film: Kino.Film) {

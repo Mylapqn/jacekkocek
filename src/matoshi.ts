@@ -51,10 +51,12 @@ export function balance(user) {
 
 export function modify(user, amount) {
     amount = Math.round(amount);
-    let m = balance(user);
-    matoshiData.set(user, m + amount);
-    console.log("User ID " + user + " matoshi modified by " + amount + ", now " + matoshiData.get(user));
-    save();
+    if (amount != 0) {
+        let m = balance(user);
+        matoshiData.set(user, m + amount);
+        console.log("User ID " + user + " matoshi modified by " + amount + ", now " + matoshiData.get(user));
+        save();
+    }
 }
 
 export function pay(from, to, amount, fee = undefined) {
