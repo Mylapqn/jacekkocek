@@ -152,7 +152,7 @@ export class PollDatabase {
     }
 
     static async updateLastInteracted(poll: Polls.Poll) {
-        await connection.query(`UPDATE Polls SET last_interacted=\"${dateToSql(new Date())}\" WHERE poll=${poll}`);
+        await connection.query(`UPDATE Polls SET last_interacted=\"${dateToSql(new Date())}\" WHERE id=${poll.id}`);
     }
 }
 
