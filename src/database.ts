@@ -91,7 +91,7 @@ export class KinoDatabase {
 
     static async getAllFilms(onlyUnwatched = false) {
         let query = `SELECT * FROM Films`;
-        if (onlyUnwatched) query += ` WHERE watched=1`
+        if (onlyUnwatched) query += ` WHERE watched=0`
         let filmList = await this.queryFilms(query);
         return filmList;
     }

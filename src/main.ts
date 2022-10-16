@@ -395,15 +395,16 @@ client.on('interactionCreate', async interaction => {
             let kinoFilms = await Database.KinoDatabase.getAllFilms(onlyUnwatched);
             if (kinoFilms.length > 0) {
               let newMessage = "**__Film suggestions:__**\n";
-              kinoFilms.forEach(f => {
+              for (const f of kinoFilms) {
                 newMessage += "• ";
                 if (f.watched) {
                   newMessage += "~~*" + f.name + "*~~";
                 }
-                else newMessage += "***" + f.name + "***";
+                else {
+                  newMessage += "***" + f.name + "***";
+                }
                 newMessage += "\n";
-
-              });
+              }
               interaction.reply(newMessage);
             }
             else {

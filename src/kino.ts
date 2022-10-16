@@ -84,11 +84,13 @@ export class Film {
     }
 
     static fromDatabase(id: number, name: string, suggestedBy: string, watched: number) {
+
         let film = new Film(name, suggestedBy);
         film.id = id;
         film.suggestedBy = suggestedBy;
         if (watched == 0) film.watched = false;
         else film.watched = true;
+        console.log(watched, film.watched);
         return film;
     }
 }
