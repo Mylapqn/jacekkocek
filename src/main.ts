@@ -296,7 +296,7 @@ radioApiKeyGet();
 
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
-loadPlaylist();
+
 
 
 
@@ -317,6 +317,7 @@ client.login(process.env.DISCORD_API_KEY);
 client.on('ready', () => {
 
   afrGuild = client.guilds.cache.get('549589656606343178');
+  loadPlaylist();
   if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
   client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
