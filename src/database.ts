@@ -93,7 +93,7 @@ export class KinoDatabase {
 export class PollDatabase {
 
     static async createPoll(poll: Polls.Poll) {
-        await connection.query(`INSERT INTO Polls (message_id, name) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\")`).catch(e => { console.log("Poll creation error: ", e) });
+        await connection.query(`INSERT INTO Polls (message_id, name, last_interacted) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\", \"${dateToSql(new Date())}\")`).catch(e => { console.log("Poll creation error: ", e) });
         poll.id = (await connection.query("SELECT LAST_INSERT_ID()"))[0]["LAST_INSERT_ID()"];
     }
 
@@ -108,6 +108,13 @@ export class PollDatabase {
             poll.id = pollRow["id"];
             poll.message = await messageFromUid(pollRow["message_id"]);
             if (!poll.message) {
+                PollDatabase.deletePoll(poll);
+                console.log("Deleted poll with missing message");
+                continue;
+            }
+            let lastInteracted = new Date(pollRow["message_id"]);
+            let age = new Date().valueOf() - lastInteracted.valueOf();
+            if (age > 604800000) {
                 PollDatabase.deletePoll(poll);
                 console.log("Deleted poll with missing message");
                 continue;
@@ -138,6 +145,10 @@ export class PollDatabase {
 
     static async removeVote(vote: Polls.PollVote) {
         await connection.query(`DELETE FROM PollVotes WHERE user=\"${vote.userId}\" AND poll=${vote.poll.id} AND option_index=${vote.option.index}`);
+    }
+
+    static async updateLastInteracted(poll: Polls.Poll) {
+        await connection.query(`UPDATE Polls SET last_interacted=\"${dateToSql(new Date())}\" WHERE poll=${poll}`);
     }
 }
 
