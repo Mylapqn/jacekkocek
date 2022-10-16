@@ -1305,10 +1305,17 @@ function savePlaylist() {
   fs.writeFile(playlistFileName, JSON.stringify(Array.from(kinoPlaylist)), (e) => { console.log("Finished writing", e) });
 }
 
-function loadPlaylist() {
+async function loadPlaylist() {
   try {
     let read = fs.readFileSync(playlistFileName, { encoding: 'utf8' });
     kinoPlaylist = new Map(JSON.parse(read));
+    let afrUsers = await afrGuild.members.fetch();
+    for (const value of kinoPlaylist.values()) {
+      let userId = afrUsers.find(u => u.user.username == value.suggestedBy).user.id;
+      let film = new Kino.Film(value.name, userId);
+      film.watched = value.watched;
+      Database.KinoDatabase.createFilm(film);
+    }
     console.log("Loaded kino playlist.");
   } catch (error) {
     console.log("Could not load kino playlist!");
