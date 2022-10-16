@@ -89,7 +89,6 @@ export class Film {
         film.id = id;
         film.suggestedBy = suggestedBy;
         film.watched = watched;
-        console.log(watched, film.watched);
         return film;
     }
 }
