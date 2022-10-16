@@ -384,14 +384,15 @@ client.on('interactionCreate', async interaction => {
             interaction.reply({ content: "There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
             */
             Kino.Film.fromCommand(filmName, interaction.user.id);
-            interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: 50 ₥");
-            if (!Matoshi.pay(client.user.id, interaction.user.id, 50, 0)) {
+            interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: 50000000 ₥");
+            if (!Matoshi.pay(client.user.id, interaction.user.id, 50000000, 0)) {
               interaction.channel.send("Not enough matoshi available for reward. Sorry! :(");
             }
             break;
           }
           case "playlist": {
-            let kinoFilms = await Database.KinoDatabase.getAllFilms();
+            let onlyUnwatched = interaction.options.getBoolean("onlyUnwatched")
+            let kinoFilms = await Database.KinoDatabase.getAllFilms(onlyUnwatched);
             if (kinoFilms.length > 0) {
               let newMessage = "**__Film suggestions:__**\n";
               kinoFilms.forEach(f => {

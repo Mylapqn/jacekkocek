@@ -19,7 +19,15 @@
             {
                 "type": 1,
                 "name": "playlist",
-                "description": "See the film suggestions"
+                "description": "See the film suggestions",
+                "options": [
+                    {
+                        "type": 5,
+                        "name": "onlyUnwatched",
+                        "description": "Whether to only show films that haven't been watched yet (default: no)",
+                        "required": false
+                    }
+                ]
             },
             {
                 "type": 1,
