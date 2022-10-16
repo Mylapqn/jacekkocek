@@ -18,7 +18,7 @@
             },
             {
                 "type": 1,
-                "name": "playlist",
+                "name": "playlists",
                 "description": "See the film suggestions",
                 "options": [
                     {
