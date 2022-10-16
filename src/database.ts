@@ -106,7 +106,7 @@ export class PollDatabase {
         for (const pollRow of pollData) {
             let poll = new Polls.Poll(pollRow["name"])
             poll.id = pollRow["id"];
-            let lastInteracted = new Date(pollRow["message_id"]);
+            let lastInteracted = new Date(pollRow["last_interacted"]);
             let age = Date.now() - lastInteracted.valueOf();
             console.log(lastInteracted, age);
 
