@@ -8,7 +8,19 @@ import { Message } from "discord.js";
 
 let connection: mysql.Connection;
 export async function init() {
-    connection = await mysql.createConnection({ host: "localhost", user: "jacekkocek", password: process.env.DBPASSWORD, database: "jacekkocek" });
+    connection = await mysql.createConnection({
+        host: "localhost",
+        user: "jacekkocek",
+        password: process.env.DBPASSWORD,
+        database: "jacekkocek",
+        typeCast: function (field, next) {
+            if (field.type === 'TINY' && field.length === 1) {
+                return (field.string() === '1'); // 1 = true, 0 = false
+            } else {
+                return next();
+            }
+        }
+    });
 
     PollDatabase.loadPolls();
     //TEMP FIX FOR TIMEOUT
