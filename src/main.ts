@@ -412,47 +412,6 @@ client.on('interactionCreate', async interaction => {
             }
             break;
           }
-          case "remind": {
-            let film = interaction.options.getString("film").toLowerCase();
-            if (kinoData.has(film)) {
-              let kinoEntry = kinoData.get(film);
-              let newMessage = "";
-
-              kinoEntry.users.forEach(u => {
-                if (u.response == 1) newMessage = newMessage + "✅ " + u.mention;
-                newMessage = newMessage + "\n";
-              });
-              let time = 3;
-              if (interaction.options.getString("when")) {
-                time = parseTime(interaction.options.getString("when"));
-              }
-              if (isNaN(time) || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
-              else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
-              else if (time > 0) {
-                let remText = newMessage;
-                let newRem = {
-                  //guild: interaction.guildId,
-                  channel: interaction.channelId,
-                  text: remText,
-                  timestamp: Math.round(nowSeconds() + time),
-                  mentions: []
-                }
-                createReminder(newRem);
-                interaction.reply({
-                  content: "Added reminder for **_" + Utilities.toTitleCase(film) + "_** at <t:" + newRem.timestamp + ">",
-                  allowedMentions: { parse: [] },
-                  ephemeral: true
-                });
-              }
-              else {
-                interaction.reply({ content: "Invalid time!", ephemeral: true });
-              }
-            }
-            else {
-              interaction.reply({ content: "Cannot find any vote for ***" + Utilities.toTitleCase(film) + "*** :disappointed:", ephemeral: true });
-            }
-            break;
-          }
           case "reset": {
             let film = interaction.options.getString("film").toLowerCase();
             if (kinoData.has(film)) {
