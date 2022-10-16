@@ -23,7 +23,7 @@
                 "options": [
                     {
                         "type": 5,
-                        "name": "onlyUnwatched",
+                        "name": "only-unwatched",
                         "description": "Whether to only show films that haven't been watched yet (default: no)",
                         "required": false
                     }
