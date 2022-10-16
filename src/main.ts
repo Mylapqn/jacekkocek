@@ -10,6 +10,7 @@ import express from "express";
 import * as Database from "./database";
 import * as Stocks from "./stocks";
 import * as Matoshi from "./matoshi";
+import * as Api from "./api";
 import * as Youtube from "./youtube";
 import * as Utilities from "./utilities";
 import { calc, isCalc, setCalcContext } from "./calc";
@@ -324,6 +325,7 @@ client.on('ready', () => {
   Stocks.init();
   Database.init();
   Matoshi.init();
+  Api.init();
 
   httpServer.get("/radio/play", (req, res) => {
     try {
