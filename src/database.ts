@@ -57,33 +57,42 @@ export async function setUser(user) {
 
 export class KinoDatabase {
     static async createFilm(film: Kino.Film) {
-        await connection.query(`INSERT INTO Films (name, suggested_by) VALUES (\"${film.name}\",\"${film.suggestedBy}\")`).catch(e => { console.log("Film creation error: ", e) });
+        await connection.query(`INSERT INTO Films (name, suggested_by, watched) VALUES (\"${film.name}\",\"${film.suggestedBy}\",${film.watched})`).catch(e => { console.log("Film creation error: ", e) });
         film.id = (await connection.query("SELECT LAST_INSERT_ID()"))[0]["LAST_INSERT_ID()"];
         console.log("Created film ", film);
     }
 
+    static async queryFilms(query: string) {
+        let filmData = await connection.query(query);
+        let films = new Array<Kino.Film>;
+        for (const entry of filmData) {
+            films.push(Kino.Film.fromDatabase(entry["id"], entry["name"], entry["suggested_by"], entry["watched"]));
+        }
+        return films;
+    }
+
     static async getFilm(id) {
-        let filmData = await connection.query(`SELECT * FROM Films WHERE id=\"${id}\"`) as Array<Kino.Film>;
-        if (filmData.length == 0) {
+        let films = await this.queryFilms(`SELECT * FROM Films WHERE id=\"${id}\"`);
+        if (films.length == 0) {
             //console.log("There is no film with id " + id);
             throw new Error("There is no film with id " + id);
         }
-        return filmData[0];
+        return films[0];
     }
 
     static async getFilmByName(name: string) {
-        let filmData = await connection.query(`SELECT * FROM Films WHERE UPPER(name)=\"${name.toUpperCase()}\"`) as Array<Kino.Film>;
-        if (filmData.length == 0) {
+        let films = await this.queryFilms(`SELECT * FROM Films WHERE UPPER(name)=\"${name.toUpperCase()}\"`);
+        if (films.length == 0) {
             //console.log("There is no film with id " + id);
             return undefined;
         }
-        return filmData[0];
+        return films[0];
     }
 
     static async getAllFilms(onlyUnwatched = false) {
         let query = `SELECT * FROM Films`;
         if (onlyUnwatched) query += ` WHERE watched=1`
-        let filmList = await connection.query(query) as Array<Kino.Film>;
+        let filmList = await this.queryFilms(query);
         return filmList;
     }
 
