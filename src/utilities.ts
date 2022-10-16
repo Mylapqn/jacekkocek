@@ -60,7 +60,7 @@ export function isValid(x: number) {
 export async function fetchMessage(channelId: string, messageId: any): Promise<Message> {
     try {
         let channel = await Main.client.channels.fetch(channelId) as TextBasedChannel;
-        return await channel.messages.fetch(messageId);
+        return await channel.messages.fetch({ message: messageId, cache: true });
     } catch (error) {
         return undefined;
         //throw new Error("Cannot fetch message");
