@@ -106,15 +106,17 @@ export class PollDatabase {
         for (const pollRow of pollData) {
             let poll = new Polls.Poll(pollRow["name"])
             poll.id = pollRow["id"];
-            poll.message = await messageFromUid(pollRow["message_id"]);
-            if (!poll.message) {
+            let lastInteracted = new Date(pollRow["message_id"]);
+            let age = Date.now() - lastInteracted.valueOf();
+            console.log(lastInteracted, age);
+
+            if (age > 604800000) {
                 PollDatabase.deletePoll(poll);
                 console.log("Deleted poll with missing message");
                 continue;
             }
-            let lastInteracted = new Date(pollRow["message_id"]);
-            let age = new Date().valueOf() - lastInteracted.valueOf();
-            if (age > 604800000) {
+            poll.message = await messageFromUid(pollRow["message_id"]);
+            if (!poll.message) {
                 PollDatabase.deletePoll(poll);
                 console.log("Deleted poll with missing message");
                 continue;
