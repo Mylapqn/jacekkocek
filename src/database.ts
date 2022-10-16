@@ -108,15 +108,13 @@ export class PollDatabase {
             poll.id = pollRow["id"];
             let lastInteracted = new Date(pollRow["last_interacted"]);
             let age = Date.now() - lastInteracted.valueOf();
-            console.log(lastInteracted, age);
-
             if (age > 604800000) {
                 PollDatabase.deletePoll(poll);
                 console.log("Deleted old poll");
                 continue;
             }
             poll.message = await messageFromUid(pollRow["message_id"]);
-            if (poll.message) {
+            if (!poll.message) {
                 PollDatabase.deletePoll(poll);
                 console.log("Deleted poll with missing message");
                 continue;
@@ -140,14 +138,17 @@ export class PollDatabase {
 
     static async addOption(option: Polls.PollOption) {
         await connection.query(`INSERT INTO PollOptions (\`index\`, poll, name) VALUES (${option.index}, ${option.poll.id}, \"${option.name}\")`).catch(e => { console.log("PollOption creation error: ", e) });
+        await this.updateLastInteracted(option.poll);
     }
 
     static async addVote(vote: Polls.PollVote) {
         await connection.query(`INSERT INTO PollVotes (user, poll, option_index) VALUES (\"${vote.userId}\", ${vote.poll.id}, ${vote.option.index})`).catch(e => { console.log("PollVote creation error: ", e) });
+        await this.updateLastInteracted(vote.poll);
     }
 
     static async removeVote(vote: Polls.PollVote) {
         await connection.query(`DELETE FROM PollVotes WHERE user=\"${vote.userId}\" AND poll=${vote.poll.id} AND option_index=${vote.option.index}`);
+        await this.updateLastInteracted(vote.poll);
     }
 
     static async updateLastInteracted(poll: Polls.Poll) {
