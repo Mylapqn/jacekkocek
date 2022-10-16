@@ -412,22 +412,6 @@ client.on('interactionCreate', async interaction => {
             }
             break;
           }
-          case "reset": {
-            let film = interaction.options.getString("film").toLowerCase();
-            if (kinoData.has(film)) {
-              kinoData.delete(film);
-              interaction.reply("The data for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
-            }
-            if (kinoPlaylist.has(film)) {
-              kinoPlaylist.delete(film);
-              savePlaylist();
-              interaction.reply("The suggestion for ***" + Utilities.toTitleCase(film) + "*** was successfully reset.");
-            }
-            else {
-              interaction.reply({ content: "Cannot find any vote or suggestion for ***" + Utilities.toTitleCase(film) + "*** :disappointed:", ephemeral: true });
-            }
-            break;
-          }
           case "info": {
             interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
             break;
