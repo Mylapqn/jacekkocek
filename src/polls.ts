@@ -15,11 +15,11 @@ export class Poll {
     constructor(name: string) {
         if (name && name != null)
             this.name = name;
-        Poll.list.push(this);
     }
 
     static async fromCommand(name: string, interaction: ChatInputCommandInteraction) {
         let poll = new Poll(name);
+        Poll.list.push(poll);
         await poll.sendMessage(interaction);
         await Database.PollDatabase.createPoll(poll);
         console.log("Creating poll with id " + poll.id);

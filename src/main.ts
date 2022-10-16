@@ -374,15 +374,6 @@ client.on('interactionCreate', async interaction => {
     switch (interaction.commandName) {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
-          case "vote day": {
-            Kino.Event.fromCommand();
-            new Polls.Poll("");
-          }
-            break;
-          case "vote film": {
-
-          }
-            break;
           case "suggest": {
             let filmName = interaction.options.getString("film").toLowerCase();
             if (kinoPlaylist.has(filmName)) {
