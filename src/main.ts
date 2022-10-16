@@ -283,23 +283,13 @@ export let letterEmoji = {
 
 console.log("\n-----------RESTART-----------")
 
-export var kinoData = new Map();
-export var weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
+export const weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
 var radioTimer;
 var fluttershy = true;
 var radioApiKey;
 var radioServerPing = 0;
 radioApiKeyGet();
-
-
-
-var kinoPlaylist = new Map();
-var playlistFileName = "kinoPlaylist.json";
-//loadPlaylist();
-
-
-
 
 const reminderThreshold = 3600;
 
@@ -838,7 +828,6 @@ client.on('messageCreate', message => {
         case "listLetterEmoji":
           var alphabet = "abcdefghijklmnopqrstuvwxyz";
           var emoji = "🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿";
-          var sas = "🇦🇧";
           var result = "";
           for (var i = 0; i < alphabet.length; i++) {
             result += alphabet.charAt(i) + " : \"\\" + emoji.slice(i * 2, i * 2 + 2) + "\",\n";
@@ -1302,27 +1291,7 @@ export function updateKinoMessage(kinoEntry) {
   kinoEntry.message.edit("Bude ***" + kinoEntry.filmName + "***?\n" + newMessage);
 }
 
-function savePlaylist() {
-  fs.writeFile(playlistFileName, JSON.stringify(Array.from(kinoPlaylist)), (e) => { console.log("Finished writing", e) });
-}
 
-async function loadPlaylist() {
-  try {
-    let read = fs.readFileSync(playlistFileName, { encoding: 'utf8' });
-    kinoPlaylist = new Map(JSON.parse(read));
-    let afrUsers = await afrGuild.members.fetch();
-    for (const value of kinoPlaylist.values()) {
-      let userId = afrUsers.find(u => u.user.username == value.suggestedBy).user.id;
-      let film = new Kino.Film(value.name, userId);
-      film.watched = value.watched;
-      Database.KinoDatabase.createFilm(film);
-    }
-    console.log("Loaded kino playlist.");
-  } catch (error) {
-    console.log("Could not load kino playlist!");
-    console.log(error);
-  }
-}
 
 
 

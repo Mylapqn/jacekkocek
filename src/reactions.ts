@@ -1,44 +1,8 @@
-import { client, updateKinoMessage, kinoData, letterEmoji, weekDayNames } from "./main"
+import { client, letterEmoji, weekDayNames } from "./main"
 import * as Polls from "./polls"
 import * as Utilities from "./utilities"
 
 export let reactionHandlers = {
-    kino: data => {
-        let kinoEntry = Array.from(kinoData.values()).find(element => { return element.message.id == data.message.id })
-        if (kinoEntry) {
-            let emojiName = data.emoji;
-            let user = data.user;
-            let kinoUser = kinoEntry.users.get(user.username);
-            if (data.remove) {
-                kinoUser.reactionCount -= 1;
-                console.log("Reaction removed " + emojiName);
-                //console.log("Current count: " + kinoUser.reactionCount);
-                if (emojiName == "white_cross") {
-                    if (kinoUser.reactionCount >= 1) {
-                        kinoUser.response = 1;
-                    }
-                }
-                if (kinoUser.reactionCount <= 0) {
-                    kinoUser.response = 0;
-                    kinoUser.reactionCount = 0;
-                }
-            }
-            else {
-                kinoUser.reactionCount++;
-                console.log("Reaction " + emojiName);
-
-                if (weekDayNames.indexOf(emojiName) != -1) {
-                    //console.log("Current count: " + kinoUser.reactionCount);
-                    kinoUser.response = 1;
-                }
-                if (emojiName == "white_cross") {
-                    kinoUser.response = 2;
-                }
-            }
-            updateKinoMessage(kinoEntry);
-
-        }
-    },
     poll: data => {
         let poll = Polls.Poll.getPollFromMessage(data.message);
         if (poll) {
