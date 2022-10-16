@@ -22,10 +22,24 @@
                 "description": "See the film suggestions",
                 "options": [
                     {
-                        "type": 5,
-                        "name": "only-unwatched",
-                        "description": "Whether to only show films that haven't been watched yet (default: no)",
-                        "required": false
+                        "type": 3,
+                        "name": "filter",
+                        "description": "Filter the films",
+                        "required": false,
+                        "choices": [
+                            {
+                                "name": "All films",
+                                "value": "all"
+                            },
+                            {
+                                "name": "Only unwatched films",
+                                "value": "unwatched"
+                            },
+                            {
+                                "name": "Only watched films",
+                                "value": "watched"
+                            }
+                        ]
                     }
                 ]
             },

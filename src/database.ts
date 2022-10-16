@@ -101,9 +101,19 @@ export class KinoDatabase {
         return films[0];
     }
 
-    static async getAllFilms(onlyUnwatched = false) {
+    static async getAllFilms(filter = "all") {
         let query = `SELECT * FROM Films`;
-        if (onlyUnwatched) query += ` WHERE watched=0`
+        switch (filter) {
+                case "watched":
+                    query += ` WHERE watched=1`
+                break;
+                case "unwatched":
+                    query += ` WHERE watched=0`
+                break;
+        
+            default:
+                break;
+        }
         let filmList = await this.queryFilms(query);
         return filmList;
     }

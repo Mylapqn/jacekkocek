@@ -392,8 +392,8 @@ client.on('interactionCreate', async interaction => {
             break;
           }
           case "playlist": {
-            let onlyUnwatched = interaction.options.getBoolean("only-unwatched")
-            let kinoFilms = await Database.KinoDatabase.getAllFilms(onlyUnwatched);
+            let filter = interaction.options.getString("filter");
+            let kinoFilms = await Database.KinoDatabase.getAllFilms(filter);
             if (kinoFilms.length > 0) {
               let newMessage = "**__Film suggestions:__**\n";
               for (const f of kinoFilms) {
