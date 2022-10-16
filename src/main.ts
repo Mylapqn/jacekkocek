@@ -296,6 +296,7 @@ radioApiKeyGet();
 
 var kinoPlaylist = new Map();
 var playlistFileName = "kinoPlaylist.json";
+//loadPlaylist();
 
 
 
@@ -324,7 +325,6 @@ client.on('ready', async () => {
 
   Stocks.init();
   await Database.init();
-  loadPlaylist();
   Matoshi.init();
   Api.init();
 
