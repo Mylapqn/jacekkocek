@@ -161,7 +161,7 @@ export class PollDatabase {
  * @param {Date} date
  */
 function dateToSql(date: Date) {
-    return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay();
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 }
 
 function messageToUid(message: Message): string {
