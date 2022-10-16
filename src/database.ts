@@ -83,7 +83,7 @@ export class KinoDatabase {
         return films;
     }
 
-    static async getFilm(id) {
+    static async getFilm(id: number) {
         let films = await this.queryFilms(`SELECT * FROM Films WHERE id=\"${id}\"`);
         if (films.length == 0) {
             //console.log("There is no film with id " + id);
