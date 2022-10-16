@@ -314,7 +314,7 @@ let baseUrl = "https://jacekkocek.coal.games";
 
 client.login(process.env.DISCORD_API_KEY);
 
-client.on('ready', () => {
+client.on('ready', async () => {
 
   afrGuild = client.guilds.cache.get('549589656606343178');
   if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
@@ -323,7 +323,8 @@ client.on('ready', () => {
   startDate = new Date();
 
   Stocks.init();
-  Database.init();
+  await Database.init();
+  loadPlaylist();
   Matoshi.init();
   Api.init();
 
@@ -365,7 +366,6 @@ client.on('ready', () => {
 
 
   console.log('' + new Date().toUTCString() + ' I am ready!');
-  loadPlaylist();
 });
 
 client.on('interactionCreate', async interaction => {
