@@ -38,7 +38,7 @@ export let reactionHandlers = {
 
 
 export function handleMessageReaction(reaction, user, remove) {
-    console.log("React", reaction);
+    //console.log("React", reaction);
     let emojiName = reaction.emoji.name;
     let message = reaction.message;
     if (user != client.user) {

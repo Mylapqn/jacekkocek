@@ -170,7 +170,8 @@ function getStockData() {
                 //console.log("Updated all stocks.");
             }
         }).catch(e => {
-            throw new Error("Error updating stocks (" + stock.symbol + "): " + e.response.status + " " + e.response.statusText + " on " + e.config.url + " " + e.response.headers.date);
+            //throw new Error("Error updating stocks (" + stock.symbol + "): " + e.response.status + " " + e.response.statusText + " on " + e.config.url + " " + e.response.headers.date);
+            throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
         });
     }
 }
