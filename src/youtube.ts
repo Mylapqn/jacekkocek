@@ -83,7 +83,7 @@ function playYoutube(videoUrl: string, channel: Discord.VoiceChannel) {
     console.log("playing " + videoUrl);
     let videoStream = ytdl(videoUrl, { filter: "audioonly", highWaterMark: 10e6 });
     videoStream.on("info", (info: ytdl.videoInfo) => {
-        console.log("YT info" + info);
+        //console.log("YT info" + info);
         let vidId = info.videoDetails.videoId;
         if (!youtubeRecent.includes(vidId)) {
             youtubeRecent.push(vidId);
