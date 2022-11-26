@@ -7,11 +7,36 @@ import * as Discord from "discord.js";
 import * as Sheets from "./sheets"
 
 
+export class Film {
+    id: number;
+    name: string;
+    suggestedBy: string;
+    watched = false;
+    constructor(name: string, suggestedBy: string) {
+        this.name = name;
+        this.suggestedBy = suggestedBy;
+    }
+
+    static fromCommand(name: string, suggestedBy: string) {
+        let film = new Film(name, suggestedBy);
+        Database.KinoDatabase.createFilm(film);
+        return film;
+    }
+
+    static fromDatabase({ id, name, suggestedBy, watched }: { id: number, name: string, suggestedBy: string, watched: boolean }) {
+        let film = new Film(name, suggestedBy);
+        film.id = id;
+        film.suggestedBy = suggestedBy;
+        film.watched = watched;
+        return film;
+    }
+}
+
 
 export class Event {
     id: number;
     film: Film;
-    date: string;
+    date: Date;
     datePoll: Polls.Poll;
     filmPoll: Polls.Poll;
     dateLocked = false;
@@ -39,8 +64,7 @@ export class Event {
         }
     }
 
-
-    static fromDatabase(id: number, film: Film, date: string, dateLocked: boolean, watched: boolean) {
+    static fromDatabase(id: number, film: Film, date: Date, dateLocked: boolean, watched: boolean) {
         let event = new Event();
         event.id = id;
         event.film = film;
@@ -65,31 +89,5 @@ export class Event {
     }
 
     static list = new Array<Event>();
-}
-
-export class Film {
-    id: number;
-    name: string;
-    suggestedBy: string;
-    watched = false;
-    constructor(name: string, suggestedBy: string) {
-        this.name = name;
-        this.suggestedBy = suggestedBy;
-    }
-
-    static fromCommand(name: string, suggestedBy: string) {
-        let film = new Film(name, suggestedBy);
-        Database.KinoDatabase.createFilm(film);
-        return film;
-    }
-
-    static fromDatabase(id: number, name: string, suggestedBy: string, watched: boolean) {
-
-        let film = new Film(name, suggestedBy);
-        film.id = id;
-        film.suggestedBy = suggestedBy;
-        film.watched = watched;
-        return film;
-    }
 }
 

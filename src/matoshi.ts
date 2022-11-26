@@ -51,7 +51,7 @@ function save() {
     fs.writeFile(matoshiFileName, JSON.stringify(Array.from(matoshiData)), (e) => { console.log("Finished writing Matoshi") });
 }
 
-export function balance(userId: string) {
+export async function balance(userId: string) {
     if (!matoshiData.has(userId)) {
         matoshiData.set(userId, 0);
     }
@@ -63,46 +63,38 @@ export function balance(userId: string) {
     return matoshiData.get(userId);
 }
 
-export function modify(userId: string, amount: number) {
+export async function modify(userId: string, amount: number) {
     amount = Math.round(amount);
     if (amount != 0) {
-        let m = balance(userId);
+        let m = await balance(userId);
         matoshiData.set(userId, m + amount);
         console.log("User ID " + userId + " matoshi modified by " + amount + ", now " + matoshiData.get(userId));
         save();
     }
 }
 
-export function pay(options:PaymentOptions, fee = Main.policyValues.matoshi.transactionFee) {
+export async function pay(options:PaymentOptions, fee = Main.policyValues.matoshi.transactionFee) {
     let amount = Math.round(options.amount);
-    if (balance(options.from) >= amount && amount > fee) {
-        modify(options.from, -amount);
-        modify(options.to, amount - fee);
-        modify(Main.client.user.id, fee);
+    if (await balance(options.from) >= amount && amount > fee) {
+        await modify(options.from, -amount);
+        await modify(options.to, amount - fee);
+        await modify(Main.client.user.id, fee);
         return true;
     }
     else return false;
 }
 
-export function cost(user: string, amount: number, guild: string) {
+export async function cost(user: string, amount: number, guild: string) {
     amount = Math.round(amount);
     if (guild == "549589656606343178" || guild == undefined) {
-        if (balance(user) >= amount) {
-            modify(user, -amount);
-            modify(Main.client.user.id, amount);
+        if (await balance(user) >= amount) {
+            await modify(user, -amount);
+            await modify(Main.client.user.id, amount);
             return true;
         }
         else return false;
     }
     else return true;
-}
-
-export function award(guild: string, user: string, amount: number) {
-    if (guild == "549589656606343178") {
-        amount = Math.round(amount);
-        modify(user, amount);
-    }
-    return true;
 }
 
 export async function generateLeaderboard() {

@@ -1,3 +1,10 @@
+export type StockPreset = {
+    id: string,
+    type: string,
+    symbol: string,
+    name: string
+}
+
 export const stockPresets = [
     {
         id: "BTC",
@@ -29,4 +36,4 @@ export const stockPresets = [
         symbol: "AMD",
         name: "AMD"
     },
-]
+] as Array<StockPreset>

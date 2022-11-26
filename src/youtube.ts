@@ -7,10 +7,10 @@ import * as Utilities from "./utilities";
 
 
 var nextYoutube;
-var nextYoutubeData;
+var nextYoutubeData: { url: string; channel: Discord.VoiceChannel; };
 var youtubeAutoplay = false;
 
-var youtubePlaylist = [];
+var youtubePlaylist = new Array<string>();
 var youtubePlaylistPosition = 0;
 var youtubePlaylistName = "test";
 
@@ -21,10 +21,12 @@ var youtubePlaying = [];
 
 let barUpdateInterval = 2000;
 
-export function play(interaction) {
+export function play(interaction:Discord.ChatInputCommandInteraction) {
     let vid = interaction.options.getString("video");
-    if (interaction.member.voice.channel) {
-        Main.joinVoiceChannel(interaction.member.voice.channel);
+    let member = interaction.member as Discord.GuildMember;
+    let voiceChannel = member.voice.channel as Discord.VoiceChannel;
+    if (voiceChannel) {
+        Main.joinVoiceChannel(member.voice.channel);
         if (interaction.options.getBoolean("autoplay")) {
             youtubeAutoplay = true;
         }
@@ -33,20 +35,20 @@ export function play(interaction) {
             if (vid.includes("list=")) {
                 let n = vid.indexOf("list=");
                 let listId = vid.slice(n + 5);
-                interaction.reply({ content: "Playing youtube in :sound:" + interaction.member.voice.channel.name, ephemeral: true });
-                playPlaylist(listId, interaction.channel);
+                interaction.reply({ content: "Playing youtube in :sound:" + member.voice.channel.name, ephemeral: true });
+                playPlaylist(listId, voiceChannel);
             }
             else {
                 youtubePlaylist = [];
-                interaction.reply({ content: "Playing youtube in :sound:" + interaction.member.voice.channel.name, ephemeral: true });
-                playYoutube(vid, interaction.channel);
+                interaction.reply({ content: "Playing youtube in :sound:" + member.voice.channel.name, ephemeral: true });
+                playYoutube(vid, voiceChannel);
             }
         }
         else {
             youtubePlaylist = [];
             search(vid).then((id) => {
-                interaction.reply({ content: "Playing youtube in :sound:" + interaction.member.voice.channel.name, ephemeral: true });
-                playYoutube("https://www.youtube.com/watch?v=" + id, interaction.channel);
+                interaction.reply({ content: "Playing youtube in :sound:" + voiceChannel.name, ephemeral: true });
+                playYoutube("https://www.youtube.com/watch?v=" + id, voiceChannel);
             }).catch(() => { interaction.reply({ content: "No results!", ephemeral: true }); });
         }
 
@@ -127,7 +129,7 @@ function playYoutube(videoUrl: string, channel: Discord.VoiceChannel) {
         //console.log(info);
 
         //voicePlay(voice, videoStream, { volume: 0.8 });
-        let nextVideo;
+        let nextVideo: string;
         if (youtubePlaylist.length > 0) {
             youtubePlaylistPosition++;
             if (youtubePlaylist.length > youtubePlaylistPosition) {
@@ -155,7 +157,7 @@ function playYoutube(videoUrl: string, channel: Discord.VoiceChannel) {
             });
             nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (length + 3) * 1000);
             nextYoutubeData = { url: nextUrl, channel: channel };
-            newPlaying.nextUrl = nextYoutube;
+            newPlaying.nextUrl = nextUrl;
             newPlaying.nextData = nextYoutubeData;
         }
         youtubePlaying.push(newPlaying);

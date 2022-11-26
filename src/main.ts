@@ -81,6 +81,12 @@ var helpCommands = [
     description: "Display help",
   },
   {
+    name: "version",
+    prefix: true,
+    arguments: "",
+    description: "Short changelog of the latest release",
+  },
+  {
     name: "spell",
     prefix: true,
     arguments: "word",
@@ -99,28 +105,10 @@ var helpCommands = [
     description: "Zobrazit hledaný film",
   },
   {
-    name: ":gif2:",
+    name: ":gif2: / :spin: / :loading:",
     prefix: false,
     arguments: "",
     description: "Animated emoji",
-  },
-  {
-    name: ":spin:",
-    prefix: false,
-    arguments: "",
-    description: "Animated emoji",
-  },
-  {
-    name: ":loading:",
-    prefix: false,
-    arguments: "",
-    description: "Animated emoji",
-  },
-  {
-    name: "version",
-    prefix: true,
-    arguments: "",
-    description: "Short changelog of the latest release",
   },
   {
     name: "song",
@@ -325,7 +313,7 @@ client.on('interactionCreate', async interaction => {
             */
             Kino.Film.fromCommand(filmName, interaction.user.id);
             interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: " + policyValues.kino.suggestReward + " ₥");
-            if (!Matoshi.pay({from:client.user.id, to:interaction.user.id, amount:policyValues.kino.suggestReward}, 0)) {
+            if (!await Matoshi.pay({from:client.user.id, to:interaction.user.id, amount:policyValues.kino.suggestReward}, 0)) {
               interaction.channel.send("Not enough matoshi available for reward. Sorry! :(");
             }
             break;
@@ -442,12 +430,12 @@ client.on('interactionCreate', async interaction => {
             if (interaction.user.id == "532918953014722560") {
               let amount = interaction.options.getInteger("amount");
               let target = interaction.options.getUser("user");
-              Matoshi.modify(target.id, amount);
+              await Matoshi.modify(target.id, amount);
               interaction.reply({ content: "Successfully awarded " + amount + " ₥ to **" + target.username + "**", ephemeral: false });
             }
             else {
               interaction.reply({ content: "You are not permitted to mint matoshi! 1 ₥ deducted! :angry:", ephemeral: false });
-              Matoshi.modify(interaction.user.id, -1);
+              await Matoshi.modify(interaction.user.id, -1);
             }
             break;
           }
@@ -456,7 +444,7 @@ client.on('interactionCreate', async interaction => {
             let to = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
 
-            if (Matoshi.pay({from:from.id, to:to.id, amount:amount})) {
+            if (await Matoshi.pay({from:from.id, to:to.id, amount:amount})) {
               interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee" + policyValues.matoshi.transactionFee + "matoshi)", ephemeral: false });
             }
             else {
@@ -469,13 +457,18 @@ client.on('interactionCreate', async interaction => {
             let from = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
             let description = interaction.options.getString("description");
+            if(amount > 1 && amount <= await Matoshi.balance(from.id)){
             Matoshi.requestPayment({ from: from.id, to: to.id, amount: amount, description: description || undefined, interaction: interaction });
+            }
+            else {
+              interaction.reply({ content: "Invalid amount!", ephemeral: false })
+            }
             break;
           }
           case "balance": {
             let user = interaction.options.getUser("user");
             if (!user) user = interaction.user;
-            let balance = Matoshi.balance(user.id);
+            let balance = await Matoshi.balance(user.id);
             interaction.reply({ content: "Matoshi balance for **" + user.username + "**: " + balance + " ₥", ephemeral: false });
             setCalcContext(balance, interaction.channelId);
             break;
@@ -567,7 +560,7 @@ client.on('interactionCreate', async interaction => {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData != undefined) {
           if (interaction.user.id == paymentData.from) {
-            if (Matoshi.pay(paymentData)) {
+            if (await Matoshi.pay(paymentData)) {
               interaction.reply("Payment successful!");
             }
             else {
@@ -616,7 +609,7 @@ client.on('interactionCreate', async interaction => {
   }
 });
 
-client.on('messageCreate', message => {
+client.on('messageCreate', async message => {
   const channel = message.channel as Discord.TextBasedChannel;
   if (message.author.id != client.user.id) {
 
@@ -840,7 +833,7 @@ client.on('messageCreate', message => {
           }
           break;
         case "s":
-          if (Matoshi.cost(message.author.id, 1, message.guildId)) {
+          if (await Matoshi.cost(message.author.id, 1, message.guildId)) {
             console.log("SEARCH!");
             startGoogleSearch(argument, message, 1);
           }
@@ -852,10 +845,7 @@ client.on('messageCreate', message => {
           console.log("SEARCH!");
           startGoogleSearch(argument, message, 2);
           break;
-        case "w2g":
-          channel.send("No longer supported!");
-          break;
-        //httpPost("https://w2g.tv/rooms/create.json").then(parsed => { channel.send(parsed) });
+
         case "nuke":
           if (message.author.id != "245616926485643264") {
             message.delete().then(() => {

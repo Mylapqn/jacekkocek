@@ -24,7 +24,7 @@ const resolutions = {
     month: "M",
 }
 
-export let stockData = new Map();
+export let stockData = new Map<string,Array<number>>();
 
 export function init() {
     stockPresets.forEach(preset => {
@@ -36,7 +36,7 @@ export function init() {
     getStockData();
 }
 
-export function findStockPreset(id) {
+export function findStockPreset(id: string) {
     for (let i = 0; i < stockPresets.length; i++) {
         const s = stockPresets[i];
         if (s.id == id) return s;
@@ -44,7 +44,7 @@ export function findStockPreset(id) {
     return undefined;
 }
 
-export function generateGraph(stockId) {
+export function generateGraph(stockId: string) {
     const width = 600;
     const height = 300;
     const padding = 5;
@@ -130,16 +130,16 @@ export function generateGraph(stockId) {
     else return false;
 }
 
-function formatCurrency(num) {
+function formatCurrency(num: number): string {
     if (num >= 100) {
-        return Math.round(num);
+        return Math.round(num).toString();
     }
     else {
         return num.toFixed(3);
     }
 }
 
-export function currentPrice(stockName) {
+export function currentPrice(stockName: string) {
     if (stockData.has(stockName)) {
         let data = stockData.get(stockName);
         if (data.length >= 1)
@@ -185,10 +185,10 @@ export function list() {
 }
 
 
-export async function buy(user, stock, amount) {
+export async function buy(user: string, stock: string, amount: number) {
     let price = currentPrice(stock);
     if (Utilities.isValid(price)) {
-        if (Matoshi.pay({ from: user, to: Main.client.user.id, amount: amount }, 0)) {
+        if (await Matoshi.pay({ from: user, to: Main.client.user.id, amount: amount }, 0)) {
             let data = await Database.getUser(user);
             let currentStock = data.wallets.get(stock) || 0;
             currentStock += amount * (1 - tradingFee) / price;
@@ -201,13 +201,13 @@ export async function buy(user, stock, amount) {
     else return false;
 }
 
-export async function sell(user, stock, amount) {
+export async function sell(user: string, stock: string, amount: number) {
     let price = currentPrice(stock);
     let data = await Database.getUser(user);
     let currentStock = data.wallets.get(stock);
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
-        if (Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - tradingFee)) }, 0)) {
+        if (await Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - tradingFee)) }, 0)) {
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
             return true;

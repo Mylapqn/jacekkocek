@@ -7,6 +7,7 @@ import * as Youtube from "./youtube"
 
 export class Poll {
     id: number;
+    messageId: string;
     message: Message;
     name: string;
     options: PollOption[] = [];
@@ -58,6 +59,7 @@ export class Poll {
     }
     async sendMessage(interaction: ChatInputCommandInteraction) {
         this.message = await interaction.reply({ embeds: this.generateMessage().embeds, fetchReply: true });
+        this.messageId = this.message.id;
         for (let i = 1; i <= this.options.length && i <= 9; i++) {
             this.message.react(Main.letterEmoji[i.toString()]);
         }

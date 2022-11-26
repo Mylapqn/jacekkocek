@@ -95,7 +95,7 @@ export function dateFromKinoString(text: string): Date {
 
 }
 
-export function weekdayEmoji(day) {
+export function weekdayEmoji(day: number) {
     switch (day) {
         case 1: return "<:po:767907091469828106>";
         case 2: return "<:ut:767907090709872661>";
