@@ -188,7 +188,7 @@ export function list() {
 export async function buy(user, stock, amount) {
     let price = currentPrice(stock);
     if (Utilities.isValid(price)) {
-        if (Matoshi.pay(user, Main.client.user.id, amount, 0)) {
+        if (Matoshi.pay({ from: user, to: Main.client.user.id, amount: amount }, 0)) {
             let data = await Database.getUser(user);
             let currentStock = data.wallets.get(stock) || 0;
             currentStock += amount * (1 - tradingFee) / price;
@@ -207,7 +207,7 @@ export async function sell(user, stock, amount) {
     let currentStock = data.wallets.get(stock);
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
-        if (Matoshi.pay(Main.client.user.id, user, Math.floor(amount * (1 - tradingFee)), 0)) {
+        if (Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - tradingFee)) }, 0)) {
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
             return true;

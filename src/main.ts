@@ -630,8 +630,6 @@ client.on('interactionCreate', async interaction => {
     switch (interaction.customId) {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
-        console.log(paymentData);
-
         if (paymentData != undefined) {
           if (interaction.user.id == paymentData.from) {
             if (Matoshi.pay(paymentData)) {

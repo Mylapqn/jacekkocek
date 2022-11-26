@@ -1,9 +1,18 @@
-import { MessageReaction, PartialMessageReaction, User, PartialUser } from "discord.js";
+import { MessageReaction, PartialMessageReaction, User, PartialUser, DiscordAPIError, Message } from "discord.js";
 import { client, letterEmoji, weekDayNames } from "./main"
 import * as Polls from "./polls"
 import * as Utilities from "./utilities"
+
+interface reactionData {
+    remove: boolean,
+    emoji: string,
+    message: Message,
+    user: User,
+    reactionObject: MessageReaction
+}
+
 export let reactionHandlers = {
-    poll: data => {
+    poll: (data: reactionData) => {
         let poll = Polls.Poll.getPollFromMessage(data.message);
         if (poll) {
             try {
@@ -34,7 +43,7 @@ export let reactionHandlers = {
             }
         }
     },
-    koce: data => {
+    koce: (data: reactionData) => {
         if (data.message.content.toLowerCase().includes("koče")) {
             if (data.remove)
                 data.message.reply("koče removed");
