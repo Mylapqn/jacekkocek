@@ -133,7 +133,7 @@
             {
                 "type": 1,
                 "name": "pay",
-                "description": "Pay someone with your matoshi (fee: 1 ₥)",
+                "description": "Pay someone with your matoshi (fee applies)",
                 "options": [
                     {
                         "type": 6,
@@ -146,6 +146,31 @@
                         "name": "amount",
                         "description": "The amount to pay (minimum: 2 ₥, subject to fee)",
                         "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "request",
+                "description": "Request a matoshi payment from someone (fee applies)",
+                "options": [
+                    {
+                        "type": 6,
+                        "name": "user",
+                        "description": "The recipient of the request",
+                        "required": true
+                    },
+                    {
+                        "type": 4,
+                        "name": "amount",
+                        "description": "The amount to request (minimum: 2 ₥, subject to fee)",
+                        "required": true
+                    },
+                    {
+                        "type": 3,
+                        "name": "description",
+                        "description": "A description of the request",
+                        "required": false
                     }
                 ]
             },

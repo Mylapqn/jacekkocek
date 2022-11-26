@@ -2,20 +2,30 @@ import * as Main from "./main";
 import * as Discord from "discord.js";
 import fs from "fs";
 
+let paymentChannel: Discord.TextChannel;
 var matoshiFileName = "matoshiBalance.json";
 var matoshiData = new Map();
 export let paymentMessages = new Map();
+interface PaymentRequestOptions {
+    from: Discord.UserResolvable,
+    to: Discord.UserResolvable,
+    amount: number,
+    description?: string,
+    channel?: Discord.TextChannel,
+    interaction?: Discord.CommandInteraction
+}
 
-export function init() {
+export async function init() {
     load();
-    Main.httpServer.post("/matoshi/payment", (req, res) => {
+    paymentChannel = await Main.afrGuild.channels.fetch("753323827093569588") as Discord.TextChannel;
+    Main.httpServer.post("/matoshi/payment", async (req, res) => {
         console.log(req.body);
         //let data = JSON.parse(req.body);
         let data = req.body;
-        if (data.from.id != Main.client.user.id)
-            paymentMessage(data).then(() => {
-                res.send("ok");
-            });
+        if (data.from.id != Main.client.user.id) {
+            let msg = await requestPayment({ from: data.from, to: data.to, amount: data.amount, description: data.description, channel: paymentChannel });
+            res.send("ok");
+        }
     });
 
 }
@@ -59,8 +69,7 @@ export function modify(user, amount) {
     }
 }
 
-export function pay(from, to, amount, fee = undefined) {
-    if (fee == undefined) fee = 1;
+export function pay(from, to, amount, fee = Main.policyValues.matoshi.transactionFee) {
     amount = Math.round(amount);
     if (balance(from) >= amount && amount > fee) {
         modify(from, -amount);
@@ -105,17 +114,16 @@ export async function generateLeaderboard() {
     return msg;
 }
 
-async function paymentMessage(data) {
-    let channel = await Main.afrGuild.channels.fetch("753323827093569588") as Discord.TextChannel;
-    let from = await Main.afrGuild.members.fetch(data.from);
-    let to = await Main.afrGuild.members.fetch(data.to);
+async function generatePaymentMessage(options: PaymentRequestOptions) {
+    const fromMember = (await Main.afrGuild.members.fetch(options.from))
+    const toMember = (await Main.afrGuild.members.fetch(options.to));
     let newEmbed = new Discord.EmbedBuilder()
         .setTitle("Confirm payment")
-        .addFields({ name: "Message", value: data.description })
-        .addFields({ name: "Amount", value: data.amount + " ₥", inline: false })
-        .addFields({ name: "From >>", value: "<@" + from.id + ">", inline: true })
-        .addFields({ name: ">> To", value: "<@" + to.id + ">", inline: true })
-        .setFooter({ text: "Only " + from.displayName + " can confirm this payment." })
+        .addFields({ name: "Message", value: options.description || "No description provided" })
+        .addFields({ name: "Amount", value: options.amount + " ₥", inline: false })
+        .addFields({ name: "From >>", value: "<@" + fromMember.id + ">", inline: true })
+        .addFields({ name: ">> To", value: "<@" + toMember.id + ">", inline: true })
+        .setFooter({ text: "Only " + fromMember.displayName + " can confirm this payment." })
         .setColor(0x18C3B1)
     let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents([
         new Discord.ButtonBuilder()
@@ -127,10 +135,19 @@ async function paymentMessage(data) {
             .setLabel("Decline")
             .setStyle(Discord.ButtonStyle.Danger),
     ]);
-    channel.send({ content: "<@" + from.id + ">", embeds: [newEmbed], components: [newActionRow] }).then(msg => {
-        //msg.react("✅");
-        //msg.react("767907092907687956");
-        paymentMessages.set(msg.id, data);
-    });
-    return true;
+    return { content: "<@" + fromMember.id + ">", embeds: [newEmbed], components: [newActionRow] };
+}
+
+export async function requestPayment(options: PaymentRequestOptions) {
+    let paymentMessage = await generatePaymentMessage(options);
+    let msg: Discord.Message;
+    if (options.interaction) {
+        await options.interaction.reply(paymentMessage);
+        msg = (await options.interaction.fetchReply());
+    }
+    else if (options.channel) {
+        msg = await options.channel.send(paymentMessage);
+    }
+    paymentMessages.set(msg.id, { from: options.from, to: options.to, amount: options.amount });
+    return msg;
 }

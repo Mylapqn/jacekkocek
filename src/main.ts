@@ -46,14 +46,28 @@ let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: Di
 var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
-var startDate;
-var defaultTimeZone = "Europe/Prague";
+let startDate: Date;
+let defaultTimeZone = "Europe/Prague";
 
 let voiceListeners = [];
 
 export const port = process.env.PORT;
 export const httpServer = express();
 httpServer.use(express.json());
+
+export let policyValues = {
+  matoshi: {
+    transactionFee: 0,
+    weeklyTaxPercent: 0,
+    weeklyTaxFlat: 0,
+  },
+  kino: {
+    suggestReward: 50,
+    watchReward: 200,
+    lateFeePerMinute: 1,
+    defaultTimeHrs: 19
+  }
+}
 
 
 
@@ -375,8 +389,8 @@ client.on('interactionCreate', async interaction => {
             interaction.reply({ content: "There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
             */
             Kino.Film.fromCommand(filmName, interaction.user.id);
-            interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: 50 ₥");
-            if (!Matoshi.pay(client.user.id, interaction.user.id, 50, 0)) {
+            interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: " + policyValues.kino.suggestReward + " ₥");
+            if (!Matoshi.pay(client.user.id, interaction.user.id, policyValues.kino.suggestReward, 0)) {
               interaction.channel.send("Not enough matoshi available for reward. Sorry! :(");
             }
             break;
@@ -508,11 +522,19 @@ client.on('interactionCreate', async interaction => {
             let amount = interaction.options.getInteger("amount");
 
             if (Matoshi.pay(from.id, to.id, amount)) {
-              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee 1 matoshi)", ephemeral: false });
+              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee" + policyValues.matoshi.transactionFee + "matoshi)", ephemeral: false });
             }
             else {
               interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
             }
+            break;
+          }
+          case "request": {
+            let to = interaction.user;
+            let from = interaction.options.getUser("user");
+            let amount = interaction.options.getInteger("amount");
+            let description = interaction.options.getString("description");
+            Matoshi.requestPayment({ from: from, to: to, amount: amount, description: description || undefined, interaction: interaction });
             break;
           }
           case "balance": {
@@ -617,30 +639,7 @@ client.on('interactionCreate', async interaction => {
               interaction.reply("Payment failed!");
             }
             Matoshi.paymentMessages.delete(interaction.message.id);
-            let msg = interaction.message;
-            let comp = msg.components;
-
-            let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
-            for (const component of comp[0].components) {
-              if (component instanceof Discord.ButtonComponent)
-                newActionRow.addComponents(new Discord.ButtonBuilder(component).setDisabled(true));
-              else
-                throw new Error("Expected only ButtonComponent");
-            }
-
-            /*let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents([
-              new Discord.ButtonBuilder()
-                .setCustomId("acceptPayment")
-                .setLabel("Accept")
-                .setStyle(Discord.ButtonStyle.Success)
-                .setDisabled(true),
-              new Discord.ButtonBuilder()
-                .setCustomId("declinePayment")
-                .setLabel("Decline")
-                .setStyle(Discord.ButtonStyle.Danger)
-                .setDisabled(true),
-            ]);*/
-            msg.edit({ content: msg.content, embeds: msg.embeds, components: [newActionRow] })
+            Utilities.disableMessageButtons(interaction.message);
           }
         }
         break;
@@ -651,16 +650,7 @@ client.on('interactionCreate', async interaction => {
           if (interaction.user.id == paymentData.from) {
             interaction.reply("Payment cancelled");
             Matoshi.paymentMessages.delete(interaction.message.id);
-            let msg = interaction.message;
-            let comp = msg.components;
-            let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
-            for (const component of comp[0].components) {
-              if (component instanceof Discord.ButtonComponent)
-                newActionRow.addComponents(new Discord.ButtonBuilder(component).setDisabled(true));
-              else
-                throw new Error("Expected only ButtonComponent");
-            }
-            msg.edit({ content: msg.content, embeds: msg.embeds, components: [newActionRow] })
+            Utilities.disableMessageButtons(interaction.message);
           }
         }
         break;

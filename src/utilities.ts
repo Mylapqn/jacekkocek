@@ -1,4 +1,4 @@
-import { Channel, Guild, Message, TextBasedChannel, TextChannel, ThreadChannel, NewsChannel } from "discord.js";
+import { Channel, Guild, Message, TextBasedChannel, TextChannel, ThreadChannel, NewsChannel, ButtonBuilder, ActionRowBuilder, ButtonComponent } from "discord.js";
 import * as Main from "./main";
 
 export function dateString(inputDate: Date) {
@@ -110,4 +110,16 @@ export function weekdayEmoji(day) {
 export function messageError(channel: TextBasedChannel, error: Error) {
     console.error(error);
     channel.send(error.name + ": " + error.message);
+}
+
+export async function disableMessageButtons(msg: Message, setDisabled = true) {
+    let comp = msg.components;
+    let newActionRow = new ActionRowBuilder<ButtonBuilder>();
+    for (const component of comp[0].components) {
+        if (component instanceof ButtonComponent)
+            newActionRow.addComponents(new ButtonBuilder(component).setDisabled(setDisabled));
+        else
+            throw new Error("Expected only ButtonComponent");
+    }
+    msg.edit({ content: msg.content, embeds: msg.embeds, components: [newActionRow] })
 }
