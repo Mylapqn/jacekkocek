@@ -1277,6 +1277,7 @@ export enum GoogleSearchTypes {
 export async function googleSearch(engine: GoogleSearchEngines, searchTerm: string, searchType: GoogleSearchTypes = GoogleSearchTypes.PAGE): Promise<any[]> {
   let response = await axios.get("https://www.googleapis.com/customsearch/v1?key=" + process.env.SEARCH_API_KEY + "&cx=" + engine + "&q=" + searchTerm + "&searchType=" + searchType)
   if (response.data.items.length == 0) throw new Error("No search results!");
+  console.log(response.data.items);
   return response.data.items;
 }
 //#endregion
