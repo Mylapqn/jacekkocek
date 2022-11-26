@@ -87,13 +87,6 @@ var helpCommands = [
     description: "Spell word in emoji reactions",
   },
   {
-    name: "zobrazit",
-    prefix: true,
-    arguments: "režim",
-    description: "Zobrazit věci z předchozí zprávy dle zvoleného režimu",
-    longDescription: "`zobrazit` - Zobrazit věci z předchozí zprávy\n`zobrazit vše` - Zobrazit vše\n`zobrazit více` - Zobrazit další položku z předchozího zobrazení\n`zobrazit ještě více` - Zobrazit ještě další položku z předchozího zobrazení\n"
-  },
-  {
     name: "s",
     prefix: true,
     arguments: "dotaz",
@@ -124,28 +117,6 @@ var helpCommands = [
     description: "Animated emoji",
   },
   {
-    name: "kino",
-    prefix: true,
-    arguments: "film",
-    description: "Start vote on kino",
-    longDescription: "Sends a message where users can react whether (and when) they want to watch the film or not. Also tries to find and send short info about the film."
-  },
-  {
-    name: "kinoReset",
-    prefix: true,
-    arguments: "film",
-    description: "Reset vote/suggestion for this film",
-    longDescription: "If there is an ongoing vote or watchlist suggestion on this specific film, it is cancelled and you can start it again.\nYou do not have to use this if you want to start a new vote for a different film."
-
-  },
-  {
-    name: "kinoRemind",
-    prefix: true,
-    arguments: "film",
-    description: "Ping all users who want to watch the film",
-    longDescription: "If there is an ongoing vote on this film, everyone who reacted positively on the original vote message gets pinged. Also sends a link to the original message."
-  },
-  {
     name: "version",
     prefix: true,
     arguments: "",
@@ -166,13 +137,6 @@ var helpCommands = [
     longDescription: "Start playing songs in your voice chat. The starting song can be specified, the following ones will be random.\nThe argument can be song name, song id, or nothing for a random song."
   },
   {
-    name: "radio",
-    prefix: true,
-    arguments: "station",
-    description: "Start playing internet radio",
-    longDescription: "Start playing internet radio. For a list of stations type `" + prefix + "radio stations.`"
-  },
-  {
     name: "stop",
     prefix: true,
     arguments: "",
@@ -184,44 +148,15 @@ var helpCommands = [
     arguments: "",
     description: "Play noise in your voice channel",
   },
-  {
-    name: "kinoSuggest",
-    prefix: true,
-    arguments: "film",
-    description: "Add a film to the watchlist",
-    longDescription: "Add a film to the 'watch later' watchlist. Interchangable with `suggest`."
-  },
-  {
-    name: "kinoPlaylist",
-    prefix: true,
-    arguments: "film",
-    description: "Display the film watchlist",
-    longDescription: "See the films to watch and the ones you have already watched. Interchangable with `playlist`, `kinoSuggestions`."
-  },
-  {
-    name: "youtube",
-    arguments: "video url",
-    prefix: true,
-    description: "",
-  },
 
 ];
 
-var helpAdminCommands = [
-  {
-    name: "listLetterEmoji",
-    prefix: true,
-    arguments: "",
-    description: "List letter emoji",
-  },
-];
 
 var changelog = {
-  version: "1.18.4",
-  releaseDate: "21.8.2022",
-  commands: ["help"],
+  version: "1.19.2",
+  releaseDate: "26.11.2022",
   changes: [
-    "Added poll system",
+    "Not specified",
   ]
 };
 
@@ -833,25 +768,7 @@ client.on('messageCreate', message => {
         case "changes":
         case "version": {
           message.delete();
-          let commandChanges = "";
           let changeChanges = "";
-          changelog.commands.forEach(commandName => {
-            let c = undefined;
-            helpCommands.forEach(helpEntry => {
-              if (helpEntry.name == commandName) {
-                c = helpEntry;
-                return;
-              }
-            });
-            if (c) {
-              commandChanges += "`";
-              if (c.prefix) commandChanges += prefix;
-              commandChanges += c.name;
-              if (c.arguments != "") commandChanges += " <" + c.arguments + ">";
-              commandChanges += "` - " + c.description;
-              commandChanges += "\n";
-            }
-          });
           changelog.changes.forEach(str => {
             changeChanges += "• ";
             changeChanges += str;
@@ -863,12 +780,8 @@ client.on('messageCreate', message => {
                 color: 0x18C3B1,
                 title: "JacekKocek v" + changelog.version, description: "Released " + changelog.releaseDate, fields: [
                   {
-                    name: "New commands", value: commandChanges
-                  },
-                  {
                     name: "Changes", value: changeChanges
                   },
-
                 ]
               }
             ]
@@ -888,15 +801,6 @@ client.on('messageCreate', message => {
               helpBasic += "` - " + command.description;
               helpBasic += "\n";
             });
-            var helpAdmin = "";
-            helpAdminCommands.forEach(command => {
-              helpAdmin += "`";
-              if (command.prefix) helpAdmin += prefix;
-              helpAdmin += command.name;
-              if (command.arguments != "") helpAdmin += " " + command.arguments;
-              helpAdmin += "` - " + command.description;
-              helpAdmin += "\n";
-            });
 
 
             channel.send({
@@ -904,10 +808,7 @@ client.on('messageCreate', message => {
                 color: 0x18C3B1,
                 title: "Help", description: "Type `" + prefix + "help <command>` to get further info on a command", fields: [
                   {
-                    name: "Basic commands", value: helpBasic
-                  },
-                  {
-                    name: "Admin commands", value: helpAdmin
+                    name: "Commands", value: helpBasic
                   },
 
                 ]
@@ -1055,7 +956,6 @@ client.on('messageCreate', message => {
           }
           break;
         }
-
         case "stop": {
           let connection = DiscordVoice.getVoiceConnection(message.guildId);
           audioPlayer.stop(true);
@@ -1170,7 +1070,7 @@ client.on("messageReactionRemove", (messageReaction, user) => {
 
 //#region REMINDERS
 
-function parseTime(inputString) {
+function parseTime(inputString: string) {
   let units = -1;
   let unitString = inputString.match(/[a-zA-Z]+/g)[0];
   if (unitString == "") return -1;

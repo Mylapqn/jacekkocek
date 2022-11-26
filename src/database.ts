@@ -220,6 +220,7 @@ async function messageFromUid(uid: string): Promise<Message> {
 }
 
 
+
 export type Datatype = "string" | "number" | "date" | DataObject;
 export type DataField = { name: string, dbName: string, type: Datatype, isKey?: boolean };
 
@@ -314,7 +315,7 @@ export class DataObject {
             }
         }
 
-        let data: Array<any> = await connection.query(`SELECT * FROM ${name} WHERE ${whereString}`)[0];
+        let data: Array<any> = await connection.query(`SELECT * FROM ${this.name} WHERE ${whereString}`)[0];
         for (const field of this.fields) {
             switch (field.type) {
                 case "string":
@@ -365,6 +366,6 @@ export class DataObject {
             }
         }
 
-        await connection.query(`DELETE FROM ${name} WHERE ${whereString}`);
+        await connection.query(`DELETE FROM ${this.name} WHERE ${whereString}`);
     }
 }
