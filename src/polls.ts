@@ -82,12 +82,14 @@ export class Poll {
     }
 
     addVote(optionIndex: number, userId: string) {
-        if (optionIndex < this.options.length && optionIndex >= 0) {
-            console.log(this.options[optionIndex].votes, userId);
-            
-            if (this.maxVotesPerUser != 0 && (this.options[optionIndex].votes.filter(v => v.userId == userId)).length >= this.maxVotesPerUser) {
-                //:frowning:
-                return false;
+        if(optionIndex < this.options.length && optionIndex >= 0){
+            if (this.maxVotesPerUser != 0) {
+                let voteCount = 0;
+                for (const option of this.options) voteCount += option.votes.find(v => v.userId == userId) ? 1 : 0;
+                if (voteCount >= this.maxVotesPerUser - 1) {
+                    //:frowning:
+                    return false;
+                }
             }
             let newVote = new PollVote(this, optionIndex, userId)
             this.options[optionIndex].votes.push(newVote);
@@ -99,6 +101,7 @@ export class Poll {
         }
         return false;
     }
+
     removeVote(optionIndex: number, userId: string) {
         if (optionIndex < this.options.length && optionIndex >= 0) {
             for (let i = 0; i < this.options[optionIndex].votes.length; i++) {
