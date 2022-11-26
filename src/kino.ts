@@ -108,15 +108,15 @@ export class Event {
         this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
         this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
         this.datePoll.lock();
-        Main.afrGuild.scheduledEvents.create({
+        let guildEvent = await Main.afrGuild.scheduledEvents.create({
             name: "Kino: " + this.film.name,
             scheduledStartTime: this.date,
             privacyLevel: Discord.GuildScheduledEventPrivacyLevel.GuildOnly,
             entityType: Discord.GuildScheduledEventEntityType.Voice,
             channel: Main.mainVoiceChannel as Discord.VoiceChannel,
-            entityMetadata: { location: "Prague, Czech Republic" },
             description: "Kino session of " + this.film.name
         })
+        this.datePoll.message.channel.send(await guildEvent.createInviteURL());
     }
 
     static fromDatabase(id: number, film: Film, date: Date, dateLocked: boolean, watched: boolean, filmPoll: Polls.Poll, datePoll: Polls.Poll, lockMessageId: string) {
