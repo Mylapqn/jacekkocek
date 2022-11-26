@@ -850,7 +850,8 @@ client.on('messageCreate', async message => {
         case "s":
           if (await Matoshi.cost(message.author.id, 1, message.guildId)) {
             console.log("SEARCH!");
-            startGoogleSearch(argument, message, 1);
+            let results = await getGoogleSearch(GoogleSearchEngines.EVERYTHING, argument);
+            message.channel.send(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
           }
           else {
             message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
@@ -858,7 +859,8 @@ client.on('messageCreate', async message => {
           break;
         case "film":
           console.log("SEARCH!");
-          startGoogleSearch(argument, message, 2);
+          let results = await getGoogleSearch(GoogleSearchEngines.CSFD, argument);
+          message.channel.send(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
           break;
 
         case "nuke":
@@ -1272,53 +1274,9 @@ enum GoogleSearchTypes {
   PAGE = "searchTypeUndefined"
 }
 
-function startGoogleSearch(argument, message, type) {
-
-  console.log("Starting Google Search for: " + argument);
-
-  var cx;
-  var index = 0;
-  var searchTerm;
-
-  if (type == 2) {
-    cx = "513b4641b78f8096a";
-    searchTerm = argument;
-    googleSearch(cx, searchTerm, message);
-  }
-  if (type == 1) {
-    cx = "003836403838224750691:axl53a8emck";
-    searchTerm = argument;
-    googleSearch(cx, searchTerm, message);
-  }
-}
-function googleSearch(cx, searchTerm, message) {
-  Https.get("https://www.googleapis.com/customsearch/v1?key=" + process.env.SEARCH_API_KEY + "&cx=" + cx + "&q=" + searchTerm, function (res) {
-    console.log("HTTPS Status:" + res.statusCode);
-    var body;
-    res.on("data", function (data) {
-      body += data;
-    });
-    res.on("end", function () {
-      var parsed = JSON.parse(body.substring(9, body.length));
-      var resultsList = parsed.items;
-
-
-      if (resultsList != null) {
-        lastSearchResults = resultsList;
-        //console.log(resultsList);
-        //console.log(parsed.queries);
-
-        message.channel.send(resultsList[0].title + "\n" + resultsList[0].snippet + "\n" + resultsList[0].link, { tts: false });
-      }
-      else
-        message.channel.send("No results :disappointed:", { tts: true });
-
-    });
-  });
-}
-export async function getGoogleSearch(engine: GoogleSearchEngines, searchTerm: string, searchType: GoogleSearchTypes = GoogleSearchTypes.PAGE) {
+export async function getGoogleSearch(engine: GoogleSearchEngines, searchTerm: string, searchType: GoogleSearchTypes = GoogleSearchTypes.PAGE): Promise<any[]> {
   let response = await axios.get("https://www.googleapis.com/customsearch/v1?key=" + process.env.SEARCH_API_KEY + "&cx=" + engine + "&q=" + searchTerm + "&searchType=" + searchType)
-  console.log(response.data);
+  return response.data.items;
 }
 //#endregion
 
