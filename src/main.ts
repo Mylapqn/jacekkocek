@@ -548,14 +548,13 @@ client.on('interactionCreate', async interaction => {
         for (let i = 1; i < 10; i++) {
           let optionName = interaction.options.getString("option" + i);
           if (!optionName) continue;
-          poll.addOption(optionName);
+          await poll.addOption(optionName);
         }
         break;
       }
     }
   }
   else if (interaction.isButton()) {
-    console.log("button pressed", interaction.customId);
     switch (interaction.customId) {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
@@ -650,17 +649,7 @@ client.on('messageCreate', async message => {
         if (poll != undefined) {
           try {
             if (!poll.customOptionsAllowed) throw new Error("Poll custom options disabled");
-            let event = Kino.Event.list.find(event => event.datePoll == poll);
-            if (event) {
-              let date = Utilities.dateFromKinoString(message.content);
-              if (!date) throw new Error("Invalid date");
-              event.addDate(date).catch((e) => {
-                Utilities.messageError(channel, e);
-              });
-            }
-            else {
-              poll.addOption(message.content);
-            }
+            poll.addOption(message.content);
           } catch (error) {
             Utilities.messageError(channel, error);
           }
