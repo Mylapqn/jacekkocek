@@ -349,6 +349,11 @@ client.on('interactionCreate', async interaction => {
             event.dateVote(interaction);
             break;
           }
+          case "vote-film": {
+            let event = Kino.Event.fromCommand();
+            event.filmVote(interaction);
+            break;
+          }
         }
         break;
       }

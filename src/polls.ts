@@ -69,7 +69,8 @@ export class Poll {
         return { embeds: [embed] };
     }
     updateMessage() {
-        this.message.edit(this.generateMessage());
+        let components = this.message.components;
+        this.message.edit({ embeds: this.generateMessage().embeds, components: components });
     }
     async sendMessage(interaction: ChatInputCommandInteraction) {
         this.message = await interaction.reply({ embeds: this.generateMessage().embeds, fetchReply: true });

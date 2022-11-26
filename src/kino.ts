@@ -57,10 +57,6 @@ export class Event {
         return name;
     }
     static async dateVoteOptionFilter(name: string) {
-        if (name.toLowerCase() == "lock") {
-
-            return undefined;
-        }
         let date = Utilities.dateFromKinoString(name)
         if (date == undefined) {
             throw new Error("Invalid date");
@@ -72,6 +68,10 @@ export class Event {
 
     async filmVote(interaction: Discord.ChatInputCommandInteraction) {
         this.filmPoll = await Polls.Poll.fromCommand("Co kino?", interaction, 0, true);
+        let embeds = this.filmPoll.message.embeds;
+        let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
+        newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockFilmVote", label: "Lock", style: Discord.ButtonStyle.Success }));
+        this.filmPoll.message.edit({ embeds: embeds, components: [newActionRow] })
         this.filmPoll.optionFilter = Event.filmVoteOptionFilter;
         Database.KinoDatabase.setEvent(this);
     }
