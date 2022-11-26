@@ -43,8 +43,8 @@ export let reactionHandlers = {
 
 
 export async function handleMessageReaction(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser, remove: boolean) {
-    reaction = await reaction.fetch();
-    user = await user.fetch();
+    reaction = await reaction.fetch() || reaction;
+    user = await user.fetch() || user;
     //console.log("React", reaction);
     let emojiName = reaction.emoji.name;
     let message = reaction.message;

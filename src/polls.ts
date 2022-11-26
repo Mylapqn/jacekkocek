@@ -86,7 +86,7 @@ export class Poll {
             if (this.maxVotesPerUser != 0) {
                 let voteCount = 0;
                 for (const option of this.options) voteCount += option.votes.find(v => v.userId == userId) ? 1 : 0;
-                if (voteCount >= this.maxVotesPerUser - 1) {
+                if (voteCount >= this.maxVotesPerUser) {
                     //:frowning:
                     return false;
                 }
