@@ -44,6 +44,11 @@ export class Poll {
         return winner;
     }
 
+    lock(){
+        Poll.list.splice(Poll.list.indexOf(this), 1);
+        Database.PollDatabase.deletePoll(this);
+    }
+
     generateMessage() {
         let embed = new EmbedBuilder().setColor(0x18C3B1).setTitle(this.name);
         let description = "";
@@ -74,7 +79,7 @@ export class Poll {
         this.message.edit({ embeds: this.generateMessage().embeds, components: components });
     }
     async sendMessage(interaction: Interaction) {
-        if(interaction instanceof AutocompleteInteraction) throw new Error("Unexpected autocomplete interaction");
+        if (interaction instanceof AutocompleteInteraction) throw new Error("Unexpected autocomplete interaction");
         this.message = await interaction.reply({ embeds: this.generateMessage().embeds, fetchReply: true });
         this.messageId = this.message.id;
         for (let i = 1; i <= this.options.length && i <= 9; i++) {

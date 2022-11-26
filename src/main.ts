@@ -41,6 +41,7 @@ const commandsToDeleteGlobal = [];
 const commandsToDeleteGuild = [];
 
 export let afrGuild: Discord.Guild;
+export let mainVoiceChannel: Discord.VoiceChannel;
 
 let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Pause } });
 var kocek = 0;
@@ -68,7 +69,6 @@ export let policyValues = {
     defaultTimeHrs: 19
   }
 }
-
 
 
 
@@ -245,6 +245,8 @@ client.login(process.env.DISCORD_API_KEY);
 client.on('ready', async () => {
 
   afrGuild = client.guilds.cache.get('549589656606343178');
+  mainVoiceChannel = await afrGuild.channels.fetch("1024767805586935888") as Discord.VoiceChannel;
+
   if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
   client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
@@ -588,11 +590,23 @@ client.on('interactionCreate', async interaction => {
         }
         break;
       }
-      case "lockFilmVote":{
-        let event = Kino.Event.list.find(e=>e.lockMessageId==interaction.message.id);
-        if(event){
+      case "lockFilmVote": {
+        //If user kino weight
+        let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
+        if (event) {
+          interaction.message.delete();
           event.dateVote(interaction)
         }
+        break;
+      }
+      case "lockDayVote": {
+        //If user kino weight
+        let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
+        if (event) {
+          interaction.message.delete();
+          event.lockDate();
+        }
+        break;
       }
     }
   }

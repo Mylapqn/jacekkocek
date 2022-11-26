@@ -49,6 +49,7 @@ export class Event {
     static fromCommand() {
         let event = new Event();
         Database.KinoDatabase.createEvent(event);
+        Sheets.getUserData();
         return event;
     }
     static async filmVoteOptionFilter(name: string) {
@@ -71,8 +72,8 @@ export class Event {
         this.filmPoll = await Polls.Poll.fromCommand("Co kino?", interaction, 0, true);
         let embeds = this.filmPoll.message.embeds;
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
-        newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockFilmVote", label: "Lock", style: Discord.ButtonStyle.Success }));
-        this.lockMessageId = (await interaction.channel.send({components: [newActionRow] })).id;
+        newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockFilmVote", label: "Confirm film selection", style: Discord.ButtonStyle.Success }));
+        this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
         this.filmPoll.optionFilter = Event.filmVoteOptionFilter;
         Database.KinoDatabase.setEvent(this);
     }
@@ -80,15 +81,14 @@ export class Event {
     async dateVote(interaction: Discord.Interaction) {
         if (this.filmPoll && !this.film) {
             this.film = await Database.KinoDatabase.getFilmByName(this.filmPoll.getWinner().name);
-            Polls.Poll.list.splice(Polls.Poll.list.indexOf(this.filmPoll), 1);
-            Database.PollDatabase.deletePoll(this.filmPoll);
+            this.filmPoll.lock();
         }
 
         this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true);
 
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
-        newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Lock", style: Discord.ButtonStyle.Success }));
-        this.lockMessageId = (await interaction.channel.send({components: [newActionRow] })).id;
+        newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }));
+        this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
 
         let dayScores = await Sheets.getDaysScores();
         let sortedScores = [...dayScores.entries()].sort((a, b) => b[1] - a[1]);
@@ -101,6 +101,18 @@ export class Event {
         }
         this.datePoll.optionFilter = Event.dateVoteOptionFilter;
         Database.KinoDatabase.setEvent(this);
+    }
+
+    async lockDate() {
+        this.datePoll.lock();
+        Main.afrGuild.scheduledEvents.create({
+            name: "Kino: " + this.film.name, scheduledStartTime: this.date,
+            privacyLevel: Discord.GuildScheduledEventPrivacyLevel.GuildOnly,
+            entityType: Discord.GuildScheduledEventEntityType.Voice,
+            channel: Main.mainVoiceChannel as Discord.VoiceChannel,
+            entityMetadata: { location: "Prague, Czech Republic" },
+            description: "Kino session of " + this.film.name
+        })
     }
 
     static fromDatabase(id: number, film: Film, date: Date, dateLocked: boolean, watched: boolean, filmPoll: Polls.Poll, datePoll: Polls.Poll, lockMessageId: string) {

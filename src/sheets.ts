@@ -21,7 +21,7 @@ async function getDayIndex(date = new Date()) {
     let result = await googleSheets.spreadsheets.values.get({
         auth,
         spreadsheetId,
-        range: "Díly!B5:B",
+        range: "Díly!B6:B",
         valueRenderOption: "FORMATTED_VALUE"
 
     });
@@ -48,6 +48,30 @@ export async function getDaysScores(): Promise<Map<Date, number>> {
         output.set(Utilities.dateFromKinoString(line[0]), parseInt(line[8]));
     }
     return output;
+}
+export type UserKinoData = {weight: number; reliability: number;};
+export async function getUserData() : Promise<Map<string,UserKinoData>> {
+    try {
+        let result = await googleSheets.spreadsheets.values.get({
+            auth,
+            spreadsheetId,
+            range: "Díly!C2:I5",
+            valueRenderOption: "FORMATTED_VALUE"
+    
+        });
+        let userData = new Map<string,UserKinoData>(); 
+        for (let u = 0; u < result.data.values[0].length; u++) {
+            const col = result.data.values[u];
+            const user = col[0];
+            const weight = col[1];
+            const reliability = col[2];
+            userData.set(user, {weight, reliability});
+        }
+        console.log(userData);
+        return userData;
+    } catch (error) {
+        return undefined;
+    }
 }
 
 export async function getDay(date: Date): Promise<number> {
