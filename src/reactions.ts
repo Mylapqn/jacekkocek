@@ -25,7 +25,7 @@ export let reactionHandlers = {
                     }
                 }
             } catch (error) {
-                data.reactionObject.users.remove(data.user);
+                if (!data.remove) data.reactionObject.users.remove(data.user);
                 console.error("Couldn't translate reaction to number");
                 //throw new Error("Couldn't translate reaction to number");
             }
