@@ -1,4 +1,4 @@
--- Adminer 4.8.1 MySQL 5.5.5-10.6.9-MariaDB-1:10.6.9+maria~deb11 dump
+-- Adminer 4.8.1 MySQL 5.5.5-10.6.11-MariaDB-1:10.6.11+maria~deb11 dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -7,28 +7,32 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
 
+DROP DATABASE IF EXISTS `jacekkocek`;
+CREATE DATABASE `jacekkocek` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+USE `jacekkocek`;
+
 DROP TABLE IF EXISTS `Films`;
 CREATE TABLE `Films` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(60) NOT NULL,
   `suggested_by` varchar(18) DEFAULT NULL,
-  `watched` bit(1) DEFAULT NULL,
+  `watched` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=223 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `KinoEvent`;
 CREATE TABLE `KinoEvent` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `film` int(11) DEFAULT NULL,
-  `date` varchar(6) DEFAULT NULL,
-  `date_locked` bit(1) DEFAULT NULL,
-  `watched` bit(1) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `date_locked` tinyint(4) DEFAULT NULL,
+  `watched` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `film` (`film`),
   CONSTRAINT `KinoEvent_ibfk_2` FOREIGN KEY (`film`) REFERENCES `Films` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `PollOptions`;
@@ -38,7 +42,7 @@ CREATE TABLE `PollOptions` (
   `name` varchar(250) NOT NULL,
   PRIMARY KEY (`poll`,`index`),
   CONSTRAINT `PollOptions_ibfk_1` FOREIGN KEY (`poll`) REFERENCES `Polls` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `Polls`;
@@ -46,8 +50,11 @@ CREATE TABLE `Polls` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `message_id` varchar(64) NOT NULL,
   `name` varchar(250) DEFAULT NULL,
+  `last_interacted` date DEFAULT NULL,
+  `max_votes_per_user` int(11) DEFAULT 0,
+  `custom_options_allowed` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `PollVotes`;
@@ -58,7 +65,7 @@ CREATE TABLE `PollVotes` (
   PRIMARY KEY (`poll`,`option_index`,`user`),
   CONSTRAINT `PollVotes_ibfk_3` FOREIGN KEY (`poll`, `option_index`) REFERENCES `PollOptions` (`poll`, `index`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `PollVotes_ibfk_5` FOREIGN KEY (`poll`) REFERENCES `Polls` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `Users`;
@@ -66,7 +73,7 @@ CREATE TABLE `Users` (
   `id` varchar(18) NOT NULL,
   `matoshi` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `Wallet`;
@@ -78,7 +85,7 @@ CREATE TABLE `Wallet` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_currency` (`user`,`currency`),
   CONSTRAINT `Wallet_ibfk_1` FOREIGN KEY (`user`) REFERENCES `Users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=526 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=567 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
--- 2022-09-02 14:37:06
+-- 2022-11-26 00:42:01

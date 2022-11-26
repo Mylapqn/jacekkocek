@@ -594,7 +594,7 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "poll": {
-        let poll = await Polls.Poll.fromCommand(interaction.options.getString("name"), interaction);
+        let poll = await Polls.Poll.fromCommand(interaction.options.getString("name"), interaction, interaction.options.getInteger("max-votes") || 0, true);
         for (let i = 1; i < 10; i++) {
           let optionName = interaction.options.getString("option" + i);
           if (!optionName) continue;
@@ -730,6 +730,7 @@ client.on('messageCreate', message => {
         let poll = Polls.Poll.getPollFromMessage(repliedMessage);
         if (poll != undefined) {
           try {
+            if (!poll.customOptionsAllowed) throw new Error("Poll custom options disabled");
             let event = Kino.Event.list.find(event => event.datePoll == poll);
             if (event) {
               let date = Utilities.dateFromKinoString(message.content);

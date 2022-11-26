@@ -1,3 +1,4 @@
+import { MessageReaction, PartialMessageReaction, User, PartialUser } from "discord.js";
 import { client, letterEmoji, weekDayNames } from "./main"
 import * as Polls from "./polls"
 import * as Utilities from "./utilities"
@@ -12,10 +13,14 @@ export let reactionHandlers = {
                 //console.log(index);
                 if (Utilities.isValid(index)) {
                     try {
-                        if (data.remove)
+                        if (data.remove) {
                             poll.removeVote(index - 1, data.user.id);
-                        else
-                            poll.addVote(index - 1, data.user.id);
+                        }
+                        else {
+                            if (!poll.addVote(index - 1, data.user.id)) {
+                                data.reaction.users.remove(data.user);
+                            }
+                        }
                     } catch (error) {
                         console.error(error)
                     }
@@ -37,16 +42,20 @@ export let reactionHandlers = {
 }
 
 
-export function handleMessageReaction(reaction, user, remove) {
+export async function handleMessageReaction(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser, remove: boolean) {
+    reaction = await reaction.fetch();
+    user = await user.fetch();
     //console.log("React", reaction);
     let emojiName = reaction.emoji.name;
     let message = reaction.message;
+
     if (user != client.user) {
         let data = {
             remove: remove,
             emoji: emojiName,
             message: message,
-            user: user
+            user: user,
+            reactionObject: reaction
         }
         for (const p of Object.keys(reactionHandlers)) {
             try {

@@ -1,4 +1,4 @@
-import { InviteGuild, Message, EmbedBuilder, TextChannel, User, TextBasedChannel, CommandInteraction, ChatInputCommandInteraction } from "discord.js";
+import { InviteGuild, Message, EmbedBuilder, TextChannel, User, TextBasedChannel, CommandInteraction, ChatInputCommandInteraction, EmbedFooterOptions } from "discord.js";
 import * as Database from "./database";
 import * as Main from "./main";
 import * as Utilities from "./utilities"
@@ -8,17 +8,20 @@ import * as Youtube from "./youtube"
 export class Poll {
     id: number;
     message: Message;
-    name = "Unnamed poll";
+    name: string;
     options: PollOption[] = [];
     totalVotes = 0;
+    maxVotesPerUser = 0;
+    customOptionsAllowed = true;
 
-    constructor(name: string) {
-        if (name && name != null)
-            this.name = name;
+    constructor(name = "Unnamed poll", maxVotesPerUser = 0, customOptionsAllowed = true) {
+        this.name = name;
+        this.maxVotesPerUser = maxVotesPerUser;
+        this.customOptionsAllowed = customOptionsAllowed;
     }
 
-    static async fromCommand(name: string, interaction: ChatInputCommandInteraction) {
-        let poll = new Poll(name);
+    static async fromCommand(name: string, interaction: ChatInputCommandInteraction, maxVotesPerUser = 0, customOptionsAllowed = true) {
+        let poll = new Poll(name, maxVotesPerUser, customOptionsAllowed);
         Poll.list.push(poll);
         await poll.sendMessage(interaction);
         await Database.PollDatabase.createPoll(poll);
@@ -27,13 +30,19 @@ export class Poll {
     }
 
     generateMessage() {
-        let embed = new EmbedBuilder().setColor(0x18C3B1).setTitle(this.name)
+        let embed = new EmbedBuilder().setColor(0x18C3B1).setTitle(this.name);
         let description = "";
+        let footerText = "";
         /*for (const option of this.options) {
             newMessage += "\n`" + (option.index + 1) + "`: " + option.name
         }*/
         if (this.options.length == 0) description += "No options yet";
-        if (this.options.length < 9) embed.setFooter({ text: "Reply to this message to add custom options" });
+        if (this.options.length < 9 && this.customOptionsAllowed) footerText += "Reply to this message to add custom options";
+        if (this.maxVotesPerUser != 0) {
+            if (footerText != "") footerText += " | ";
+            footerText += "Max votes per user: " + this.maxVotesPerUser;
+        }
+        if (footerText != "") embed.setFooter({ text: footerText });
         for (const option of this.options) {
             let votes = option.votes.length;
             let percentage = Math.round((votes / (this.totalVotes || 1) * 100));
@@ -74,13 +83,19 @@ export class Poll {
 
     addVote(optionIndex: number, userId: string) {
         if (optionIndex < this.options.length && optionIndex >= 0) {
+            if (this.maxVotesPerUser != 0 && (this.options[optionIndex].votes.filter(v => v.userId == userId)).length >= this.maxVotesPerUser) {
+                //:frowning:
+                return false;
+            }
             let newVote = new PollVote(this, optionIndex, userId)
             this.options[optionIndex].votes.push(newVote);
             this.totalVotes++;
             this.updateMessage();
             Database.PollDatabase.addVote(newVote);
             console.log(`Added vote to poll "${this.name}" from user ${userId} for option ${optionIndex}`);
+            return true;
         }
+        return false;
     }
     removeVote(optionIndex: number, userId: string) {
         if (optionIndex < this.options.length && optionIndex >= 0) {
