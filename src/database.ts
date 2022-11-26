@@ -128,17 +128,17 @@ export class KinoDatabase {
     }
 
     static async setFilm(film: Kino.Film) {
-        await connection.query(`UPDATE Films SET watched=${film.watched} WHERE id=${film.id}`);
+        await connection.query(`UPDATE Films SET watched=${film.watched ? 1 : 0} WHERE id=${film.id}`);
     }
 
     static async createEvent(event: Kino.Event) {
-        event.id = (await connection.query(`INSERT INTO KinoEvent (watched) VALUES (${event.watched})`)
+        event.id = (await connection.query(`INSERT INTO KinoEvent (watched) VALUES (${event.watched ? 1 : 0})`)
             .catch(e => { console.log("KinoEvent creation error: ", e) })).insertId;
         console.log("Created event ", event);
     }
 
     static async setEvent(event: Kino.Event) {
-        await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${event.date}, date_poll=${event.datePoll.id}, film_poll=${event.filmPoll.id} date_locked=${event.dateLocked}, watched=${event.watched}, lock_message_id=${event.lockMessageId} WHERE id=${event.id}`);
+        await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${event.date}, date_poll=${event.datePoll.id}, film_poll=${event.filmPoll.id} date_locked=${event.dateLocked ? 1 : 0}, watched=${event.watched ? 1 : 0}, lock_message_id=${event.lockMessageId} WHERE id=${event.id}`);
     }
 }
 export class PollDatabase {
