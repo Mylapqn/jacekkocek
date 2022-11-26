@@ -5,11 +5,15 @@ import fs from "fs";
 let paymentChannel: Discord.TextChannel;
 var matoshiFileName = "matoshiBalance.json";
 var matoshiData = new Map();
-export let paymentMessages = new Map();
-interface PaymentRequestOptions {
-    from: Discord.UserResolvable,
-    to: Discord.UserResolvable,
+export let paymentMessages = new Map<string,PaymentOptions>();
+
+interface PaymentOptions {
+    from: string,
+    to: string,
     amount: number,
+}
+
+interface PaymentRequestOptions extends PaymentOptions {
     description?: string,
     channel?: Discord.TextChannel,
     interaction?: Discord.CommandInteraction
@@ -47,40 +51,40 @@ function save() {
     fs.writeFile(matoshiFileName, JSON.stringify(Array.from(matoshiData)), (e) => { console.log("Finished writing Matoshi") });
 }
 
-export function balance(user) {
-    if (!matoshiData.has(user)) {
-        matoshiData.set(user, 0);
+export function balance(userId: string) {
+    if (!matoshiData.has(userId)) {
+        matoshiData.set(userId, 0);
     }
-    let b = matoshiData.get(user);
+    let b = matoshiData.get(userId);
     if (b == null || b == undefined || isNaN(b)) {
-        matoshiData.set(user, 0);
-        console.log("User ID " + user + " matoshi balance is NaN, resetting to 0");
+        matoshiData.set(userId, 0);
+        console.log("User ID " + userId + " matoshi balance is NaN, resetting to 0");
     }
-    return matoshiData.get(user);
+    return matoshiData.get(userId);
 }
 
-export function modify(user, amount) {
+export function modify(userId: string, amount: number) {
     amount = Math.round(amount);
     if (amount != 0) {
-        let m = balance(user);
-        matoshiData.set(user, m + amount);
-        console.log("User ID " + user + " matoshi modified by " + amount + ", now " + matoshiData.get(user));
+        let m = balance(userId);
+        matoshiData.set(userId, m + amount);
+        console.log("User ID " + userId + " matoshi modified by " + amount + ", now " + matoshiData.get(userId));
         save();
     }
 }
 
-export function pay(from, to, amount, fee = Main.policyValues.matoshi.transactionFee) {
-    amount = Math.round(amount);
-    if (balance(from) >= amount && amount > fee) {
-        modify(from, -amount);
-        modify(to, amount - fee);
+export function pay(options:PaymentOptions, fee = Main.policyValues.matoshi.transactionFee) {
+    let amount = Math.round(options.amount);
+    if (balance(options.from) >= amount && amount > fee) {
+        modify(options.from, -amount);
+        modify(options.to, amount - fee);
         modify(Main.client.user.id, fee);
         return true;
     }
     else return false;
 }
 
-export function cost(user, amount, guild) {
+export function cost(user: string, amount: number, guild: string) {
     amount = Math.round(amount);
     if (guild == "549589656606343178" || guild == undefined) {
         if (balance(user) >= amount) {
@@ -93,7 +97,7 @@ export function cost(user, amount, guild) {
     else return true;
 }
 
-export function award(guild, user, amount) {
+export function award(guild: string, user: string, amount: number) {
     if (guild == "549589656606343178") {
         amount = Math.round(amount);
         modify(user, amount);

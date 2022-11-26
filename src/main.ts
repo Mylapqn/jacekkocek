@@ -390,7 +390,7 @@ client.on('interactionCreate', async interaction => {
             */
             Kino.Film.fromCommand(filmName, interaction.user.id);
             interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: " + policyValues.kino.suggestReward + " ₥");
-            if (!Matoshi.pay(client.user.id, interaction.user.id, policyValues.kino.suggestReward, 0)) {
+            if (!Matoshi.pay({from:client.user.id, to:interaction.user.id, amount:policyValues.kino.suggestReward}, 0)) {
               interaction.channel.send("Not enough matoshi available for reward. Sorry! :(");
             }
             break;
@@ -521,7 +521,7 @@ client.on('interactionCreate', async interaction => {
             let to = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
 
-            if (Matoshi.pay(from.id, to.id, amount)) {
+            if (Matoshi.pay({from:from.id, to:to.id, amount:amount})) {
               interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee" + policyValues.matoshi.transactionFee + "matoshi)", ephemeral: false });
             }
             else {
@@ -534,7 +534,7 @@ client.on('interactionCreate', async interaction => {
             let from = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
             let description = interaction.options.getString("description");
-            Matoshi.requestPayment({ from: from, to: to, amount: amount, description: description || undefined, interaction: interaction });
+            Matoshi.requestPayment({ from: from.id, to: to.id, amount: amount, description: description || undefined, interaction: interaction });
             break;
           }
           case "balance": {
@@ -634,7 +634,7 @@ client.on('interactionCreate', async interaction => {
 
         if (paymentData != undefined) {
           if (interaction.user.id == paymentData.from) {
-            if (Matoshi.pay(paymentData.from, paymentData.to, paymentData.amount)) {
+            if (Matoshi.pay(paymentData)) {
               interaction.reply("Payment successful!");
             }
             else {
