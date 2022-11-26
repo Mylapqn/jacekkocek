@@ -355,7 +355,7 @@
             {
                 "type": 4,
                 "name": "max-votes",
-                "description": "Maximum votes per user (default: unlimited)",
+                "description": "Maximum votes per user (0 for unlimited) (default: unlimited)",
                 "required": false
             },
             {
