@@ -313,7 +313,7 @@ client.on('interactionCreate', async interaction => {
             */
             Kino.Film.fromCommand(filmName, interaction.user.id);
             interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: " + policyValues.kino.suggestReward + " ₥");
-            if (!await Matoshi.pay({from:client.user.id, to:interaction.user.id, amount:policyValues.kino.suggestReward}, 0)) {
+            if (!await Matoshi.pay({ from: client.user.id, to: interaction.user.id, amount: policyValues.kino.suggestReward }, 0)) {
               interaction.channel.send("Not enough matoshi available for reward. Sorry! :(");
             }
             break;
@@ -444,7 +444,7 @@ client.on('interactionCreate', async interaction => {
             let to = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
 
-            if (await Matoshi.pay({from:from.id, to:to.id, amount:amount})) {
+            if (await Matoshi.pay({ from: from.id, to: to.id, amount: amount })) {
               interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee" + policyValues.matoshi.transactionFee + "matoshi)", ephemeral: false });
             }
             else {
@@ -457,8 +457,8 @@ client.on('interactionCreate', async interaction => {
             let from = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
             let description = interaction.options.getString("description");
-            if(amount > 1 && amount <= await Matoshi.balance(from.id)){
-            Matoshi.requestPayment({ from: from.id, to: to.id, amount: amount, description: description || undefined, interaction: interaction });
+            if (amount > 1 && amount <= await Matoshi.balance(from.id)) {
+              Matoshi.requestPayment({ from: from.id, to: to.id, amount: amount, description: description || undefined, interaction: interaction });
             }
             else {
               interaction.reply({ content: "Invalid amount!", ephemeral: false })
@@ -555,6 +555,7 @@ client.on('interactionCreate', async interaction => {
     }
   }
   else if (interaction.isButton()) {
+    console.log("button pressed", interaction.customId);
     switch (interaction.customId) {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
