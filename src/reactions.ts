@@ -2,7 +2,6 @@ import { MessageReaction, PartialMessageReaction, User, PartialUser } from "disc
 import { client, letterEmoji, weekDayNames } from "./main"
 import * as Polls from "./polls"
 import * as Utilities from "./utilities"
-
 export let reactionHandlers = {
     poll: data => {
         let poll = Polls.Poll.getPollFromMessage(data.message);

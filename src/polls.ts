@@ -37,10 +37,12 @@ export class Poll {
             newMessage += "\n`" + (option.index + 1) + "`: " + option.name
         }*/
         if (this.options.length == 0) description += "No options yet";
-        if (this.options.length < 9 && this.customOptionsAllowed) footerText += "Reply to this message to add custom options";
         if (this.maxVotesPerUser != 0) {
-            if (footerText != "") footerText += " | ";
             footerText += "Max votes per user: " + this.maxVotesPerUser;
+        }
+        if (this.options.length < 9 && this.customOptionsAllowed) {
+            if (footerText != "") footerText += " | ";
+            footerText += "Reply to this message to add custom options";
         }
         if (footerText != "") embed.setFooter({ text: footerText });
         for (const option of this.options) {
@@ -82,7 +84,7 @@ export class Poll {
     }
 
     addVote(optionIndex: number, userId: string) {
-        if(optionIndex < this.options.length && optionIndex >= 0){
+        if (optionIndex < this.options.length && optionIndex >= 0) {
             if (this.maxVotesPerUser != 0) {
                 let voteCount = 0;
                 for (const option of this.options) voteCount += option.votes.find(v => v.userId == userId) ? 1 : 0;
