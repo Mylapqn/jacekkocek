@@ -107,14 +107,21 @@ export class Event {
         this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
         this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
         this.datePoll.lock();
-        let guildEvent = await Main.afrGuild.scheduledEvents.create({
+        let guildEventOptions: Discord.GuildScheduledEventCreateOptions = {
             name: "Kino: " + this.film.name,
             scheduledStartTime: this.date,
             privacyLevel: Discord.GuildScheduledEventPrivacyLevel.GuildOnly,
             entityType: Discord.GuildScheduledEventEntityType.Voice,
             channel: Main.mainVoiceChannel as Discord.VoiceChannel,
-            description: "Kino session of " + this.film.name
-        })
+            description: "Kino session of " + this.film.name,
+        }
+        try {
+            let filmImageUrl = await Main.googleSearch(Main.GoogleSearchEngines.CSFD, this.film.name, Main.GoogleSearchTypes.IMAGE)[0].link;
+            guildEventOptions.image = filmImageUrl;
+        } catch (error) {
+            console.log(error);
+        }
+        let guildEvent = await Main.afrGuild.scheduledEvents.create(guildEventOptions)
         this.datePoll.message.channel.send(await guildEvent.createInviteURL());
     }
 
