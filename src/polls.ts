@@ -113,11 +113,11 @@ export class Poll {
                     this.totalVotes--;
                     this.updateMessage();
                     Database.PollDatabase.removeVote(vote);
+                    console.log(`Removed vote from poll "${this.name}" from user ${userId} for option ${optionIndex}`);
                     break;
                 }
             }
         }
-        console.log(`Removed vote from poll "${this.name}" from user ${userId} for option ${optionIndex}`);
     }
 
     static list = new Array<Poll>();
