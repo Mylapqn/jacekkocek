@@ -563,7 +563,7 @@ client.on('interactionCreate', async interaction => {
     switch (interaction.customId) {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
-        if (paymentData != undefined) {
+        if (paymentData) {
           if (interaction.user.id == paymentData.from) {
             if (await Matoshi.pay(paymentData)) {
               interaction.reply("Payment successful!");
@@ -579,7 +579,7 @@ client.on('interactionCreate', async interaction => {
       }
       case "declinePayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
-        if (paymentData != undefined) {
+        if (paymentData) {
           if (interaction.user.id == paymentData.from) {
             interaction.reply("Payment cancelled");
             Matoshi.paymentMessages.delete(interaction.message.id);
@@ -587,6 +587,12 @@ client.on('interactionCreate', async interaction => {
           }
         }
         break;
+      }
+      case "lockFilmVote":{
+        let event = Kino.Event.list.find(e=>e.lockMessageId==interaction.message.id);
+        if(event){
+          event.dateVote(interaction)
+        }
       }
     }
   }

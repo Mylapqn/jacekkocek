@@ -41,6 +41,7 @@ export class Event {
     filmPoll: Polls.Poll;
     dateLocked = false;
     watched = false;
+    lockMessageId: string = "";
     constructor() {
         Event.list.push(this);
     }
@@ -71,12 +72,12 @@ export class Event {
         let embeds = this.filmPoll.message.embeds;
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockFilmVote", label: "Lock", style: Discord.ButtonStyle.Success }));
-        this.filmPoll.message.edit({ embeds: embeds, components: [newActionRow] })
+        this.lockMessageId = (await interaction.channel.send({components: [newActionRow] })).id;
         this.filmPoll.optionFilter = Event.filmVoteOptionFilter;
         Database.KinoDatabase.setEvent(this);
     }
 
-    async dateVote(interaction: Discord.ChatInputCommandInteraction) {
+    async dateVote(interaction: Discord.Interaction) {
         if (this.filmPoll && !this.film) {
             this.film = await Database.KinoDatabase.getFilmByName(this.filmPoll.getWinner().name);
             Polls.Poll.list.splice(Polls.Poll.list.indexOf(this.filmPoll), 1);
@@ -84,6 +85,11 @@ export class Event {
         }
 
         this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true);
+
+        let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
+        newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Lock", style: Discord.ButtonStyle.Success }));
+        this.lockMessageId = (await interaction.channel.send({components: [newActionRow] })).id;
+
         let dayScores = await Sheets.getDaysScores();
         let sortedScores = [...dayScores.entries()].sort((a, b) => b[1] - a[1]);
         sortedScores = sortedScores.slice(0, Math.min(sortedScores.length, 5));
@@ -97,7 +103,7 @@ export class Event {
         Database.KinoDatabase.setEvent(this);
     }
 
-    static fromDatabase(id: number, film: Film, date: Date, dateLocked: boolean, watched: boolean, filmPoll: Polls.Poll, datePoll: Polls.Poll) {
+    static fromDatabase(id: number, film: Film, date: Date, dateLocked: boolean, watched: boolean, filmPoll: Polls.Poll, datePoll: Polls.Poll, lockMessageId: string) {
         let event = new Event();
         event.id = id;
         event.film = film;
@@ -106,6 +112,7 @@ export class Event {
         event.watched = watched;
         event.datePoll = datePoll;
         event.filmPoll = filmPoll;
+        event.lockMessageId = lockMessageId;
         return event;
     }
 

@@ -1,4 +1,4 @@
-import { InviteGuild, Message, EmbedBuilder, TextChannel, User, TextBasedChannel, CommandInteraction, ChatInputCommandInteraction, EmbedFooterOptions } from "discord.js";
+import { InviteGuild, Message, EmbedBuilder, TextChannel, User, TextBasedChannel, CommandInteraction, ChatInputCommandInteraction, EmbedFooterOptions, Interaction, AutocompleteInteraction } from "discord.js";
 import * as Database from "./database";
 import * as Main from "./main";
 import * as Utilities from "./utilities"
@@ -16,7 +16,6 @@ export class Poll {
     customOptionsAllowed = true;
 
     optionFilter = async (option: string) => option;
-    //messageBuilder = async (embed: EmbedBuilder) => undefined
 
     constructor(name = "Unnamed poll", maxVotesPerUser = 0, customOptionsAllowed = true) {
         this.name = name;
@@ -24,7 +23,7 @@ export class Poll {
         this.customOptionsAllowed = customOptionsAllowed;
     }
 
-    static async fromCommand(name: string, interaction: ChatInputCommandInteraction, maxVotesPerUser = 0, customOptionsAllowed = true) {
+    static async fromCommand(name: string, interaction: Interaction, maxVotesPerUser = 0, customOptionsAllowed = true) {
         let poll = new Poll(name, maxVotesPerUser, customOptionsAllowed);
         Poll.list.push(poll);
         await poll.sendMessage(interaction);
@@ -72,10 +71,10 @@ export class Poll {
     async updateMessage() {
         this.message = await this.message.fetch();
         let components = this.message.components;
-        console.log(this.message);
         this.message.edit({ embeds: this.generateMessage().embeds, components: components });
     }
-    async sendMessage(interaction: ChatInputCommandInteraction) {
+    async sendMessage(interaction: Interaction) {
+        if(interaction instanceof AutocompleteInteraction) throw new Error("Unexpected autocomplete interaction");
         this.message = await interaction.reply({ embeds: this.generateMessage().embeds, fetchReply: true });
         this.messageId = this.message.id;
         for (let i = 1; i <= this.options.length && i <= 9; i++) {

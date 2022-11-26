@@ -122,7 +122,7 @@ export class KinoDatabase {
     static async loadEvents() {
         let events: Array<Array<any>> = await connection.query(`SELECT * FROM KinoEvent`);
         for (const eventData of events) {
-            Kino.Event.fromDatabase(eventData["id"], await this.getFilm(eventData["film"]), new Date(eventData["date"]), eventData["date_locked"] == 1, eventData["watched"] == 1, Polls.Poll.list.find(p => p.id == eventData["film_poll"]), Polls.Poll.list.find(p => p.id == eventData["date_poll"]));
+            Kino.Event.fromDatabase(eventData["id"], await this.getFilm(eventData["film"]), new Date(eventData["date"]), eventData["date_locked"] == 1, eventData["watched"] == 1, Polls.Poll.list.find(p => p.id == eventData["film_poll"]), Polls.Poll.list.find(p => p.id == eventData["date_poll"]), eventData["lock_message_id"]);
         }
         return events;
     }
@@ -138,7 +138,7 @@ export class KinoDatabase {
     }
 
     static async setEvent(event: Kino.Event) {
-        await connection.query(`UPDATE KinoEvent SET film=${event.film.id || -1}, date=${event.date}, date_poll=${event.datePoll}, film_poll=${event.filmPoll} date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
+        await connection.query(`UPDATE KinoEvent SET film=${event.film.id || -1}, date=${event.date}, date_poll=${event.datePoll}, film_poll=${event.filmPoll} date_locked=${event.dateLocked}, watched=${event.watched}, lock_message_id=${event.lockMessageId} WHERE id=${event.id}`);
     }
 }
 export class PollDatabase {

@@ -31,10 +31,11 @@ CREATE TABLE `KinoEvent` (
   `date` date DEFAULT NULL,
   `date_locked` tinyint(4) DEFAULT NULL,
   `watched` tinyint(4) DEFAULT NULL,
+  `lock_message_id` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `film` (`film`),
   CONSTRAINT `KinoEvent_ibfk_2` FOREIGN KEY (`film`) REFERENCES `Films` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `PollOptions`;
@@ -56,7 +57,7 @@ CREATE TABLE `Polls` (
   `max_votes_per_user` int(11) DEFAULT 0,
   `custom_options_allowed` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `PollVotes`;
@@ -90,4 +91,4 @@ CREATE TABLE `Wallet` (
 ) ENGINE=InnoDB AUTO_INCREMENT=567 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
--- 2022-11-26 20:42:18
+-- 2022-11-26 21:45:36
