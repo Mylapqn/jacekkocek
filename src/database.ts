@@ -69,7 +69,8 @@ export async function setUser(user) {
 
 export class KinoDatabase {
     static async createFilm(film: Kino.Film) {
-        film.id = await connection.query(`INSERT INTO Films (name, suggested_by, watched) VALUES (\"${film.name}\",\"${film.suggestedBy}\",${film.watched})`).catch(e => { console.log("Film creation error: ", e) });
+        film.id = (await connection.query(`INSERT INTO Films (name, suggested_by, watched) VALUES (\"${film.name}\",\"${film.suggestedBy}\",${film.watched})`)
+            .catch(e => { console.log("Film creation error: ", e) })).insertId;
         console.log("Created film ", film);
     }
 
@@ -122,7 +123,8 @@ export class KinoDatabase {
     }
 
     static async createEvent(event: Kino.Event) {
-        event.id = await connection.query(`INSERT INTO KinoEvent (watched) VALUES (${event.watched})`).catch(e => { console.log("KinoEvent creation error: ", e) });
+        event.id = (await connection.query(`INSERT INTO KinoEvent (watched) VALUES (${event.watched})`)
+            .catch(e => { console.log("KinoEvent creation error: ", e) })).insertId;
         console.log("Created event ", event);
     }
 
@@ -137,7 +139,8 @@ export class KinoDatabase {
 export class PollDatabase {
 
     static async createPoll(poll: Polls.Poll) {
-        poll.id = await connection.query(`INSERT INTO Polls (message_id, name, last_interacted, max_votes_per_user, custom_options_allowed) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\", \"${dateToSql(new Date())}\", ${poll.maxVotesPerUser}), ${poll.customOptionsAllowed}`).catch(e => { console.log("Poll creation error: ", e) });
+        poll.id = (await connection.query(`INSERT INTO Polls (message_id, name, last_interacted, max_votes_per_user, custom_options_allowed) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\", \"${dateToSql(new Date())}\", ${poll.maxVotesPerUser}), ${poll.customOptionsAllowed}`)
+            .catch(e => { console.log("Poll creation error: ", e) })).insertId;
     }
 
     static async deletePoll(poll: Polls.Poll) {
@@ -185,8 +188,6 @@ export class PollDatabase {
     }
 
     static async addVote(vote: Polls.PollVote) {
-        console.log(`(\"${vote.userId}\", ${vote.poll.id}, ${vote.option.index})`);
-        
         await connection.query(`INSERT INTO PollVotes (user, poll, option_index) VALUES (\"${vote.userId}\", ${vote.poll.id}, ${vote.option.index})`).catch(e => { console.log("PollVote creation error: ", e) });
         await this.updateLastInteracted(vote.poll);
     }
