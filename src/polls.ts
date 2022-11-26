@@ -83,7 +83,7 @@ export class Poll {
 
     addVote(optionIndex: number, userId: string) {
         if (optionIndex < this.options.length && optionIndex >= 0) {
-            console.log(this.options[optionIndex].votes.filter(v => v.userId == userId));
+            console.log(this.options[optionIndex].votes, userId);
             
             if (this.maxVotesPerUser != 0 && (this.options[optionIndex].votes.filter(v => v.userId == userId)).length >= this.maxVotesPerUser) {
                 //:frowning:
