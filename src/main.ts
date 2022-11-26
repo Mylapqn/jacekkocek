@@ -850,7 +850,7 @@ client.on('messageCreate', async message => {
         case "s":
           if (await Matoshi.cost(message.author.id, 1, message.guildId)) {
             console.log("SEARCH!");
-            let results = await getGoogleSearch(GoogleSearchEngines.EVERYTHING, argument);
+            let results = await googleSearch(GoogleSearchEngines.EVERYTHING, argument);
             message.channel.send(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
           }
           else {
@@ -859,7 +859,7 @@ client.on('messageCreate', async message => {
           break;
         case "film":
           console.log("SEARCH!");
-          let results = await getGoogleSearch(GoogleSearchEngines.CSFD, argument);
+          let results = await googleSearch(GoogleSearchEngines.CSFD, argument);
           message.channel.send(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
           break;
 
@@ -1008,7 +1008,7 @@ client.on('messageCreate', async message => {
           break;
         }
         case "search": {
-          getGoogleSearch(GoogleSearchEngines.CSFD, "test");
+          googleSearch(GoogleSearchEngines.CSFD, "test");
           break;
         }
         case "skip": {
@@ -1264,18 +1264,19 @@ function findCommand(name) {
 
 //#region GOOGLE
 
-enum GoogleSearchEngines {
+export enum GoogleSearchEngines {
   CSFD = "513b4641b78f8096a",
   EVERYTHING = "003836403838224750691:axl53a8emck",
   WIKIPEDIA = "003836403838224750691:wcw78s5sqwm"
 }
-enum GoogleSearchTypes {
+export enum GoogleSearchTypes {
   IMAGE = "image",
   PAGE = "searchTypeUndefined"
 }
 
-export async function getGoogleSearch(engine: GoogleSearchEngines, searchTerm: string, searchType: GoogleSearchTypes = GoogleSearchTypes.PAGE): Promise<any[]> {
+export async function googleSearch(engine: GoogleSearchEngines, searchTerm: string, searchType: GoogleSearchTypes = GoogleSearchTypes.PAGE): Promise<any[]> {
   let response = await axios.get("https://www.googleapis.com/customsearch/v1?key=" + process.env.SEARCH_API_KEY + "&cx=" + engine + "&q=" + searchTerm + "&searchType=" + searchType)
+  if (response.data.items.length == 0) throw new Error("No search results!");
   return response.data.items;
 }
 //#endregion
