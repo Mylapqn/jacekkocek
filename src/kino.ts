@@ -50,38 +50,63 @@ export class Event {
         Database.KinoDatabase.createEvent(event);
         return event;
     }
+    static async filmVoteOptionFilter(name: string) {
+        if ((await Database.KinoDatabase.getFilmByName(name)) == undefined) {
+            throw new Error("Invalid option");
+        }
+        return name;
+    }
+    static async dateVoteOptionFilter(name: string) {
+        if (name.toLowerCase() == "lock") {
+
+            return undefined;
+        }
+        let date = Utilities.dateFromKinoString(name)
+        if (date == undefined) {
+            throw new Error("Invalid date");
+        }
+        let score = await Sheets.getDay(date);
+        if (!score) throw new Error("Invalid kino date");
+        return Event.dateOptionName(date, score);
+    }
+
+    async filmVote(interaction: Discord.ChatInputCommandInteraction) {
+        this.filmPoll = await Polls.Poll.fromCommand("Co kino?", interaction, 0, true);
+        this.filmPoll.optionFilter = Event.filmVoteOptionFilter;
+        Database.KinoDatabase.setEvent(this);
+    }
 
     async dateVote(interaction: Discord.ChatInputCommandInteraction) {
-        this.datePoll = await Polls.Poll.fromCommand("Kdy kino?", interaction, 0, true);
+        if (this.filmPoll && !this.film) {
+            this.film = await Database.KinoDatabase.getFilmByName(this.filmPoll.getWinner().name);
+            Polls.Poll.list.splice(Polls.Poll.list.indexOf(this.filmPoll), 1);
+            Database.PollDatabase.deletePoll(this.filmPoll);
+        }
+
+        this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true);
         let dayScores = await Sheets.getDaysScores();
         let sortedScores = [...dayScores.entries()].sort((a, b) => b[1] - a[1]);
         sortedScores = sortedScores.slice(0, Math.min(sortedScores.length, 5));
         let days = [...new Map(sortedScores).keys()];
         for (const [day, score] of dayScores) {
             if (days.includes(day)) {
-                this.datePoll.addOption(Event.dateOptionName(day, score));
+                await this.datePoll.addOption(Event.dateOptionName(day, score));
             }
         }
+        this.datePoll.optionFilter = Event.dateVoteOptionFilter;
+        Database.KinoDatabase.setEvent(this);
     }
 
-    static fromDatabase(id: number, film: Film, date: Date, dateLocked: boolean, watched: boolean) {
+    static fromDatabase(id: number, film: Film, date: Date, dateLocked: boolean, watched: boolean, filmPoll: Polls.Poll, datePoll: Polls.Poll) {
         let event = new Event();
         event.id = id;
         event.film = film;
         event.date = date;
         event.dateLocked = dateLocked;
         event.watched = watched;
+        event.datePoll = datePoll;
+        event.filmPoll = filmPoll;
         return event;
-    }
-
-    async addDate(date: Date) {
-        try {
-            let score = await Sheets.getDay(date);
-            if (!score) throw new Error("Invalid kino date");
-            this.datePoll.addOption(Event.dateOptionName(date, score));
-        } catch (error) {
-            throw error;
-        }
     }
 
     private static dateOptionName(date: Date, score: number): string {

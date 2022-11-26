@@ -23,6 +23,7 @@ export async function init() {
     });
 
     PollDatabase.loadPolls();
+    KinoDatabase.loadEvents();
     //TEMP FIX FOR TIMEOUT
     setInterval(() => {
         connection.query(`SELECT * FROM Users WHERE id=\"0\"`);
@@ -78,7 +79,7 @@ export class KinoDatabase {
         let filmData = await connection.query(query);
         let films = new Array<Kino.Film>;
         for (const entry of filmData) {
-            films.push(Kino.Film.fromDatabase(entry["id"], entry["name"], entry["suggested_by"], entry["watched"] ));
+            films.push(Kino.Film.fromDatabase(entry["id"], entry["name"], entry["suggested_by"], entry["watched"]));
         }
         return films;
     }
@@ -118,6 +119,14 @@ export class KinoDatabase {
         return filmList;
     }
 
+    static async loadEvents() {
+        let events: Array<Array<any>> = await connection.query(`SELECT * FROM Events`);
+        for (const eventData of events) {
+            Kino.Event.fromDatabase(eventData["id"], await this.getFilm(eventData["film"]), new Date(eventData["date"]), eventData["date_locked"] == 1, eventData["watched"] == 1, Polls.Poll.list.find(p => p.id == eventData["film_poll"]), Polls.Poll.list.find(p => p.id == eventData["date_poll"]));
+        }
+        return events;
+    }
+
     static async setFilm(film: Kino.Film) {
         await connection.query(`UPDATE Films SET watched=${film.watched} WHERE id=${film.id}`);
     }
@@ -128,12 +137,8 @@ export class KinoDatabase {
         console.log("Created event ", event);
     }
 
-    static async getEvent(id) {
-        throw new Error("not implemented");
-    }
-
     static async setEvent(event: Kino.Event) {
-        await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${event.date}, date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
+        await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${event.date}, date_poll=${event.datePoll}, film_poll=${event.filmPoll} date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
     }
 }
 export class PollDatabase {
@@ -166,6 +171,10 @@ export class PollDatabase {
                 continue;
             }
             Polls.Poll.list.push(poll);
+            if ((await connection.query(`SELECT * FROM KinoEvent WHERE film_poll=${poll.id}`)).length > 0)
+                poll.optionFilter = Kino.Event.filmVoteOptionFilter;
+            else if ((await connection.query(`SELECT * FROM KinoEvent WHERE date_poll=${poll.id}`)).length > 0)
+                poll.optionFilter = Kino.Event.dateVoteOptionFilter;
             let options: Array<Array<any>> = await connection.query(`SELECT * FROM PollOptions WHERE poll=${poll.id}`);
             for (const optionRow of options) {
                 let option = new Polls.PollOption(poll, optionRow["index"], optionRow["name"]);

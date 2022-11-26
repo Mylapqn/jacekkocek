@@ -15,9 +15,11 @@ export class Poll {
     maxVotesPerUser = 0;
     customOptionsAllowed = true;
 
+    optionFilter = async (option: string) => option;
+
     constructor(name = "Unnamed poll", maxVotesPerUser = 0, customOptionsAllowed = true) {
         this.name = name;
-        this.maxVotesPerUser = Math.max(0,maxVotesPerUser);
+        this.maxVotesPerUser = Math.max(0, maxVotesPerUser);
         this.customOptionsAllowed = customOptionsAllowed;
     }
 
@@ -28,6 +30,18 @@ export class Poll {
         await Database.PollDatabase.createPoll(poll);
         console.log("Creating poll with id " + poll.id);
         return poll;
+    }
+
+    getWinner() {
+        let max = 0;
+        let winner: PollOption;
+        for (const option of this.options) {
+            if (option.votes.length >= max) {
+                winner = option;
+                max = option.votes.length;
+            }
+        }
+        return winner;
     }
 
     generateMessage() {
@@ -66,8 +80,10 @@ export class Poll {
         return this.message;
     }
 
-    addOption(name: string) {
+    async addOption(name: string) {
         if (this.options.length >= 9) throw new Error("Options limit reached");
+        name = await this.optionFilter(name)
+        if (!name) return;
         if (this.options.some(option => option.name == name)) throw new Error("Option already exists");
         name = name.replace(/[\r\n]/gm, '');
         name.trim();
