@@ -49,7 +49,6 @@ export class Event {
     static fromCommand() {
         let event = new Event();
         Database.KinoDatabase.createEvent(event);
-        Sheets.getUserData();
         return event;
     }
     static async filmVoteOptionFilter(name: string) {
@@ -138,4 +137,3 @@ export class Event {
 
     static list = new Array<Event>();
 }
-

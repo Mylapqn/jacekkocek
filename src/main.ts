@@ -1005,6 +1005,10 @@ client.on('messageCreate', async message => {
           channel.send(new Date().toString());
           break;
         }
+        case "search": {
+          getGoogleSearch(GoogleSearchEngines.CSFD, "test");
+          break;
+        }
         case "skip": {
           message.delete();
           let num = parseInt(argument);
@@ -1257,6 +1261,17 @@ function findCommand(name) {
 //#endregion
 
 //#region GOOGLE
+
+enum GoogleSearchEngines {
+  CSFD = "513b4641b78f8096a",
+  EVERYTHING = "003836403838224750691:axl53a8emck",
+  WIKIPEDIA = "003836403838224750691:wcw78s5sqwm"
+}
+enum GoogleSearchTypes {
+  IMAGE = "image",
+  PAGE = "searchTypeUndefined"
+}
+
 function startGoogleSearch(argument, message, type) {
 
   console.log("Starting Google Search for: " + argument);
@@ -1300,6 +1315,10 @@ function googleSearch(cx, searchTerm, message) {
 
     });
   });
+}
+export async function getGoogleSearch(engine: GoogleSearchEngines, searchTerm: string, searchType: GoogleSearchTypes = GoogleSearchTypes.PAGE) {
+  let response = await axios.get("https://www.googleapis.com/customsearch/v1?key=" + process.env.SEARCH_API_KEY + "&cx=" + engine + "&q=" + searchTerm + "&searchType=" + searchType)
+  console.log(response.data);
 }
 //#endregion
 

@@ -50,27 +50,28 @@ export async function getDaysScores(): Promise<Map<Date, number>> {
     return output;
 }
 export type UserKinoData = { weight: number; reliability: number; };
-export async function getUserData(): Promise<Map<string, UserKinoData>> {
+export async function getUserData() : Promise<Map<string,UserKinoData>> {
+    doAuth();
     try {
-        doAuth();
         let result = await googleSheets.spreadsheets.values.get({
             auth,
             spreadsheetId,
             range: "Díly!C2:I5",
             valueRenderOption: "FORMATTED_VALUE"
-
+    
         });
-        let userData = new Map<string, UserKinoData>();
-        for (let u = 0; u < result.data.values[0].length; u++) {
-            const col = result.data.values[u];
-            const user = col[0];
-            const weight = col[1];
-            const reliability = col[2];
-            userData.set(user, { weight, reliability });
+        let userData = new Map<string,UserKinoData>(); 
+        console.log();
+        for (let index = 0; index < result.data.values[0].length; index++) {
+            const user = result.data.values[0][index];
+            const weight = result.data.values[1][index];
+            const reliability = result.data.values[2][index];
+            userData.set(user, {weight, reliability});
         }
-        console.log(userData);
         return userData;
     } catch (error) {
+        console.log(error);
+
         return undefined;
     }
 }
