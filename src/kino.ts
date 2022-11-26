@@ -104,9 +104,13 @@ export class Event {
     }
 
     async lockDate() {
+        let dateFields = this.datePoll.getWinner().name.split(" ")[1].split(".");
+        this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
+        this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
         this.datePoll.lock();
         Main.afrGuild.scheduledEvents.create({
-            name: "Kino: " + this.film.name, scheduledStartTime: this.date,
+            name: "Kino: " + this.film.name,
+            scheduledStartTime: this.date,
             privacyLevel: Discord.GuildScheduledEventPrivacyLevel.GuildOnly,
             entityType: Discord.GuildScheduledEventEntityType.Voice,
             channel: Main.mainVoiceChannel as Discord.VoiceChannel,

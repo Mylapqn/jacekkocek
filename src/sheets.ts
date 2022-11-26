@@ -30,7 +30,7 @@ async function getDayIndex(date = new Date()) {
         if (value[0] == today) return true;
         return false;
     }) + 5;
-    if(todayIndex == 4) throw new Error("~~Offset~~ date is outside the bounds of the ~~dataview~~ sheet");
+    if (todayIndex == 4) throw new Error("~~Offset~~ date is outside the bounds of the ~~dataview~~ sheet");
     return todayIndex;
 }
 
@@ -49,23 +49,24 @@ export async function getDaysScores(): Promise<Map<Date, number>> {
     }
     return output;
 }
-export type UserKinoData = {weight: number; reliability: number;};
-export async function getUserData() : Promise<Map<string,UserKinoData>> {
+export type UserKinoData = { weight: number; reliability: number; };
+export async function getUserData(): Promise<Map<string, UserKinoData>> {
     try {
+        doAuth();
         let result = await googleSheets.spreadsheets.values.get({
             auth,
             spreadsheetId,
             range: "Díly!C2:I5",
             valueRenderOption: "FORMATTED_VALUE"
-    
+
         });
-        let userData = new Map<string,UserKinoData>(); 
+        let userData = new Map<string, UserKinoData>();
         for (let u = 0; u < result.data.values[0].length; u++) {
             const col = result.data.values[u];
             const user = col[0];
             const weight = col[1];
             const reliability = col[2];
-            userData.set(user, {weight, reliability});
+            userData.set(user, { weight, reliability });
         }
         console.log(userData);
         return userData;
@@ -82,11 +83,11 @@ export async function getDay(date: Date): Promise<number> {
         let result = await googleSheets.spreadsheets.values.get({
             auth,
             spreadsheetId,
-            range: "Díly!J" +  index,
+            range: "Díly!J" + index,
             valueRenderOption: "FORMATTED_VALUE"
-    
+
         });
-        
+
         score = result.data.values[0][0];
     } catch (error) {
         return undefined;
