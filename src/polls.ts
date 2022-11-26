@@ -70,6 +70,7 @@ export class Poll {
     }
     updateMessage() {
         let components = this.message.components;
+        console.log(components);
         this.message.edit({ embeds: this.generateMessage().embeds, components: components });
     }
     async sendMessage(interaction: ChatInputCommandInteraction) {

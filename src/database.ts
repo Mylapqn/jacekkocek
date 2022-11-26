@@ -138,7 +138,7 @@ export class KinoDatabase {
     }
 
     static async setEvent(event: Kino.Event) {
-        await connection.query(`UPDATE KinoEvent SET film=${event.film.id}, date=${event.date}, date_poll=${event.datePoll}, film_poll=${event.filmPoll} date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
+        await connection.query(`UPDATE KinoEvent SET film=${event.film.id || -1}, date=${event.date}, date_poll=${event.datePoll}, film_poll=${event.filmPoll} date_locked=${event.dateLocked}, watched=${event.watched} WHERE id=${event.id}`);
     }
 }
 export class PollDatabase {
