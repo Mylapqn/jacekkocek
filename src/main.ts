@@ -593,7 +593,7 @@ client.on('interactionCreate', async interaction => {
       case "lockFilmVote": {
         //If user kino weight
         let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
-        if (event) {
+        if (event && event?.filmPoll.options.length > 0) {
           interaction.message.delete();
           event.dateVote(interaction)
         }
@@ -602,7 +602,7 @@ client.on('interactionCreate', async interaction => {
       case "lockDayVote": {
         //If user kino weight
         let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
-        if (event) {
+        if (event && event?.datePoll.options.length > 0) {
           interaction.message.delete();
           event.lockDate();
         }
