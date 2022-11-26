@@ -139,7 +139,7 @@ export class KinoDatabase {
 export class PollDatabase {
 
     static async createPoll(poll: Polls.Poll) {
-        await connection.query(`INSERT INTO Polls (message_id, name, last_interacted) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\", \"${dateToSql(new Date())}\")`).catch(e => { console.log("Poll creation error: ", e) });
+        await connection.query(`INSERT INTO Polls (message_id, name, last_interacted, max_votes_per_user) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\", \"${dateToSql(new Date())}\", \"${poll.maxVotesPerUser}\")`).catch(e => { console.log("Poll creation error: ", e) });
         poll.id = (await connection.query("SELECT LAST_INSERT_ID()"))[0]["LAST_INSERT_ID()"];
     }
 
@@ -150,7 +150,7 @@ export class PollDatabase {
     static async loadPolls() {
         let pollData: Array<Array<any>> = await connection.query(`SELECT * FROM Polls`);
         for (const pollRow of pollData) {
-            let poll = new Polls.Poll(pollRow["name"])
+            let poll = new Polls.Poll(pollRow["name"],pollRow["max_votes_per_user"])
             poll.id = pollRow["id"];
             let lastInteracted = new Date(pollRow["last_interacted"]);
             let age = Date.now() - lastInteracted.valueOf();
