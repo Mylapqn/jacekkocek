@@ -21,7 +21,7 @@ export let reactionHandlers = {
                             }
                         }
                     } catch (error) {
-                        console.error(error)
+                        //console.error(error)
                     }
                 }
                 else {
@@ -29,7 +29,7 @@ export let reactionHandlers = {
                 }
             } catch (error) {
                 if (!data.remove) data.reactionObject.users.remove(data.user);
-                console.error("Couldn't translate reaction to number");
+                //console.error("Couldn't translate reaction to number");
                 //throw new Error("Couldn't translate reaction to number");
             }
         }
