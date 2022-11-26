@@ -17,7 +17,7 @@ export class Poll {
 
     constructor(name = "Unnamed poll", maxVotesPerUser = 0, customOptionsAllowed = true) {
         this.name = name;
-        this.maxVotesPerUser = maxVotesPerUser;
+        this.maxVotesPerUser = Math.max(0,maxVotesPerUser);
         this.customOptionsAllowed = customOptionsAllowed;
     }
 

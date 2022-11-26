@@ -78,7 +78,7 @@ export class KinoDatabase {
         let filmData = await connection.query(query);
         let films = new Array<Kino.Film>;
         for (const entry of filmData) {
-            films.push(Kino.Film.fromDatabase({ id: entry["id"], name: entry["name"], suggestedBy: entry["suggested_by"], watched: entry["watched"] }));
+            films.push(Kino.Film.fromDatabase(entry["id"], entry["name"], entry["suggested_by"], entry["watched"] ));
         }
         return films;
     }
