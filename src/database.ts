@@ -185,6 +185,8 @@ export class PollDatabase {
     }
 
     static async addVote(vote: Polls.PollVote) {
+        console.log(`(\"${vote.userId}\", ${vote.poll.id}, ${vote.option.index})`);
+        
         await connection.query(`INSERT INTO PollVotes (user, poll, option_index) VALUES (\"${vote.userId}\", ${vote.poll.id}, ${vote.option.index})`).catch(e => { console.log("PollVote creation error: ", e) });
         await this.updateLastInteracted(vote.poll);
     }
