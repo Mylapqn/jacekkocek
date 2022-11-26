@@ -139,7 +139,7 @@ export class KinoDatabase {
 export class PollDatabase {
 
     static async createPoll(poll: Polls.Poll) {
-        poll.id = (await connection.query(`INSERT INTO Polls (message_id, name, last_interacted, max_votes_per_user, custom_options_allowed) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\", \"${dateToSql(new Date())}\", ${poll.maxVotesPerUser}), ${poll.customOptionsAllowed}`)
+        poll.id = (await connection.query(`INSERT INTO Polls (message_id, name, last_interacted, max_votes_per_user, custom_options_allowed) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\", \"${dateToSql(new Date())}\", ${poll.maxVotesPerUser}, ${poll.customOptionsAllowed})`)
             .catch(e => { console.log("Poll creation error: ", e) })).insertId;
     }
 
