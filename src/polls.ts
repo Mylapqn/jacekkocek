@@ -16,6 +16,7 @@ export class Poll {
     customOptionsAllowed = true;
 
     optionFilter = async (option: string) => option;
+    //messageBuilder = async (embed: EmbedBuilder) => undefined
 
     constructor(name = "Unnamed poll", maxVotesPerUser = 0, customOptionsAllowed = true) {
         this.name = name;
@@ -68,7 +69,8 @@ export class Poll {
         embed.setDescription(description);
         return { embeds: [embed] };
     }
-    updateMessage() {
+    async updateMessage() {
+        this.message = await this.message.fetch();
         let components = this.message.components;
         console.log(this.message);
         this.message.edit({ embeds: this.generateMessage().embeds, components: components });
