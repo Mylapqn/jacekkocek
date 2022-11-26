@@ -116,6 +116,7 @@ export async function disableMessageButtons(msg: Message, setDisabled = true) {
     let comp = msg.components;
     let newActionRow = new ActionRowBuilder<ButtonBuilder>();
     for (const component of comp[0].components) {
+        console.log(component);
         if (component instanceof ButtonComponent)
             newActionRow.addComponents(new ButtonBuilder(component).setDisabled(setDisabled));
         else
