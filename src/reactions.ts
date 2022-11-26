@@ -18,7 +18,7 @@ export let reactionHandlers = {
                         }
                         else {
                             if (!poll.addVote(index - 1, data.user.id)) {
-                                data.reaction.users.remove(data.user);
+                                data.reactionObject.users.remove(data.user);
                             }
                         }
                     } catch (error) {
@@ -43,8 +43,8 @@ export let reactionHandlers = {
 
 
 export async function handleMessageReaction(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser, remove: boolean) {
-    reaction = await reaction.fetch() || reaction;
-    user = await user.fetch() || user;
+    reaction = await reaction.fetch();
+    user = await user.fetch();
     //console.log("React", reaction);
     let emojiName = reaction.emoji.name;
     let message = reaction.message;
