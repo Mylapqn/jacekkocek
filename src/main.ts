@@ -99,12 +99,6 @@ var helpCommands = [
     description: "Zobrazit hledaný dotaz",
   },
   {
-    name: "film",
-    prefix: true,
-    arguments: "název filmu",
-    description: "Zobrazit hledaný film",
-  },
-  {
     name: ":gif2: / :spin: / :loading:",
     prefix: false,
     arguments: "",
@@ -335,7 +329,7 @@ client.on('interactionCreate', async interaction => {
                 }
                 newMessage += "\n";
               }
-              await interaction.reply(newMessage).catch(e => console.log);
+              await interaction.reply(newMessage).catch(e => console.error);
             }
             else {
               interaction.reply({ content: "The playlist is empty!", ephemeral: true });
@@ -343,7 +337,9 @@ client.on('interactionCreate', async interaction => {
             break;
           }
           case "info": {
-            interaction.reply({ content: "Not yet supported :disappointed:", ephemeral: true });
+            let film = interaction.options.getString("film");
+            let results = await googleSearch(SearchEngines.CSFD, film);
+            interaction.reply(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
             break;
           }
           case "vote-day": {
@@ -857,12 +853,6 @@ client.on('messageCreate', async message => {
             message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
           }
           break;
-        case "film":
-          console.log("SEARCH!");
-          let results = await googleSearch(SearchEngines.CSFD, argument);
-          message.channel.send(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
-          break;
-
         case "nuke":
           if (message.author.id != "245616926485643264") {
             message.delete().then(() => {
