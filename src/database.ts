@@ -138,7 +138,7 @@ export class KinoDatabase {
     }
 
     static async setEvent(event: Kino.Event) {
-        await connection.query(`UPDATE KinoEvent SET film=${event?.film?.id || 'NULL'}, date=${event.date || 'NULL'}, date_poll=${event?.datePoll?.id || 'NULL'}, film_poll=${event?.filmPoll?.id || 'NULL'}, date_locked=${event.dateLocked ? '\'1\'' : '\'0\''}, watched=${event.watched ? '\'1\'' : '\'0\''}, lock_message_id=${event.lockMessageId || 'NULL'} WHERE id=${event.id}`);
+        await connection.query(`UPDATE KinoEvent SET film=${event?.film?.id || 'NULL'}, date=${dateToSql(event?.date) || 'NULL'}, date_poll=${event?.datePoll?.id || 'NULL'}, film_poll=${event?.filmPoll?.id || 'NULL'}, date_locked=${event.dateLocked ? '\'1\'' : '\'0\''}, watched=${event.watched ? '\'1\'' : '\'0\''}, lock_message_id=${event.lockMessageId || 'NULL'} WHERE id=${event.id}`);
     }
 }
 export class PollDatabase {
