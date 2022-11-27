@@ -139,11 +139,11 @@ export class KinoDatabase {
 
     static async setEvent(event: Kino.Event) {
         let updateString = "UPDATE KinoEvent SET ";
-        if(event.film) updateString+= `film=${event.film.id}, `
-        if(event.date) updateString+= `date=${dateToSql(event.date)}, `
-        if(event.datePoll) updateString+= `date_poll=${event.datePoll.id}, `
-        if(event.filmPoll) updateString+= `film_poll=${event.filmPoll.id}, `
-        updateString+=`date_locked=${event.dateLocked ? '\'1\'' : '\'0\''}, watched=${event.watched ? '\'1\'' : '\'0\''}, lock_message_id=${event.lockMessageId || 'NULL'} WHERE id=${event.id}`
+        if(event.film) updateString+= `film=\"${event.film.id}\", `
+        if(event.date) updateString+= `date=\"${dateToSql(event.date)}\", `
+        if(event.datePoll) updateString+= `date_poll=\"${event.datePoll.id}\", `
+        if(event.filmPoll) updateString+= `film_poll=\"${event.filmPoll.id}\", `
+        updateString+=`date_locked=\"${event.dateLocked ? 1 : 0}\", watched=\"${event.watched ? 1 : 0}\", lock_message_id=\"${event.lockMessageId || 'NULL'}\" WHERE id=\"${event.id}\"`
         await connection.query(updateString);
     }
 }
