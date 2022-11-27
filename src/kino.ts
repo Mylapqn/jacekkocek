@@ -121,7 +121,7 @@ export class Event {
                 let filmImageUrl = (await Main.googleSearch(Main.SearchEngines.EVERYTHING, "Movie still " + this.film.name, Main.SearchTypes.IMAGE))[0].link;
                 guildEventOptions.image = filmImageUrl;
             } catch (error) {
-                console.error("Image search error:" + error.message);
+                console.error("KinoEvent Image search error:" + error.message);
             }
             let guildEvent = await Main.afrGuild.scheduledEvents.create(guildEventOptions)
             this.datePoll.message.channel.send(await guildEvent.createInviteURL());

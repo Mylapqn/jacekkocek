@@ -846,8 +846,12 @@ client.on('messageCreate', async message => {
         case "s":
           if (await Matoshi.cost(message.author.id, 1, message.guildId)) {
             console.log("SEARCH!");
-            let results = await googleSearch(SearchEngines.EVERYTHING, argument);
-            message.channel.send(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
+            try {
+              let results = await googleSearch(SearchEngines.EVERYTHING, argument);
+              message.channel.send(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
+            } catch (error) {
+              message.reply("No results!");
+            }
           }
           else {
             message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
@@ -856,8 +860,12 @@ client.on('messageCreate', async message => {
         case "img":
           if (await Matoshi.cost(message.author.id, 20, message.guildId)) {
             console.log("SEARCH!");
-            let results = await googleSearch(SearchEngines.EVERYTHING, argument, SearchTypes.IMAGE);
-            message.channel.send(results[0].link);
+            try {
+              let results = await googleSearch(SearchEngines.EVERYTHING, argument, SearchTypes.IMAGE);
+              message.channel.send(results[0].link);
+            } catch (error) {
+              message.reply("No results!");
+            }
           }
           else {
             message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
@@ -1276,8 +1284,10 @@ export enum SearchTypes {
 
 export async function googleSearch(engine: SearchEngines, searchTerm: string, searchType: SearchTypes = SearchTypes.PAGE): Promise<any[]> {
   let response = await axios.get(`https://www.googleapis.com/customsearch/v1?key=${process.env.SEARCH_API_KEY}&cx=${engine}&q=${searchTerm}&searchType=${searchType}&num=2`)
-  if (!response.data.items || response.data?.items.length == 0) throw new Error("No search results!");
-  //console.log(response.data.items);
+  if (!response.data.items || response.data?.items.length == 0) {
+    console.error("No search results");
+    return [];
+  }//console.log(response.data.items);
   return response.data.items;
 }
 //#endregion
