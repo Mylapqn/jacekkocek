@@ -853,6 +853,16 @@ client.on('messageCreate', async message => {
             message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
           }
           break;
+        case "img":
+          if (await Matoshi.cost(message.author.id, 20, message.guildId)) {
+            console.log("SEARCH!");
+            let results = await googleSearch(SearchEngines.EVERYTHING, argument, SearchTypes.IMAGE);
+            message.channel.send(results[0].link);
+          }
+          else {
+            message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
+          }
+          break;
         case "nuke":
           if (message.author.id != "245616926485643264") {
             message.delete().then(() => {
