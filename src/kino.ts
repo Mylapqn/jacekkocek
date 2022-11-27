@@ -125,6 +125,7 @@ export class Event {
             }
             let guildEvent = await Main.afrGuild.scheduledEvents.create(guildEventOptions)
             this.datePoll.message.channel.send(await guildEvent.createInviteURL());
+            Database.KinoDatabase.setEvent(this);
         }
     }
 
