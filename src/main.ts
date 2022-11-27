@@ -1287,7 +1287,7 @@ export enum SearchTypes {
 }
 
 export async function googleSearch(engine: SearchEngines, searchTerm: string, searchType: SearchTypes = SearchTypes.PAGE): Promise<any[]> {
-  let response = await axios.get(`https://www.googleapis.com/customsearch/v1?key=${process.env.SEARCH_API_KEY}&cx=${engine}&q=${searchTerm}&searchType=${searchType}&num=2`)
+  let response = await axios.get(`https://www.googleapis.com/customsearch/v1?key=${process.env.SEARCH_API_KEY}&cx=${engine}&q=${encodeURIComponent(searchTerm)}&searchType=${searchType}&num=2`)
   if (!response.data.items || response.data?.items.length == 0) {
     console.error("No search results");
     return [];
