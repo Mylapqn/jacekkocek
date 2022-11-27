@@ -55,7 +55,7 @@ export class Event {
         if ((await Database.KinoDatabase.getFilmByName(name)) == undefined) {
             throw new Error("Invalid option");
         }
-        return name;
+        return Utilities.toTitleCase(name);
     }
     static async dateVoteOptionFilter(name: string) {
         let date = Utilities.dateFromKinoString(name)
