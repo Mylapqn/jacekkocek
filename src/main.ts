@@ -338,8 +338,12 @@ client.on('interactionCreate', async interaction => {
           }
           case "info": {
             let film = interaction.options.getString("film");
-            let results = await googleSearch(SearchEngines.CSFD, film);
-            interaction.reply(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
+            try {
+              let results = await googleSearch(SearchEngines.CSFD, film);
+              interaction.reply(results[0].title + "\n" + results[0].snippet + "\n" + results[0].link);
+            } catch (error) {
+              interaction.reply({ content: "No results!", ephemeral: true });
+            }
             break;
           }
           case "vote-day": {
