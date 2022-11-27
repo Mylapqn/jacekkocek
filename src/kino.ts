@@ -118,7 +118,7 @@ export class Event {
                 description: "Kino session of " + this.film.name,
             }
             try {
-                let filmImageUrl = (await Main.googleSearch(Main.SearchEngines.CSFD, this.film.name, Main.SearchTypes.IMAGE))[0].link;
+                let filmImageUrl = (await Main.googleSearch(Main.SearchEngines.EVERYTHING, "Movie still " + this.film.name, Main.SearchTypes.IMAGE))[0].link;
                 guildEventOptions.image = filmImageUrl;
             } catch (error) {
                 console.error("Image search error:" + error.message);
