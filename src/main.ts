@@ -335,7 +335,7 @@ client.on('interactionCreate', async interaction => {
                 }
                 newMessage += "\n";
               }
-              interaction.reply(newMessage);
+              await interaction.reply(newMessage).catch(e => console.log);
             }
             else {
               interaction.reply({ content: "The playlist is empty!", ephemeral: true });
