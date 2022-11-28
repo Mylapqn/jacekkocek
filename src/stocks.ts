@@ -162,10 +162,10 @@ function getStockData() {
                 //console.log(stock.id + " First: " + res.data.c[0]);
             }
             else {
-                console.log(stock.id + " INVALID DATA");
+                //console.log(stock.id + " INVALID DATA");
             }
-            //info[stock.id] = res.data.c;
             stockData.set(stock.id, res.data.c);
+            //info[stock.id] = res.data.c;
             if (i == stockPresets.length - 1) {
                 //console.log("Updated all stocks.");
             }

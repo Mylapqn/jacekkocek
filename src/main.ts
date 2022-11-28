@@ -269,7 +269,8 @@ client.on('ready', async () => {
   });
   httpServer.get("/kino/start", (req, res) => {
     try {
-      console.log(req.query);
+      console.log("Kino start event received!");
+      res.setHeader("Access-Control-Allow-Origin", "*");
       res.send("OK");
     } catch (e) {
       res.send("Something went wrong :(");
