@@ -75,7 +75,7 @@ export function getPolicyName(name: string) {
 }
 
 export function generatePolicyList() {
-  let list = "**__Matoshi Policy List:__**\n";
+  let list = "**__JacekKocek Policy List:__**\n";
   const name = 0;
   const unit = 1;
 
