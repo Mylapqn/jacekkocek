@@ -221,7 +221,7 @@ export class PollDatabase {
 
 export class PolicyDatabase {
     static async setPolicy(name: string, value: number) {
-        await connection.query(`INSERT INTO Policies (name, value) VALUES (\"${name}\",${value}) ON DUPLICATE KEY UPDATE Policies SET value=${name} WHERE id=${value}`).catch(e => console.error("Set policy error: " + e));
+        await connection.query(`INSERT INTO Policies (name, value) VALUES (\"${name}\",${value}) ON DUPLICATE KEY UPDATE Policies SET value=${value} WHERE id=\"${name}\"`).catch(e => console.error("Set policy error: " + e));
     }
 
     static async loadPolicies() {
