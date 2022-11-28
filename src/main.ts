@@ -64,12 +64,12 @@ export async function setPolicyValue(name: string, value: number) {
   Database.PolicyDatabase.setPolicy(name, value);
 }
 
-export async function getPolicyValue(name: string) {
+export function getPolicyValue(name: string) {
   let [category, policy] = name.split(".");
   return policyValues[category][policy];
 }
 
-export async function getPolicyName(name: string) {
+export function getPolicyName(name: string) {
   let [category, policy] = name.split(".");
   return policyNames[category][policy];
 }
@@ -623,7 +623,7 @@ client.on('interactionCreate', async interaction => {
             try {
               let policy = interaction.options.getString("policy");
               let newValue = interaction.options.getNumber("value");
-              let curValue = await getPolicyValue(policy);
+              let curValue = getPolicyValue(policy);
               let policyName = getPolicyName(policy)
               await setPolicyValue(policy, newValue);
               interaction.reply({ content: `<@${bember.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
