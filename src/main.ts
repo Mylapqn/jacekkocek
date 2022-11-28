@@ -83,7 +83,7 @@ export function generatePolicyList() {
     list += "**" + Utilities.toTitleCase(category) + ":**\n";
     for (const policy in policyValues[category]) {
       const value = policyValues[category][policy];
-      list += "" + policyNames[policy][name] + ": " + value + policyNames[category][policy][unit] + "\n";
+      list += "" + policyNames[category][policy][name] + ": " + value + policyNames[category][policy][unit] + "\n";
     }
   }
   return list;
