@@ -83,7 +83,7 @@ export function generatePolicyList() {
     list += "**" + Utilities.toTitleCase(category) + ":**\n";
     for (const policy in policyValues[category]) {
       const value = policyValues[category][policy];
-      list += "• " + policyNames[category][policy][name] + ": **" + value + policyNames[category][policy][unit] + "**\n";
+      list += "• " + policyNames[category][policy][name] + ": **" + value + " " + policyNames[category][policy][unit] + "**\n";
     }
   }
   return list;
@@ -522,6 +522,10 @@ client.on('interactionCreate', async interaction => {
             let from = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
             let description = interaction.options.getString("description");
+            if (to == from) {
+              interaction.reply({ content: "Invalid request!", ephemeral: true });
+              break;
+            }
             if (amount > 1 && amount <= await Matoshi.balance(from.id)) {
               Matoshi.requestPayment({ from: from.id, to: to.id, amount: amount, description: description || undefined, interaction: interaction });
             }
