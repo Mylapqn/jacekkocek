@@ -236,6 +236,14 @@
                             {
                                 "name": "AMD",
                                 "value": "AMD"
+                            },
+                            {
+                                "name": "META",
+                                "value": "META"
+                            },
+                            {
+                                "name": "TWTR",
+                                "value": "TWTR"
                             }
                         ]
                     },
@@ -277,6 +285,14 @@
                             {
                                 "name": "AMD",
                                 "value": "AMD"
+                            },
+                            {
+                                "name": "META",
+                                "value": "META"
+                            },
+                            {
+                                "name": "TWTR",
+                                "value": "TWTR"
                             }
                         ]
                     },
@@ -318,6 +334,14 @@
                             {
                                 "name": "AMD",
                                 "value": "AMD"
+                            },
+                            {
+                                "name": "META",
+                                "value": "META"
+                            },
+                            {
+                                "name": "TWTR",
+                                "value": "TWTR"
                             }
                         ]
                     }
