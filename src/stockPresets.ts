@@ -36,4 +36,16 @@ export const stockPresets = [
         symbol: "AMD",
         name: "AMD"
     },
+    {
+        id: "META",
+        type: "stock",
+        symbol: "META",
+        name: "Meta"
+    },
+    {
+        id: "TWTR",
+        type: "stock",
+        symbol: "TWTR",
+        name: "Twitter"
+    },
 ] as Array<StockPreset>

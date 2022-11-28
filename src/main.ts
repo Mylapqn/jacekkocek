@@ -42,6 +42,7 @@ const commandsToDeleteGuild = [];
 
 export let afrGuild: Discord.Guild;
 export let mainVoiceChannel: Discord.VoiceChannel;
+export let managerRole: Discord.Role;
 
 let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Pause } });
 var kocek = 0;
@@ -57,16 +58,43 @@ export const port = process.env.PORT;
 export const httpServer = express();
 httpServer.use(express.json());
 
+export async function setPolicyValue(name: string, value: number) {
+  let [category, policy] = name.split(".");
+  policyValues[category][policy] = value;
+  Database.PolicyDatabase.setPolicy(name, value);
+}
+
+export async function getPolicyValue(name: string) {
+  let [category, policy] = name.split(".");
+  return policyValues[category][policy];
+}
+
+export function generatePolicyList() {
+  let list = "**__Matoshi Policy List:__**\n";
+  list += "\n**Matoshi:**\n";
+  for (const policy in policyValues.matoshi) {
+    const value = policyValues.matoshi[policy];
+    list += "\t" + policy + ": " + value + "\n";
+  }
+  list = "\n**Kino:**\n";
+  for (const policy in policyValues.kino) {
+    const value = policyValues.kino[policy];
+    list += "\t" + policy + ": " + value + "\n";
+  }
+  return list;
+}
+
 export let policyValues = {
   matoshi: {
-    transactionFee: 0,
+    transactionFee: 1,
+    stockFee: 0.5,
     weeklyTaxPercent: 0,
     weeklyTaxFlat: 0,
   },
   kino: {
     suggestReward: 50,
     watchReward: 200,
-    lateFeePerMinute: 1,
+    lateFee: 100,
     defaultTimeHrs: 19
   }
 }
@@ -241,6 +269,7 @@ client.on('ready', async () => {
 
   afrGuild = client.guilds.cache.get('549589656606343178');
   mainVoiceChannel = await afrGuild.channels.fetch("1024767805586935888") as Discord.VoiceChannel;
+  managerRole = await afrGuild.roles.fetch("1046868723048382494");
 
   if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
@@ -305,6 +334,7 @@ client.on('interactionCreate', async interaction => {
   //console.log("Interaction", interaction);
   if (interaction.isChatInputCommand()) {
     console.log("Slash command by " + interaction.user.username + ": " + interaction.commandName);
+    let bember = interaction.member as Discord.GuildMember;
     switch (interaction.commandName) {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
@@ -400,7 +430,6 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "radio": {
-        let bember = interaction.member as Discord.GuildMember;
         switch (interaction.options.getSubcommand()) {
           case "play": {
             let voice = bember.voice.channel;
@@ -567,6 +596,27 @@ client.on('interactionCreate', async interaction => {
           if (!optionName) continue;
           await poll.addOption(optionName);
         }
+        break;
+      }
+      case "policy": {
+        switch (interaction.options.getSubcommand()) {
+          case "edit": {
+            try {
+              let policy = interaction.options.getString("policy");
+              let newValue = interaction.options.getNumber("value");
+              let curValue = await getPolicyValue(policy);
+              await setPolicyValue(policy, newValue);
+              interaction.reply({ content: bember.displayName + " changed the policy " + policy + " to " + newValue + " (previously " + curValue + ")", ephemeral: false })
+            } catch (error) {
+              interaction.reply({ content: "Policy setting failed!", ephemeral: true });
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "policy-list": {
+        interaction.reply(generatePolicyList());
         break;
       }
     }

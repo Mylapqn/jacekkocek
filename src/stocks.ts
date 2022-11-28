@@ -11,8 +11,6 @@ const stockApiKey = "c8oe5maad3iatn99i470";
 const stockHistoryHours = 24;
 const stockUpdatesPerHour = 4;
 
-const tradingFee = .005;
-
 const resolutions = {
     m1: 1,
     m5: 5,
@@ -24,7 +22,7 @@ const resolutions = {
     month: "M",
 }
 
-export let stockData = new Map<string,Array<number>>();
+export let stockData = new Map<string, Array<number>>();
 
 export function init() {
     stockPresets.forEach(preset => {
@@ -191,7 +189,7 @@ export async function buy(user: string, stock: string, amount: number) {
         if (await Matoshi.pay({ from: user, to: Main.client.user.id, amount: amount }, 0)) {
             let data = await Database.getUser(user);
             let currentStock = data.wallets.get(stock) || 0;
-            currentStock += amount * (1 - tradingFee) / price;
+            currentStock += amount * (1 - Main.policyValues.matoshi.stockFee / 100) / price;
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
             return true;
@@ -207,7 +205,7 @@ export async function sell(user: string, stock: string, amount: number) {
     let currentStock = data.wallets.get(stock);
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
-        if (await Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - tradingFee)) }, 0)) {
+        if (await Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - Main.policyValues.matoshi.stockFee / 100)) }, 0)) {
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
             return true;

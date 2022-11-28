@@ -24,6 +24,7 @@ export async function init() {
 
     PollDatabase.loadPolls();
     KinoDatabase.loadEvents();
+    PolicyDatabase.loadPolicies();
     //TEMP FIX FOR TIMEOUT
     setInterval(() => {
         connection.query(`SELECT * FROM Users WHERE id=\"0\"`);
@@ -139,11 +140,11 @@ export class KinoDatabase {
 
     static async setEvent(event: Kino.Event) {
         let updateString = "UPDATE KinoEvent SET ";
-        if(event.film) updateString+= `film=\"${event.film.id}\", `
-        if(event.date) updateString+= `date=\"${dateToSql(event.date)}\", `
-        if(event.datePoll) updateString+= `date_poll=\"${event.datePoll.id}\", `
-        if(event.filmPoll) updateString+= `film_poll=\"${event.filmPoll.id}\", `
-        updateString+=`date_locked=\"${event.dateLocked ? 1 : 0}\", watched=\"${event.watched ? 1 : 0}\", lock_message_id=\"${event.lockMessageId || 'NULL'}\" WHERE id=\"${event.id}\"`
+        if (event.film) updateString += `film=\"${event.film.id}\", `
+        if (event.date) updateString += `date=\"${dateToSql(event.date)}\", `
+        if (event.datePoll) updateString += `date_poll=\"${event.datePoll.id}\", `
+        if (event.filmPoll) updateString += `film_poll=\"${event.filmPoll.id}\", `
+        updateString += `date_locked=\"${event.dateLocked ? 1 : 0}\", watched=\"${event.watched ? 1 : 0}\", lock_message_id=\"${event.lockMessageId || 'NULL'}\" WHERE id=\"${event.id}\"`
         await connection.query(updateString);
     }
 }
@@ -217,6 +218,20 @@ export class PollDatabase {
     }
 }
 
+
+export class PolicyDatabase {
+    static async setPolicy(name: string, value: number) {
+        await connection.query(`INSERT INTO Wallet (name, value) VALUES (\"${name}\",${value}) ON DUPLICATE KEY UPDATE Policies SET value=${name} WHERE id=${value}`).catch(e => console.log("Set policy error: " + name));
+    }
+
+    static async loadPolicies() {
+        let policies: Array<Array<any>> = await connection.query(`SELECT * FROM Policies`);
+        for (const row of policies) {
+            let [category, policy] = row["name"].split(".");
+            Main.policyValues[category][policy] = parseFloat(row["value"]);
+        }
+    }
+}
 
 /**
  * @param {Date} date

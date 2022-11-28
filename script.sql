@@ -35,7 +35,14 @@ CREATE TABLE `KinoEvent` (
   PRIMARY KEY (`id`),
   KEY `film` (`film`),
   CONSTRAINT `KinoEvent_ibfk_2` FOREIGN KEY (`film`) REFERENCES `Films` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+DROP TABLE IF EXISTS `Policies`;
+CREATE TABLE `Policies` (
+  `name` varchar(64) NOT NULL,
+  `value` double NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `PollOptions`;
@@ -57,7 +64,7 @@ CREATE TABLE `Polls` (
   `max_votes_per_user` int(11) DEFAULT 0,
   `custom_options_allowed` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `PollVotes`;
@@ -91,4 +98,4 @@ CREATE TABLE `Wallet` (
 ) ENGINE=InnoDB AUTO_INCREMENT=567 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
--- 2022-11-26 21:45:36
+-- 2022-11-28 20:20:23
