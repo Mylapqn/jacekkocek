@@ -129,6 +129,7 @@ export function generateGraph(stockId: string) {
 }
 
 function formatCurrency(num: number): string {
+    if(!num) return "Unknown"
     if (num >= 100) {
         return Math.round(num).toString();
     }
@@ -139,7 +140,7 @@ function formatCurrency(num: number): string {
 
 export function currentPrice(stockName: string) {
     if (stockData.has(stockName)) {
-        let data = stockData.get(stockName);
+        let data = stockData.get(stockName) || [];
         if (data.length >= 1)
             return data[data.length - 1];
     }
