@@ -69,17 +69,22 @@ export async function getPolicyValue(name: string) {
   return policyValues[category][policy];
 }
 
+export async function getPolicyName(name: string) {
+  let [category, policy] = name.split(".");
+  return policyNames[category][policy];
+}
+
 export function generatePolicyList() {
   let list = "**__Matoshi Policy List:__**\n";
-  list += "\n**Matoshi:**\n";
-  for (const policy in policyValues.matoshi) {
-    const value = policyValues.matoshi[policy];
-    list += "\t" + policy + ": " + value + "\n";
-  }
-  list += "\n**Kino:**\n";
-  for (const policy in policyValues.kino) {
-    const value = policyValues.kino[policy];
-    list += "\t" + policy + ": " + value + "\n";
+  const name = 0;
+  const unit = 1;
+
+  for (const category in policyValues) {
+    list += "**" + Utilities.toTitleCase(category) + ":**\n";
+    for (const policy in policyValues[category]) {
+      const value = policyValues[category][policy];
+      list += "" + policyNames[policy][name] + ": " + value + policyNames[category][policy][unit] + "\n";
+    }
   }
   return list;
 }
@@ -96,6 +101,20 @@ export let policyValues = {
     watchReward: 200,
     lateFee: 100,
     defaultTimeHrs: 19
+  }
+}
+export let policyNames = {
+  matoshi: {
+    transactionFee: ["Matoshi transaction fee", "₥"],
+    stockFee: ["Stock transaction fee", "%"],
+    weeklyTaxPercent: ["Weekly percent tax", "%"],
+    weeklyTaxFlat: ["Weekly flat tax", "₥"],
+  },
+  kino: {
+    suggestReward: ["Kino suggest reward", "₥"],
+    watchReward: ["Kino watch reward", "₥"],
+    lateFee: ["Kino late fee", "₥"],
+    defaultTimeHrs: ["Kino default time", "hours"],
   }
 }
 
@@ -605,8 +624,9 @@ client.on('interactionCreate', async interaction => {
               let policy = interaction.options.getString("policy");
               let newValue = interaction.options.getNumber("value");
               let curValue = await getPolicyValue(policy);
+              let policyName = getPolicyName(policy)
               await setPolicyValue(policy, newValue);
-              interaction.reply({ content: "<@" + bember.id + "> changed the policy **" + policy + "** to **" + newValue + "** (previously " + curValue + ")", ephemeral: false, allowedMentions: { users: [], parse: [] } })
+              interaction.reply({ content: `<@${bember.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
             } catch (error) {
               interaction.reply({ content: "Policy setting failed!", ephemeral: true });
             }
