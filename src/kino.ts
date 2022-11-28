@@ -69,7 +69,6 @@ export class Event {
 
     async filmVote(interaction: Discord.ChatInputCommandInteraction) {
         this.filmPoll = await Polls.Poll.fromCommand("Co kino?", interaction, 0, true);
-        let embeds = this.filmPoll.message.embeds;
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockFilmVote", label: "Confirm film selection", style: Discord.ButtonStyle.Success }));
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;

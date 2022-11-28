@@ -52,6 +52,7 @@ let defaultTimeZone = "Europe/Prague";
 
 let voiceListeners = [];
 
+// https://jacekkocek.coal.games/
 export const port = process.env.PORT;
 export const httpServer = express();
 httpServer.use(express.json());
@@ -261,6 +262,14 @@ client.on('ready', async () => {
         playStation(voiceChannel, radioId);
       }
       //let data = JSON.parse(req.body);
+      res.send("OK");
+    } catch (e) {
+      res.send("Something went wrong :(");
+    }
+  });
+  httpServer.get("/kino/start", (req, res) => {
+    try {
+      console.log(req.query);
       res.send("OK");
     } catch (e) {
       res.send("Something went wrong :(");

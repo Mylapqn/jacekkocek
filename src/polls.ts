@@ -44,7 +44,10 @@ export class Poll {
         return winner;
     }
 
-    lock(){
+    async lock(){
+        this.name += " [Locked]"
+        let newMessage = this.generateMessage();
+        this.message.edit({ embeds: [newMessage.embeds[0].setFooter({text:"You can't vote in this poll anymore"}).setColor(0x888888)]});
         Poll.list.splice(Poll.list.indexOf(this), 1);
         Database.PollDatabase.deletePoll(this);
     }
@@ -74,9 +77,7 @@ export class Poll {
         return { embeds: [embed] };
     }
     async updateMessage() {
-        this.message = await this.message.fetch();
-        let components = this.message.components;
-        this.message.edit({ embeds: this.generateMessage().embeds, components: components });
+        this.message.edit({ embeds: this.generateMessage().embeds});
     }
     async sendMessage(interaction: Interaction) {
         if (interaction instanceof AutocompleteInteraction) throw new Error("Unexpected autocomplete interaction");
