@@ -601,20 +601,22 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "lockFilmVote": {
-        //If user kino weight
-        let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
-        if (event && event?.filmPoll.options.length > 0) {
-          interaction.message.delete();
-          event.dateVote(interaction)
+        if (await Kino.interactionWeightCheck(interaction)) {
+          let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
+          if (event && event?.filmPoll.options.length > 0) {
+            interaction.message.delete();
+            event.dateVote(interaction);
+          }
         }
         break;
       }
       case "lockDayVote": {
-        //If user kino weight
-        let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
-        if (event && event?.datePoll.options.length > 0) {
-          interaction.message.delete();
-          event.lockDate();
+        if (await Kino.interactionWeightCheck(interaction)) {
+          let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
+          if (event && event?.datePoll.options.length > 0) {
+            interaction.message.delete();
+            event.lockDate();
+          }
         }
         break;
       }

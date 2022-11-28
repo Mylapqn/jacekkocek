@@ -1,4 +1,4 @@
-import { InviteGuild, Message, EmbedBuilder, TextChannel, User, TextBasedChannel, CommandInteraction, ChatInputCommandInteraction, EmbedFooterOptions, Interaction, AutocompleteInteraction } from "discord.js";
+import * as Discord from "discord.js";
 import * as Database from "./database";
 import * as Main from "./main";
 import * as Utilities from "./utilities"
@@ -8,7 +8,7 @@ import * as Youtube from "./youtube"
 export class Poll {
     id: number;
     messageId: string;
-    message: Message;
+    message: Discord.Message;
     name: string;
     options: PollOption[] = [];
     totalVotes = 0;
@@ -23,7 +23,7 @@ export class Poll {
         this.customOptionsAllowed = customOptionsAllowed;
     }
 
-    static async fromCommand(name: string, interaction: Interaction, maxVotesPerUser = 0, customOptionsAllowed = true) {
+    static async fromCommand(name: string, interaction: Discord.Interaction, maxVotesPerUser = 0, customOptionsAllowed = true) {
         let poll = new Poll(name, maxVotesPerUser, customOptionsAllowed);
         Poll.list.push(poll);
         await poll.sendMessage(interaction);
@@ -44,16 +44,16 @@ export class Poll {
         return winner;
     }
 
-    async lock(){
+    async lock() {
         this.name += " [Locked]"
         let newMessage = this.generateMessage();
-        this.message.edit({ embeds: [newMessage.embeds[0].setFooter({text:"You can't vote in this poll anymore"}).setColor(0x888888)]});
+        this.message.edit({ embeds: [newMessage.embeds[0].setFooter({ text: "You can't vote in this poll anymore" }).setColor(0x888888)] });
         Poll.list.splice(Poll.list.indexOf(this), 1);
         Database.PollDatabase.deletePoll(this);
     }
 
     generateMessage() {
-        let embed = new EmbedBuilder().setColor(0x18C3B1).setTitle(this.name);
+        let embed = new Discord.EmbedBuilder().setColor(0x18C3B1).setTitle(this.name);
         let description = "";
         let footerText = "";
         /*for (const option of this.options) {
@@ -77,10 +77,10 @@ export class Poll {
         return { embeds: [embed] };
     }
     async updateMessage() {
-        this.message.edit({ embeds: this.generateMessage().embeds});
+        this.message.edit({ embeds: this.generateMessage().embeds });
     }
-    async sendMessage(interaction: Interaction) {
-        if (interaction instanceof AutocompleteInteraction) throw new Error("Unexpected autocomplete interaction");
+    async sendMessage(interaction: Discord.Interaction) {
+        if (interaction instanceof Discord.AutocompleteInteraction) throw new Error("Unexpected autocomplete interaction");
         this.message = await interaction.reply({ embeds: this.generateMessage().embeds, fetchReply: true });
         this.messageId = this.message.id;
         for (let i = 1; i <= this.options.length && i <= 9; i++) {
@@ -148,7 +148,7 @@ export class Poll {
     }
 
     static list = new Array<Poll>();
-    static getPollFromMessage(message: Message) {
+    static getPollFromMessage(message: Discord.Message) {
         return Poll.list.find(element => { return Utilities.matchMessages(element.message, message) });
     }
 }

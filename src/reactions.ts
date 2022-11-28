@@ -1,14 +1,14 @@
-import { MessageReaction, PartialMessageReaction, User, PartialUser, DiscordAPIError, Message } from "discord.js";
-import { client, letterEmoji, weekDayNames } from "./main"
+import * as Discord from "discord.js";
+import * as Main from "./main"
 import * as Polls from "./polls"
 import * as Utilities from "./utilities"
 
 interface reactionData {
     remove: boolean,
     emoji: string,
-    message: Message,
-    user: User,
-    reactionObject: MessageReaction
+    message: Discord.Message,
+    user: Discord.User,
+    reactionObject: Discord.MessageReaction
 }
 
 export let reactionHandlers = {
@@ -17,7 +17,7 @@ export let reactionHandlers = {
         if (poll) {
             try {
                 //console.log(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji }));
-                let index = parseInt(Object.entries(letterEmoji).find(e => { return e[1] === data.emoji })[0]);
+                let index = parseInt(Object.entries(Main.letterEmoji).find(e => { return e[1] === data.emoji })[0]);
                 //console.log(index);
                 if (Utilities.isValid(index)) {
                     try {
@@ -54,14 +54,14 @@ export let reactionHandlers = {
 }
 
 
-export async function handleMessageReaction(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser, remove: boolean) {
+export async function handleMessageReaction(reaction: Discord.MessageReaction | Discord.PartialMessageReaction, user: Discord.User | Discord.PartialUser, remove: boolean) {
     reaction = await reaction.fetch();
     user = await user.fetch();
     //console.log("React", reaction);
     let emojiName = reaction.emoji.name;
     let message = reaction.message;
 
-    if (user != client.user) {
+    if (user != Main.client.user) {
         let data = {
             remove: remove,
             emoji: emojiName,

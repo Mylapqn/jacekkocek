@@ -1,5 +1,6 @@
-import { Channel, Guild, Message, TextBasedChannel, TextChannel, ThreadChannel, NewsChannel, ButtonBuilder, ActionRowBuilder, ButtonComponent } from "discord.js";
+import * as Discord from "discord.js";
 import * as Main from "./main";
+import * as Sheets from "./sheets";
 
 export function dateString(inputDate: Date) {
     let minutes = inputDate.getMinutes();
@@ -57,21 +58,21 @@ export function isValid(x: number) {
     else return true;
 }
 
-export async function fetchMessage(channelId: string, messageId: any): Promise<Message> {
+export async function fetchMessage(channelId: string, messageId: any): Promise<Discord.Message> {
     try {
-        let channel = await Main.client.channels.fetch(channelId) as TextBasedChannel;
+        let channel = await Main.client.channels.fetch(channelId) as Discord.TextBasedChannel;
         return await channel.messages.fetch({ message: messageId, cache: true });
     } catch (error) {
         return undefined;
         //throw new Error("Cannot fetch message");
     }
 }
-export function matchMessages(a: Message, b: Message) {
+export function matchMessages(a: Discord.Message, b: Discord.Message) {
     return a.id == b.id && a.channelId == b.channelId
 }
 
-export function isActualChannel(channel: any): channel is TextChannel | ThreadChannel | NewsChannel {
-    return (channel instanceof TextChannel || channel instanceof ThreadChannel || channel instanceof NewsChannel);
+export function isActualChannel(channel: any): channel is Discord.TextChannel | Discord.ThreadChannel | Discord.NewsChannel {
+    return (channel instanceof Discord.TextChannel || channel instanceof Discord.ThreadChannel || channel instanceof Discord.NewsChannel);
 }
 
 export function dateFromKinoString(text: string): Date {
@@ -107,19 +108,20 @@ export function weekdayEmoji(day: number) {
     }
 }
 
-export function messageError(channel: TextBasedChannel, error: Error) {
+export function messageError(channel: Discord.TextBasedChannel, error: Error) {
     console.error(error);
     channel.send(error.name + ": " + error.message);
 }
 
-export async function disableMessageButtons(msg: Message, setDisabled = true) {
+export async function disableMessageButtons(msg: Discord.Message, setDisabled = true) {
     let comp = msg.components;
-    let newActionRow = new ActionRowBuilder<ButtonBuilder>();
+    let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
     for (const component of comp[0].components) {
-        if (component instanceof ButtonComponent)
-            newActionRow.addComponents(new ButtonBuilder(component.data).setDisabled(setDisabled));
+        if (component instanceof Discord.ButtonComponent)
+            newActionRow.addComponents(new Discord.ButtonBuilder(component.data).setDisabled(setDisabled));
         else
             throw new Error("Expected only ButtonComponent");
     }
     msg.edit({ content: msg.content, embeds: msg.embeds, components: [newActionRow] })
 }
+

@@ -111,6 +111,7 @@ export class Event {
             let guildEventOptions: Discord.GuildScheduledEventCreateOptions = {
                 name: "Kino: " + this.film.name,
                 scheduledStartTime: this.date,
+                scheduledEndTime: new Date(this.date.valueOf() + (1000 * 3600 * 2)),
                 privacyLevel: Discord.GuildScheduledEventPrivacyLevel.GuildOnly,
                 entityType: Discord.GuildScheduledEventEntityType.Voice,
                 channel: Main.mainVoiceChannel as Discord.VoiceChannel,
@@ -146,4 +147,18 @@ export class Event {
     }
 
     static list = new Array<Event>();
+}
+
+
+export async function interactionWeightCheck(interaction: Discord.Interaction) {
+    let userWeight = (await Sheets.getUserData()).get(interaction.user.id).weight;
+    const minWeight = .9;
+    if (userWeight >= minWeight) {
+        return true;
+    }
+    else {
+        if (!(interaction instanceof Discord.AutocompleteInteraction))
+            interaction.reply({ content: "Only users with kino weight over " + minWeight + " can do this! (Your weight is " + userWeight + ")", ephemeral: true });
+        return false;
+    }
 }
