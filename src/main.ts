@@ -76,7 +76,7 @@ export function generatePolicyList() {
     const value = policyValues.matoshi[policy];
     list += "\t" + policy + ": " + value + "\n";
   }
-  list = "\n**Kino:**\n";
+  list += "\n**Kino:**\n";
   for (const policy in policyValues.kino) {
     const value = policyValues.kino[policy];
     list += "\t" + policy + ": " + value + "\n";
@@ -606,7 +606,7 @@ client.on('interactionCreate', async interaction => {
               let newValue = interaction.options.getNumber("value");
               let curValue = await getPolicyValue(policy);
               await setPolicyValue(policy, newValue);
-              interaction.reply({ content: bember.displayName + " changed the policy " + policy + " to " + newValue + " (previously " + curValue + ")", ephemeral: false })
+              interaction.reply({ content: "<@" + bember.id + "> changed the policy **" + policy + "** to **" + newValue + "** (previously " + curValue + ")", ephemeral: false, allowedMentions: { users: [], parse: [] } })
             } catch (error) {
               interaction.reply({ content: "Policy setting failed!", ephemeral: true });
             }

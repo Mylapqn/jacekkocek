@@ -34,9 +34,9 @@ export async function init() {
 }
 
 async function createUser(id) {
-    await connection.query(`INSERT INTO Users VALUES (\"${id}\",0)`).catch(e => { console.log("User creation error: ", e) });
+    await connection.query(`INSERT INTO Users VALUES (\"${id}\",0)`).catch(e => { console.error("User creation error: ", e) });
     for (const stockPreset of stockPresets) {
-        await connection.query(`INSERT INTO Wallet (user, currency, amount) VALUES (\"${id}\",\"${stockPreset.id}\",0)`).catch(e => { console.log("Wallet creation error: ", e) });
+        await connection.query(`INSERT INTO Wallet (user, currency, amount) VALUES (\"${id}\",\"${stockPreset.id}\",0)`).catch(e => { console.error("Wallet creation error: ", e) });
     }
     return await connection.query(`SELECT * FROM Users WHERE id=\"${id}\"`);
 }
@@ -61,18 +61,18 @@ export async function getUser(id) {
 
 export async function setUser(user) {
     if (Utilities.isValid(user.matoshi))
-        connection.query(`UPDATE Users SET matoshi=${user.matoshi} WHERE id=\"${user.id}\"`).catch(e => { console.log("Matoshi update error: ", e) });
+        connection.query(`UPDATE Users SET matoshi=${user.matoshi} WHERE id=\"${user.id}\"`).catch(e => { console.error("Matoshi update error: ", e) });
     for (const [currency, amount] of user.wallets) {
         console.log(currency, amount)
         if (Utilities.isValid(amount))
-            connection.query(`INSERT INTO Wallet (user, currency, amount) VALUES (\"${user.id}\",\"${currency}\",${amount}) ON DUPLICATE KEY UPDATE amount = ${amount}`).catch(e => { console.log("Wallet update error: ", e) });
+            connection.query(`INSERT INTO Wallet (user, currency, amount) VALUES (\"${user.id}\",\"${currency}\",${amount}) ON DUPLICATE KEY UPDATE amount = ${amount}`).catch(e => { console.error("Wallet update error: ", e) });
     }
 }
 
 export class KinoDatabase {
     static async createFilm(film: Kino.Film) {
         film.id = (await connection.query(`INSERT INTO Films (name, suggested_by, watched) VALUES (\"${film.name}\",\"${film.suggestedBy}\",${film.watched})`)
-            .catch(e => { console.log("Film creation error: ", e) })).insertId;
+            .catch(e => { console.error("Film creation error: ", e) })).insertId;
         console.log("Created film ", film);
     }
 
@@ -134,7 +134,7 @@ export class KinoDatabase {
 
     static async createEvent(event: Kino.Event) {
         event.id = (await connection.query(`INSERT INTO KinoEvent (watched) VALUES (${event.watched ? '\'1\'' : '\'0\''})`)
-            .catch(e => { console.log("KinoEvent creation error: ", e) })).insertId;
+            .catch(e => { console.error("KinoEvent creation error: ", e) })).insertId;
         console.log("Created event ", event);
     }
 
@@ -152,7 +152,7 @@ export class PollDatabase {
 
     static async createPoll(poll: Polls.Poll) {
         poll.id = (await connection.query(`INSERT INTO Polls (message_id, name, last_interacted, max_votes_per_user, custom_options_allowed) VALUES (\"${messageToUid(poll.message)}\", \"${poll.name}\", \"${dateToSql(new Date())}\", ${poll.maxVotesPerUser}, ${poll.customOptionsAllowed})`)
-            .catch(e => { console.log("Poll creation error: ", e) })).insertId;
+            .catch(e => { console.error("Poll creation error: ", e) })).insertId;
     }
 
     static async deletePoll(poll: Polls.Poll) {
@@ -199,12 +199,12 @@ export class PollDatabase {
     }
 
     static async addOption(option: Polls.PollOption) {
-        await connection.query(`INSERT INTO PollOptions (\`index\`, poll, name) VALUES (${option.index}, ${option.poll.id}, \"${option.name}\")`).catch(e => { console.log("PollOption creation error: ", e) });
+        await connection.query(`INSERT INTO PollOptions (\`index\`, poll, name) VALUES (${option.index}, ${option.poll.id}, \"${option.name}\")`).catch(e => { console.error("PollOption creation error: ", e) });
         await this.updateLastInteracted(option.poll);
     }
 
     static async addVote(vote: Polls.PollVote) {
-        await connection.query(`INSERT INTO PollVotes (user, poll, option_index) VALUES (\"${vote.userId}\", ${vote.poll.id}, ${vote.option.index})`).catch(e => { console.log("PollVote creation error: ", e) });
+        await connection.query(`INSERT INTO PollVotes (user, poll, option_index) VALUES (\"${vote.userId}\", ${vote.poll.id}, ${vote.option.index})`).catch(e => { console.error("PollVote creation error: ", e) });
         await this.updateLastInteracted(vote.poll);
     }
 
@@ -221,7 +221,7 @@ export class PollDatabase {
 
 export class PolicyDatabase {
     static async setPolicy(name: string, value: number) {
-        await connection.query(`INSERT INTO Wallet (name, value) VALUES (\"${name}\",${value}) ON DUPLICATE KEY UPDATE Policies SET value=${name} WHERE id=${value}`).catch(e => console.log("Set policy error: " + name));
+        await connection.query(`INSERT INTO Policies (name, value) VALUES (\"${name}\",${value}) ON DUPLICATE KEY UPDATE Policies SET value=${name} WHERE id=${value}`).catch(e => console.error("Set policy error: " + e));
     }
 
     static async loadPolicies() {
