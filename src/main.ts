@@ -521,7 +521,7 @@ client.on('interactionCreate', async interaction => {
             let to = interaction.user;
             let from = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
-            let description = interaction.options.getString("description");
+            let description = Utilities.escapeFormatting(interaction.options.getString("description"));
             if (to == from) {
               interaction.reply({ content: "Invalid request!", ephemeral: true });
               break;
@@ -613,7 +613,7 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "poll": {
-        let poll = await Polls.Poll.fromCommand(interaction.options.getString("name"), interaction, interaction.options.getInteger("max-votes") || 0, true);
+        let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, true);
         for (let i = 1; i < 10; i++) {
           let optionName = interaction.options.getString("option" + i);
           if (!optionName) continue;
@@ -687,7 +687,7 @@ client.on('interactionCreate', async interaction => {
       case "lockDayVote": {
         if (await Kino.interactionWeightCheck(interaction)) {
           let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
-          if (event && event?.datePoll.options.length > 0) {
+          if (event && event?.datePoll?.options.length > 0) {
             interaction.message.delete();
             event.lockDate();
           }

@@ -88,14 +88,18 @@ export class Event {
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }));
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
 
-        let dayScores = await Sheets.getDaysScores();
-        let sortedScores = [...dayScores.entries()].sort((a, b) => b[1] - a[1]);
-        sortedScores = sortedScores.slice(0, Math.min(sortedScores.length, 5));
-        let days = [...new Map(sortedScores).keys()];
-        for (const [day, score] of dayScores) {
-            if (days.includes(day)) {
-                await this.datePoll.addOption(Event.dateOptionName(day, score));
+        try {
+            let dayScores = await Sheets.getDaysScores();
+            let sortedScores = [...dayScores.entries()].sort((a, b) => b[1] - a[1]);
+            sortedScores = sortedScores.slice(0, Math.min(sortedScores.length, 5));
+            let days = [...new Map(sortedScores).keys()];
+            for (const [day, score] of dayScores) {
+                if (days.includes(day)) {
+                    await this.datePoll.addOption(Event.dateOptionName(day, score));
+                }
             }
+        } catch (error) {
+            console.error("Error populating kino date poll: " + error);
         }
         this.datePoll.optionFilter = Event.dateVoteOptionFilter;
         Database.KinoDatabase.setEvent(this);

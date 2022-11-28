@@ -15,7 +15,7 @@ export class Poll {
     maxVotesPerUser = 0;
     customOptionsAllowed = true;
 
-    optionFilter = async (option: string) => option;
+    optionFilter = async (option: string) => Utilities.escapeFormatting(option);
 
     constructor(name = "Unnamed poll", maxVotesPerUser = 0, customOptionsAllowed = true) {
         this.name = name;
@@ -94,7 +94,7 @@ export class Poll {
         name = await this.optionFilter(name)
         if (!name) return;
         if (this.options.some(option => option.name == name)) throw new Error("Option already exists");
-        name = name.replace(/[\r\n]/gm, '');
+        name = name.replace(/[\r\n]/gm, ''); //Remove line breaks
         name.trim();
         if (name.length > 244) {
             name = name.substring(0, 240) + "...";

@@ -125,3 +125,6 @@ export async function disableMessageButtons(msg: Discord.Message, setDisabled = 
     msg.edit({ content: msg.content, embeds: msg.embeds, components: [newActionRow] })
 }
 
+export function escapeFormatting(text:string){
+    return text.replace(/[\\_|*~]/g, `\\$&`);
+}
