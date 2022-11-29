@@ -7,7 +7,7 @@ import * as Utilities from "./utilities";
 
 
 var nextYoutube;
-var nextYoutubeData: { url: string; channel: Discord.VoiceChannel; };
+var nextYoutubeData: { url: string; channel: Discord.VoiceChannel; textChannel: Discord.TextBasedChannel };
 var youtubeAutoplay = false;
 
 var youtubePlaylist = new Array<string>();
@@ -21,7 +21,7 @@ var youtubePlaying = [];
 
 let barUpdateInterval = 2000;
 
-export function play(interaction:Discord.ChatInputCommandInteraction) {
+export function play(interaction: Discord.ChatInputCommandInteraction) {
     let vid = interaction.options.getString("video");
     let member = interaction.member as Discord.GuildMember;
     let voiceChannel = member.voice.channel as Discord.VoiceChannel;
@@ -36,19 +36,19 @@ export function play(interaction:Discord.ChatInputCommandInteraction) {
                 let n = vid.indexOf("list=");
                 let listId = vid.slice(n + 5);
                 interaction.reply({ content: "Playing youtube in :sound:" + member.voice.channel.name, ephemeral: true });
-                playPlaylist(listId, voiceChannel);
+                playPlaylist(listId, voiceChannel, interaction.channel);
             }
             else {
                 youtubePlaylist = [];
                 interaction.reply({ content: "Playing youtube in :sound:" + member.voice.channel.name, ephemeral: true });
-                playYoutube(vid, voiceChannel);
+                playYoutube(vid, voiceChannel, interaction.channel);
             }
         }
         else {
             youtubePlaylist = [];
             search(vid).then((id) => {
                 interaction.reply({ content: "Playing youtube in :sound:" + voiceChannel.name, ephemeral: true });
-                playYoutube("https://www.youtube.com/watch?v=" + id, voiceChannel);
+                playYoutube("https://www.youtube.com/watch?v=" + id, voiceChannel, interaction.channel);
             }).catch(() => { interaction.reply({ content: "No results!", ephemeral: true }); });
         }
 
@@ -64,7 +64,7 @@ function clearNextTimeout() {
 }
 youtubePlaylistName = "Unknown Playlist";
 
-function playPlaylist(playlistUrl: string, channel: Discord.VoiceChannel) {
+function playPlaylist(playlistUrl: string, channel: Discord.VoiceChannel, textChannel: Discord.TextBasedChannel) {
     getPlaylistName(playlistUrl).then(title => {
         youtubePlaylistName = title as string;
     })
@@ -77,11 +77,11 @@ function playPlaylist(playlistUrl: string, channel: Discord.VoiceChannel) {
         youtubePlaylist = items.map(x => x.contentDetails.videoId);
         youtubePlaylistPosition = listPos;
         console.log(youtubePlaylist);
-        playYoutube("https://www.youtube.com/watch?v=" + youtubePlaylist[listPos], channel);
+        playYoutube("https://www.youtube.com/watch?v=" + youtubePlaylist[listPos], channel, textChannel);
     })
 }
 
-function playYoutube(videoUrl: string, channel: Discord.VoiceChannel) {
+function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, textChannel: Discord.TextBasedChannel) {
     console.log("playing " + videoUrl);
     let videoStream = ytdl(videoUrl, { filter: "audioonly", highWaterMark: 10e6 });
     videoStream.on("info", (info: ytdl.videoInfo) => {
@@ -119,7 +119,7 @@ function playYoutube(videoUrl: string, channel: Discord.VoiceChannel) {
             updateMessage(newPlaying);
         }, barUpdateInterval);
         try {
-            channel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)] }).then(msg => {
+            textChannel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)] }).then(msg => {
                 newPlaying.statusMsg = msg;
             });
 
@@ -155,8 +155,8 @@ function playYoutube(videoUrl: string, channel: Discord.VoiceChannel) {
             let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
             videoStream.on("finish", () => {
             });
-            nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel) }, (length + 3) * 1000);
-            nextYoutubeData = { url: nextUrl, channel: channel };
+            nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel, textChannel) }, (length + 3) * 1000);
+            nextYoutubeData = { url: nextUrl, channel: channel, textChannel: textChannel };
             newPlaying.nextUrl = nextUrl;
             newPlaying.nextData = nextYoutubeData;
         }
@@ -303,7 +303,7 @@ export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.
                     }
                 }
             }
-            playYoutube(nextYoutubeData.url, nextYoutubeData.channel);
+            playYoutube(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
         }
     }
 }
