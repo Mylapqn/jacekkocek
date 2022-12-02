@@ -178,7 +178,7 @@ function getStockData() {
 export function list() {
     let str = "Available stocks:\n"
     stockPresets.forEach(stock => {
-        str += stock.name + " (" + stock.id + ") - Current price: " + formatCurrency(currentPrice(stock.id)) + "₥\n"
+        str += stock.name + " (" + stock.id + ") - Current price: " + formatCurrency(currentPrice(stock.id)) + " ₥\n"
     });
     return str;
 }
@@ -187,7 +187,7 @@ export function list() {
 export async function buy(user: string, stock: string, amount: number) {
     let price = currentPrice(stock);
     if (Utilities.isValid(price)) {
-        if (await Matoshi.pay({ from: user, to: Main.client.user.id, amount: amount }, 0)) {
+        if (await Matoshi.pay({ from: user, to: Main.client.user.id, amount: amount }, false)) {
             let data = await Database.getUser(user);
             let currentStock = data.wallets.get(stock) || 0;
             currentStock += amount * (1 - Main.policyValues.matoshi.stockFee / 100) / price;
@@ -206,7 +206,7 @@ export async function sell(user: string, stock: string, amount: number) {
     let currentStock = data.wallets.get(stock);
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
-        if (await Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - Main.policyValues.matoshi.stockFee / 100)) }, 0)) {
+        if (await Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - Main.policyValues.matoshi.stockFee / 100)) }, false)) {
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
             return true;

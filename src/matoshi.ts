@@ -73,8 +73,12 @@ export async function modify(userId: string, amount: number) {
     }
 }
 
+export function calcFee(amount: number) {
+    return Math.ceil(Math.max(Main.policyValues.matoshi.transactionFeeMin, Main.policyValues.matoshi.transactionFeePercent / 100 * amount))
+}
+
 export async function pay(options: PaymentOptions, feeApplies = false) {
-    const fee = feeApplies ? Math.ceil(Math.max(Main.policyValues.matoshi.transactionFeeMin, Main.policyValues.matoshi.transactionFeePercent / 100 * options.amount)) : 0;
+    const fee = feeApplies ? calcFee(options.amount) : 0;
     const amount = Math.round(options.amount);
     if (await balance(options.from) >= amount && amount > fee) {
         await modify(options.from, -amount);

@@ -107,15 +107,15 @@ export let policyValues = {
 export let policyNames = {
   matoshi: {
     transactionFeePercent: ["Matoshi transaction fee percentage (Doesn't apply if below minimum fee)", "%"],
-    transactionFeeMin: ["Matoshi minimum transaction fee", "₥"],
+    transactionFeeMin: ["Matoshi minimum transaction fee", " ₥"],
     stockFee: ["Stock transaction fee", "%"],
     weeklyTaxPercent: ["Weekly percent tax", "%"],
-    weeklyTaxFlat: ["Weekly flat tax", "₥"],
+    weeklyTaxFlat: ["Weekly flat tax", " ₥"],
   },
   kino: {
-    suggestReward: ["Kino suggest reward", "₥"],
-    watchReward: ["Kino watch reward", "₥"],
-    lateFee: ["Kino late fee", "₥"],
+    suggestReward: ["Kino suggest reward", " ₥"],
+    watchReward: ["Kino watch reward", " ₥"],
+    lateFee: ["Kino late fee", " ₥"],
     defaultTimeHrs: ["Kino default time", "hours"],
   }
 }
@@ -513,7 +513,7 @@ client.on('interactionCreate', async interaction => {
             let amount = interaction.options.getInteger("amount");
 
             if (await Matoshi.pay({ from: from.id, to: to.id, amount: amount })) {
-              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee" + policyValues.matoshi.transactionFeeMin + "matoshi)", ephemeral: false });
+              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee " + Matoshi.calcFee(amount) + " ₥)", ephemeral: false });
             }
             else {
               interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });

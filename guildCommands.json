@@ -439,15 +439,15 @@
                                 "value": "matoshi.weeklyTaxFlat"
                             },
                             {
-                                "name": "Kino reward for suggestion (₥)",
+                                "name": "Kino reward for suggestion ( ₥)",
                                 "value": "kino.suggestReward"
                             },
                             {
-                                "name": "Kino reward for watching (₥)",
+                                "name": "Kino reward for watching ( ₥)",
                                 "value": "kino.watchReward"
                             },
                             {
-                                "name": "Kino late fee (₥)",
+                                "name": "Kino late fee ( ₥)",
                                 "value": "kino.lateFee"
                             },
                             {
