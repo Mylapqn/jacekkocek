@@ -107,15 +107,15 @@ export let policyValues = {
 export let policyNames = {
   matoshi: {
     transactionFeePercent: ["Matoshi transaction fee percentage (Doesn't apply if below minimum fee)", "%"],
-    transactionFeeMin: ["Matoshi minimum transaction fee", " ₥"],
+    transactionFeeMin: ["Matoshi minimum transaction fee", "₥"],
     stockFee: ["Stock transaction fee", "%"],
     weeklyTaxPercent: ["Weekly percent tax", "%"],
-    weeklyTaxFlat: ["Weekly flat tax", " ₥"],
+    weeklyTaxFlat: ["Weekly flat tax", "₥"],
   },
   kino: {
-    suggestReward: ["Kino suggest reward", " ₥"],
-    watchReward: ["Kino watch reward", " ₥"],
-    lateFee: ["Kino late fee", " ₥"],
+    suggestReward: ["Kino suggest reward", "₥"],
+    watchReward: ["Kino watch reward", "₥"],
+    lateFee: ["Kino late fee", "₥"],
     defaultTimeHrs: ["Kino default time", "hours"],
   }
 }
