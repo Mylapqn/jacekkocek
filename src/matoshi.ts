@@ -115,7 +115,7 @@ async function generatePaymentMessage(options: PaymentRequestOptions) {
     const fromMember = (await Main.afrGuild.members.fetch(options.from))
     const toMember = (await Main.afrGuild.members.fetch(options.to));
     let confirmUsersList = fromMember.displayName;
-    if (fromMember.user = Main.client.user) {
+    if (fromMember.user == Main.client.user && Main.managerRole.members.size > 0) {
         confirmUsersList += " or " + Main.managerRole.members.first().displayName;
     }
     let newEmbed = new Discord.EmbedBuilder()
