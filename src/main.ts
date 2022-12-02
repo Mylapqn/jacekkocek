@@ -613,7 +613,8 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "poll": {
-        let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, true);
+        let customOptionsEnabled = interaction.options.getBoolean("custom-options-enabled") === null || interaction.options.getBoolean("custom-options-enabled");
+        let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, customOptionsEnabled);
         for (let i = 1; i < 10; i++) {
           let optionName = interaction.options.getString("option" + i);
           if (!optionName) continue;

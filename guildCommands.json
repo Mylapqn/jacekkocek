@@ -487,6 +487,12 @@
                 "required": false
             },
             {
+                "type": 5,
+                "name": "custom-options-enabled",
+                "description": "Whether users can add custom options to the poll (default: true)",
+                "required": false
+            },
+            {
                 "type": 3,
                 "name": "option1",
                 "description": "Poll option 1",
