@@ -5,7 +5,7 @@ import fs from "fs";
 let paymentChannel: Discord.TextChannel;
 var matoshiFileName = "matoshiBalance.json";
 var matoshiData = new Map();
-export let paymentMessages = new Map<string,PaymentOptions>();
+export let paymentMessages = new Map<string, PaymentOptions>();
 
 interface PaymentOptions {
     from: string,
@@ -73,8 +73,9 @@ export async function modify(userId: string, amount: number) {
     }
 }
 
-export async function pay(options:PaymentOptions, fee = Main.policyValues.matoshi.transactionFee) {
-    let amount = Math.round(options.amount);
+export async function pay(options: PaymentOptions, feeApplies = false) {
+    const fee = feeApplies ? Math.ceil(Math.max(Main.policyValues.matoshi.transactionFeeMin, Main.policyValues.matoshi.transactionFeePercent / 100 * options.amount)) : 0;
+    const amount = Math.round(options.amount);
     if (await balance(options.from) >= amount && amount > fee) {
         await modify(options.from, -amount);
         await modify(options.to, amount - fee);
@@ -113,13 +114,17 @@ export async function generateLeaderboard() {
 async function generatePaymentMessage(options: PaymentRequestOptions) {
     const fromMember = (await Main.afrGuild.members.fetch(options.from))
     const toMember = (await Main.afrGuild.members.fetch(options.to));
+    let confirmUsersList = fromMember.displayName;
+    if (fromMember.user = Main.client.user) {
+        confirmUsersList += " or " + Main.managerRole.members.first().displayName;
+    }
     let newEmbed = new Discord.EmbedBuilder()
         .setTitle("Confirm payment")
         .addFields({ name: "Message", value: options.description || "No description provided" })
         .addFields({ name: "Amount", value: options.amount + " ₥", inline: false })
         .addFields({ name: "From >>", value: "<@" + fromMember.id + ">", inline: true })
         .addFields({ name: ">> To", value: "<@" + toMember.id + ">", inline: true })
-        .setFooter({ text: "Only " + fromMember.displayName + " can confirm this payment." })
+        .setFooter({ text: "Only " + confirmUsersList + " can confirm this payment." })
         .setColor(0x18C3B1)
     let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents([
         new Discord.ButtonBuilder()

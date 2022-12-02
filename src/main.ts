@@ -91,7 +91,8 @@ export function generatePolicyList() {
 
 export let policyValues = {
   matoshi: {
-    transactionFee: 1,
+    transactionFeePercent: 0,
+    transactionFeeMin: 1,
     stockFee: 0.5,
     weeklyTaxPercent: 0,
     weeklyTaxFlat: 0,
@@ -105,7 +106,8 @@ export let policyValues = {
 }
 export let policyNames = {
   matoshi: {
-    transactionFee: ["Matoshi transaction fee", "₥"],
+    transactionFeePercent: ["Matoshi transaction fee percentage (Doesn't apply if below minimum fee)", "%"],
+    transactionFeeMin: ["Matoshi minimum transaction fee", "₥"],
     stockFee: ["Stock transaction fee", "%"],
     weeklyTaxPercent: ["Weekly percent tax", "%"],
     weeklyTaxFlat: ["Weekly flat tax", "₥"],
@@ -351,9 +353,10 @@ client.on('ready', async () => {
 
 client.on('interactionCreate', async interaction => {
   //console.log("Interaction", interaction);
+  const uid = interaction.user.id;
+  const member = interaction.member as Discord.GuildMember;
   if (interaction.isChatInputCommand()) {
     console.log("Slash command by " + interaction.user.username + ": " + interaction.commandName);
-    let bember = interaction.member as Discord.GuildMember;
     switch (interaction.commandName) {
       case "kino": {
         switch (interaction.options.getSubcommand()) {
@@ -368,7 +371,7 @@ client.on('interactionCreate', async interaction => {
             */
             Kino.Film.fromCommand(filmName, interaction.user.id);
             interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: " + policyValues.kino.suggestReward + " ₥");
-            if (!await Matoshi.pay({ from: client.user.id, to: interaction.user.id, amount: policyValues.kino.suggestReward }, 0)) {
+            if (!await Matoshi.pay({ from: client.user.id, to: interaction.user.id, amount: policyValues.kino.suggestReward }, false)) {
               interaction.channel.send("Not enough matoshi available for reward. Sorry! :(");
             }
             break;
@@ -451,7 +454,7 @@ client.on('interactionCreate', async interaction => {
       case "radio": {
         switch (interaction.options.getSubcommand()) {
           case "play": {
-            let voice = bember.voice.channel;
+            let voice = member.voice.channel;
             let station = interaction.options.getInteger("station");
             if (station < radioStations.length && station >= 0) {
               interaction.reply(playStation(voice, station));
@@ -459,7 +462,7 @@ client.on('interactionCreate', async interaction => {
             break;
           }
           case "custom": {
-            let voice = bember.voice.channel;
+            let voice = member.voice.channel;
             let url = interaction.options.getString("url");
             if (url.startsWith("http")) {
               interaction.reply(playStation(voice, url));
@@ -510,7 +513,7 @@ client.on('interactionCreate', async interaction => {
             let amount = interaction.options.getInteger("amount");
 
             if (await Matoshi.pay({ from: from.id, to: to.id, amount: amount })) {
-              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee" + policyValues.matoshi.transactionFee + "matoshi)", ephemeral: false });
+              interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee" + policyValues.matoshi.transactionFeeMin + "matoshi)", ephemeral: false });
             }
             else {
               interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
@@ -631,7 +634,7 @@ client.on('interactionCreate', async interaction => {
               let curValue = getPolicyValue(policy);
               let policyName = getPolicyName(policy)
               await setPolicyValue(policy, newValue);
-              interaction.reply({ content: `<@${bember.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
+              interaction.reply({ content: `<@${member.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
             } catch (error) {
               interaction.reply({ content: "Policy setting failed!", ephemeral: true });
             }
@@ -651,7 +654,7 @@ client.on('interactionCreate', async interaction => {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData) {
-          if (interaction.user.id == paymentData.from) {
+          if (uid == paymentData.from || (uid == client.user.id && member.roles.cache.has(managerRole.id))) {
             if (await Matoshi.pay(paymentData)) {
               interaction.reply("Payment successful!");
             }
@@ -667,7 +670,7 @@ client.on('interactionCreate', async interaction => {
       case "declinePayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData) {
-          if (interaction.user.id == paymentData.from) {
+          if (uid == paymentData.from || (uid == client.user.id && member.roles.cache.has(managerRole.id))) {
             interaction.reply("Payment cancelled");
             Matoshi.paymentMessages.delete(interaction.message.id);
             Utilities.disableMessageButtons(interaction.message);

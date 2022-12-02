@@ -419,8 +419,12 @@
                         "required": true,
                         "choices": [
                             {
-                                "name": "Fee per transaction (₥)",
-                                "value": "matoshi.transactionFee"
+                                "name": "Minimal fee per transaction (flat ₥)",
+                                "value": "matoshi.transactionFeeMin"
+                            },
+                            {
+                                "name": "Percentage fee per transaction (%)",
+                                "value": "matoshi.transactionFeePercent"
                             },
                             {
                                 "name": "Fee per stock transaction (% of transaction)",
