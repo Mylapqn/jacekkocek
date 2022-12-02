@@ -27,6 +27,7 @@ export function play(interaction: Discord.ChatInputCommandInteraction) {
     let voiceChannel = member.voice.channel as Discord.VoiceChannel;
     if (voiceChannel) {
         Main.joinVoiceChannel(member.voice.channel);
+        console.log("Autoplay", interaction.options.getBoolean("autoplay"));
         if (interaction.options.getBoolean("autoplay")) {
             youtubeAutoplay = true;
         }
