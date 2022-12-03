@@ -674,12 +674,14 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "lockFilmVote": {
+        console.log("Button clicked");
         if (await Kino.interactionWeightCheck(interaction)) {
+          console.log("check pass");
           let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
+          console.log("ebent", event);
           if (event && event?.filmPoll.options.length > 0) {
             interaction.message.delete();
-            console.log("Button clicked");
-            
+
             event.dateVote(interaction);
           }
         }
