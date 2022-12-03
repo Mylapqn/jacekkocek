@@ -81,14 +81,17 @@ export class Event {
             this.film = await Database.KinoDatabase.getFilmByName(this.filmPoll.getWinner().name);
             this.filmPoll.lock();
         }
+        console.log("Date vote", this.film);
+        
 
         this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true);
-
+        console.log("Date poll", this.datePoll);
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }));
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
 
         try {
+            console.log("Try");
             let dayScores = await Sheets.getDaysScores();
             let sortedScores = [...dayScores.entries()].sort((a, b) => b[1] - a[1]);
             sortedScores = sortedScores.slice(0, Math.min(sortedScores.length, 5));
@@ -98,7 +101,9 @@ export class Event {
                     await this.datePoll.addOption(Event.dateOptionName(day, score));
                 }
             }
+            console.log("Try2");
         } catch (error) {
+            console.log("Catch");
             console.error("Error populating kino date poll: " + error);
         }
         this.datePoll.optionFilter = Event.dateVoteOptionFilter;

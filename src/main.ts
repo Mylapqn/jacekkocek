@@ -678,6 +678,8 @@ client.on('interactionCreate', async interaction => {
           let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
           if (event && event?.filmPoll.options.length > 0) {
             interaction.message.delete();
+            console.log("Button clicked");
+            
             event.dateVote(interaction);
           }
         }
