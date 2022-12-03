@@ -123,7 +123,7 @@ export class KinoDatabase {
     static async loadEvents() {
         let events: Array<Array<any>> = await connection.query(`SELECT * FROM KinoEvent`);
         for (const eventData of events) {
-            let eventOptions: Kino.EventOptions;
+            let eventOptions = {} as Kino.EventOptions;
             eventOptions.id = eventData["id"];
             eventOptions.dateLocked = eventData["date_locked"] == 1;
             eventOptions.watched = eventData["watched"] == 1;
