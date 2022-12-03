@@ -132,6 +132,8 @@ export class KinoDatabase {
             if (eventData["film_poll"]) eventOptions.filmPoll = Polls.Poll.list.find(p => p.id == eventData["film_poll"]);
             if (eventData["date_poll"]) eventOptions.datePoll = Polls.Poll.list.find(p => p.id == eventData["date_poll"]);
             if (eventData["lock_message_id"]) eventOptions.lockMessageId = eventData["lock_message_id"];
+            console.log(eventOptions);
+
             Kino.Event.fromDatabase(eventOptions);
         }
         return events;
