@@ -129,7 +129,10 @@ export class KinoDatabase {
             eventOptions.watched = eventData["watched"] == 1;
             if (eventData["film"]) eventOptions.film = await this.getFilm(eventData["film"]);
             if (eventData["date"]) eventOptions.date = new Date(eventData["date"]);
-            if (eventData["film_poll"]) eventOptions.filmPoll = Polls.Poll.list.find(p => p.id == eventData["film_poll"]);
+            if (eventData["film_poll"]) eventOptions.filmPoll = Polls.Poll.list.find(p => {
+                console.log(p.id, eventData["film_poll"]);
+                return p.id == eventData["film_poll"]
+            });
             if (eventData["date_poll"]) eventOptions.datePoll = Polls.Poll.list.find(p => p.id == eventData["date_poll"]);
             if (eventData["lock_message_id"]) eventOptions.lockMessageId = eventData["lock_message_id"];
             console.log(eventOptions);
