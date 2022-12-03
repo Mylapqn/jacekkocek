@@ -61,7 +61,6 @@ export async function getUserData(): Promise<Map<string, UserKinoData>> {
 
         });
         let userData = new Map<string, UserKinoData>();
-        console.log();
         for (let index = 0; index < result.data.values[0].length; index++) {
             const user = result.data.values[0][index];
             const weight = parseFloat(result.data.values[1][index]);
@@ -70,7 +69,7 @@ export async function getUserData(): Promise<Map<string, UserKinoData>> {
         }
         return userData;
     } catch (error) {
-        console.log(error);
+        console.error(error);
 
         return undefined;
     }
