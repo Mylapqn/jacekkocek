@@ -22,9 +22,9 @@ export async function init() {
         }
     });
 
-    PollDatabase.loadPolls();
-    KinoDatabase.loadEvents();
-    PolicyDatabase.loadPolicies();
+    await PollDatabase.loadPolls();
+    await KinoDatabase.loadEvents();
+    await PolicyDatabase.loadPolicies();
     //TEMP FIX FOR TIMEOUT
     setInterval(() => {
         connection.query(`SELECT * FROM Users WHERE id=\"0\"`);
