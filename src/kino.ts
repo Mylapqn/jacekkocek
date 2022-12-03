@@ -81,17 +81,13 @@ export class Event {
             this.film = await Database.KinoDatabase.getFilmByName(this.filmPoll.getWinner().name);
             this.filmPoll.lock();
         }
-        console.log("Date vote", this.film);
-        
 
         this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true);
-        console.log("Date poll", this.datePoll);
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }));
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
 
         try {
-            console.log("Try");
             let dayScores = await Sheets.getDaysScores();
             let sortedScores = [...dayScores.entries()].sort((a, b) => b[1] - a[1]);
             sortedScores = sortedScores.slice(0, Math.min(sortedScores.length, 5));
@@ -101,9 +97,7 @@ export class Event {
                     await this.datePoll.addOption(Event.dateOptionName(day, score));
                 }
             }
-            console.log("Try2");
         } catch (error) {
-            console.log("Catch");
             console.error("Error populating kino date poll: " + error);
         }
         this.datePoll.optionFilter = Event.dateVoteOptionFilter;
@@ -138,16 +132,16 @@ export class Event {
         }
     }
 
-    static fromDatabase(id: number, film: Film, date: Date, dateLocked: boolean, watched: boolean, filmPoll: Polls.Poll, datePoll: Polls.Poll, lockMessageId: string) {
+    static fromDatabase(options: EventOptions) {
         let event = new Event();
-        event.id = id;
-        event.film = film;
-        event.date = date;
-        event.dateLocked = dateLocked;
-        event.watched = watched;
-        event.datePoll = datePoll;
-        event.filmPoll = filmPoll;
-        event.lockMessageId = lockMessageId;
+        event.id = options.id;
+        event.film = options?.film;
+        event.date = options?.date;
+        event.dateLocked = options.dateLocked;
+        event.watched = options.watched;
+        event.datePoll = options?.datePoll;
+        event.filmPoll = options?.filmPoll;
+        event.lockMessageId = options?.lockMessageId;
         return event;
     }
 
@@ -156,6 +150,17 @@ export class Event {
     }
 
     static list = new Array<Event>();
+}
+
+export interface EventOptions {
+    id: number,
+    film?: Film,
+    date?: Date,
+    dateLocked: boolean,
+    watched: boolean,
+    filmPoll?: Polls.Poll,
+    datePoll?: Polls.Poll,
+    lockMessageId?: string
 }
 
 

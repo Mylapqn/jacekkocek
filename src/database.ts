@@ -123,7 +123,16 @@ export class KinoDatabase {
     static async loadEvents() {
         let events: Array<Array<any>> = await connection.query(`SELECT * FROM KinoEvent`);
         for (const eventData of events) {
-            Kino.Event.fromDatabase(eventData["id"], await this.getFilm(eventData["film"]), new Date(eventData["date"]), eventData["date_locked"] == 1, eventData["watched"] == 1, Polls.Poll.list.find(p => p.id == eventData["film_poll"]), Polls.Poll.list.find(p => p.id == eventData["date_poll"]), eventData["lock_message_id"]);
+            let eventOptions: Kino.EventOptions;
+            eventOptions.id = eventData["id"];
+            eventOptions.dateLocked = eventData["date_locked"] == 1;
+            eventOptions.watched = eventData["watched"] == 1;
+            if (eventData["film"]) eventOptions.film = await this.getFilm(eventData["film"]);
+            if (eventData["date"]) eventOptions.date = new Date(eventData["date"]);
+            if (eventData["film_poll"]) eventOptions.filmPoll = Polls.Poll.list.find(p => p.id == eventData["film_poll"]);
+            if (eventData["date_poll"]) eventOptions.filmPoll = Polls.Poll.list.find(p => p.id == eventData["date_poll"]);
+            if (eventData["lock_message_id"]) eventOptions.lockMessageId = eventData["lock_message_id"];
+            Kino.Event.fromDatabase(eventOptions);
         }
         return events;
     }
