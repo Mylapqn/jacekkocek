@@ -37,12 +37,9 @@ intents.add(Intents.GuildMembers);
 intents.add(Intents.MessageContent);
 export const client = new Discord.Client({ intents: intents });
 
-const updateGlobalCommands = false;
-const commandsToDeleteGlobal = [];
-const commandsToDeleteGuild = [];
-
-export let afrGuild: Discord.Guild;
+export let mainGuild: Discord.Guild;
 export let mainVoiceChannel: Discord.VoiceChannel;
+export let notifyTextChannel: Discord.TextChannel;
 export let managerRole: Discord.Role;
 
 let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Pause } });
@@ -317,13 +314,25 @@ let baseUrl = "https://jacekkocek.coal.games";
 
 client.login(process.env.DISCORD_API_KEY);
 
+const defaultMainGuildId = '549589656606343178';
+const defaultNotifyTextChannelId = '753323827093569588';
+const defaultMainVoiceChannelId = '1024767805586935888';
+const defaultManagerRoleId = '1046868723048382494';
+
 client.on('ready', async () => {
+  const mainGuildId = process.env.MAIN_GUILD_ID ?? defaultMainGuildId;
+  const notifyTextChannelId = process.env.NOTIFY_TEXT_CHANNEL_ID ?? defaultNotifyTextChannelId;
+  const mainVoiceChannelId = process.env.MAIN_VOICE_CHANNEL_ID ?? defaultMainVoiceChannelId;
+  const managerRoleId = process.env.MANAGER_ROLE_ID ?? defaultManagerRoleId;
+  const production = defaultMainGuildId == mainGuildId;
 
-  afrGuild = client.guilds.cache.get('549589656606343178');
-  mainVoiceChannel = await afrGuild.channels.fetch("1024767805586935888") as Discord.VoiceChannel;
-  managerRole = await afrGuild.roles.fetch("1046868723048382494");
+  mainGuild = client.guilds.cache.get(mainGuildId);
+  notifyTextChannel = await mainGuild.channels.fetch(notifyTextChannelId) as Discord.TextChannel;
+  mainVoiceChannel = await mainGuild.channels.fetch(mainVoiceChannelId) as Discord.VoiceChannel;
+  managerRole = await mainGuild.roles.fetch(managerRoleId);
 
-  if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
+  if (production)
+    client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
   client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
   startDate = new Date();
@@ -372,7 +381,7 @@ client.on('ready', async () => {
   });
   */
 
-  setupCommands();
+  await setupCommands();
   setupReminders();
   setInterval(() => {
     setupReminders();
@@ -551,7 +560,7 @@ client.on('interactionCreate', async interaction => {
             let to = interaction.user;
             let from = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
-            let description = Utilities.escapeFormatting(interaction.options.getString("description"));
+            let description = interaction.options.getString("description");
             if (to == from) {
               interaction.reply({ content: "Invalid request!", ephemeral: true });
               break;
@@ -677,7 +686,7 @@ client.on('interactionCreate', async interaction => {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData) {
-          if (uid == paymentData.from || (uid == client.user.id && member.roles.cache.has(managerRole.id))) {
+          if (uid == paymentData.from || (paymentData.from == client.user.id && member.roles.cache.has(managerRole.id))) {
             if (await Matoshi.pay(paymentData)) {
               interaction.reply("Payment successful!");
             }
@@ -693,7 +702,7 @@ client.on('interactionCreate', async interaction => {
       case "declinePayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData) {
-          if (uid == paymentData.from || (uid == client.user.id && member.roles.cache.has(managerRole.id))) {
+          if (uid == paymentData.from || (paymentData.from == client.user.id && member.roles.cache.has(managerRole.id))) {
             interaction.reply("Payment cancelled");
             Matoshi.paymentMessages.delete(interaction.message.id);
             Utilities.disableMessageButtons(interaction.message);
@@ -1350,7 +1359,7 @@ function loadReminders() {
   }
 }
 
-function setupCommands() {
+async function setupCommands() {
   try {
     const globalCommands = JSON.parse(fs.readFileSync("globalCommands.json", { encoding: 'utf8' }));
     const guildCommands = JSON.parse(fs.readFileSync("guildCommands.json", { encoding: 'utf8' }));

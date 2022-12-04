@@ -1,8 +1,8 @@
 import * as Main from "./main";
 import * as Discord from "discord.js";
+import * as Utilities from "./utilities"
 import fs from "fs";
 
-let paymentChannel: Discord.TextChannel;
 var matoshiFileName = "matoshiBalance.json";
 var matoshiData = new Map();
 export let paymentMessages = new Map<string, PaymentOptions>();
@@ -21,13 +21,12 @@ interface PaymentRequestOptions extends PaymentOptions {
 
 export async function init() {
     load();
-    paymentChannel = await Main.afrGuild.channels.fetch("753323827093569588") as Discord.TextChannel;
     Main.httpServer.post("/matoshi/payment", async (req, res) => {
         console.log(req.body);
         //let data = JSON.parse(req.body);
         let data = req.body;
         if (data.from.id != Main.client.user.id) {
-            let msg = await requestPayment({ from: data.from, to: data.to, amount: data.amount, description: data.description, channel: paymentChannel });
+            let msg = await requestPayment({ from: data.from, to: data.to, amount: data.amount, description: data.description, channel: Main.notifyTextChannel });
             res.send("ok");
         }
     });
@@ -106,7 +105,7 @@ export async function generateLeaderboard() {
     let sorted = Array.from(matoshiData.keys()).sort((a, b) => { return matoshiData.get(b) - matoshiData.get(a); });
     let msg = "Matoshi balance leaderboard:\n";
     for (let i = 0; i < sorted.length && i < 10; i++) {
-        let usr = await Main.afrGuild.members.fetch(sorted[i]);
+        let usr = await Main.mainGuild.members.fetch(sorted[i]);
         let usrn: string;
         if (!usr) usrn = "Unknown user";
         else usrn = usr.user.username;
@@ -116,15 +115,15 @@ export async function generateLeaderboard() {
 }
 
 async function generatePaymentMessage(options: PaymentRequestOptions) {
-    const fromMember = (await Main.afrGuild.members.fetch(options.from))
-    const toMember = (await Main.afrGuild.members.fetch(options.to));
+    const fromMember = (await Main.mainGuild.members.fetch(options.from))
+    const toMember = (await Main.mainGuild.members.fetch(options.to));
     let confirmUsersList = fromMember.displayName;
     if (fromMember.user == Main.client.user && Main.managerRole.members.size > 0) {
         confirmUsersList += " or " + Main.managerRole.members.first().displayName;
     }
     let newEmbed = new Discord.EmbedBuilder()
         .setTitle("Confirm payment")
-        .addFields({ name: "Message", value: options.description || "No description provided" })
+        .addFields({ name: "Message", value: Utilities.escapeFormatting(options.description || "No description provided") })
         .addFields({ name: "Amount", value: options.amount + " ₥", inline: false })
         .addFields({ name: "From >>", value: "<@" + fromMember.id + ">", inline: true })
         .addFields({ name: ">> To", value: "<@" + toMember.id + ">", inline: true })
