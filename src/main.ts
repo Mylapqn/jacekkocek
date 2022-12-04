@@ -658,7 +658,7 @@ client.on('interactionCreate', async interaction => {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData) {
-          if (uid == paymentData.from || (uid == client.user.id && member.roles.cache.has(managerRole.id))) {
+          if (uid == paymentData.from || (paymentData.from == client.user.id && member.roles.cache.has(managerRole.id))) {
             if (await Matoshi.pay(paymentData)) {
               interaction.reply("Payment successful!");
             }
@@ -674,7 +674,7 @@ client.on('interactionCreate', async interaction => {
       case "declinePayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData) {
-          if (uid == paymentData.from || (uid == client.user.id && member.roles.cache.has(managerRole.id))) {
+          if (uid == paymentData.from || (paymentData.from == client.user.id && member.roles.cache.has(managerRole.id))) {
             interaction.reply("Payment cancelled");
             Matoshi.paymentMessages.delete(interaction.message.id);
             Utilities.disableMessageButtons(interaction.message);
