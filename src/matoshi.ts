@@ -1,5 +1,6 @@
 import * as Main from "./main";
 import * as Discord from "discord.js";
+import * as Utilities from "./utilities"
 import fs from "fs";
 
 var matoshiFileName = "matoshiBalance.json";
@@ -122,7 +123,7 @@ async function generatePaymentMessage(options: PaymentRequestOptions) {
     }
     let newEmbed = new Discord.EmbedBuilder()
         .setTitle("Confirm payment")
-        .addFields({ name: "Message", value: options.description || "No description provided" })
+        .addFields({ name: "Message", value: Utilities.escapeFormatting(options.description || "No description provided") })
         .addFields({ name: "Amount", value: options.amount + " ₥", inline: false })
         .addFields({ name: "From >>", value: "<@" + fromMember.id + ">", inline: true })
         .addFields({ name: ">> To", value: "<@" + toMember.id + ">", inline: true })

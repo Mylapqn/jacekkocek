@@ -528,7 +528,7 @@ client.on('interactionCreate', async interaction => {
             let to = interaction.user;
             let from = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
-            let description = Utilities.escapeFormatting(interaction.options.getString("description"));
+            let description = interaction.options.getString("description");
             if (to == from) {
               interaction.reply({ content: "Invalid request!", ephemeral: true });
               break;
