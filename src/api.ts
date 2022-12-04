@@ -3,20 +3,22 @@ import * as Discord from "discord.js";
 
 export function init() {
     Main.httpServer.post("/api/notify", (req, res) => {
-        console.log(req.body);
-        let data = req.body;
-        notifyMessage(data).then(() => {
+        try {
+            console.log(req.body);
+            let data = req.body;
+            notifyMessage(data);
             res.send("ok");
-        });
+        } catch (e) {
+            res.sendStatus(500);
+        }
     });
 }
 
-async function notifyMessage(data) {
-    let channel = (await Main.afrGuild.channels.fetch("753323827093569588")) as Discord.TextChannel;
+function notifyMessage(data) {
     let newEmbed = new Discord.EmbedBuilder()
         .setTitle(data.title)
         .addFields({ name: "Message", value: data.description })
         .setColor(0x18c3b1);
-    channel.send({ embeds: [newEmbed] });
+    Main.notifyTextChannel.send({ embeds: [newEmbed] });
     return true;
 }
