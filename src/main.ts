@@ -36,12 +36,9 @@ intents.add(Intents.GuildMembers);
 intents.add(Intents.MessageContent);
 export const client = new Discord.Client({ intents: intents });
 
-const updateGlobalCommands = false;
-const commandsToDeleteGlobal = [];
-const commandsToDeleteGuild = [];
-
-export let afrGuild: Discord.Guild;
+export let mainGuild: Discord.Guild;
 export let mainVoiceChannel: Discord.VoiceChannel;
+export let notifyTextChannel: Discord.TextChannel;
 export let managerRole: Discord.Role;
 
 let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Pause } });
@@ -286,13 +283,25 @@ let baseUrl = "https://jacekkocek.coal.games";
 
 client.login(process.env.DISCORD_API_KEY);
 
+const defaultMainGuildId = '549589656606343178';
+const defaultNotifyTextChannelId = '753323827093569588';
+const defaultMainVoiceChannelId = '1024767805586935888';
+const defaultManagerRoleId = '1046868723048382494';
+
 client.on('ready', async () => {
+  const mainGuildId = process.env.MAIN_GUILD_ID ?? defaultMainGuildId;
+  const notifyTextChannelId = process.env.NOTIFY_TEXT_CHANNEL_ID ?? defaultNotifyTextChannelId;
+  const mainVoiceChannelId = process.env.MAIN_VOICE_CHANNEL_ID ?? defaultMainVoiceChannelId;
+  const managerRoleId = process.env.MANAGER_ROLE_ID ?? defaultManagerRoleId;
+  const production = defaultMainGuildId == mainGuildId;
 
-  afrGuild = client.guilds.cache.get('549589656606343178');
-  mainVoiceChannel = await afrGuild.channels.fetch("1024767805586935888") as Discord.VoiceChannel;
-  managerRole = await afrGuild.roles.fetch("1046868723048382494");
+  mainGuild = client.guilds.cache.get(mainGuildId);
+  notifyTextChannel = await mainGuild.channels.fetch(notifyTextChannelId) as Discord.TextChannel;
+  mainVoiceChannel = await mainGuild.channels.fetch(mainVoiceChannelId) as Discord.VoiceChannel;
+  managerRole = await mainGuild.roles.fetch(managerRoleId);
 
-  if (process.env.DISABLE_PRODUCTION_FEATURES == undefined) client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
+  if (production)
+    client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
   console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
   client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
   startDate = new Date();
@@ -340,7 +349,7 @@ client.on('ready', async () => {
   });
   */
 
-  setupCommands();
+  await setupCommands();
   setupReminders();
   setInterval(() => {
     setupReminders();
@@ -1322,21 +1331,13 @@ function loadReminders() {
   }
 }
 
-function setupCommands() {
+async function setupCommands() {
   try {
-    let globalCommands = JSON.parse(fs.readFileSync("globalCommands.json", { encoding: 'utf8' }));
-    let guildCommands = JSON.parse(fs.readFileSync("guildCommands.json", { encoding: 'utf8' }));
-    if (updateGlobalCommands) {
-      client.application?.commands.set(globalCommands);
-      commandsToDeleteGlobal.forEach(na => {
-        afrGuild.commands.delete(na);
-      })
-      console.log("Updated global commands.");
-    }
-    afrGuild.commands.set(guildCommands);
-    commandsToDeleteGuild.forEach(na => {
-      afrGuild.commands.delete(na);
-    })
+    const globalCommands = JSON.parse(fs.readFileSync("globalCommands.json", { encoding: 'utf8' }));
+    const guildCommands = JSON.parse(fs.readFileSync("guildCommands.json", { encoding: 'utf8' }));
+
+    await compareCommandsAndApply(client.application?.commands, globalCommands, undefined);
+    await compareCommandsAndApply(client.application?.commands, guildCommands, mainGuild.id);
 
     console.log("Updated guild commands.");
   } catch (error) {
@@ -1345,6 +1346,47 @@ function setupCommands() {
   }
 }
 
+type CommandChange = { type: 'delete', command: Discord.ApplicationCommandResolvable } | { type: 'add', command: Discord.ApplicationCommandData } | { type: 'edit', oldCommand: Discord.ApplicationCommandResolvable, newCommand: Discord.ApplicationCommandData };
+
+async function compareCommandsAndApply(manager: Discord.ApplicationCommandManager, targetArray: Discord.ApplicationCommandData[], guildId?: Discord.Snowflake) {
+  const source = await manager.fetch({ guildId: guildId });
+  const target: { [key in string]: Discord.ApplicationCommandData } = targetArray.reduce((map, item) => {
+    map[item.name] = item;
+    return map;
+  }, {});
+
+  // build command changes array
+  const changes: CommandChange[] = [];
+  source.each((command) => {
+    if (command.guildId != guildId)
+      return;
+
+    const targetItem = target[command.name];
+    if (targetItem == null)
+      changes.push({ type: 'delete', command: command });
+    else if (!command.equals(targetItem)) {
+      changes.push({ type: 'edit', oldCommand: command, newCommand: targetItem });
+    }
+
+    delete target[command.name];
+  });
+
+  Object.values(target).forEach((newCommand) => {
+    changes.push({ type: 'add', command: newCommand });
+  });
+
+  // apply command changes
+  const promises = changes.map(async (change) => {
+    if (change.type == 'delete') {
+      await manager.delete(change.command, guildId);
+    } else if (change.type == 'add') {
+      await manager.create(change.command, guildId);
+    } else if (change.type == 'edit') {
+      await manager.delete(change.oldCommand, guildId);
+      await manager.create(change.newCommand, guildId);
+    }
+  });
+}
 
 
 //#endregion
