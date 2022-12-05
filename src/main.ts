@@ -19,6 +19,8 @@ import * as Kino from "./kino";
 import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
 import { Readable } from "stream";
+import { getStockChoices, getStockFeeHints } from "./stockPresets";
+
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -61,7 +63,14 @@ httpServer.use(express.json());
 export async function setPolicyValue(name: string, value: number) {
   let [category, policy] = name.split(".");
   policyValues[category][policy] = value;
-  Database.PolicyDatabase.setPolicy(name, value);
+  let promises = [];
+  if (policyRelation[category] != undefined && policyRelation[category][policy] != undefined) {
+    for (const related of policyRelation[category][policy]) {
+      promises.push(setPolicyValue(related, value));
+    }
+  }
+  await Promise.all(promises);
+  await Database.PolicyDatabase.setPolicy(name, value);
 }
 
 export function getPolicyValue(name: string) {
@@ -83,43 +92,66 @@ export function generatePolicyList() {
     list += "**" + Utilities.toTitleCase(category) + ":**\n";
     for (const policy in policyValues[category]) {
       const value = policyValues[category][policy];
-      list += "• " + policyNames[category][policy][name] + ": **" + value + " " + policyNames[category][policy][unit] + "**\n";
+      if (policyInfluence[category + "." + policy] == null || getPolicyValue(policyInfluence[category + "." + policy]) != value)
+        list += "• " + policyNames[category][policy][name] + ": **" + value + " " + policyNames[category][policy][unit] + "**\n";
     }
   }
   return list;
 }
 
+export let policyRelation = {};
+
+let policyInfluence = {}
+
+function preparePolicyInfluence() {
+  policyInfluence = (() => {
+    let result = {};
+    for (const category in policyRelation) {
+      for (const policy in policyRelation[category]) {
+        const relations = policyRelation[category][policy];
+        for (const name of relations) {
+          result[name] = category + "." + policy;
+        }
+      }
+    }
+    return result;
+  })();
+}
+
 export let policyValues = {
-  matoshi: {
-    transactionFeePercent: 0,
-    transactionFeeMin: 1,
-    stockFee: 0.5,
-    weeklyTaxPercent: 0,
-    weeklyTaxFlat: 0,
-  },
   kino: {
     suggestReward: 50,
     watchReward: 200,
     lateFee: 100,
-    defaultTimeHrs: 19
-  }
-}
-export let policyNames = {
-  matoshi: {
-    transactionFeePercent: ["Matoshi transaction fee percentage (Doesn't apply if below minimum fee)", "%"],
-    transactionFeeMin: ["Matoshi minimum transaction fee", "₥"],
-    stockFee: ["Stock transaction fee", "%"],
-    weeklyTaxPercent: ["Weekly percent tax", "%"],
-    weeklyTaxFlat: ["Weekly flat tax", "₥"],
+    defaultTimeHrs: 19,
   },
+  matoshi: {
+    transactionFeePercent: 0,
+    transactionFeeMin: 1,
+    weeklyTaxPercent: 0,
+    weeklyTaxFlat: 0,
+  },
+  stock: {
+    defaultFee: 0.5,
+  },
+};
+export let policyNames = {
   kino: {
     suggestReward: ["Kino suggest reward", "₥"],
     watchReward: ["Kino watch reward", "₥"],
-    lateFee: ["Kino late fee", "₥"],
     defaultTimeHrs: ["Kino default time", "hours"],
-  }
-}
-
+    lateFee: ["Kino late fee", "₥"],
+  },
+  matoshi: {
+    transactionFeePercent: ["Matoshi transaction fee percentage (Doesn't apply if below minimum fee)", "%"],
+    transactionFeeMin: ["Matoshi minimum transaction fee", "₥"],
+    weeklyTaxPercent: ["Weekly percent tax", "%"],
+    weeklyTaxFlat: ["Weekly flat tax", "₥"],
+  },
+  stock: {
+    defaultFee: ["Stock transaction fee", "%"],
+  },
+};
 
 
 
@@ -312,6 +344,7 @@ client.on('ready', async () => {
   startDate = new Date();
 
   Stocks.init();
+  preparePolicyInfluence();
   await Database.init();
   Matoshi.init();
   Api.init();
@@ -533,7 +566,7 @@ client.on('interactionCreate', async interaction => {
             let to = interaction.user;
             let from = interaction.options.getUser("user");
             let amount = interaction.options.getInteger("amount");
-            let description = Utilities.escapeFormatting(interaction.options.getString("description"));
+            let description = interaction.options.getString("description");
             if (to == from) {
               interaction.reply({ content: "Invalid request!", ephemeral: true });
               break;
@@ -635,20 +668,16 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "policy": {
-        switch (interaction.options.getSubcommand()) {
-          case "edit": {
-            try {
-              let policy = interaction.options.getString("policy");
-              let newValue = interaction.options.getNumber("value");
-              let curValue = getPolicyValue(policy);
-              let policyName = getPolicyName(policy)
-              await setPolicyValue(policy, newValue);
-              interaction.reply({ content: `<@${member.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
-            } catch (error) {
-              interaction.reply({ content: "Policy setting failed!", ephemeral: true });
-            }
-            break;
-          }
+        try {
+          let policy = interaction.options.getString("policy");
+          let newValue = interaction.options.getNumber("value");
+          let curValue = getPolicyValue(policy);
+          let policyName = getPolicyName(policy)
+          await setPolicyValue(policy, newValue);
+          interaction.reply({ content: `<@${member.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
+        } catch (error) {
+          console.log(error);
+          interaction.reply({ content: "Policy setting failed!", ephemeral: true });
         }
         break;
       }
@@ -663,7 +692,7 @@ client.on('interactionCreate', async interaction => {
       case "acceptPayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData) {
-          if (uid == paymentData.from || (uid == client.user.id && member.roles.cache.has(managerRole.id))) {
+          if (uid == paymentData.from || (paymentData.from == client.user.id && member.roles.cache.has(managerRole.id))) {
             if (await Matoshi.pay(paymentData)) {
               interaction.reply("Payment successful!");
             }
@@ -679,7 +708,7 @@ client.on('interactionCreate', async interaction => {
       case "declinePayment": {
         let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
         if (paymentData) {
-          if (uid == paymentData.from || (uid == client.user.id && member.roles.cache.has(managerRole.id))) {
+          if (uid == paymentData.from || (paymentData.from == client.user.id && member.roles.cache.has(managerRole.id))) {
             interaction.reply("Payment cancelled");
             Matoshi.paymentMessages.delete(interaction.message.id);
             Utilities.disableMessageButtons(interaction.message);
@@ -1341,6 +1370,8 @@ async function setupCommands() {
     const globalCommands = JSON.parse(fs.readFileSync("globalCommands.json", { encoding: 'utf8' }));
     const guildCommands = JSON.parse(fs.readFileSync("guildCommands.json", { encoding: 'utf8' }));
 
+    generateGuildCommandOptions(guildCommands);
+
     await compareCommandsAndApply(client.application?.commands, globalCommands, undefined);
     await compareCommandsAndApply(client.application?.commands, guildCommands, mainGuild.id);
 
@@ -1349,6 +1380,22 @@ async function setupCommands() {
     console.log("Could not load commands!");
     console.log(error);
   }
+}
+
+function generateGuildCommandOptions(commands: Array<any>) {
+  let stock = commands.find(o => o.name == "stocks");
+  for (const subcommand of stock.options) {
+    if (["buy", "sell", "info", "balance"].includes(subcommand.name)) {
+      for (const option of subcommand.options) {
+        if (option.name == "stock")
+          option.choices = getStockChoices();
+      }
+    }
+  }
+
+
+  let stockPolicy: { choices: Array<any> } = commands.find(o => o.name == "policy").options.find(o => o.name == "stock").options.find(o => o.name == "policy");
+  stockPolicy.choices = stockPolicy.choices.concat(getStockFeeHints());
 }
 
 type CommandChange = { type: 'delete', command: Discord.ApplicationCommandResolvable } | { type: 'add', command: Discord.ApplicationCommandData } | { type: 'edit', oldCommand: Discord.ApplicationCommandResolvable, newCommand: Discord.ApplicationCommandData };
