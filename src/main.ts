@@ -499,7 +499,8 @@ client.on('interactionCreate', async interaction => {
             let voice = member.voice.channel;
             let station = interaction.options.getInteger("station");
             if (station < radioStations.length && station >= 0) {
-              playStation(voice, station).then((embed) => { interaction.reply(embed); });
+              const embed = await playStation(voice, station);
+              interaction.reply(embed);
             }
             break;
           }
@@ -507,7 +508,8 @@ client.on('interactionCreate', async interaction => {
             let voice = member.voice.channel;
             let url = interaction.options.getString("url");
             if (url.startsWith("http")) {
-              playStation(voice, url).then((embed) => { interaction.reply(embed); });
+              const embed = await playStation(voice, url);
+              interaction.reply(embed);
             }
             break;
           }
