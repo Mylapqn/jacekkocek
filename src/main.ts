@@ -99,7 +99,18 @@ export function generatePolicyList() {
   return list;
 }
 
-export let policyRelation = {};
+export let policyRelation = {
+  service: {
+    defaultFee: [
+      "service.searchFee",
+      "service.radioFee",
+      "service.youtubeFee",
+      "service.fryPleaseFee",
+      "service.remindFee",
+      "service.imageFee",
+      "service.calcFee"],
+  }
+};
 
 let policyInfluence = {}
 
@@ -131,6 +142,16 @@ export let policyValues = {
     weeklyTaxPercent: 0,
     weeklyTaxFlat: 0,
   },
+  service: {
+    defaultFee: 0,
+    searchFee: 1,
+    radioFee: 0,
+    youtubeFee: 0,
+    fryPleaseFee: 0,
+    remindFee: 0,
+    imageFee: 20,
+    calcFee: 0,
+  },
   stock: {
     defaultFee: 0.5,
   },
@@ -147,6 +168,16 @@ export let policyNames = {
     transactionFeeMin: ["Matoshi minimum transaction fee", "₥"],
     weeklyTaxPercent: ["Weekly percent tax", "%"],
     weeklyTaxFlat: ["Weekly flat tax", "₥"],
+  },
+  service: {
+    defaultFee: ["Service fee", "₥"],
+    searchFee: ["Search fee", "₥"],
+    radioFee: ["Radio fee", "₥"],
+    youtubeFee: ["Youtube fee", "₥"],
+    fryPleaseFee: ["Usmažit prosím fee", "₥"],
+    remindFee: ["Remind fee", "₥"],
+    imageFee: ["Image search fee", "₥"],
+    calcFee: ["Kalkulačka fee", "₥"],
   },
   stock: {
     defaultFee: ["Stock transaction fee", "%"],
@@ -468,21 +499,26 @@ client.on('interactionCreate', async interaction => {
         if (isNaN(time) || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
         else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
         else if (time > 0) {
-          let remText = interaction.options.getString("text").trim();
-          if (remText == "") remText = "Unnamed reminder";
-          let newRem = {
-            //guild: interaction.guildId,
-            channel: interaction.channelId,
-            dm: interaction.channelId,
-            text: remText,
-            timestamp: Math.round(nowSeconds() + time),
-            mentions: []
+          if (await Matoshi.cost(member.id, policyValues.service.remindFee, interaction.guildId)) {
+
+            let remText = interaction.options.getString("text").trim();
+            if (remText == "") remText = "Unnamed reminder";
+            let newRem = {
+              //guild: interaction.guildId,
+              channel: interaction.channelId,
+              dm: interaction.channelId,
+              text: remText,
+              timestamp: Math.round(nowSeconds() + time),
+              mentions: []
+            }
+            createReminder(newRem);
+            interaction.reply({
+              content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
+              allowedMentions: { parse: [] }
+            });
+          } else {
+            interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.remindFee + "₥", allowedMentions: { repliedUser: false } });
           }
-          createReminder(newRem);
-          interaction.reply({
-            content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
-            allowedMentions: { parse: [] }
-          });
         }
         else {
           interaction.reply({ content: "Invalid time!", ephemeral: true });
@@ -490,7 +526,11 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "youtube": {
-        Youtube.play(interaction);
+        if (await Matoshi.cost(member.id, policyValues.service.youtubeFee, interaction.guildId)) {
+          Youtube.play(interaction);
+        } else {
+          interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.youtubeFee + "₥", allowedMentions: { repliedUser: false } });
+        }
         break;
       }
       case "radio": {
@@ -499,8 +539,12 @@ client.on('interactionCreate', async interaction => {
             let voice = member.voice.channel;
             let station = interaction.options.getInteger("station");
             if (station < radioStations.length && station >= 0) {
-              const embed = await playStation(voice, station);
-              interaction.reply(embed);
+              if (await Matoshi.cost(member.id, policyValues.service.radioFee, interaction.guildId)) {
+                const embed = await playStation(voice, station);
+                interaction.reply(embed);
+              } else {
+                interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.radioFee + "₥", allowedMentions: { repliedUser: false } });
+              }
             }
             break;
           }
@@ -508,8 +552,12 @@ client.on('interactionCreate', async interaction => {
             let voice = member.voice.channel;
             let url = interaction.options.getString("url");
             if (url.startsWith("http")) {
-              const embed = await playStation(voice, url);
-              interaction.reply(embed);
+              if (await Matoshi.cost(member.id, policyValues.service.radioFee, interaction.guildId)) {
+                const embed = await playStation(voice, url);
+                interaction.reply(embed);
+              } else {
+                interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.radioFee + "₥", allowedMentions: { repliedUser: false } });
+              }
             }
             break;
           }
@@ -660,14 +708,14 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "poll": {
-        let customOptionsEnabled = interaction.options.getBoolean("custom-options-enabled") === null || interaction.options.getBoolean("custom-options-enabled");
-        let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, customOptionsEnabled);
-        for (let i = 1; i < 10; i++) {
-          let optionName = interaction.options.getString("option" + i);
-          if (!optionName) continue;
-          await poll.addOption(optionName);
-        }
-        break;
+          let customOptionsEnabled = interaction.options.getBoolean("custom-options-enabled") === null || interaction.options.getBoolean("custom-options-enabled");
+          let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, customOptionsEnabled);
+          for (let i = 1; i < 10; i++) {
+            let optionName = interaction.options.getString("option" + i);
+            if (!optionName) continue;
+            await poll.addOption(optionName);
+          }
+          break;
       }
       case "policy": {
         try {
@@ -798,7 +846,7 @@ client.on('messageCreate', async message => {
 
     }
     else if (message.type == Discord.MessageType.Reply) {
-      channel.messages.fetch(message.reference.messageId).then(repliedMessage => {
+      channel.messages.fetch(message.reference.messageId).then(async repliedMessage => {
         let lowerCase = message.content.toLowerCase();
         let poll = Polls.Poll.getPollFromMessage(repliedMessage);
         if (poll != undefined) {
@@ -811,7 +859,6 @@ client.on('messageCreate', async message => {
           message.delete();
         }
         if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
-
           let url = null;
           if (repliedMessage.attachments.size > 0) {
             url = repliedMessage.attachments.first().proxyURL;
@@ -820,27 +867,31 @@ client.on('messageCreate', async message => {
             url = repliedMessage.content.substr(repliedMessage.content.indexOf("http"));
           }
           if (url != null) {
-            Jimp.read(url).then(image => {
-              console.log("jimp start");
-              const maxSize = 512;
-              let w = image.getWidth();
-              let h = image.getHeight();
-              if (w > maxSize || h > maxSize) {
-                image.scaleToFit(maxSize, maxSize)
-              }
-              let kernelSharpen = [[0, -3, 0], [-3, 13, -3], [0, -3, 0]];
-              image
-                .quality(10)
-                .convolute(kernelSharpen)
-                .contrast(.99)
-                //.color([{ apply: "saturate", params: [70] }])
-                .convolute(kernelSharpen)
-                .writeAsync("./outputImg.jpg").then(e => {
-                  console.log("jimp done")
-                  message.reply({ files: ["./outputImg.jpg"] }).then(
-                    function () { fs.unlink("./outputImg.jpg", null) });
-                });
-            }).catch(error => { channel.send(error.name + ": " + error.message) })
+            if (await Matoshi.cost(message.author.id, policyValues.service.fryPleaseFee, message.guildId)) {
+              Jimp.read(url).then(image => {
+                console.log("jimp start");
+                const maxSize = 512;
+                let w = image.getWidth();
+                let h = image.getHeight();
+                if (w > maxSize || h > maxSize) {
+                  image.scaleToFit(maxSize, maxSize)
+                }
+                let kernelSharpen = [[0, -3, 0], [-3, 13, -3], [0, -3, 0]];
+                image
+                  .quality(10)
+                  .convolute(kernelSharpen)
+                  .contrast(.99)
+                  //.color([{ apply: "saturate", params: [70] }])
+                  .convolute(kernelSharpen)
+                  .writeAsync("./outputImg.jpg").then(e => {
+                    console.log("jimp done")
+                    message.reply({ files: ["./outputImg.jpg"] }).then(
+                      function () { fs.unlink("./outputImg.jpg", null) });
+                  });
+              }).catch(error => { channel.send(error.name + ": " + error.message) })
+            } else {
+              message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.fryPleaseFee + "₥", allowedMentions: { repliedUser: false } });
+            }
           }
 
         }
@@ -978,7 +1029,7 @@ client.on('messageCreate', async message => {
           }
           break;
         case "s":
-          if (await Matoshi.cost(message.author.id, 1, message.guildId)) {
+          if (await Matoshi.cost(message.author.id, policyValues.service.searchFee, message.guildId)) {
             console.log("SEARCH!");
             try {
               let results = await googleSearch(SearchEngines.EVERYTHING, argument);
@@ -988,11 +1039,11 @@ client.on('messageCreate', async message => {
             }
           }
           else {
-            message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
+            message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.imageFee + "₥", allowedMentions: { repliedUser: false } });
           }
           break;
         case "img":
-          if (await Matoshi.cost(message.author.id, 20, message.guildId)) {
+          if (await Matoshi.cost(message.author.id, policyValues.service.imageFee, message.guildId)) {
             console.log("SEARCH!");
             try {
               let results = await googleSearch(SearchEngines.EVERYTHING, argument, SearchTypes.IMAGE);
@@ -1002,7 +1053,7 @@ client.on('messageCreate', async message => {
             }
           }
           else {
-            message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
+            message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.imageFee + "₥", allowedMentions: { repliedUser: false } });
           }
           break;
         case "nuke":
@@ -1204,8 +1255,10 @@ client.on('messageCreate', async message => {
 
     }
     else if (isCalc(message.content)) {
-      let result = calc(message);
-      if (result) channel.send(result);
+      if (Matoshi.cost(message.author.id, policyValues.service.calcFee, message.guild.id)) {
+        let result = calc(message);
+        if (result) channel.send(result);
+      }
     }
   }
 });

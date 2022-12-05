@@ -90,7 +90,7 @@ export async function pay(options: PaymentOptions, feeApplies = false) {
 
 export async function cost(user: string, amount: number, guild: string) {
     amount = Math.round(amount);
-    if (guild == "549589656606343178" || guild == undefined) {
+    if (guild == Main.mainGuild.id || guild == undefined) {
         if (await balance(user) >= amount) {
             await modify(user, -amount);
             await modify(Main.client.user.id, amount);

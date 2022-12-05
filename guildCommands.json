@@ -404,6 +404,59 @@
                         "required": true
                     }
                 ]
+            },
+            {
+                "type": 1,
+                "name": "service",
+                "description": "Edit the value of a service policy",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "policy",
+                        "description": "The policy to change",
+                        "required": true,
+                        "choices": [
+                            {
+                                "name": "Fee per service use (₥)",
+                                "value": "service.defaultFee"
+                            },
+                            {
+                                "name": "Fee per search use (₥)",
+                                "value": "service.searchFee"
+                            },
+                            {
+                                "name": "Fee per image search use (₥)",
+                                "value": "service.imageFee"
+                            },
+                            {
+                                "name": "Fee per radio use (₥)",
+                                "value": "service.radioFee"
+                            },
+                            {
+                                "name": "Fee per youtube use (₥)",
+                                "value": "service.youtubeFee"
+                            },
+                            {
+                                "name": "Fee per usmažit prosím use (₥)",
+                                "value": "service.fryPleaseFee"
+                            },
+                            {
+                                "name": "Fee per remind use (₥)",
+                                "value": "service.remindFee"
+                            },
+                            {
+                                "name": "Fee per calculator use (₥)",
+                                "value": "service.calcFee"
+                            }
+                        ]
+                    },
+                    {
+                        "type": 10,
+                        "name": "value",
+                        "description": "The new value for the policy",
+                        "required": true
+                    }
+                ]
             }
         ]
     },
