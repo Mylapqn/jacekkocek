@@ -107,6 +107,7 @@ export let policyRelation = {
       "service.youtubeFee",
       "service.fryPleaseFee",
       "service.remindFee",
+      "service.imageFee",
       "service.calcFee"],
   }
 };
@@ -148,6 +149,7 @@ export let policyValues = {
     youtubeFee: 0,
     fryPleaseFee: 0,
     remindFee: 0,
+    imageFee: 20,
     calcFee: 0,
   },
   stock: {
@@ -174,6 +176,7 @@ export let policyNames = {
     youtubeFee: ["Youtube fee", "₥"],
     fryPleaseFee: ["Usmažit prosím fee", "₥"],
     remindFee: ["Remind fee", "₥"],
+    imageFee: ["Image search fee", "₥"],
     calcFee: ["Kalkulačka fee", "₥"],
   },
   stock: {
@@ -1036,11 +1039,11 @@ client.on('messageCreate', async message => {
             }
           }
           else {
-            message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.searchFee + "₥", allowedMentions: { repliedUser: false } });
+            message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.imageFee + "₥", allowedMentions: { repliedUser: false } });
           }
           break;
         case "img":
-          if (await Matoshi.cost(message.author.id, 20, message.guildId)) {
+          if (await Matoshi.cost(message.author.id, policyValues.service.imageFee, message.guildId)) {
             console.log("SEARCH!");
             try {
               let results = await googleSearch(SearchEngines.EVERYTHING, argument, SearchTypes.IMAGE);
@@ -1050,7 +1053,7 @@ client.on('messageCreate', async message => {
             }
           }
           else {
-            message.reply({ content: "Insufficient matoshi!", allowedMentions: { repliedUser: false } });
+            message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.imageFee + "₥", allowedMentions: { repliedUser: false } });
           }
           break;
         case "nuke":

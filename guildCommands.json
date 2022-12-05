@@ -425,6 +425,10 @@
                                 "value": "service.searchFee"
                             },
                             {
+                                "name": "Fee per image search use (₥)",
+                                "value": "service.imageFee"
+                            },
+                            {
                                 "name": "Fee per radio use (₥)",
                                 "value": "service.radioFee"
                             },
