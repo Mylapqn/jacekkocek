@@ -106,7 +106,6 @@ export let policyRelation = {
       "service.radioFee",
       "service.youtubeFee",
       "service.fryPleaseFee",
-      "service.pollFee",
       "service.remindFee",
       "service.calcFee"],
   }
@@ -144,13 +143,12 @@ export let policyValues = {
   },
   service: {
     defaultFee: 0,
-    searchFee: 0,
+    searchFee: 1,
     radioFee: 0,
     youtubeFee: 0,
     fryPleaseFee: 0,
-    pollFee: 0,
     remindFee: 0,
-    calcFee: 1,
+    calcFee: 0,
   },
   stock: {
     defaultFee: 0.5,
@@ -175,7 +173,6 @@ export let policyNames = {
     radioFee: ["Radio fee", "₥"],
     youtubeFee: ["Youtube fee", "₥"],
     fryPleaseFee: ["Usmažit prosím fee", "₥"],
-    pollFee: ["Poll fee", "₥"],
     remindFee: ["Remind fee", "₥"],
     calcFee: ["Kalkulačka fee", "₥"],
   },
@@ -708,7 +705,6 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "poll": {
-        if (await Matoshi.cost(member.id, policyValues.service.pollFee, interaction.guildId)) {
           let customOptionsEnabled = interaction.options.getBoolean("custom-options-enabled") === null || interaction.options.getBoolean("custom-options-enabled");
           let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, customOptionsEnabled);
           for (let i = 1; i < 10; i++) {
@@ -717,9 +713,6 @@ client.on('interactionCreate', async interaction => {
             await poll.addOption(optionName);
           }
           break;
-        } else {
-          interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.pollFee + "₥", allowedMentions: { repliedUser: false } });
-        }
       }
       case "policy": {
         try {

@@ -437,10 +437,6 @@
                                 "value": "service.fryPleaseFee"
                             },
                             {
-                                "name": "Fee per poll use (₥)",
-                                "value": "service.pollFee"
-                            },
-                            {
                                 "name": "Fee per remind use (₥)",
                                 "value": "service.remindFee"
                             },
