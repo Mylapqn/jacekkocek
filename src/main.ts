@@ -499,7 +499,7 @@ client.on('interactionCreate', async interaction => {
             let voice = member.voice.channel;
             let station = interaction.options.getInteger("station");
             if (station < radioStations.length && station >= 0) {
-              interaction.reply(playStation(voice, station));
+              playStation(voice, station).then((embed) => { interaction.reply(embed); });
             }
             break;
           }
@@ -507,7 +507,7 @@ client.on('interactionCreate', async interaction => {
             let voice = member.voice.channel;
             let url = interaction.options.getString("url");
             if (url.startsWith("http")) {
-              interaction.reply(playStation(voice, url));
+              playStation(voice, url).then((embed) => { interaction.reply(embed); });
             }
             break;
           }
@@ -1046,7 +1046,7 @@ client.on('messageCreate', async message => {
 
         case "noise": {
           if (message.member.voice.channel) {
-            voiceChannelPlay(message.member.voice.channel, "http://uk1.internet-radio.com:8004/live", 0.063);
+            voiceChannelPlay(message.member.voice.channel, "http://uk1.internet-radio.com:8004/live", 0.063).catch(console.error);
 
             /*
             message.member.voice.channel.join().then(voice => {
@@ -1065,7 +1065,7 @@ client.on('messageCreate', async message => {
           if (message.member.voice.channel) {
             let v = 1.2;
             if (argument && !isNaN(argument)) v = argument;
-            voiceChannelPlay(message.member.voice.channel, "tududum.mp3", v);
+            voiceChannelPlay(message.member.voice.channel, "tududum.mp3", v).catch(console.error);
           }
           break;
         }
@@ -1091,7 +1091,7 @@ client.on('messageCreate', async message => {
           message.delete();
           if (message.member.voice.channel) {
             fs.existsSync("mlp-mix.ogg");
-            voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
+            voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5).catch(console.error);
             //voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
             channel.send({
               embeds: [{
@@ -1614,7 +1614,7 @@ function alternateFluttershyColor() {
   else return 0xE581B1;
 }
 
-function playStation(voice, id) {
+async function playStation(voice, id) {
   let station;
   if (typeof (id) == "string") {
     station = {
@@ -1626,15 +1626,27 @@ function playStation(voice, id) {
   else {
     station = radioStations[id];
   }
-  voiceChannelPlay(voice, station.url, 0.6);
-  return ({
-    embeds: [{
-      title: "♫ " + station.name,
-      color: station.color,
-      footer: { text: "Now playing" },
-    }]
-  });
 
+  try {
+    await voiceChannelPlay(voice, station.url, 0.6);
+    return ({
+      embeds: [{
+        title: "♫ " + station.name,
+        color: station.color,
+        footer: { text: "Now playing" },
+      }]
+    });
+  } catch (e) {
+    console.error(e);
+
+    audioPlayer.stop();
+    return ({
+      embeds: [{
+        title: "Connection to radio failed!",
+        color: 0xFF0000
+      }]
+    });
+  }
 }
 
 //#endregion
