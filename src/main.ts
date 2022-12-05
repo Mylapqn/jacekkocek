@@ -18,7 +18,9 @@ import * as Polls from "./polls";
 import * as Kino from "./kino";
 import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
+import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
+
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -41,8 +43,10 @@ export let mainGuild: Discord.Guild;
 export let mainVoiceChannel: Discord.VoiceChannel;
 export let notifyTextChannel: Discord.TextChannel;
 export let managerRole: Discord.Role;
+export let adminId: string[];
 
-let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Pause } });
+let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Stop } });
+
 var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
@@ -318,6 +322,7 @@ const defaultMainGuildId = '549589656606343178';
 const defaultNotifyTextChannelId = '753323827093569588';
 const defaultMainVoiceChannelId = '1024767805586935888';
 const defaultManagerRoleId = '1046868723048382494';
+const defaultAdminId = ['532918953014722560'];
 
 client.on('ready', async () => {
   const mainGuildId = process.env.MAIN_GUILD_ID ?? defaultMainGuildId;
@@ -330,6 +335,7 @@ client.on('ready', async () => {
   notifyTextChannel = await mainGuild.channels.fetch(notifyTextChannelId) as Discord.TextChannel;
   mainVoiceChannel = await mainGuild.channels.fetch(mainVoiceChannelId) as Discord.VoiceChannel;
   managerRole = await mainGuild.roles.fetch(managerRoleId);
+  adminId = process.env.ADMIN_ID?.split(',') ?? defaultAdminId;
 
   if (production)
     client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
@@ -531,7 +537,7 @@ client.on('interactionCreate', async interaction => {
         switch (interaction.options.getSubcommand()) {
           case "award": {
             //console.log(interaction.user);
-            if (interaction.user.id == "532918953014722560") {
+            if (adminId.includes(interaction.user.id)) {
               let amount = interaction.options.getInteger("amount");
               let target = interaction.options.getUser("user");
               await Matoshi.modify(target.id, amount);
@@ -736,7 +742,7 @@ client.on('interactionCreate', async interaction => {
     switch (interaction.commandName) {
       case "Nuke Here": {
         let maxDelete = 20;
-        if (interaction.user.id == "532918953014722560") maxDelete = 100;
+        if (adminId.includes(interaction.user.id)) maxDelete = 100;
         interaction.channel.messages.fetch({ limit: maxDelete }).then(messages => {
           const previousMessages = Array.from(messages.values()) as Discord.Message[];
           const nukeIndex = previousMessages.findIndex(m => { return m.id == interaction.targetId });
@@ -1004,7 +1010,7 @@ client.on('messageCreate', async message => {
               argNumber = parseInt(argument);
               if (isNaN(argNumber)) argNumber = 0;
               if (argNumber > 0) {
-                if (argNumber > 20 && message.author.id != "532918953014722560") argNumber = 20;
+                if (argNumber > 20 && !adminId.includes(message.author.id)) argNumber = 20;
                 let channelName = channel.id;
                 if (Utilities.isActualChannel(channel))
                   channelName = "#" + channel.name;
@@ -1167,7 +1173,7 @@ client.on('messageCreate', async message => {
           break;
         }
         case "restart": {
-          if (message.author.id == "532918953014722560") {
+          if (adminId.includes(message.author.id)) {
             message.delete().then(() => {
               process.exit()
             });
@@ -1432,6 +1438,7 @@ async function compareCommandsAndApply(manager: Discord.ApplicationCommandManage
       await manager.create(change.newCommand, guildId);
     }
   });
+  await Promise.all(promises);
 }
 
 
@@ -1471,12 +1478,18 @@ export async function googleSearch(engine: SearchEngines, searchTerm: string, se
 
 //#region SONGS AND YOUTUBE
 
-export function voiceChannelPlay(channel, audio, volume) {
+export async function voiceChannelPlay(channel, audio, volume) {
   if (channel != null) {
     //audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
     joinVoiceChannel(channel);
   }
-  let res = DiscordVoice.createAudioResource(audio, { inlineVolume: true });
+  let audioReadable: Readable;
+  if (typeof audio == 'string') {
+    audioReadable = await Utilities.getAsync(audio);
+  } else
+    audioReadable = audio;
+
+  let res = DiscordVoice.createAudioResource(audioReadable, { inlineVolume: true });
   let v = volume ?? 1;
   v = Math.min(Math.abs(v), 5);
   res.volume.volume = v;

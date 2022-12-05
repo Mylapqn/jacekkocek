@@ -1,6 +1,10 @@
 import * as Discord from "discord.js";
 import * as Main from "./main";
 import * as Sheets from "./sheets";
+import * as Http from "http";
+import * as Https from "https";
+import * as fs from 'fs';
+import { Readable } from "stream";
 
 export function dateString(inputDate: Date) {
     let minutes = inputDate.getMinutes();
@@ -125,6 +129,30 @@ export async function disableMessageButtons(msg: Discord.Message, setDisabled = 
     msg.edit({ content: msg.content, embeds: msg.embeds, components: [newActionRow] })
 }
 
-export function escapeFormatting(text:string){
+export function escapeFormatting(text: string) {
     return text.replace(/[\\_|*~]/g, `\\$&`);
+}
+
+export function getAsync(url: string): Promise<Readable> {
+    const isHttp = url.startsWith('http://');
+    const isHttps = url.startsWith('https://');
+
+    if (isHttp || isHttps) {
+        const getFunction = isHttps ? Https.get : Http.get;
+
+        return new Promise((resolve, reject) => {
+            getFunction(url, (res) => {
+                if (res.statusCode != 200) {
+                    reject(new Error("Http request failed: " + res.statusMessage));
+                    res.resume();
+                    return;
+                }
+
+                resolve(res);
+            });
+        });
+    }
+    else {
+        return Promise.resolve(fs.createReadStream(url));
+    }
 }
