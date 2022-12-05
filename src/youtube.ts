@@ -150,7 +150,12 @@ function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, textChanne
             }
         }
         clearNextTimeout();
-        Main.voiceChannelPlay(null, videoStream, 0.8)
+        Main.voiceChannelPlay(null, videoStream, 0.8).catch((e) => {
+            console.error(e);
+            textChannel.send({ embeds: [new Discord.EmbedBuilder().setColor(0xFF0000).setTitle("Youtube play failed!")] }).catch(console.error);
+            stop();
+        });
+
         if (nextVideo) {
             let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
             videoStream.on("finish", () => {
