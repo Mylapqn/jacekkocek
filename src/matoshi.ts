@@ -193,8 +193,8 @@ async function scheduleTax() {
     day = day == 0 ? 7 : day;
 
     date.setDate(date.getDate() + 7 - (day));
-    date.setHours(21);
-    date.setMinutes(4);
+    date.setHours(23);
+    date.setMinutes(59);
 
     if(lastTaxTime > date.valueOf() - 24*60*60*1000){
         date = new Date(date.valueOf() + 7*24*60*60*1000);
