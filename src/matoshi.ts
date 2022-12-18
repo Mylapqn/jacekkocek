@@ -30,7 +30,7 @@ export async function init() {
             res.send("ok");
         }
     });
-
+    scheduleTax();
 }
 
 function load() {
@@ -154,4 +154,58 @@ export async function requestPayment(options: PaymentRequestOptions) {
     }
     paymentMessages.set(msg.id, { from: options.from, to: options.to, amount: options.amount });
     return msg;
+}
+
+
+async function collectAndReportTax() {
+    let sorted = Array.from(matoshiData.keys()).sort((a, b) => { return matoshiData.get(b) - matoshiData.get(a); });
+
+    let msg = "Matoshi tax report:\n";
+    for (let i = 0; i < sorted.length; i++) {
+        let usr = await Main.mainGuild.members.fetch(sorted[i]);
+        if (usr.id == Main.client.user.id) continue;
+        let usrn: string;
+
+        let failureToPay = 0;
+
+        let initialBalance = await balance(usr.id);
+        let tax = Math.ceil(Main.policyValues.matoshi.weeklyTaxFlat + (Main.policyValues.matoshi.weeklyTaxPercent / 100) * initialBalance);
+
+        if (tax > initialBalance) {
+            failureToPay = tax - initialBalance;
+            tax = initialBalance;
+        }
+
+        await cost(usr.id, tax, Main.mainGuild.id);
+
+        if (!usr) usrn = "Unknown user";
+        else usrn = usr.user.username;
+
+        msg += "**" + usrn + "** paid: " + tax + "₥" + ((failureToPay != 0) ? ", failed to pay " + failureToPay + " ₥" : "") + "\n";
+    }
+    return msg;
+}
+
+let lastTaxTime = 0;
+async function scheduleTax() {
+    let date = new Date(1671128081000);
+    let day = date.getDay();
+    day = day == 0 ? 7 : day;
+
+    date.setDate(date.getDate() + 7 - (day));
+    date.setHours(23);
+    date.setMinutes(59);
+
+    if(lastTaxTime > date.valueOf() - 24*60*60*1000){
+        date = new Date(date.valueOf() + 7*24*60*60*1000);
+    }
+
+    let delay = date.valueOf() - Date.now();
+
+    setTimeout(async () => {
+        Main.notifyTextChannel.send(await collectAndReportTax());
+        lastTaxTime = Date.now();
+        scheduleTax()
+    }, delay);
+    console.log("Tax collection in: " + (delay/1000/60/60).toFixed(2) + "h");
 }
