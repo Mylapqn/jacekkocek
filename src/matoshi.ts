@@ -188,7 +188,7 @@ async function collectAndReportTax() {
 
 let lastTaxTime = 0;
 async function scheduleTax() {
-    let date = new Date(1671128081000);
+    let date = new Date();
     let day = date.getDay();
     day = day == 0 ? 7 : day;
 
