@@ -445,6 +445,10 @@
                                 "value": "service.remindFee"
                             },
                             {
+                                "name": "Fee per nuke use (₥)",
+                                "value": "service.nukeFee"
+                            },
+                            {
                                 "name": "Fee per calculator use (₥)",
                                 "value": "service.calcFee"
                             }
