@@ -149,6 +149,7 @@ export let policyValues = {
     youtubeFee: 0,
     fryPleaseFee: 0,
     remindFee: 0,
+    nukeFee: 0,
     imageFee: 20,
     calcFee: 0,
   },
@@ -176,6 +177,7 @@ export let policyNames = {
     youtubeFee: ["Youtube fee", "₥"],
     fryPleaseFee: ["Usmažit prosím fee", "₥"],
     remindFee: ["Remind fee", "₥"],
+    nukeFee: ["Nuke fee", "₥"],
     imageFee: ["Image search fee", "₥"],
     calcFee: ["Kalkulačka fee", "₥"],
   },
@@ -708,14 +710,14 @@ client.on('interactionCreate', async interaction => {
         break;
       }
       case "poll": {
-          let customOptionsEnabled = interaction.options.getBoolean("custom-options-enabled") === null || interaction.options.getBoolean("custom-options-enabled");
-          let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, customOptionsEnabled);
-          for (let i = 1; i < 10; i++) {
-            let optionName = interaction.options.getString("option" + i);
-            if (!optionName) continue;
-            await poll.addOption(optionName);
-          }
-          break;
+        let customOptionsEnabled = interaction.options.getBoolean("custom-options-enabled") === null || interaction.options.getBoolean("custom-options-enabled");
+        let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, customOptionsEnabled);
+        for (let i = 1; i < 10; i++) {
+          let optionName = interaction.options.getString("option" + i);
+          if (!optionName) continue;
+          await poll.addOption(optionName);
+        }
+        break;
       }
       case "policy": {
         try {
@@ -792,21 +794,25 @@ client.on('interactionCreate', async interaction => {
     switch (interaction.commandName) {
       case "Nuke Here": {
         let maxDelete = 20;
-        if (adminId.includes(interaction.user.id)) maxDelete = 100;
-        interaction.channel.messages.fetch({ limit: maxDelete }).then(messages => {
-          const previousMessages = Array.from(messages.values()) as Discord.Message[];
-          const nukeIndex = previousMessages.findIndex(m => { return m.id == interaction.targetId });
-          if (nukeIndex < 0 || nukeIndex >= maxDelete) {
-            interaction.reply({ content: "Cannot nuke this far!", ephemeral: true });
-          }
-          else {
-            interaction.reply({ content: "Nuking " + (nukeIndex + 1) + " messages", ephemeral: true });
-            for (let i = 0; i <= nukeIndex; i++) {
-              previousMessages[i].delete();
+        if (await Matoshi.cost(interaction.user.id, policyValues.service.nukeFee, interaction.guildId)) {
+          if (adminId.includes(interaction.user.id)) maxDelete = 100;
+          interaction.channel.messages.fetch({ limit: maxDelete }).then(messages => {
+            const previousMessages = Array.from(messages.values()) as Discord.Message[];
+            const nukeIndex = previousMessages.findIndex(m => { return m.id == interaction.targetId });
+            if (nukeIndex < 0 || nukeIndex >= maxDelete) {
+              interaction.reply({ content: "Cannot nuke this far!", ephemeral: true });
             }
-          }
+            else {
+              interaction.reply({ content: "Nuking " + (nukeIndex + 1) + " messages", ephemeral: true });
+              for (let i = 0; i <= nukeIndex; i++) {
+                previousMessages[i].delete();
+              }
+            }
 
-        });
+          });
+        } else {
+          interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.nukeFee + "₥", ephemeral: true });
+        }
       }
     }
   }
@@ -1058,41 +1064,44 @@ client.on('messageCreate', async message => {
           break;
         case "nuke":
           if (message.author.id != "245616926485643264") {
-            message.delete().then(() => {
-              var argNumber = 1;
-              argNumber = parseInt(argument);
-              if (isNaN(argNumber)) argNumber = 0;
-              if (argNumber > 0) {
-                if (argNumber > 20 && !adminId.includes(message.author.id)) argNumber = 20;
-                let channelName = channel.id;
-                if (Utilities.isActualChannel(channel))
-                  channelName = "#" + channel.name;
-                else if (channel.isDMBased()) {
-                  channelName = "DM with " + channel.recipient.username;
-                }
-                console.log("Deleting " + argNumber + " last messages in " + channelName + ", command by " + message.author.username);
-                channel.messages.fetch({ limit: argNumber }).then(messages => {
-
-                  var previousMessages = Array.from(messages.values()) as Discord.Message[];
-                  for (var i = 0; i < argNumber; i++) {
-                    var reacts = Array.from(previousMessages[i].reactions.cache.mapValues(reaction => reaction.emoji.name).values());
-                    //channel.send(argument.charAt(i));
-                    previousMessages[i].delete();
-                    if (reacts.includes("♋")) break;
+            if (await Matoshi.cost(message.author.id, policyValues.service.nukeFee, message.guildId)) {
+              message.delete().then(() => {
+                var argNumber = 1;
+                argNumber = parseInt(argument);
+                if (isNaN(argNumber)) argNumber = 0;
+                if (argNumber > 0) {
+                  if (argNumber > 20 && !adminId.includes(message.author.id)) argNumber = 20;
+                  let channelName = channel.id;
+                  if (Utilities.isActualChannel(channel))
+                    channelName = "#" + channel.name;
+                  else if (channel.isDMBased()) {
+                    channelName = "DM with " + channel.recipient.username;
                   }
+                  console.log("Deleting " + argNumber + " last messages in " + channelName + ", command by " + message.author.username);
+                  channel.messages.fetch({ limit: argNumber }).then(messages => {
 
-                });
-                /*channel.fetch().then(channel => {for (var i = 0; i < argNumber; i++) {
-                  let lastMessage= channel.lastMessage;
-                  var reacts = lastMessage.reactions.cache.mapValues(reaction => reaction._emoji.name).array();
-                  //channel.send(argument.charAt(i));
-                  lastMessage.delete();
-                  if (reacts.includes("♋")) break;
-                }});*/
-              }
-            });
-          }
-          else {
+                    var previousMessages = Array.from(messages.values()) as Discord.Message[];
+                    for (var i = 0; i < argNumber; i++) {
+                      var reacts = Array.from(previousMessages[i].reactions.cache.mapValues(reaction => reaction.emoji.name).values());
+                      //channel.send(argument.charAt(i));
+                      previousMessages[i].delete();
+                      if (reacts.includes("♋")) break;
+                    }
+
+                  });
+                  /*channel.fetch().then(channel => {for (var i = 0; i < argNumber; i++) {
+                    let lastMessage= channel.lastMessage;
+                    var reacts = lastMessage.reactions.cache.mapValues(reaction => reaction._emoji.name).array();
+                    //channel.send(argument.charAt(i));
+                    lastMessage.delete();
+                    if (reacts.includes("♋")) break;
+                  }});*/
+                }
+              });
+            } else {
+              message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.nukeFee + "₥", allowedMentions: { repliedUser: false } });
+            }
+          } else {
             channel.send("cringe");
           }
           break;
