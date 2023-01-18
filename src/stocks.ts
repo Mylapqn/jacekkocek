@@ -207,7 +207,7 @@ export async function sell(user: string, stock: string, amount: number) {
     let currentStock = data.wallets.get(stock);
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
-        if (await Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - Main.policyValues.stock[stock+"fee"] / 100)) }, false)) {
+        if (await Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - Main.policyValues.stock[stock + "fee"] / 100)) }, false)) {
             data.wallets.set(stock, currentStock);
             await Database.setUser(data);
             return true;
@@ -221,4 +221,14 @@ export async function balance(user, stock) {
     let data = await Database.getUser(user);
     let currentStock = data.wallets.get(stock);
     return currentStock;
+}
+
+export async function balanceAll(user): Promise<Array<{ stock: string, balance: number }>> {
+    let data = await Database.getUser(user);
+    let out = []
+    for (const [stock, balance] of data.wallets) {
+        out.push({stock, balance});
+    }
+
+    return out;
 }

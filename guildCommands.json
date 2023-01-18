@@ -277,6 +277,19 @@
             },
             {
                 "type": 1,
+                "name": "total",
+                "description": "Check the stock balance for every stock of someone",
+                "options": [
+                    {
+                        "type": 6,
+                        "name": "user",
+                        "description": "Whose balance to check (default: you)",
+                        "required": false
+                    }
+                ]
+            },
+            {
+                "type": 1,
                 "name": "list",
                 "description": "Display the list of available stocks"
             }
