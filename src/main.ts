@@ -706,6 +706,24 @@ client.on('interactionCreate', async interaction => {
             });
             break;
           }
+          case "total": {
+            let user = interaction.options.getUser("user");
+            if (!user) user = interaction.user;
+            Stocks.balanceAll(user.id).then(stocks => {
+              let reply = "Balance for **" + user.username + "**: \n";
+              let total = 0;
+
+              for (const stock of stocks) {
+                const price = Math.floor(Stocks.currentPrice(stock.stock) * stock.balance);
+                reply += stock.stock + ": " + stock.balance + (isNaN(price) ? "" : " (worth " + price + " ₥)" + "\n");
+                total += isNaN(price) ? 0 : price;
+              }
+              reply += "Total: " + total + " ₥";
+              interaction.reply(reply);
+              setCalcContext(total, interaction.channelId);
+            });
+            break;
+          }
         }
         break;
       }
