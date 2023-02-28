@@ -458,6 +458,8 @@ client.on('interactionCreate', async interaction => {
           }
           case "playlist": {
             let filter = interaction.options.getString("filter");
+            console.log(filter);
+            
             let kinoFilms = await Database.KinoDatabase.getAllFilms(filter);
             if (kinoFilms.length > 0) {
               let newMessage = "**__Film suggestions:__**\n";
