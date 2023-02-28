@@ -24,7 +24,7 @@
                     {
                         "type": 3,
                         "name": "filter",
-                        "description": "Filter the films",
+                        "description": "Filter the films (default: only unwatched)",
                         "required": false,
                         "choices": [
                             {
@@ -34,6 +34,10 @@
                             {
                                 "name": "Only watched films",
                                 "value": "watched"
+                            },
+                            {
+                                "name": "All films",
+                                "value": "all"
                             }
                         ]
                     }

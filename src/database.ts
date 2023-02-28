@@ -103,7 +103,7 @@ export class KinoDatabase {
         return films[0];
     }
 
-    static async getAllFilms(filter = "all") {
+    static async getAllFilms(filter = "unwatched") {
         let query = `SELECT * FROM Films`;
         switch (filter) {
             case "watched":
