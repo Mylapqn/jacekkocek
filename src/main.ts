@@ -457,7 +457,7 @@ client.on('interactionCreate', async interaction => {
             break;
           }
           case "playlist": {
-            let filter = interaction.options.getString("filter");
+            let filter = interaction.options.getString("filter") || "unwatched";
             console.log(filter);
             
             let kinoFilms = await Database.KinoDatabase.getAllFilms(filter);

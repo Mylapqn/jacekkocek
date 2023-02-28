@@ -28,17 +28,18 @@
                         "required": false,
                         "choices": [
                             {
+                                "name": "All films",
+                                "value": "all"
+                            },
+                            {
                                 "name": "Only unwatched films",
                                 "value": "unwatched"
                             },
                             {
                                 "name": "Only watched films",
                                 "value": "watched"
-                            },
-                            {
-                                "name": "All films",
-                                "value": "all"
                             }
+                            
                         ]
                     }
                 ]
