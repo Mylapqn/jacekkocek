@@ -91,7 +91,11 @@ export class Poll {
 
     async addOption(name: string) {
         if (this.options.length >= 9) throw new Error("Options limit reached");
-        name = await this.optionFilter(name)
+        try {
+            name = await this.optionFilter(name);
+        } catch (error) {
+            console.error("Poll filter error: " + error);
+        }
         if (!name) return;
         if (this.options.some(option => option.name == name)) throw new Error("Option already exists");
         name = name.replace(/[\r\n]/gm, ''); //Remove line breaks
