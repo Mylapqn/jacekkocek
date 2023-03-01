@@ -331,10 +331,10 @@ console.log("\n-----------RESTART-----------")
 
 export const weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
-var radioTimer;
-var fluttershy = true;
-var radioApiKey;
-var radioServerPing = 0;
+let radioTimer;
+let fluttershy = true;
+let radioApiKey: string;
+let radioServerPing = 0;
 //radioApiKeyGet();
 
 const reminderThreshold = 3600;
@@ -1152,19 +1152,19 @@ client.on('messageCreate', async message => {
         case "song": {
           message.delete();
           if (message.member.voice.channel)
-            mlpSong(message.member.voice.channel, argument, false, channel);
+            //mlpSong(message.member.voice.channel, argument, false, channel);
           break;
         }
         case "songs": {
           message.delete();
           if (message.member.voice.channel)
-            mlpSong(message.member.voice.channel, argument, true, channel);
+            //mlpSong(message.member.voice.channel, argument, true, channel);
           break;
         }
         case "mlpRadio": {
           message.delete();
           if (message.member.voice.channel)
-            playRadio(message.member.voice.channel, channel);
+            //playRadio(message.member.voice.channel, channel);
           break;
         }
         case "mlpMix": {
