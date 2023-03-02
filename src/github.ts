@@ -54,7 +54,7 @@ export async function createIssue(title, desc, label, author) {
         ],
     })
     if (response.status == 201) {
-        return response.url;
+        return response.data.html_url;
     }
     else {
         throw new Error("Error creating issue")
