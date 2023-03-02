@@ -16,7 +16,7 @@ const auth = createAppAuth({
     privateKey: process.env.GITHUB_PRIVATE_KEY,
     installationId: installationId,
     clientSecret: process.env.GITHUB_API_KEY,
-    clientId: "Iv1.5a1e31d3239f66d5"
+    clientId: "Iv1.5a1e31d3239f66d5",
 })
 
 export async function init() {
