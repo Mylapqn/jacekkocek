@@ -39,7 +39,6 @@
                                 "name": "Only watched films",
                                 "value": "watched"
                             }
-                            
                         ]
                     }
                 ]
@@ -565,6 +564,41 @@
                 "name": "option9",
                 "description": "Poll option 9",
                 "required": false
+            }
+        ]
+    },
+    {
+        "name": "issue",
+        "description": "Suggest a JacekKocek feature or report a bug",
+        "options": [
+            
+            {
+                "type": 3,
+                "name": "title",
+                "description": "The title of the issue",
+                "required": true
+            },
+            {
+                "type": 3,
+                "name": "description",
+                "description": "A longer description of the issue",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "type",
+                "description": "The type of the issue (default: request)",
+                "required": false,
+                "choices": [
+                    {
+                        "name": "Feature request",
+                        "value": "request"
+                    },
+                    {
+                        "name": "Bug report",
+                        "value": "bug"
+                    }
+                ]
             }
         ]
     }

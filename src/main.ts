@@ -13,6 +13,7 @@ import * as Matoshi from "./matoshi";
 import * as Api from "./api";
 import * as Youtube from "./youtube";
 import * as Utilities from "./utilities";
+import * as Github from "./github";
 import { calc, isCalc, setCalcContext } from "./calc";
 import * as Polls from "./polls";
 import * as Kino from "./kino";
@@ -755,6 +756,13 @@ client.on('interactionCreate', async interaction => {
         interaction.reply(generatePolicyList());
         break;
       }
+      case "issue": {
+        let issueName = interaction.options.getString("title");
+        let issueDesc = interaction.options.getString("description") || "No description";
+        let issueType = interaction.options.getString("type") || "request";
+        interaction.reply("added issue");
+        break;
+      }
     }
   }
   else if (interaction.isButton()) {
@@ -1153,19 +1161,19 @@ client.on('messageCreate', async message => {
           message.delete();
           if (message.member.voice.channel)
             //mlpSong(message.member.voice.channel, argument, false, channel);
-          break;
+            break;
         }
         case "songs": {
           message.delete();
           if (message.member.voice.channel)
             //mlpSong(message.member.voice.channel, argument, true, channel);
-          break;
+            break;
         }
         case "mlpRadio": {
           message.delete();
           if (message.member.voice.channel)
             //playRadio(message.member.voice.channel, channel);
-          break;
+            break;
         }
         case "mlpMix": {
           message.delete();
@@ -1229,6 +1237,10 @@ client.on('messageCreate', async message => {
         }
         case "search": {
           googleSearch(SearchEngines.CSFD, "test");
+          break;
+        }
+        case "test": {
+          Github.auth();
           break;
         }
         case "skip": {
