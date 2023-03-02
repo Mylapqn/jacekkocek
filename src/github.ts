@@ -28,8 +28,8 @@ export async function init() {
 
 
 
-export async function test() {
-    /*await request("POST /repos/Mylapqn/jacekkocek/issues", {
+/*export async function test() {
+    await request("POST /repos/Mylapqn/jacekkocek/issues", {
         headers: {
             authorization: "token " + token
         },
@@ -40,14 +40,23 @@ export async function test() {
         labels: [
             'request'
         ],
-    });*/
-    console.log(await octokit.request("POST /repos/Mylapqn/jacekkocek/issues", {
+    });
+}*/
+export async function createIssue(title, desc, label, author) {
+    let response = await octokit.request("POST /repos/Mylapqn/jacekkocek/issues", {
         owner: 'Mylapqn',
         repo: 'jacekkocek',
-        title: 'Test',
-        body: 'Test desc',
+        title: title,
+        body: desc + "\nCreated from command by "+author,
         labels: [
-            'request'
+            label,
+            "from command"
         ],
-    }));
+    })
+    if (response.status == 201) {
+        return response.url;
+    }
+    else {
+        throw new Error("Error creating issue")
+    }
 }

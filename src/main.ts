@@ -761,7 +761,12 @@ client.on('interactionCreate', async interaction => {
         let issueName = interaction.options.getString("title");
         let issueDesc = interaction.options.getString("description") || "No description";
         let issueType = interaction.options.getString("type") || "request";
-        interaction.reply("added issue");
+        try {
+          let url = await Github.createIssue(issueName, issueDesc, issueType, member.user.username)
+          interaction.reply("Successfully added issue **" + issueName + "**\n" + url);
+        } catch (e) {
+          interaction.reply({ content: "Error creating issue!", ephemeral: true });
+        }
         break;
       }
     }
@@ -1235,14 +1240,6 @@ client.on('messageCreate', async message => {
         case "time": {
           channel.send(Utilities.dateString(new Date(Date.now() - Utilities.getTimeOffset(new Date(), defaultTimeZone))));
           channel.send(new Date().toString());
-          break;
-        }
-        case "search": {
-          googleSearch(SearchEngines.CSFD, "test");
-          break;
-        }
-        case "test": {
-          Github.test();
           break;
         }
         case "skip": {
