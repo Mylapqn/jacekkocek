@@ -762,6 +762,7 @@ client.on('interactionCreate', async interaction => {
         let issueDesc = interaction.options.getString("description") || "No description";
         let issueType = interaction.options.getString("type") || "request";
         try {
+          await interaction.deferReply();
           let url = await Github.createIssue(issueName, issueDesc, issueType, member.user.username)
           interaction.reply("Successfully added issue **" + issueName + "**\n" + url);
         } catch (e) {

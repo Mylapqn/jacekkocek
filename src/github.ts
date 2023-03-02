@@ -47,7 +47,7 @@ export async function createIssue(title, desc, label, author) {
         owner: 'Mylapqn',
         repo: 'jacekkocek',
         title: title,
-        body: desc + "\nCreated from command by "+author,
+        body: desc + "\n\n_Created from command by " + author + "_",
         labels: [
             label,
             "from command"
