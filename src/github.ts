@@ -27,7 +27,7 @@ export async function init() {
 export async function test() {
     await request("POST /repos/Mylapqn/jacekkocek/issues", {
         headers: {
-            authorization: "token " + token
+            authorization: "bearer " + token
         },
         owner: 'Mylapqn',
         repo: 'jacekkocek',
