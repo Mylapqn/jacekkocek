@@ -42,7 +42,7 @@ export async function init() {
         ],
     });
 }*/
-export async function createIssue(title, desc, label, author) {
+export async function createIssue(title: string, desc: string, label: string, author: string) {
     let response = await octokit.request("POST /repos/Mylapqn/jacekkocek/issues", {
         owner: 'Mylapqn',
         repo: 'jacekkocek',
