@@ -15,11 +15,13 @@ const auth = createAppAuth({
     appId: appId,
     privateKey: process.env.GITHUB_PRIVATE_KEY,
     installationId: installationId,
+    clientSecret: process.env.GITHUB_API_KEY,
+    clientId: "Iv1.5a1e31d3239f66d5"
 })
 
 export async function init() {
     //octokit = await app.getInstallationOctokit(installationId)
-    token = await auth({ type: "app" })
+    token = await auth({ type: "installation" })
 }
 
 
