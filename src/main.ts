@@ -382,6 +382,7 @@ client.on('ready', async () => {
   await Database.init();
   Matoshi.init();
   Api.init();
+  Github.init();
 
   httpServer.get("/radio/play", (req, res) => {
     try {
