@@ -19,7 +19,7 @@ const auth = createAppAuth({
 
 export async function init() {
     //octokit = await app.getInstallationOctokit(installationId)
-    token = await auth({ type: "installation" })
+    token = await auth({ type: "app" })
 }
 
 
