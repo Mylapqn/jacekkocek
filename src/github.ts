@@ -13,7 +13,7 @@ let token;
 
 const auth = createAppAuth({
     appId: appId,
-    privateKey: /*process.env.GITHUB_PRIVATE_KEY*/"koče",
+    privateKey: process.env.GITHUB_PRIVATE_KEY,
     installationId: installationId,
 })
 
