@@ -1216,7 +1216,8 @@ client.on('messageCreate', async message => {
             let connection = DiscordVoice.joinVoiceChannel({
               channelId: channel.id,
               guildId: channel.guild.id,
-              adapterCreator: channel.guild.voiceAdapterCreator,
+              //TODO Workaround for Discord.js types bug
+              adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordVoice.DiscordGatewayAdapterCreator,
               selfDeaf: false
             })
             //let receiver = new DiscordVoice.VoiceReceiver(connection);
@@ -1240,7 +1241,7 @@ client.on('messageCreate', async message => {
           break;
         }
         case "test": {
-          Github.auth();
+          Github.test();
           break;
         }
         case "skip": {
