@@ -20,7 +20,13 @@ const auth = createAppAuth({
 })
 */
 export async function test() {
-    console.log(await octokit.request("GET /issues", {
-
+    console.log(await octokit.request("POST /repos/Mylapqn/jacekkocek/issues", {
+        owner: 'Mylapqn',
+        repo: 'jacekkocek',
+        title: 'Test',
+        body: 'Test desc',
+        labels: [
+          'request'
+        ],
     }));
 }
