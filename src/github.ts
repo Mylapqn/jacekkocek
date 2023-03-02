@@ -13,7 +13,7 @@ let token;
 
 const auth = createAppAuth({
     appId: appId,
-    privateKey: process.env.GITHUB_PRIVATE_KEY,
+    privateKey: /*process.env.GITHUB_PRIVATE_KEY*/"koče",
     installationId: installationId,
 })
 
@@ -27,7 +27,7 @@ export async function init() {
 export async function test() {
     await request("POST /repos/Mylapqn/jacekkocek/issues", {
         headers: {
-            authorization: "bearer " + token
+            authorization: "token " + token
         },
         owner: 'Mylapqn',
         repo: 'jacekkocek',
