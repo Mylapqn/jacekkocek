@@ -36,7 +36,7 @@ export class Poll {
         let max = 0;
         let winner: PollOption;
         for (const option of this.options) {
-            if (option.votes.length >= max) {
+            if (option.votes.length > max) {
                 winner = option;
                 max = option.votes.length;
             }
