@@ -716,7 +716,7 @@ client.on('interactionCreate', async interaction => {
 
               for (const stock of stocks) {
                 const price = Math.floor(Stocks.currentPrice(stock.stock) * stock.balance);
-                reply += stock.stock + ": " + stock.balance + (isNaN(price) ? "" : " (worth " + price + " ₥)" + "\n");
+                reply += stock.stock + ": " + stock.balance + ((isNaN(price) ? "" : " (worth " + price + " ₥)") + "\n");
                 total += isNaN(price) ? 0 : price;
               }
               reply += "Total: " + total + " ₥";
