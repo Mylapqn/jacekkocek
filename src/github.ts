@@ -7,6 +7,7 @@ const octokit = new Octokit({
     auth: process.env.GITHUB_PERSONAL_API_KEY
 })
 
+//TODO GITHUB_PRIVATE_KEY_PATH file instead of env string
 //TODO App authentification
 /*
 
