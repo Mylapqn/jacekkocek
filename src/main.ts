@@ -47,6 +47,10 @@ export let managerRole: Discord.Role;
 export let adminId: string[];
 
 let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Stop } });
+const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+  const newUdp = Reflect.get(newNetworkState, 'udp');
+  clearInterval(newUdp?.keepAliveInterval);
+}
 
 var kocek = 0;
 var lastSearchResults = null;
@@ -1571,7 +1575,7 @@ export async function googleSearch(engine: SearchEngines, searchTerm: string, se
 
 //#region SONGS AND YOUTUBE
 
-export async function voiceChannelPlay(channel, audio, volume) {
+export async function voiceChannelPlay(channel: Discord.VoiceBasedChannel, audio: string | Readable, volume: number) {
   if (channel != null) {
     //audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
     joinVoiceChannel(channel);
@@ -1595,6 +1599,13 @@ export function joinVoiceChannel(channel) {
     channelId: channel.id,
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
+  });
+  conn.on('stateChange', (oldState, newState) => {
+    const oldNetworking = Reflect.get(oldState, 'networking');
+    const newNetworking = Reflect.get(newState, 'networking');
+
+    oldNetworking?.off('stateChange', networkStateChangeHandler);
+    newNetworking?.on('stateChange', networkStateChangeHandler);
   });
   conn.subscribe(audioPlayer);
   return conn;
