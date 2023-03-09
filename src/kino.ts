@@ -127,7 +127,7 @@ export class Event {
                 console.error("KinoEvent Image search error:" + error.message);
             }
             let guildEvent = await Main.mainGuild.scheduledEvents.create(guildEventOptions)
-            this.datePoll.message.channel.send(await guildEvent.createInviteURL());
+            this.datePoll.message.channel.send(await guildEvent.createInviteURL({maxAge:0}));
             Database.KinoDatabase.setEvent(this);
         }
     }

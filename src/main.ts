@@ -47,6 +47,8 @@ export let managerRole: Discord.Role;
 export let adminId: string[];
 
 let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: DiscordVoice.NoSubscriberBehavior.Stop } });
+
+//TODO TEMP DISCORD WORKAROUND
 const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
   const newUdp = Reflect.get(newNetworkState, 'udp');
   clearInterval(newUdp?.keepAliveInterval);
@@ -1594,12 +1596,14 @@ export async function voiceChannelPlay(channel: Discord.VoiceBasedChannel, audio
   audioPlayer.play(res);
 }
 
+
 export function joinVoiceChannel(channel) {
   let conn = DiscordVoice.joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
+  //TODO TEMP DISCORD WORKAROUND
   conn.on('stateChange', (oldState, newState) => {
     const oldNetworking = Reflect.get(oldState, 'networking');
     const newNetworking = Reflect.get(newState, 'networking');
