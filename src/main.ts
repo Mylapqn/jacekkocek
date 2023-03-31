@@ -257,8 +257,8 @@ var helpCommands = [
 
 
 var changelog = {
-  version: "1.19.2",
-  releaseDate: "26.11.2022",
+  version: "1.21.2",
+  releaseDate: "1.4.2023",
   changes: [
     "Not specified",
   ]
