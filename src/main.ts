@@ -1112,7 +1112,7 @@ client.on('messageCreate', async message => {
                   let channelName = channel.id;
                   if (Utilities.isActualChannel(channel))
                     channelName = "#" + channel.name;
-                  else if (channel.isDMBased()) {
+                  else if (channel.type === Discord.ChannelType.DM) {
                     channelName = "DM with " + channel.recipient.username;
                   }
                   console.log("Deleting " + argNumber + " last messages in " + channelName + ", command by " + message.author.username);
