@@ -435,7 +435,7 @@ client.on('ready', async () => {
   //console.log(upcomingReminders);
 
 
-  console.log('' + new Date().toUTCString() + ' I am ready!');
+  console.log('' + new Date().toUTCString() + ' I am ready! Discord.js v'+Discord.version);
 });
 
 client.on('interactionCreate', async interaction => {
