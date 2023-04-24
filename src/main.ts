@@ -972,9 +972,9 @@ client.on('messageCreate', async message => {
           message.delete().then(() => {
             argument = argument.replace(/ /g, "").toLowerCase();
             console.log("Sanitized argument: " + argument);
-            channel.messages.fetch({ limit: 1 }).then(messages => {
+            channel.messages.fetch({ limit: 1 }).then((messages: Discord.Collection<string, Discord.Message>) => {
 
-              var previousMessage = messages.values()[0];
+              var previousMessage = messages.first();
               for (var i = 0; i < argument.length; i++) {
                 //channel.send(argument.charAt(i));
                 previousMessage.react(letterEmoji[argument.charAt(i)]);
