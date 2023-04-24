@@ -409,6 +409,7 @@ client.on('ready', async () => {
       console.log("Kino start event received!");
       res.setHeader("Access-Control-Allow-Origin", "*");
       res.send("OK");
+      Kino.Event.kinoReward();
     } catch (e) {
       res.send("Something went wrong :(");
     }
@@ -498,6 +499,14 @@ client.on('interactionCreate', async interaction => {
           case "vote-film": {
             let event = Kino.Event.fromCommand();
             event.filmVote(interaction);
+            break;
+          }
+
+          case "start": {
+            if(await Kino.interactionWeightCheck(interaction)){
+              let response = await Kino.Event.startToday();
+              interaction.reply(response);
+            }
             break;
           }
         }

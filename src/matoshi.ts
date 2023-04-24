@@ -186,6 +186,54 @@ async function collectAndReportTax() {
     return msg;
 }
 
+export async function lateFees(onTimeUsers: string[], voters: string[], filmName: string) {
+    let late = [];
+    for (const user of voters) {
+        if (!onTimeUsers.includes(user)) late.push(user);
+    }
+
+    let msg = `Starting **${filmName}**\n`;
+    msg += onTimeUsers.length + " / " + voters.length + " voters are on time.\n"
+
+    if (late.length > 0) {
+        for (let i = 0; i < late.length; i++) {
+            let usr = await Main.mainGuild.members.fetch(late[i]);
+            if (usr.id == Main.client.user.id) continue;
+            let usrn: string;
+
+            let failureToPay = 0;
+
+            let initialBalance = await balance(usr.id);
+            let lateFee = Main.policyValues.kino.lateFee;
+
+            if (lateFee > initialBalance) {
+                failureToPay = lateFee - initialBalance;
+                lateFee = initialBalance;
+            }
+
+            await cost(usr.id, lateFee, Main.mainGuild.id);
+
+            if (!usr) usrn = "Unknown user";
+            else usrn = usr.user.username;
+
+            msg += "**" + usrn + "** paid: " + lateFee + "₥ in late fees" + ((failureToPay != 0) ? ", failed to pay " + failureToPay + "₥" : "") + "\n";
+        }
+    }
+
+    return msg;
+}
+
+export async function watchReward(users: string[]) {
+    let msg = `Watch rewards:\n`;
+    for (const user of users) {
+        if(!Array.from(matoshiData.keys()).includes(user)) continue;
+        let usr = await Main.mainGuild.members.fetch(user);
+        pay({ from: Main.client.user.id, to: user, amount: Main.policyValues.kino.watchReward }, false)
+        msg += usr.user.username + " was rewarded " + Main.policyValues.kino.watchReward + "₥"
+    }
+    return msg
+}
+
 let lastTaxTime = 0;
 async function scheduleTax() {
     let date = new Date();
@@ -196,8 +244,8 @@ async function scheduleTax() {
     date.setHours(23);
     date.setMinutes(59);
 
-    if(lastTaxTime > date.valueOf() - 24*60*60*1000){
-        date = new Date(date.valueOf() + 7*24*60*60*1000);
+    if (lastTaxTime > date.valueOf() - 24 * 60 * 60 * 1000) {
+        date = new Date(date.valueOf() + 7 * 24 * 60 * 60 * 1000);
     }
 
     let delay = date.valueOf() - Date.now();
@@ -207,5 +255,5 @@ async function scheduleTax() {
         lastTaxTime = Date.now();
         scheduleTax()
     }, delay);
-    console.log("Tax collection in: " + (delay/1000/60/60).toFixed(2) + "h");
+    console.log("Tax collection in: " + (delay / 1000 / 60 / 60).toFixed(2) + "h");
 }
