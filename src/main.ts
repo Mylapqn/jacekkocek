@@ -257,8 +257,8 @@ var helpCommands = [
 
 
 var changelog = {
-  version: "1.19.2",
-  releaseDate: "26.11.2022",
+  version: "1.21.2",
+  releaseDate: "1.4.2023",
   changes: [
     "Not specified",
   ]
@@ -435,7 +435,7 @@ client.on('ready', async () => {
   //console.log(upcomingReminders);
 
 
-  console.log('' + new Date().toUTCString() + ' I am ready!');
+  console.log('' + new Date().toUTCString() + ' I am ready! Discord.js v'+Discord.version);
 });
 
 client.on('interactionCreate', async interaction => {
@@ -1112,7 +1112,7 @@ client.on('messageCreate', async message => {
                   let channelName = channel.id;
                   if (Utilities.isActualChannel(channel))
                     channelName = "#" + channel.name;
-                  else if (channel.isDMBased()) {
+                  else if (channel.type === Discord.ChannelType.DM) {
                     channelName = "DM with " + channel.recipient.username;
                   }
                   console.log("Deleting " + argNumber + " last messages in " + channelName + ", command by " + message.author.username);
