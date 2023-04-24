@@ -51,6 +51,31 @@ export class Event {
         Database.KinoDatabase.createEvent(event);
         return event;
     }
+
+    static async startToday() {
+        let response;
+        const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
+        if (todayEvent && todayEvent.film.watched == false) {
+            const todayVoters = todayEvent.datePoll.getWinner().votes.map(vote => vote.userId);
+            const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
+            response = await Matoshi.lateFees(onTimeUsers, todayVoters, todayEvent.film.name);
+            todayEvent.film.watched = true;
+            Database.KinoDatabase.setFilm(todayEvent.film);
+        } else {
+            response = todayEvent.film.watched ? "Already started" : "No event for today";
+        }
+        return response;
+    }
+
+    static async kinoReward() {
+        const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
+        if (todayEvent && todayEvent.film.watched) {
+            Main.mainVoiceChannel.send(
+                await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.id))
+            );
+        }
+    }
+
     static async filmVoteOptionFilter(name: string) {
         if ((await Database.KinoDatabase.getFilmByName(name)) == undefined) {
             throw new Error("Invalid option");
@@ -127,7 +152,7 @@ export class Event {
                 console.error("KinoEvent Image search error:" + error.message);
             }
             let guildEvent = await Main.mainGuild.scheduledEvents.create(guildEventOptions)
-            this.datePoll.message.channel.send(await guildEvent.createInviteURL({maxAge:0}));
+            this.datePoll.message.channel.send(await guildEvent.createInviteURL({ maxAge: 0 }));
             Database.KinoDatabase.setEvent(this);
         }
     }
