@@ -52,9 +52,9 @@ export class Event {
         return event;
     }
     static async filmVoteOptionFilter(name: string) {
-        if ((await Database.KinoDatabase.getFilmByName(name)) == undefined) {
-            throw new Error("Invalid option");
-        }
+        let film = await Database.KinoDatabase.getFilmByName(name);
+        if (film == undefined) throw new Error("Invalid option");
+        if (film.watched) throw new Error("Already watched");
         return Utilities.toTitleCase(name);
     }
     static async dateVoteOptionFilter(name: string) {

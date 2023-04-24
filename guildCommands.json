@@ -46,7 +46,7 @@
             {
                 "type": 1,
                 "name": "vote-film",
-                "description": "Start a vote to choose what to watch on the chosen kino day"
+                "description": "Start a vote to choose what to watch"
             },
             {
                 "type": 1,
@@ -151,33 +151,8 @@
                     {
                         "type": 4,
                         "name": "amount",
-                        "description": "The amount to pay (minimum: 2 ₥, subject to fee)",
+                        "description": "The amount to pay (Matoshi transaction fee or Matoshi minimum fee will apply)",
                         "required": true
-                    }
-                ]
-            },
-            {
-                "type": 1,
-                "name": "request",
-                "description": "Request a matoshi payment from someone (fee applies)",
-                "options": [
-                    {
-                        "type": 6,
-                        "name": "user",
-                        "description": "The recipient of the request",
-                        "required": true
-                    },
-                    {
-                        "type": 4,
-                        "name": "amount",
-                        "description": "The amount to request (minimum: 2 ₥, subject to fee)",
-                        "required": true
-                    },
-                    {
-                        "type": 3,
-                        "name": "description",
-                        "description": "A description of the request",
-                        "required": false
                     }
                 ]
             },
@@ -208,7 +183,7 @@
             {
                 "type": 1,
                 "name": "buy",
-                "description": "Buy a stock with matoshi (fee: 0.5 %)",
+                "description": "Buy a stock with matoshi (stock transaction fee applies)",
                 "options": [
                     {
                         "type": 3,
@@ -228,7 +203,7 @@
             {
                 "type": 1,
                 "name": "sell",
-                "description": "Sell a stock for matoshi (fee: 0.5 %)",
+                "description": "Sell a stock for matoshi (stock transaction fee applies)",
                 "options": [
                     {
                         "type": 3,
@@ -296,188 +271,6 @@
                 "type": 1,
                 "name": "list",
                 "description": "Display the list of available stocks"
-            }
-        ]
-    },
-    {
-        "name": "policy",
-        "description": "Change a matoshi financial policy",
-        "options": [
-            {
-                "type": 1,
-                "name": "kino",
-                "description": "Edit the value of a kino policy",
-                "options": [
-                    {
-                        "type": 3,
-                        "name": "policy",
-                        "description": "The policy to change",
-                        "required": true,
-                        "choices": [
-                            {
-                                "name": "Kino reward for suggestion (₥)",
-                                "value": "kino.suggestReward"
-                            },
-                            {
-                                "name": "Kino reward for watching (₥)",
-                                "value": "kino.watchReward"
-                            },
-                            {
-                                "name": "Kino late fee (₥)",
-                                "value": "kino.lateFee"
-                            },
-                            {
-                                "name": "Kino default time (hours)",
-                                "value": "kino.defaultTimeHrs"
-                            }
-                        ]
-                    },
-                    {
-                        "type": 10,
-                        "name": "value",
-                        "description": "The new value for the policy",
-                        "required": true
-                    }
-                ]
-            },
-            {
-                "type": 1,
-                "name": "matoshi",
-                "description": "Edit the value of a Matoshi financial policy",
-                "options": [
-                    {
-                        "type": 3,
-                        "name": "policy",
-                        "description": "The policy to change",
-                        "required": true,
-                        "choices": [
-                            {
-                                "name": "Minimal fee per transaction (flat ₥)",
-                                "value": "matoshi.transactionFeeMin"
-                            },
-                            {
-                                "name": "Percentage fee per transaction (%)",
-                                "value": "matoshi.transactionFeePercent"
-                            },
-                            {
-                                "name": "Tax per week (% of matoshi in wallet)",
-                                "value": "matoshi.weeklyTaxPercent"
-                            },
-                            {
-                                "name": "Tax per week (flat ₥)",
-                                "value": "matoshi.weeklyTaxFlat"
-                            },
-                            {
-                                "name": "Kino reward for suggestion (₥)",
-                                "value": "kino.suggestReward"
-                            },
-                            {
-                                "name": "Kino reward for watching (₥)",
-                                "value": "kino.watchReward"
-                            },
-                            {
-                                "name": "Kino late fee (₥)",
-                                "value": "kino.lateFee"
-                            },
-                            {
-                                "name": "Kino default time (hours)",
-                                "value": "kino.defaultTimeHrs"
-                            },
-                            {
-                                "name": "Fee per stock transaction (% of transaction)",
-                                "value": "stock.stockFee"
-                            }
-                        ]
-                    },
-                    {
-                        "type": 10,
-                        "name": "value",
-                        "description": "The new value for the policy",
-                        "required": true
-                    }
-                ]
-            },
-            {
-                "type": 1,
-                "name": "stock",
-                "description": "Edit the value of a stock policy",
-                "options": [
-                    {
-                        "type": 3,
-                        "name": "policy",
-                        "description": "The policy to change",
-                        "required": true,
-                        "choices": [
-                            {
-                                "name": "Fee per stock transaction (% of transaction)",
-                                "value": "stock.defaultFee"
-                            }
-                        ]
-                    },
-                    {
-                        "type": 10,
-                        "name": "value",
-                        "description": "The new value for the policy",
-                        "required": true
-                    }
-                ]
-            },
-            {
-                "type": 1,
-                "name": "service",
-                "description": "Edit the value of a service policy",
-                "options": [
-                    {
-                        "type": 3,
-                        "name": "policy",
-                        "description": "The policy to change",
-                        "required": true,
-                        "choices": [
-                            {
-                                "name": "Fee per service use (₥)",
-                                "value": "service.defaultFee"
-                            },
-                            {
-                                "name": "Fee per search use (₥)",
-                                "value": "service.searchFee"
-                            },
-                            {
-                                "name": "Fee per image search use (₥)",
-                                "value": "service.imageFee"
-                            },
-                            {
-                                "name": "Fee per radio use (₥)",
-                                "value": "service.radioFee"
-                            },
-                            {
-                                "name": "Fee per youtube use (₥)",
-                                "value": "service.youtubeFee"
-                            },
-                            {
-                                "name": "Fee per usmažit prosím use (₥)",
-                                "value": "service.fryPleaseFee"
-                            },
-                            {
-                                "name": "Fee per remind use (₥)",
-                                "value": "service.remindFee"
-                            },
-                            {
-                                "name": "Fee per nuke use (₥)",
-                                "value": "service.nukeFee"
-                            },
-                            {
-                                "name": "Fee per calculator use (₥)",
-                                "value": "service.calcFee"
-                            }
-                        ]
-                    },
-                    {
-                        "type": 10,
-                        "name": "value",
-                        "description": "The new value for the policy",
-                        "required": true
-                    }
-                ]
             }
         ]
     },
@@ -571,7 +364,6 @@
         "name": "issue",
         "description": "Suggest a JacekKocek feature or report a bug",
         "options": [
-            
             {
                 "type": 3,
                 "name": "title",
@@ -597,6 +389,220 @@
                     {
                         "name": "Bug report",
                         "value": "bug"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "sudo",
+        "description": "Special commands for Generální tajemník",
+        "options": [
+            {
+                "type": 2,
+                "name": "policy",
+                "description": "Change a matoshi financial policy",
+                "options": [
+                    {
+                        "type": 1,
+                        "name": "kino",
+                        "description": "Edit the value of a kino policy",
+                        "options": [
+                            {
+                                "type": 3,
+                                "name": "policy",
+                                "description": "The policy to change",
+                                "required": true,
+                                "choices": [
+                                    {
+                                        "name": "Kino reward for suggestion (₥)",
+                                        "value": "kino.suggestReward"
+                                    },
+                                    {
+                                        "name": "Kino reward for watching (₥)",
+                                        "value": "kino.watchReward"
+                                    },
+                                    {
+                                        "name": "Kino late fee (₥)",
+                                        "value": "kino.lateFee"
+                                    },
+                                    {
+                                        "name": "Kino default time (hours)",
+                                        "value": "kino.defaultTimeHrs"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": 10,
+                                "name": "value",
+                                "description": "The new value for the policy",
+                                "required": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": 1,
+                        "name": "matoshi",
+                        "description": "Edit the value of a Matoshi financial policy",
+                        "options": [
+                            {
+                                "type": 3,
+                                "name": "policy",
+                                "description": "The policy to change",
+                                "required": true,
+                                "choices": [
+                                    {
+                                        "name": "Minimal fee per transaction (flat ₥)",
+                                        "value": "matoshi.transactionFeeMin"
+                                    },
+                                    {
+                                        "name": "Percentage fee per transaction (%)",
+                                        "value": "matoshi.transactionFeePercent"
+                                    },
+                                    {
+                                        "name": "Tax per week (% of matoshi in wallet)",
+                                        "value": "matoshi.weeklyTaxPercent"
+                                    },
+                                    {
+                                        "name": "Tax per week (flat ₥)",
+                                        "value": "matoshi.weeklyTaxFlat"
+                                    },
+                                    {
+                                        "name": "Kino reward for suggestion (₥)",
+                                        "value": "kino.suggestReward"
+                                    },
+                                    {
+                                        "name": "Kino reward for watching (₥)",
+                                        "value": "kino.watchReward"
+                                    },
+                                    {
+                                        "name": "Kino late fee (₥)",
+                                        "value": "kino.lateFee"
+                                    },
+                                    {
+                                        "name": "Kino default time (hours)",
+                                        "value": "kino.defaultTimeHrs"
+                                    },
+                                    {
+                                        "name": "Fee per stock transaction (% of transaction)",
+                                        "value": "stock.stockFee"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": 10,
+                                "name": "value",
+                                "description": "The new value for the policy",
+                                "required": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": 1,
+                        "name": "stock",
+                        "description": "Edit the value of a stock policy",
+                        "options": [
+                            {
+                                "type": 3,
+                                "name": "policy",
+                                "description": "The policy to change",
+                                "required": true,
+                                "choices": [
+                                    {
+                                        "name": "Fee per stock transaction (% of transaction)",
+                                        "value": "stock.defaultFee"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": 10,
+                                "name": "value",
+                                "description": "The new value for the policy",
+                                "required": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": 1,
+                        "name": "service",
+                        "description": "Edit the value of a service policy",
+                        "options": [
+                            {
+                                "type": 3,
+                                "name": "policy",
+                                "description": "The policy to change",
+                                "required": true,
+                                "choices": [
+                                    {
+                                        "name": "Fee per service use (₥)",
+                                        "value": "service.defaultFee"
+                                    },
+                                    {
+                                        "name": "Fee per search use (₥)",
+                                        "value": "service.searchFee"
+                                    },
+                                    {
+                                        "name": "Fee per image search use (₥)",
+                                        "value": "service.imageFee"
+                                    },
+                                    {
+                                        "name": "Fee per radio use (₥)",
+                                        "value": "service.radioFee"
+                                    },
+                                    {
+                                        "name": "Fee per youtube use (₥)",
+                                        "value": "service.youtubeFee"
+                                    },
+                                    {
+                                        "name": "Fee per usmažit prosím use (₥)",
+                                        "value": "service.fryPleaseFee"
+                                    },
+                                    {
+                                        "name": "Fee per remind use (₥)",
+                                        "value": "service.remindFee"
+                                    },
+                                    {
+                                        "name": "Fee per nuke use (₥)",
+                                        "value": "service.nukeFee"
+                                    },
+                                    {
+                                        "name": "Fee per calculator use (₥)",
+                                        "value": "service.calcFee"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": 10,
+                                "name": "value",
+                                "description": "The new value for the policy",
+                                "required": true
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "jacek-request",
+                "description": "Request a matoshi payment as jacek from someone",
+                "options": [
+                    {
+                        "type": 6,
+                        "name": "user",
+                        "description": "The recipient of the request",
+                        "required": true
+                    },
+                    {
+                        "type": 4,
+                        "name": "amount",
+                        "description": "The amount to request",
+                        "required": true
+                    },
+                    {
+                        "type": 3,
+                        "name": "description",
+                        "description": "A description of the request",
+                        "required": false
                     }
                 ]
             }

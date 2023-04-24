@@ -91,26 +91,27 @@ export class Poll {
 
     async addOption(name: string) {
         if (this.options.length >= 9) throw new Error("Options limit reached");
+        let newName: string;
         try {
-            name = await this.optionFilter(name);
+            newName = await this.optionFilter(name);
         } catch (error) {
             console.error("Poll filter error: " + error);
         }
-        if (!name) return;
-        if (this.options.some(option => option.name == name)) throw new Error("Option already exists");
-        name = name.replace(/[\r\n]/gm, ''); //Remove line breaks
-        name.trim();
-        if (name.length > 244) {
-            name = name.substring(0, 240) + "...";
+        if (!newName) return;
+        if (this.options.some(option => option.name == newName)) throw new Error("Option already exists");
+        newName = newName.replace(/[\r\n]/gm, ''); //Remove line breaks
+        newName.trim();
+        if (newName.length > 244) {
+            newName = newName.substring(0, 240) + "...";
         }
-        let newOption = new PollOption(this, this.options.length, name);
+        let newOption = new PollOption(this, this.options.length, newName);
         this.options.push(newOption);
         if (this.message != undefined) {
             this.updateMessage();
             this.message.react(Main.letterEmoji[this.options.length.toString()]);
         }
         Database.PollDatabase.addOption(newOption);
-        console.log(`Added option to poll "${this.name}" with name ${name}`);
+        console.log(`Added option to poll "${this.name}" with name ${newName}`);
         return newOption;
     }
 
