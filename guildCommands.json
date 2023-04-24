@@ -151,7 +151,7 @@
                     {
                         "type": 4,
                         "name": "amount",
-                        "description": "The amount to pay (minimum: 2 ₥, subject to fee)",
+                        "description": "The amount to pay (Matoshi transaction fee or Matoshi minimum fee will apply)",
                         "required": true
                     }
                 ]
@@ -170,7 +170,7 @@
                     {
                         "type": 4,
                         "name": "amount",
-                        "description": "The amount to request (minimum: 2 ₥, subject to fee)",
+                        "description": "The amount to request (Matoshi transaction fee or Matoshi minimum fee will apply)",
                         "required": true
                     },
                     {
@@ -208,7 +208,7 @@
             {
                 "type": 1,
                 "name": "buy",
-                "description": "Buy a stock with matoshi (fee: 0.5 %)",
+                "description": "Buy a stock with matoshi (stock transaction fee applies)",
                 "options": [
                     {
                         "type": 3,
@@ -228,7 +228,7 @@
             {
                 "type": 1,
                 "name": "sell",
-                "description": "Sell a stock for matoshi (fee: 0.5 %)",
+                "description": "Sell a stock for matoshi (stock transaction fee applies)",
                 "options": [
                     {
                         "type": 3,
