@@ -435,7 +435,7 @@ client.on('ready', async () => {
   //console.log(upcomingReminders);
 
 
-  console.log('' + new Date().toUTCString() + ' I am ready! Discord.js v'+Discord.version);
+  console.log('' + new Date().toUTCString() + ' I am ready! Discord.js v' + Discord.version);
 });
 
 client.on('interactionCreate', async interaction => {
@@ -630,12 +630,7 @@ client.on('interactionCreate', async interaction => {
               interaction.reply({ content: "Invalid request!", ephemeral: true });
               break;
             }
-            if (amount > 1 && amount <= await Matoshi.balance(from.id)) {
-              Matoshi.requestPayment({ from: from.id, to: to.id, amount: amount, description: description || undefined, interaction: interaction });
-            }
-            else {
-              interaction.reply({ content: "Invalid amount!", ephemeral: false })
-            }
+            Matoshi.requestPayment({ from: from.id, to: to.id, amount: amount, description: description || undefined, interaction: interaction });
             break;
           }
           case "balance": {
@@ -744,20 +739,6 @@ client.on('interactionCreate', async interaction => {
         }
         break;
       }
-      case "policy": {
-        try {
-          let policy = interaction.options.getString("policy");
-          let newValue = interaction.options.getNumber("value");
-          let curValue = getPolicyValue(policy);
-          let policyName = getPolicyName(policy)
-          await setPolicyValue(policy, newValue);
-          interaction.reply({ content: `<@${member.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
-        } catch (error) {
-          console.log(error);
-          interaction.reply({ content: "Policy setting failed!", ephemeral: true });
-        }
-        break;
-      }
       case "policy-list": {
         interaction.reply(generatePolicyList());
         break;
@@ -775,6 +756,42 @@ client.on('interactionCreate', async interaction => {
         }
         break;
       }
+      case "sudo": {
+        switch (interaction.options.getSubcommand()) {
+          case "jacek-request": {
+            let to = client.user;
+            let from = interaction.options.getUser("user");
+            let amount = interaction.options.getInteger("amount");
+            let description = interaction.options.getString("description");
+            if (to == from) {
+              interaction.reply({ content: "Invalid request!", ephemeral: true });
+              break;
+            }
+            Matoshi.requestPayment({ from: from.id, to: to.id, amount: amount, description: description || undefined, interaction: interaction });
+
+            break;
+          }
+          default: {
+            switch (interaction.options.getSubcommandGroup()) {
+              case "policy": {
+                try {
+                  let policy = interaction.options.getString("policy");
+                  let newValue = interaction.options.getNumber("value");
+                  let curValue = getPolicyValue(policy);
+                  let policyName = getPolicyName(policy)
+                  await setPolicyValue(policy, newValue);
+                  interaction.reply({ content: `<@${member.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
+                } catch (error) {
+                  console.log(error);
+                  interaction.reply({ content: "Policy setting failed!", ephemeral: true });
+                }
+                break;
+              }
+            }
+          }
+        }
+        break;
+      }
     }
   }
   else if (interaction.isButton()) {
@@ -785,12 +802,12 @@ client.on('interactionCreate', async interaction => {
           if (uid == paymentData.from || (paymentData.from == client.user.id && member.roles.cache.has(managerRole.id))) {
             if (await Matoshi.pay(paymentData)) {
               interaction.reply("Payment successful!");
+              Matoshi.paymentMessages.delete(interaction.message.id);
+              Utilities.disableMessageButtons(interaction.message);
             }
             else {
               interaction.reply("Payment failed!");
             }
-            Matoshi.paymentMessages.delete(interaction.message.id);
-            Utilities.disableMessageButtons(interaction.message);
           }
         }
         break;
@@ -1493,7 +1510,7 @@ function generateGuildCommandOptions(commands: Array<any>) {
   }
 
 
-  let stockPolicy: { choices: Array<any> } = commands.find(o => o.name == "policy").options.find(o => o.name == "stock").options.find(o => o.name == "policy");
+  let stockPolicy: { choices: Array<any> } = commands.find(o => o.name == "sudo").options.find(o => o.name == "policy").options.find(o => o.name == "stock").options.find(o => o.name == "policy");
   stockPolicy.choices = stockPolicy.choices.concat(getStockFeeHints());
 }
 
