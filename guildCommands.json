@@ -101,6 +101,11 @@
             },
             {
                 "type": 1,
+                "name": "start",
+                "description": "Start a kino session"
+            },
+            {
+                "type": 1,
                 "name": "info",
                 "description": "See the info about a film (usually CSFD page)",
                 "options": [
