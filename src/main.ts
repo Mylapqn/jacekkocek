@@ -769,9 +769,9 @@ client.on('interactionCreate', async interaction => {
         try {
           await interaction.deferReply();
           let url = await Github.createIssue(issueName, issueDesc, issueType, member.user.username)
-          interaction.reply("Successfully added issue **" + issueName + "**\n" + url);
+          interaction.editReply("Successfully added issue **" + issueName + "**\n" + url);
         } catch (e) {
-          interaction.reply({ content: "Error creating issue!", ephemeral: true });
+          interaction.editReply({ content: "Error creating issue!" });
         }
         break;
       }
