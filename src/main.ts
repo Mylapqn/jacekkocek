@@ -38,6 +38,7 @@ intents.add(Intents.GuildEmojisAndStickers);
 intents.add(Intents.GuildVoiceStates);
 intents.add(Intents.GuildMembers);
 intents.add(Intents.MessageContent);
+intents.add(Intents.GuildScheduledEvents);
 export const client = new Discord.Client({ intents: intents });
 
 export let mainGuild: Discord.Guild;
