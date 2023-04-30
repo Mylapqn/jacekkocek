@@ -4,6 +4,8 @@ import * as Main from "./main";
 import * as Utilities from "./utilities"
 import * as Youtube from "./youtube"
 
+export type PollOptionFilter = (option: string) => Promise<string>;
+
 
 export class Poll {
     id: number;
@@ -15,7 +17,7 @@ export class Poll {
     maxVotesPerUser = 0;
     customOptionsAllowed = true;
 
-    optionFilter = async (option: string) => Utilities.escapeFormatting(option);
+    optionFilter: PollOptionFilter = async (option: string) => Utilities.escapeFormatting(option);
 
     constructor(name = "Unnamed poll", maxVotesPerUser = 0, customOptionsAllowed = true) {
         this.name = name;

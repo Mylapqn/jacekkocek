@@ -4,7 +4,7 @@ import * as Utilities from "./utilities"
 import fs from "fs";
 
 var matoshiFileName = "matoshiBalance.json";
-var matoshiData = new Map();
+var matoshiData = new Map<string,number>();
 export let paymentMessages = new Map<string, PaymentOptions>();
 
 interface PaymentOptions {
@@ -188,12 +188,12 @@ async function collectAndReportTax() {
 
 export async function lateFees(onTimeUsers: string[], voters: string[], filmName: string) {
     let late = [];
-    for (const user of voters) {
-        if (!onTimeUsers.includes(user)) late.push(user);
+    for (const voterId of voters) {
+        if (!onTimeUsers.includes(voterId)) late.push(voterId);
     }
 
     let msg = `Starting **${filmName}**\n`;
-    msg += onTimeUsers.length + " / " + voters.length + " voters are on time.\n"
+    msg += (voters.length-late.length) + " / " + voters.length + " voters are on time.\n"
 
     if (late.length > 0) {
         for (let i = 0; i < late.length; i++) {
@@ -223,13 +223,12 @@ export async function lateFees(onTimeUsers: string[], voters: string[], filmName
     return msg;
 }
 
-export async function watchReward(users: string[]) {
-    let msg = `Watch rewards:\n`;
+export async function watchReward(users: Discord.User[], filmName: string) {
+    let msg = `Watch rewards for **${filmName}**:\n`;
     for (const user of users) {
-        if(!Array.from(matoshiData.keys()).includes(user)) continue;
-        let usr = await Main.mainGuild.members.fetch(user);
-        pay({ from: Main.client.user.id, to: user, amount: Main.policyValues.kino.watchReward }, false)
-        msg += usr.user.username + " was rewarded " + Main.policyValues.kino.watchReward + "₥"
+        if (!Array.from(matoshiData.keys()).includes(user.id)) continue;
+        pay({ from: Main.client.user.id, to: user.id, amount: Main.policyValues.kino.watchReward }, false)
+        msg += user.username + " was rewarded " + Main.policyValues.kino.watchReward + "₥";
     }
     return msg
 }

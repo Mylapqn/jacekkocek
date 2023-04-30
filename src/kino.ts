@@ -70,21 +70,20 @@ export class Event {
     }
 
     static async kinoReward() {
-        const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
-        if (todayEvent && todayEvent.film.watched) {
-            Main.mainVoiceChannel.send(
-                await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.id))
+        const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
+        const activeEvent = this.list.find(k => guildEvents.find(e => k.guildEventId == e.id && e.isActive()));
+        if (activeEvent) {
+            Main.kinoChannel.send(
+                await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.user), activeEvent.film.name)
             );
         }
     }
-
-    static async filmVoteOptionFilter(name: string) {
+    static filmVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
         let film = await Database.KinoDatabase.getFilmByName(name);
         if (film == undefined) throw new Error("Invalid option");
-        if (film.watched) throw new Error("Already watched");
         return Utilities.toTitleCase(name);
     }
-    static async dateVoteOptionFilter(name: string) {
+    static dateVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
         let date = Utilities.dateFromKinoString(name)
         if (date == undefined) {
             throw new Error("Invalid date");
