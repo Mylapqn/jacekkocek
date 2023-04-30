@@ -56,7 +56,8 @@ export class Event {
     static async startToday() {
         let response = "";
         const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
-        if (todayEvent && todayEvent.film.watched == false) {
+        if (todayEvent) {
+            console.log(todayEvent);
             const todayVoters = todayEvent.attendeeIds;
             const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
             response = await Matoshi.lateFees(onTimeUsers, todayVoters, todayEvent.film.name);
