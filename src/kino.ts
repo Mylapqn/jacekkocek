@@ -70,9 +70,11 @@ export class Event {
     }
 
     static async kinoReward() {
+        console.log("kinoreward1");
         const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
+        console.log("kinoreward2",guildEvents);
         const activeEvent = this.list.find(k => guildEvents.find(e => k.guildEventId == e.id && e.isActive()));
-        console.log("kinoreward", activeEvent);
+        console.log("kinoreward3", activeEvent);
         if (activeEvent) {
             activeEvent.watched = true;
             Main.kinoChannel.send(
