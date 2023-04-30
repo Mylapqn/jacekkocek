@@ -169,6 +169,7 @@ export class Event {
         event.datePoll = options?.datePoll;
         event.filmPoll = options?.filmPoll;
         event.lockMessageId = options?.lockMessageId;
+        event.attendeeIds = options?.attendeeIds;
         return event;
     }
 
@@ -188,6 +189,7 @@ export interface EventOptions {
     filmPoll?: Polls.Poll,
     datePoll?: Polls.Poll,
     lockMessageId?: string
+    attendeeIds?: string[]
 }
 
 
