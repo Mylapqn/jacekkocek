@@ -57,7 +57,7 @@ export class Event {
         let response = "";
         const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
         if (todayEvent) {
-            console.log(todayEvent);
+            //console.log(todayEvent);
             const todayVoters = todayEvent.attendeeIds;
             const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
             response = await Matoshi.lateFees(onTimeUsers, todayVoters, todayEvent.film.name);
@@ -134,6 +134,8 @@ export class Event {
     async lockDate() {
         if (!this.dateLocked) {
             this.dateLocked = true;
+            console.log(this.datePoll.getWinner().votes);
+
             this.attendeeIds = this.datePoll.getWinner().votes.map(v => v.userId);
             let dateFields = this.datePoll.getWinner().name.split(" ")[1].split(".");
             this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
