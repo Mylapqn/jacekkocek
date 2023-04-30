@@ -73,6 +73,7 @@ export class Event {
         console.log("kinoreward1");
         const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
         console.log("kinoreward2", guildEvents);
+        
         console.log(this.list);
 
         const activeEvent = this.list.find(k => guildEvents.find((e, id) => k.guildEventId == id && e.isActive()));
