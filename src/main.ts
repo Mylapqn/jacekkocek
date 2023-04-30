@@ -444,9 +444,12 @@ client.on('ready', async () => {
 });
 
 client.on("guildScheduledEventUpdate", async (oldEvent, newEvent) => {
+    console.log("Event Changed");
     if (oldEvent.status != newEvent.status && newEvent.status == Discord.GuildScheduledEventStatus.Active && newEvent.guild == mainGuild) {
+        console.log("Afr Event Started");
         let kinoEvent = Kino.Event.list.find(e => e.guildEventId == newEvent.id);
         if (kinoEvent) {
+            console.log("Kino Event Started");
             let response = await kinoEvent.start();
             kinoChannel.send(response);
         }
