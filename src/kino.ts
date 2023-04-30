@@ -39,6 +39,7 @@ export class Event {
     date: Date;
     datePoll: Polls.Poll;
     filmPoll: Polls.Poll;
+    attendeeIds: string[] 
     dateLocked = false;
     watched = false;
     lockMessageId: string = "";
@@ -53,10 +54,10 @@ export class Event {
     }
 
     static async startToday() {
-        let response;
+        let response = "";
         const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
         if (todayEvent && todayEvent.film.watched == false) {
-            const todayVoters = todayEvent.datePoll.getWinner().votes.map(vote => vote.userId);
+            const todayVoters = todayEvent.attendeeIds;
             const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
             response = await Matoshi.lateFees(onTimeUsers, todayVoters, todayEvent.film.name);
             todayEvent.film.watched = true;
@@ -132,6 +133,7 @@ export class Event {
     async lockDate() {
         if (!this.dateLocked) {
             this.dateLocked = true;
+            this.attendeeIds = this.datePoll.getWinner().votes.map(v => v.userId);
             let dateFields = this.datePoll.getWinner().name.split(" ")[1].split(".");
             this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
             this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
@@ -167,6 +169,7 @@ export class Event {
         event.datePoll = options?.datePoll;
         event.filmPoll = options?.filmPoll;
         event.lockMessageId = options?.lockMessageId;
+        event.attendeeIds = options?.attendeeIds;
         return event;
     }
 
@@ -186,6 +189,7 @@ export interface EventOptions {
     filmPoll?: Polls.Poll,
     datePoll?: Polls.Poll,
     lockMessageId?: string
+    attendeeIds?: string[]
 }
 
 
