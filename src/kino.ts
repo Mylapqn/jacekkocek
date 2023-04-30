@@ -80,7 +80,6 @@ export class Event {
     static async filmVoteOptionFilter(name: string) {
         let film = await Database.KinoDatabase.getFilmByName(name);
         if (film == undefined) throw new Error("Invalid option");
-        if (film.watched) throw new Error("Already watched");
         return Utilities.toTitleCase(name);
     }
     static async dateVoteOptionFilter(name: string) {
