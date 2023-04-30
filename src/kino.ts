@@ -73,7 +73,7 @@ export class Event {
         console.log("kinoreward1");
         const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
         console.log("kinoreward2",guildEvents);
-        const activeEvent = this.list.find(k => guildEvents.find(e => k.guildEventId == e.id && e.isActive()));
+        const activeEvent = this.list.find(k => guildEvents.find(e => k.guildEventId == e.id && e.status == Discord.GuildScheduledEventStatus.Active));
         console.log("kinoreward3", activeEvent);
         if (activeEvent) {
             activeEvent.watched = true;
