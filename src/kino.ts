@@ -73,6 +73,7 @@ export class Event {
         const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
         const activeEvent = this.list.find(k => guildEvents.find(e => k.guildEventId == e.id && e.isActive()));
         if (activeEvent) {
+            activeEvent.watched = true;
             Main.kinoChannel.send(
                 await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.user), activeEvent.film.name)
             );
