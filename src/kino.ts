@@ -72,10 +72,7 @@ export class Event {
     static async kinoReward() {
         console.log("kinoreward1");
         const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
-        console.log("kinoreward2222", guildEvents);
-
-        console.log(this.list);
-
+        console.log("kinoreward2", guildEvents);
         const activeEvent = this.list.find(k => guildEvents.find((e, id) => k.guildEventId == id && e.isActive()));
         console.log("kinoreward3", activeEvent);
         if (activeEvent) {
@@ -178,6 +175,7 @@ export class Event {
         event.filmPoll = options?.filmPoll;
         event.lockMessageId = options?.lockMessageId;
         event.attendeeIds = options?.attendeeIds;
+        event.guildEventId = options?.guildEventId;
         return event;
     }
 
