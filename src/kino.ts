@@ -70,12 +70,9 @@ export class Event {
     }
 
     static async kinoReward() {
-        console.log("kinoreward1");
         const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
-        console.log("kinoreward2", guildEvents);
         const activeEvent = this.list.find(k => guildEvents.find((e, id) => k.guildEventId == id && e.isActive()));
-        console.log("kinoreward3", activeEvent);
-        if (activeEvent) {
+        if (activeEvent && !activeEvent.watched) {
             activeEvent.watched = true;
             Main.kinoChannel.send(
                 await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.user), activeEvent.film.name)

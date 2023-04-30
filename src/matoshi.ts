@@ -4,7 +4,7 @@ import * as Utilities from "./utilities"
 import fs from "fs";
 
 var matoshiFileName = "matoshiBalance.json";
-var matoshiData = new Map<string,number>();
+var matoshiData = new Map<string, number>();
 export let paymentMessages = new Map<string, PaymentOptions>();
 
 interface PaymentOptions {
@@ -193,7 +193,7 @@ export async function lateFees(onTimeUsers: string[], voters: string[], filmName
     }
 
     let msg = `Starting **${filmName}**\n`;
-    msg += (voters.length-late.length) + " / " + voters.length + " voters are on time.\n"
+    msg += (voters.length - late.length) + " / " + voters.length + " voters are on time.\n"
 
     if (late.length > 0) {
         for (let i = 0; i < late.length; i++) {
@@ -224,12 +224,18 @@ export async function lateFees(onTimeUsers: string[], voters: string[], filmName
 }
 
 export async function watchReward(users: Discord.User[], filmName: string) {
-    let msg = `Watch rewards for **${filmName}**:\n`;
+    let msg = new Discord.EmbedBuilder();
+    msg.setTitle(`Watch rewards for **${filmName}**:\n`);
+    let namesColumn = "";
+    let valuesColumn = "";
     for (const user of users) {
         if (!Array.from(matoshiData.keys()).includes(user.id)) continue;
         pay({ from: Main.client.user.id, to: user.id, amount: Main.policyValues.kino.watchReward }, false)
-        msg += user.username + " was rewarded " + Main.policyValues.kino.watchReward + "₥";
+        namesColumn += user.username + " was rewarded\n";
+        valuesColumn += Main.policyValues.kino.watchReward + "₥\n";
     }
+    msg.addFields([{name:"",value:namesColumn},{name:"",value:valuesColumn}]);
+
     return msg
 }
 
