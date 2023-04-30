@@ -39,10 +39,11 @@ export class Event {
     date: Date;
     datePoll: Polls.Poll;
     filmPoll: Polls.Poll;
-    attendeeIds: string[] 
+    attendeeIds: string[]
     dateLocked = false;
     watched = false;
     lockMessageId: string = "";
+    guildEventId: string;
     constructor() {
         Event.list.push(this);
     }
@@ -53,18 +54,17 @@ export class Event {
         return event;
     }
 
-    static async startToday() {
+    async start() {
         let response = "";
-        const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
-        if (todayEvent) {
-            //console.log(todayEvent);
-            const todayVoters = todayEvent.attendeeIds;
+        if (!this.watched) {
+            const todayVoters = this.attendeeIds;
             const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
-            response = await Matoshi.lateFees(onTimeUsers, todayVoters, todayEvent.film.name);
-            todayEvent.film.watched = true;
-            Database.KinoDatabase.setFilm(todayEvent.film);
-        } else {
-            response = todayEvent.film.watched ? "Already started" : "No event for today";
+            response = await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name);
+            this.film.watched = true;
+            Database.KinoDatabase.setFilm(this.film);
+        }
+        else {
+            response = "Event already watched";
         }
         return response;
     }
@@ -134,11 +134,7 @@ export class Event {
     async lockDate() {
         if (!this.dateLocked) {
             this.dateLocked = true;
-            console.log(this.datePoll.getWinner().votes);
-
             this.attendeeIds = this.datePoll.getWinner().votes.map(v => v.userId);
-            
-            console.log(this.attendeeIds);
             let dateFields = this.datePoll.getWinner().name.split(" ")[1].split(".");
             this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
             this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
@@ -159,6 +155,7 @@ export class Event {
                 console.error("KinoEvent Image search error:" + error.message);
             }
             let guildEvent = await Main.mainGuild.scheduledEvents.create(guildEventOptions)
+            this.guildEventId = guildEvent.id;
             this.datePoll.message.channel.send(await guildEvent.createInviteURL({ maxAge: 0 }));
             Database.KinoDatabase.setEvent(this);
         }
@@ -193,8 +190,9 @@ export interface EventOptions {
     watched: boolean,
     filmPoll?: Polls.Poll,
     datePoll?: Polls.Poll,
-    lockMessageId?: string
-    attendeeIds?: string[]
+    lockMessageId?: string,
+    attendeeIds?: string[],
+    guildEventId?: string,
 }
 
 
