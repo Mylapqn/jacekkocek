@@ -137,6 +137,7 @@ export class Event {
             console.log(this.datePoll.getWinner().votes);
 
             this.attendeeIds = this.datePoll.getWinner().votes.map(v => v.userId);
+            console.log(this.attendeeIds);
             let dateFields = this.datePoll.getWinner().name.split(" ")[1].split(".");
             this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
             this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
