@@ -49,7 +49,7 @@ export async function getDaysScores(): Promise<Map<Date, number>> {
     }
     return output;
 }
-export type UserKinoData = { weight: number; reliability: number; totalWeight };
+export type UserKinoData = { weight: number; reliability: number;};
 export async function getUserData(): Promise<Map<string, UserKinoData>> {
     doAuth();
     try {
@@ -65,12 +65,43 @@ export async function getUserData(): Promise<Map<string, UserKinoData>> {
             const user = result.data.values[0][index];
             const weight = parseFloat(result.data.values[1][index]);
             const reliability = parseFloat(result.data.values[2][index]);
-            userData.set(user, { weight, reliability, totalWeight: weight * reliability });
+            userData.set(user, { weight, reliability});
         }
         return userData;
     } catch (error) {
         console.error(error);
 
+        return undefined;
+    }
+}
+
+export async function setUserData(userData: Map<string, UserKinoData>) {
+    doAuth();
+    let result = await googleSheets.spreadsheets.values.get({
+        auth,
+        spreadsheetId,
+        range: "Díly!C2:I2",
+        valueRenderOption: "FORMATTED_VALUE"
+
+    });
+    let users = result.data.values[0].map(id => id);
+    const orderedData = users.map(u => [userData.get(u).weight, userData.get(u).reliability]);
+    
+
+    try {
+        let result = await googleSheets.spreadsheets.values.update({
+            auth,
+            spreadsheetId,
+            range: "Díly!C3:I4",
+            valueInputOption: "RAW",
+            requestBody: {
+                  "majorDimension": "COLUMNS",
+                  "range": "Díly!C3:I4",
+                  "values": orderedData
+              },
+        });
+    } catch (error) {
+        console.error(error);
         return undefined;
     }
 }
