@@ -236,7 +236,7 @@ export async function watchReward(users: Discord.User[], filmName: string) {
     }
     msg.addFields([{name:"",value:namesColumn},{name:"",value:valuesColumn}]);
 
-    return msg
+    return {embeds:[msg]};
 }
 
 let lastTaxTime = 0;
