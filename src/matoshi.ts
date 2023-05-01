@@ -231,12 +231,12 @@ export async function watchReward(users: Discord.User[], filmName: string): Prom
     for (const user of users) {
         if (!Array.from(matoshiData.keys()).includes(user.id)) continue;
         pay({ from: Main.client.user.id, to: user.id, amount: Main.policyValues.kino.watchReward }, false)
-        namesColumn += user.username + " was rewarded\n";
-        valuesColumn += Main.policyValues.kino.watchReward + "₥\n";
+        namesColumn += user.toString() + " was rewarded\n";
+        valuesColumn += Main.policyValues.kino.watchReward + " ₥\n";
     }
-    msg.addFields([{ name: "User", value: namesColumn }, { name: "Reward", value: valuesColumn }]);
+    msg.addFields([{ name: "User", value: namesColumn, inline: true }, { name: "Reward", value: valuesColumn, inline: true }]);
 
-    return { embeds: [msg]};
+    return { embeds: [msg], allowedMentions: { parse: [] } };
 }
 
 let lastTaxTime = 0;
