@@ -234,9 +234,9 @@ export async function watchReward(users: Discord.User[], filmName: string): Prom
         namesColumn += user.username + " was rewarded\n";
         valuesColumn += Main.policyValues.kino.watchReward + "₥\n";
     }
-    msg.addFields([{ name: "", value: namesColumn }, { name: "", value: valuesColumn }]);
+    msg.addFields([{ name: "User", value: namesColumn }, { name: "Reward", value: valuesColumn }]);
 
-    return { embeds: [msg] };
+    return { embeds: [msg]};
 }
 
 let lastTaxTime = 0;
