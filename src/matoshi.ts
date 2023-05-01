@@ -239,6 +239,7 @@ export async function watchReward(users: Discord.User[], filmName: string): Prom
     if (csfdResult && csfdResult.link)
         msg.setURL(csfdResult.link);
     msg.setColor(0x18C3B1);
+    msg.setFooter({text:"Nezapomeňte tento film ohodnotit na csfd.cz! (link in title)"});
 
     return { embeds: [msg], allowedMentions: { parse: [] } };
 }
