@@ -231,10 +231,13 @@ export async function watchReward(users: Discord.User[], filmName: string): Prom
     for (const user of users) {
         if (!Array.from(matoshiData.keys()).includes(user.id)) continue;
         pay({ from: Main.client.user.id, to: user.id, amount: Main.policyValues.kino.watchReward }, false)
-        namesColumn += user.toString() + " was rewarded\n";
+        namesColumn += user.toString() + "\n";
         valuesColumn += Main.policyValues.kino.watchReward + " ₥\n";
     }
     msg.addFields([{ name: "User", value: namesColumn, inline: true }, { name: "Reward", value: valuesColumn, inline: true }]);
+    let csfdResult = await Main.googleSearch(Main.SearchEngines.CSFD, filmName)[0];
+    if (csfdResult && csfdResult.link)
+        msg.setFooter({ text: csfdResult.link });
 
     return { embeds: [msg], allowedMentions: { parse: [] } };
 }

@@ -77,6 +77,7 @@ export class Event {
             Main.kinoChannel.send(
                 await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.user), activeEvent.film.name)
             );
+            Database.KinoDatabase.setEvent(activeEvent);
         }
     }
     static filmVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
