@@ -186,7 +186,7 @@ async function collectAndReportTax() {
     return msg;
 }
 
-export async function lateFees(onTimeUsers: string[], voters: string[], filmName: string) {
+export async function lateFees(onTimeUsers: string[], voters: string[], filmName: string): Promise<string> {
     let late = [];
     for (const voterId of voters) {
         if (!onTimeUsers.includes(voterId)) late.push(voterId);
@@ -223,7 +223,7 @@ export async function lateFees(onTimeUsers: string[], voters: string[], filmName
     return msg;
 }
 
-export async function watchReward(users: Discord.User[], filmName: string) {
+export async function watchReward(users: Discord.User[], filmName: string): Promise<Discord.MessageCreateOptions> {
     let msg = new Discord.EmbedBuilder();
     msg.setTitle(`Watch rewards for **${filmName}**:\n`);
     let namesColumn = "";
@@ -234,9 +234,9 @@ export async function watchReward(users: Discord.User[], filmName: string) {
         namesColumn += user.username + " was rewarded\n";
         valuesColumn += Main.policyValues.kino.watchReward + "₥\n";
     }
-    msg.addFields([{name:"",value:namesColumn},{name:"",value:valuesColumn}]);
+    msg.addFields([{ name: "", value: namesColumn }, { name: "", value: valuesColumn }]);
 
-    return {embeds:[msg]};
+    return { embeds: [msg] };
 }
 
 let lastTaxTime = 0;
