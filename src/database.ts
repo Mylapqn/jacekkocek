@@ -133,6 +133,7 @@ export class KinoDatabase {
             if (eventData["date_poll"]) eventOptions.datePoll = Polls.Poll.list.find(p => p.id == eventData["date_poll"]);
             if (eventData["lock_message_id"]) eventOptions.lockMessageId = eventData["lock_message_id"];
             if (eventData["attendee_ids"]) eventOptions.attendeeIds = (eventData["attendee_ids"] as string).split(",");
+            if (eventData["guild_event_id"]) eventOptions.guildEventId = eventData["guild_event_id"];
             Kino.Event.fromDatabase(eventOptions);
         }
         return events;
@@ -155,6 +156,7 @@ export class KinoDatabase {
         if (event.datePoll) updateString += `date_poll=\"${event.datePoll.id}\", `
         if (event.filmPoll) updateString += `film_poll=\"${event.filmPoll.id}\", `
         if (event.attendeeIds) updateString += `attendee_ids=\"${event.attendeeIds.join(",")}\", `
+        if (event.guildEventId) updateString += `guild_event_id=\"${event.guildEventId}\", `
         updateString += `date_locked=\"${event.dateLocked ? 1 : 0}\", watched=\"${event.watched ? 1 : 0}\", lock_message_id=\"${event.lockMessageId || 'NULL'}\" WHERE id=\"${event.id}\"`
         await connection.query(updateString);
     }

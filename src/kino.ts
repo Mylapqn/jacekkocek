@@ -39,10 +39,11 @@ export class Event {
     date: Date;
     datePoll: Polls.Poll;
     filmPoll: Polls.Poll;
-    attendeeIds: string[] 
+    attendeeIds: string[]
     dateLocked = false;
     watched = false;
     lockMessageId: string = "";
+    guildEventId: string;
     constructor() {
         Event.list.push(this);
     }
@@ -53,36 +54,38 @@ export class Event {
         return event;
     }
 
-    static async startToday() {
+    async start() {
         let response = "";
-        const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
-        if (todayEvent && todayEvent.film.watched == false) {
-            const todayVoters = todayEvent.attendeeIds;
+        if (!this.watched) {
+            const todayVoters = this.attendeeIds;
             const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
-            response = await Matoshi.lateFees(onTimeUsers, todayVoters, todayEvent.film.name);
-            todayEvent.film.watched = true;
-            Database.KinoDatabase.setFilm(todayEvent.film);
-        } else {
-            response = todayEvent.film.watched ? "Already started" : "No event for today";
+            response = await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name);
+            this.film.watched = true;
+            Database.KinoDatabase.setFilm(this.film);
+        }
+        else {
+            response = "Event already watched";
         }
         return response;
     }
 
     static async kinoReward() {
-        const todayEvent = this.list.find(e => e.date && e.date.toDateString() == new Date().toDateString());
-        if (todayEvent && todayEvent.film.watched) {
-            Main.mainVoiceChannel.send(
-                await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.id))
+        const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
+        const activeEvent = this.list.find(k => guildEvents.find((e, id) => k.guildEventId == id && e.isActive()));
+        if (activeEvent && !activeEvent.watched) {
+            activeEvent.watched = true;
+            Main.kinoChannel.send(
+                await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.user), activeEvent.film.name)
             );
+            Database.KinoDatabase.setEvent(activeEvent);
         }
     }
-
-    static async filmVoteOptionFilter(name: string) {
+    static filmVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
         let film = await Database.KinoDatabase.getFilmByName(name);
         if (film == undefined) throw new Error("Invalid option");
         return Utilities.toTitleCase(name);
     }
-    static async dateVoteOptionFilter(name: string) {
+    static dateVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
         let date = Utilities.dateFromKinoString(name)
         if (date == undefined) {
             throw new Error("Invalid date");
@@ -153,6 +156,7 @@ export class Event {
                 console.error("KinoEvent Image search error:" + error.message);
             }
             let guildEvent = await Main.mainGuild.scheduledEvents.create(guildEventOptions)
+            this.guildEventId = guildEvent.id;
             this.datePoll.message.channel.send(await guildEvent.createInviteURL({ maxAge: 0 }));
             Database.KinoDatabase.setEvent(this);
         }
@@ -169,6 +173,7 @@ export class Event {
         event.filmPoll = options?.filmPoll;
         event.lockMessageId = options?.lockMessageId;
         event.attendeeIds = options?.attendeeIds;
+        event.guildEventId = options?.guildEventId;
         return event;
     }
 
@@ -187,8 +192,9 @@ export interface EventOptions {
     watched: boolean,
     filmPoll?: Polls.Poll,
     datePoll?: Polls.Poll,
-    lockMessageId?: string
-    attendeeIds?: string[]
+    lockMessageId?: string,
+    attendeeIds?: string[],
+    guildEventId?: string,
 }
 
 
