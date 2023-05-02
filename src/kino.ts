@@ -57,7 +57,7 @@ export class Event {
     async start() {
         let response = "";
         if (!this.watched) {
-            setTimeout(async() => {
+            setTimeout(async () => {
                 const todayVoters = this.attendeeIds;
                 const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
                 Main.kinoChannel.send(await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name));
@@ -219,7 +219,7 @@ export interface EventOptions {
 export async function interactionWeightCheck(interaction: Discord.Interaction) {
     let userWeight = (await Sheets.getUserData()).get(interaction.user.id).weight;
     const minWeight = .9;
-    if (userWeight >= minWeight) {
+    if (userWeight >= minWeight || (interaction.member.roles as Discord.GuildMemberRoleManager).cache.find(e => e == Main.managerRole)) {
         return true;
     }
     else {
