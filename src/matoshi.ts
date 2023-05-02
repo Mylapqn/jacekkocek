@@ -234,6 +234,10 @@ export async function watchReward(users: Discord.User[], filmName: string): Prom
         namesColumn += user.toString() + "\n";
         valuesColumn += Main.policyValues.kino.watchReward + " ₥\n";
     }
+
+    if (namesColumn.length == 0) namesColumn = "no users";
+    if (valuesColumn.length == 0) valuesColumn = "no reward";
+
     msg.addFields([{ name: "User", value: namesColumn, inline: true }, { name: "Reward", value: valuesColumn, inline: true }]);
     let csfdResult = (await Main.googleSearch(Main.SearchEngines.CSFD, filmName))[0];
     if (csfdResult && csfdResult.link) {
