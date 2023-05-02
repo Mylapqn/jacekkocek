@@ -21,7 +21,9 @@ import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
 import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
-
+require( 'console-stamp' )( console , { 
+    format: ':date(dd/mm/yyyy HH:MM:ss.l)' 
+} );
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
