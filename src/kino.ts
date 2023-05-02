@@ -82,6 +82,8 @@ export class Event {
                 await Matoshi.watchReward(voiceMembers, activeEvent.film.name)
             );
 
+            Sheets.setKinoToday(activeEvent.film.name);
+
             const userData = await Sheets.getUserData();
             for (const [id, data] of userData) {
                 if (voiceMembers.find(u => u.id == id)) {
