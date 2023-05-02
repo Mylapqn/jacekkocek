@@ -57,11 +57,14 @@ export class Event {
     async start() {
         let response = "";
         if (!this.watched) {
-            const todayVoters = this.attendeeIds;
-            const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
-            response = await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name);
-            this.film.watched = true;
-            Database.KinoDatabase.setFilm(this.film);
+            setTimeout(async() => {
+                const todayVoters = this.attendeeIds;
+                const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
+                Main.kinoChannel.send(await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name));
+                this.film.watched = true;
+                Database.KinoDatabase.setFilm(this.film);
+            }, 120 * 1000)
+            response = "Kino is starting, late fees in 120s!";
         }
         else {
             response = "Event already watched";
@@ -74,9 +77,24 @@ export class Event {
         const activeEvent = this.list.find(k => guildEvents.find((e, id) => k.guildEventId == id && e.isActive()));
         if (activeEvent && !activeEvent.watched) {
             activeEvent.watched = true;
+            const voiceMembers = Main.mainVoiceChannel.members.map(member => member.user);
             Main.kinoChannel.send(
-                await Matoshi.watchReward(Main.mainVoiceChannel.members.map(member => member.user), activeEvent.film.name)
+                await Matoshi.watchReward(voiceMembers, activeEvent.film.name)
             );
+
+            const userData = await Sheets.getUserData();
+            for (const [id, data] of userData) {
+                if (voiceMembers.find(u => u.id == id)) {
+                    data.weight = Math.min(1, data.weight + 0.05);
+                    if (activeEvent.attendeeIds.includes(id)) data.reliability = Math.min(1, data.reliability + 0.1);
+                } else {
+                    data.weight = Math.max(0, data.weight - 0.05);
+                    if (activeEvent.attendeeIds.includes(id)) data.reliability = Math.max(0, data.reliability - 0.1);
+                }
+            }
+
+            Sheets.setUserData(userData);
+
             Database.KinoDatabase.setEvent(activeEvent);
         }
     }
