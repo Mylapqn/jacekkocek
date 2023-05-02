@@ -57,14 +57,14 @@ export class Event {
     async start() {
         let response = "";
         if (!this.watched) {
+            const todayVoters = this.attendeeIds;
+            const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
             setTimeout(async () => {
-                const todayVoters = this.attendeeIds;
-                const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
                 Main.kinoChannel.send(await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name));
                 this.film.watched = true;
                 Database.KinoDatabase.setFilm(this.film);
             }, 120 * 1000)
-            response = "Kino is starting, late fees in 120s!";
+            response = "Kino is starting, late fees in 120s! " + this.attendeeIds.filter(id => !onTimeUsers.includes(id)).map(id => `<@${id}>`);
         }
         else {
             response = "Event already watched";
