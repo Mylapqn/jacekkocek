@@ -106,6 +106,27 @@ export async function setUserData(userData: Map<string, UserKinoData>) {
     }
 }
 
+export async function setKinoToday(film: string) {
+    doAuth();
+    let index = await getDayIndex(new Date());
+    try {
+        let result = await googleSheets.spreadsheets.values.update({
+            auth,
+            spreadsheetId,
+            range: "Díly!K" + index,
+            valueInputOption: "RAW",
+            requestBody: {
+                  "majorDimension": "COLUMNS",
+                  "range": "Díly!K" + index,
+                  "values": [[film]]
+              },
+        });
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
 export async function getDay(date: Date): Promise<number> {
     doAuth();
     let index = await getDayIndex(date);
