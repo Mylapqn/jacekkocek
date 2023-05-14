@@ -58,8 +58,9 @@ export class Event {
         let response = "";
         if (!this.watched) {
             const todayVoters = this.attendeeIds;
-            const onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
+            let onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
             setTimeout(async () => {
+                onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
                 Main.kinoChannel.send(await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name));
                 this.film.watched = true;
                 Database.KinoDatabase.setFilm(this.film);
