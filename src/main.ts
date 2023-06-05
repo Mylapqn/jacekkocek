@@ -21,9 +21,9 @@ import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
 import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
-require( 'console-stamp' )( console , { 
-    format: ':date(dd/mm/yyyy HH:MM:ss.l)' 
-} );
+require('console-stamp')(console, {
+    format: ':date(dd/mm/yyyy HH:MM:ss.l)'
+});
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -541,7 +541,7 @@ client.on('interactionCreate', async interaction => {
                         }
                         createReminder(newRem);
                         interaction.reply({
-                            content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
+                            content: `Added reminder for **_${remText}_** at <t:${newRem.timestamp}> (<t:${newRem.timestamp}:R>)`,
                             allowedMentions: { parse: [] }
                         });
                     } else {
@@ -1356,29 +1356,23 @@ client.on("messageReactionRemove", (messageReaction, user) => {
 
 //#region REMINDERS
 
-function parseTime(inputString: string) {
-    let units = -1;
-    let unitString = inputString.match(/[a-zA-Z]+/g)[0];
-    if (unitString == "") return -1;
-    if (unitString.startsWith("sec") || unitString == "s") {
-        units = 1;
+function parseTime(durationString: string) {
+    const regex = /(?:(\d+)w)?\s?(?:(\d+)d)?\s?(?:(\d+)h)?\s?(?:(\d+)m)?\s?(?:(\d+)s)?/;
+    const matches = durationString.match(regex);
+
+    if (!matches) {
+        throw new Error("Invalid duration format");
     }
-    else if (unitString.startsWith("min") || unitString == "m") {
-        units = 60;
-    }
-    else if (unitString.startsWith("hour") || unitString == "h" || unitString == "hr") {
-        units = 3600;
-    }
-    else if (unitString.startsWith("day") || unitString == "d") {
-        units = 86400;
-    }
-    else if (unitString.startsWith("week") || unitString == "w") {
-        units = 604800;
-    }
-    else if (unitString.startsWith("mon")) {
-        units = 2592000;
-    }
-    return parseFloat(inputString) * units;
+
+    const weeks = matches[1] ? parseInt(matches[1]) : 0;
+    const days = matches[2] ? parseInt(matches[2]) : 0;
+    const hours = matches[3] ? parseInt(matches[3]) : 0;
+    const minutes = matches[4] ? parseInt(matches[4]) : 0;
+    const seconds = matches[5] ? parseInt(matches[5]) : 0;
+
+    const totalSeconds = weeks * 7 * 24 * 60 * 60 + days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
+
+    return totalSeconds;
 }
 
 function createReminder(newRem) {
