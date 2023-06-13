@@ -555,7 +555,8 @@ client.on('interactionCreate', async interaction => {
                         }
                         break;
                     case "remove": {
-                        removeReminder(interaction.user.id, parseInt(interaction.options.getString("reminder")));
+                        const removed = removeReminder(interaction.user.id, parseInt(interaction.options.getString("reminder")));
+                        interaction.reply({content: removed.text + " removed", ephemeral: true});
                     }
                         break;
                     case "list": {
@@ -1418,8 +1419,9 @@ function setReminder(newRem: ReminderData) {
 
 function removeReminder(authorId: string, timestamp: number) {
     const rem = reminders.find(r => (r.author == authorId || !r.author) && r.timestamp == timestamp);
-    reminders.splice(reminders.indexOf(rem), 1);
+    const removed = reminders.splice(reminders.indexOf(rem), 1);
     saveReminders();
+    return removed[0];
 }
 
 function getAuthorsReminders(authorId: string) {
