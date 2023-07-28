@@ -148,8 +148,8 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
     try {
         let actionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(
             new Discord.ButtonBuilder({ emoji: { name: "⏮" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrev" }),
-            new Discord.ButtonBuilder({ emoji: { name: "⏹" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
-            new Discord.ButtonBuilder({ emoji: { name: "⏭" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
+            new Discord.ButtonBuilder({ label:"\⏹",emoji: { name: "⏹" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
+            new Discord.ButtonBuilder({ label:"⏭",emoji: { name: "⏭" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
             new Discord.ButtonBuilder({ emoji: { name: "🔄" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
         );
         textChannel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)], components: [actionRow] }).then((msg: Discord.Message<boolean>) => {
