@@ -884,6 +884,21 @@ client.on('interactionCreate', async interaction => {
                 }
                 break;
             }
+            case "youtubeStop": {
+                Youtube.stop()
+                interaction.deferUpdate();
+                break;
+            }
+            case "youtubeNext": {
+                Youtube.skip(interaction.guild,1,interaction.message.channel)
+                interaction.deferUpdate();
+                break;
+            }
+            case "youtubeAutoplay": {
+                Youtube.toggleAutoplay()
+                interaction.deferUpdate();
+                break;
+            }
         }
     }
     else if (interaction.isContextMenuCommand()) {

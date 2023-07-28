@@ -7,9 +7,9 @@ import * as Utilities from "./utilities";
 import axios from "axios";
 
 
-let nextYoutube: string | number | NodeJS.Timeout;
+let nextYoutubeTimeout: string | number | NodeJS.Timeout;
 let nextYoutubeData: VideoData;
-let youtubeAutoplay = false;
+let autoplay = false;
 
 interface VideoData {
     url: string,
@@ -23,8 +23,6 @@ interface YoutubeData {
     elapsed: number,
     length: number,
     barInterval: any,
-    nextUrl: string,
-    nextData: VideoData,
     autoplay: boolean,
     embed: Discord.EmbedBuilder
 }
@@ -36,10 +34,10 @@ let playlist = {
     id: "none"
 }
 
-let recentList = [];
+let recentList: string[] = [];
 let recentMax = 6;
 
-let playing = [];
+let playing: YoutubeData[] = [];
 
 let barUpdateInterval = 2000;
 
@@ -50,9 +48,9 @@ export function play(interaction: Discord.ChatInputCommandInteraction) {
     if (voiceChannel) {
         Main.joinVoiceChannel(member.voice.channel);
         if (interaction.options.getBoolean("autoplay")) {
-            youtubeAutoplay = true;
+            autoplay = true;
         }
-        else youtubeAutoplay = false;
+        else autoplay = false;
         if (vid.startsWith("http")) {
             if (vid.includes("list=")) {
                 let n = vid.indexOf("list=");
@@ -81,8 +79,8 @@ function clearNextTimeout() {
     playing.forEach(d => {
         clearInterval(d.barInterval);
     })
-    if (nextYoutube) clearTimeout(nextYoutube);
-    nextYoutube = null;
+    if (nextYoutubeTimeout) clearTimeout(nextYoutubeTimeout);
+    nextYoutubeTimeout = null;
 }
 
 async function playPlaylist(url: string, channel: Discord.VoiceChannel, textChannel: Discord.TextBasedChannel) {
@@ -125,10 +123,13 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
         .setDescription(Utilities.timeString(length) + ' | From *' + info.videoDetails.ownerChannelName + '*')
         .setURL(videoUrl);
 
+    if (autoplay)
+        embed.setFooter({ text: `Autoplay is on` });
+
 
     if (playlist.items.length > 0) {
         embed
-            .setFooter({ text: `${playlist.position + 1}/${playlist.items.length} in ${playlist.name}`})
+            .setFooter({ text: `${playlist.position + 1}/${playlist.items.length} in ${playlist.name}` })
             .setURL(`${videoUrl}&list=${playlist.id}`)
     }
     let newPlaying: YoutubeData = {
@@ -137,9 +138,7 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
         elapsed: 0,
         length: length * 1000,
         barInterval: undefined,
-        nextUrl: undefined,
-        nextData: undefined,
-        autoplay: youtubeAutoplay,
+        autoplay: autoplay,
         embed: embed
     }
     newPlaying.barInterval = setInterval(() => {
@@ -147,10 +146,10 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
     }, barUpdateInterval);
     try {
         let actionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(
-            new Discord.ButtonBuilder({ emoji: { name: "backward",id:"1134483313235611648" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrev" }),
-            new Discord.ButtonBuilder({ emoji: { name: "stop",id:"1134483316544913538" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
-            new Discord.ButtonBuilder({ emoji: { name: "forward",id:"1134483315290820678" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
-            new Discord.ButtonBuilder({ emoji: { name: "autoplay",id:"1134483312052797490" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
+            new Discord.ButtonBuilder({ emoji: { name: "backward", id: "1134483313235611648" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrev" }),
+            new Discord.ButtonBuilder({ emoji: { name: "stop", id: "1134483316544913538" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
+            new Discord.ButtonBuilder({ emoji: { name: "forward", id: "1134483315290820678" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
+            new Discord.ButtonBuilder({ emoji: { name: "autoplay", id: "1134483312052797490" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
         );
         textChannel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)], components: [actionRow] }).then((msg: Discord.Message<boolean>) => {
             newPlaying.statusMsg = msg;
@@ -173,7 +172,7 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
             clearNextTimeout();
         }
     }
-    else if (youtubeAutoplay) {
+    else {
         for (let i = 0; i < info.related_videos.length; i++) {
             const nextId = info.related_videos[i].id;
             if (!recentList.includes(nextId)) {
@@ -191,14 +190,17 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
 
     if (nextVideo) {
         let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
-        videoStream.on("finish", () => {
-        });
-        nextYoutube = setTimeout(() => { playYoutube(nextUrl, channel, textChannel) }, (length + 3) * 1000);
+        videoStream.on("finish", () => { });
+        nextYoutubeTimeout = setTimeout(tryPlayNextYoutube, (length + 3) * 1000);
         nextYoutubeData = { url: nextUrl, channel: channel, textChannel: textChannel };
-        newPlaying.nextUrl = nextUrl;
-        newPlaying.nextData = nextYoutubeData;
     }
     playing.push(newPlaying);
+}
+
+function tryPlayNextYoutube() {
+    if (playlist.items.length > 0 || autoplay && nextYoutubeData.url) {
+        playYoutube(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
+    }
 }
 
 async function getPlaylistItems(playlistId: string) {
@@ -285,23 +287,31 @@ function generateProgressBar(elapsed: number, length: number, count: number) {
 }
 
 export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.TextBasedChannel) {
-    if (nextYoutube && (youtubeAutoplay || playlist.items.length > 0)) {
+    if (nextYoutubeTimeout && (autoplay || playlist.items.length > 0)) {
         let voice = guild.members.me.voice.channel;
         if (voice) {
-            if (amount && playlist.items.length > 0) {
+            if (amount > 0 && playlist.items.length > 0) {
                 //let num = parseInt(amount);
-                let num = amount;
-                if (!isNaN(num)) {
+                if (!isNaN(amount)) {
                     //message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
-                    playlist.position += (num - 1);
-                    if (playlist.position >= 0 && playlist.position < playlist.items.length) {
+                    if (playlist.position >= 0 && playlist.position + amount < playlist.items.length) {
+                        playlist.position += amount;
                         nextYoutubeData.url = "https://www.youtube.com/watch?v=" + playlist.items[playlist.position];
                     }
                     else {
                         textChannel.send("Cannot skip outside of playlist!");
-                        playlist.position -= (num - 1);
                         return;
                     }
+                }
+            }
+            if (amount < 0) {
+                if (playlist.items.length > 0 && playlist.position > 0) {
+                    playlist.position += amount;
+                    nextYoutubeData.url = "https://www.youtube.com/watch?v=" + playlist.items[playlist.position];
+                }
+                else if (recentList.length > 1) {
+                    recentList.pop();
+                    nextYoutubeData.url = "https://www.youtube.com/watch?v=" + recentList.pop();
                 }
             }
             playYoutube(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
@@ -320,4 +330,11 @@ export function progressEmoji(progress: number) {
 export function stop() {
     clearNextTimeout();
     playlist.items = [];
+}
+
+export function toggleAutoplay() {
+    autoplay = !autoplay;
+    if (!playlist || playlist.items.length <= 0) {
+        playing[playing.length - 1].embed.setFooter({ text: autoplay ? "Autoplay is on" : "" });
+    }
 }
