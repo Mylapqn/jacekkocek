@@ -3,7 +3,7 @@ import * as DiscordVoice from "@discordjs/voice";
 import * as Https from "https";
 import Canvas from "canvas";
 import Jimp from "jimp";
-import ytdl from "ytdl-core";
+import ytdl from "@distube/ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
