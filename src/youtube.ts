@@ -235,6 +235,7 @@ async function getPlaylistName(playlistId: string) {
 }
 
 async function search(query: string) {
+    console.log(`Searching youtube for ${query}`);
     let response = await axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&eventType=none&maxResults=1&q=${query}&regionCode=US&relevanceLanguage=EN&safeSearch=none&type=video&key=${process.env.SEARCH_API_KEY}`);
 
     if (response.status != 200) {
