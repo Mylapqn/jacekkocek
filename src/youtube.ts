@@ -146,7 +146,8 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
         updateMessage(newPlaying);
     }, barUpdateInterval);
     try {
-        textChannel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)] }).then((msg: Discord.Message<boolean>) => {
+        let actionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(new Discord.ButtonBuilder({label:"next",emoji:{ name: "⏭" }}));
+        textChannel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)], components: [actionRow] }).then((msg: Discord.Message<boolean>) => {
             newPlaying.statusMsg = msg;
         });
 
