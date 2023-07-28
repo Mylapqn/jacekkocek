@@ -21,9 +21,9 @@ import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
 import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
-require( 'console-stamp' )( console , { 
-    format: ':date(dd/mm/yyyy HH:MM:ss.l)' 
-} );
+require('console-stamp')(console, {
+    format: ':date(dd/mm/yyyy HH:MM:ss.l)'
+});
 
 //const icecastParser = require("icecast-parser");
 //const Parser = icecastParser.Parser;
@@ -350,7 +350,7 @@ let radioServerPing = 0;
 
 const reminderThreshold = 3600;
 
-let reminders = [];
+let reminders: Array<ReminderData> = [];
 
 let upcomingReminders = [];
 const remindersFileName = "reminders.json";
@@ -523,33 +523,55 @@ client.on('interactionCreate', async interaction => {
                 break;
             }
             case "remind": {
-                let time = parseTime(interaction.options.getString("delay"));
-                if (isNaN(time) || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
-                else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
-                else if (time > 0) {
-                    if (await Matoshi.cost(member.id, policyValues.service.remindFee, interaction.guildId)) {
+                switch (interaction.options.getSubcommand()) {
+                    case "create":
+                        let time = parseTime(interaction.options.getString("delay"));
+                        if (isNaN(time) || time <= 0) interaction.reply({ content: "Invalid time!", ephemeral: true });
+                        else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
+                        else if (time > 0) {
+                            if (await Matoshi.cost(member.id, policyValues.service.remindFee, interaction.guildId)) {
 
-                        let remText = interaction.options.getString("text").trim();
-                        if (remText == "") remText = "Unnamed reminder";
-                        let newRem = {
-                            //guild: interaction.guildId,
-                            channel: interaction.channelId,
-                            dm: interaction.channelId,
-                            text: remText,
-                            timestamp: Math.round(nowSeconds() + time),
-                            mentions: []
+                                let remText = interaction.options.getString("text").trim();
+                                if (remText == "") remText = "Unnamed reminder";
+                                let newRem = {
+                                    //guild: interaction.guildId,
+                                    channel: interaction.channelId,
+                                    text: remText,
+                                    timestamp: Math.round(nowSeconds() + time),
+                                    author: interaction.user.id,
+                                    mentions: []
+                                }
+                                setReminder(newRem);
+                                interaction.reply({
+                                    content: `Added reminder for **_${remText}_** at <t:${newRem.timestamp}> (<t:${newRem.timestamp}:R>)`,
+                                    allowedMentions: { parse: [] }
+                                });
+                            } else {
+                                interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.remindFee + "₥", allowedMentions: { repliedUser: false } });
+                            }
                         }
-                        createReminder(newRem);
-                        interaction.reply({
-                            content: "Added reminder for **_" + remText + "_** at <t:" + newRem.timestamp + ">",
-                            allowedMentions: { parse: [] }
-                        });
-                    } else {
-                        interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.remindFee + "₥", allowedMentions: { repliedUser: false } });
+                        else {
+                            interaction.reply({ content: "Invalid time!", ephemeral: true });
+                        }
+                        break;
+                    case "remove": {
+                        const removed = removeReminder(interaction.user.id, parseInt(interaction.options.getString("reminder")));
+                        interaction.reply({content: removed.text + " removed", ephemeral: true});
                     }
-                }
-                else {
-                    interaction.reply({ content: "Invalid time!", ephemeral: true });
+                        break;
+                    case "list": {
+                        cleanupReminders();
+                        saveReminders();
+                        let msg = "__Reminders:__\n";
+                        for (const rem of reminders) {
+                            const author = rem.author ? "<@" + rem.author + ">" : "";
+                            msg += "• **" + rem.text + "** at <t:" + rem.timestamp + "> " + author + "\n";
+                        }
+                        interaction.reply({ content: msg, allowedMentions: { parse: [] } });
+                        break;
+                    }
+                    default:
+                        break;
                 }
                 break;
             }
@@ -886,6 +908,15 @@ client.on('interactionCreate', async interaction => {
                     });
                 } else {
                     interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.nukeFee + "₥", ephemeral: true });
+                }
+            }
+        }
+    } else if (interaction.isAutocomplete()) {
+        switch (interaction.commandName) {
+            case "remind": {
+                if (interaction.options.getSubcommand() == "remove") {
+                    const focused = interaction.options.getFocused();
+                    interaction.respond(getAuthorsReminders(interaction.user.id).filter(r => r.text.toLocaleLowerCase().includes(focused.toLocaleLowerCase())).map(r => ({ name: `${r.text} - ${Utilities.dateString(new Date(r.timestamp * 1000))}`, value: r.timestamp + "" })));
                 }
             }
         }
@@ -1295,16 +1326,6 @@ client.on('messageCreate', async message => {
                     }
                     break;
                 }
-                case "remindList": {
-                    cleanupReminders();
-                    saveReminders();
-                    let msg = "__Reminders:__\n";
-                    for (const rem of reminders) {
-                        msg += "• **" + rem.text + "** at <t:" + rem.timestamp + ">\n";
-                    }
-                    channel.send({ content: msg, allowedMentions: { parse: [] } });
-                    break;
-                }
                 case "restart": {
                     if (adminId.includes(message.author.id)) {
                         message.delete().then(() => {
@@ -1356,32 +1377,34 @@ client.on("messageReactionRemove", (messageReaction, user) => {
 
 //#region REMINDERS
 
-function parseTime(inputString: string) {
-    let units = -1;
-    let unitString = inputString.match(/[a-zA-Z]+/g)[0];
-    if (unitString == "") return -1;
-    if (unitString.startsWith("sec") || unitString == "s") {
-        units = 1;
+function parseTime(durationString: string) {
+    const regex = /(?:(\d+)w)?\s?(?:(\d+)d)?\s?(?:(\d+)h)?\s?(?:(\d+)m)?\s?(?:(\d+)s)?/;
+    const matches = durationString.match(regex);
+
+    if (!matches) {
+        throw new Error("Invalid duration format");
     }
-    else if (unitString.startsWith("min") || unitString == "m") {
-        units = 60;
-    }
-    else if (unitString.startsWith("hour") || unitString == "h" || unitString == "hr") {
-        units = 3600;
-    }
-    else if (unitString.startsWith("day") || unitString == "d") {
-        units = 86400;
-    }
-    else if (unitString.startsWith("week") || unitString == "w") {
-        units = 604800;
-    }
-    else if (unitString.startsWith("mon")) {
-        units = 2592000;
-    }
-    return parseFloat(inputString) * units;
+
+    const weeks = matches[1] ? parseInt(matches[1]) : 0;
+    const days = matches[2] ? parseInt(matches[2]) : 0;
+    const hours = matches[3] ? parseInt(matches[3]) : 0;
+    const minutes = matches[4] ? parseInt(matches[4]) : 0;
+    const seconds = matches[5] ? parseInt(matches[5]) : 0;
+
+    const totalSeconds = weeks * 7 * 24 * 60 * 60 + days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
+
+    return totalSeconds;
 }
 
-function createReminder(newRem) {
+type ReminderData = {
+    channel: string,
+    text: string,
+    timestamp: number,
+    author: string,
+    timeout?: any
+}
+
+function setReminder(newRem: ReminderData) {
     let time = newRem.timestamp - nowSeconds();
     if (time <= reminderThreshold) {
         newRem.timeout = setTimeout(() => {
@@ -1392,6 +1415,17 @@ function createReminder(newRem) {
     }
     reminders.push(newRem);
     saveReminders();
+}
+
+function removeReminder(authorId: string, timestamp: number) {
+    const rem = reminders.find(r => (r.author == authorId || !r.author) && r.timestamp == timestamp);
+    const removed = reminders.splice(reminders.indexOf(rem), 1);
+    saveReminders();
+    return removed[0];
+}
+
+function getAuthorsReminders(authorId: string) {
+    return reminders.filter(r => r.author == authorId || !r.author);
 }
 
 function cleanupReminders() {
@@ -1426,7 +1460,7 @@ export function nowSeconds() {
     return Math.round(Date.now() / 1000);
 }
 
-async function executeReminder(rem) {
+async function executeReminder(rem: ReminderData) {
     let channel = await client.channels.fetch(rem.channel) as Discord.TextBasedChannel;
     let toSend = "**Reminder: **" + rem.text;
     /*let mentions = "";
@@ -1481,7 +1515,7 @@ function saveReminders() {
             channel: r.channel,
             text: r.text,
             timestamp: r.timestamp,
-            mentions: r.mentions
+            author: r.author
         })
     }
     fs.writeFile(remindersFileName, JSON.stringify(f), (e) => { console.log("Finished writing", e) });
