@@ -894,6 +894,11 @@ client.on('interactionCreate', async interaction => {
                 interaction.deferUpdate();
                 break;
             }
+            case "youtubePrevious": {
+                Youtube.skip(interaction.guild,-1,interaction.message.channel)
+                interaction.deferUpdate();
+                break;
+            }
             case "youtubeAutoplay": {
                 Youtube.toggleAutoplay()
                 interaction.deferUpdate();

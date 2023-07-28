@@ -146,7 +146,7 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
     }, barUpdateInterval);
     try {
         let actionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(
-            new Discord.ButtonBuilder({ emoji: { name: "backward", id: "1134483313235611648" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrev" }),
+            new Discord.ButtonBuilder({ emoji: { name: "backward", id: "1134483313235611648" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrevious" }),
             new Discord.ButtonBuilder({ emoji: { name: "stop", id: "1134483316544913538" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
             new Discord.ButtonBuilder({ emoji: { name: "forward", id: "1134483315290820678" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
             new Discord.ButtonBuilder({ emoji: { name: "autoplay", id: "1134483312052797490" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
@@ -295,7 +295,7 @@ export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.
                 if (!isNaN(amount)) {
                     //message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
                     if (playlist.position >= 0 && playlist.position + amount < playlist.items.length) {
-                        playlist.position += amount;
+                        playlist.position += amount-1;
                         nextYoutubeData.url = "https://www.youtube.com/watch?v=" + playlist.items[playlist.position];
                     }
                     else {
