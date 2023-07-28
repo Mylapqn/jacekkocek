@@ -287,7 +287,7 @@ function generateProgressBar(elapsed: number, length: number, count: number) {
 }
 
 export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.TextBasedChannel) {
-    if (nextYoutubeTimeout && (autoplay || playlist.items.length > 0)) {
+    if (nextYoutubeTimeout && nextYoutubeData.url) {
         let voice = guild.members.me.voice.channel;
         if (voice) {
             if (amount > 0 && playlist.items.length > 0) {
@@ -295,7 +295,7 @@ export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.
                 if (!isNaN(amount)) {
                     //message.channel.send("sas " + youtubePlaylistPosition + " sas " + num);
                     if (playlist.position >= 0 && playlist.position + amount < playlist.items.length) {
-                        playlist.position += amount-1;
+                        playlist.position += amount - 1;
                         nextYoutubeData.url = "https://www.youtube.com/watch?v=" + playlist.items[playlist.position];
                     }
                     else {
@@ -306,7 +306,7 @@ export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.
             }
             if (amount < 0) {
                 if (playlist.items.length > 0 && playlist.position > 0) {
-                    playlist.position += amount;
+                    playlist.position += amount - 1;
                     nextYoutubeData.url = "https://www.youtube.com/watch?v=" + playlist.items[playlist.position];
                 }
                 else if (recentList.length > 1) {
@@ -335,6 +335,6 @@ export function stop() {
 export function toggleAutoplay() {
     autoplay = !autoplay;
     if ((!playlist || playlist.items.length <= 0) && playing[playing.length - 1]) {
-        playing[playing.length - 1].embed.setFooter({ text: autoplay ? "Autoplay is on" : "" });
+        playing[playing.length - 1].embed.setFooter({ text: autoplay ? "Autoplay is on" : null });
     }
 }
