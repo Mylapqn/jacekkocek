@@ -147,10 +147,10 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
     }, barUpdateInterval);
     try {
         let actionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(
-            new Discord.ButtonBuilder({ emoji: { name: "⏮" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrev" }),
-            new Discord.ButtonBuilder({ label:"\⏹",emoji: { name: "⏹" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
-            new Discord.ButtonBuilder({ label:"fof",emoji: { name: "forward",id:"1134483312052797490" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
-            new Discord.ButtonBuilder({ emoji: { name: "🔄" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
+            new Discord.ButtonBuilder({ emoji: { name: "backward",id:"1134483313235611648" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrev" }),
+            new Discord.ButtonBuilder({ emoji: { name: "stop",id:"1134483316544913538" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
+            new Discord.ButtonBuilder({ emoji: { name: "forward",id:"1134483315290820678" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
+            new Discord.ButtonBuilder({ emoji: { name: "autoplay",id:"1134483312052797490" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
         );
         textChannel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)], components: [actionRow] }).then((msg: Discord.Message<boolean>) => {
             newPlaying.statusMsg = msg;
