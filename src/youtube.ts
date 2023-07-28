@@ -125,12 +125,12 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
         .setDescription(Utilities.timeString(length) + ' | From *' + info.videoDetails.ownerChannelName + '*')
         .setURL(videoUrl);
 
+
     if (playlist.items.length > 0) {
         embed
-            .setFooter({ text: `${playlist.position + 1}/${playlist.items.length} in ${playlist.name}` })
+            .setFooter({ text: `${playlist.position + 1}/${playlist.items.length} in ${playlist.name}`})
             .setURL(`${videoUrl}&list=${playlist.id}`)
     }
-
     let newPlaying: YoutubeData = {
         statusMsg: undefined,
         voiceChannel: channel,
@@ -146,7 +146,12 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
         updateMessage(newPlaying);
     }, barUpdateInterval);
     try {
-        let actionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(new Discord.ButtonBuilder({label:"next",emoji:{ name: "⏭" },style:Discord.ButtonStyle.Primary,customId:"youtubeNext"}));
+        let actionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(
+            new Discord.ButtonBuilder({ emoji: { name: "⏮" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrev" }),
+            new Discord.ButtonBuilder({ emoji: { name: "⏹" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
+            new Discord.ButtonBuilder({ emoji: { name: "⏭" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
+            new Discord.ButtonBuilder({ emoji: { name: "🔄" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
+        );
         textChannel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)], components: [actionRow] }).then((msg: Discord.Message<boolean>) => {
             newPlaying.statusMsg = msg;
         });
