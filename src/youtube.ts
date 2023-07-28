@@ -97,7 +97,7 @@ async function playPlaylist(url: string, channel: Discord.VoiceChannel, textChan
     playlist.items = await getPlaylistItems(url);
     playlist.position = listPos;
     console.log(playlist.items);
-    playYoutube("https://www.youtube.com/watch?v=" + playlist[listPos], channel, textChannel);
+    playYoutube("https://www.youtube.com/watch?v=" + playlist.items[listPos], channel, textChannel);
 }
 
 async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, textChannel: Discord.TextBasedChannel) {
@@ -200,7 +200,7 @@ async function getPlaylistItems(playlistId: string) {
     }
     console.log("SUCCESS! Items: " + response.data.items.length);
     let list = response.data.items.map((x: { contentDetails: { videoId: any; }; }) => x.contentDetails.videoId) as string[]
-    while (response.data.nextPageToken) {
+    while (response.data.nextPageToken && list.length < 300) {
         response = await axios.get(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&pageToken=${response.data.nextPageToken}&maxResults=50&playlistId=${playlistId}&key=${process.env.SEARCH_API_KEY}`);
         list = list.concat(response.data.items.map((x: { contentDetails: { videoId: any; }; }) => x.contentDetails.videoId));
     }
