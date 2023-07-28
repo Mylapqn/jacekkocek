@@ -334,7 +334,7 @@ export function stop() {
 
 export function toggleAutoplay() {
     autoplay = !autoplay;
-    if (!playlist || playlist.items.length <= 0) {
+    if ((!playlist || playlist.items.length <= 0) && playing[playing.length - 1]) {
         playing[playing.length - 1].embed.setFooter({ text: autoplay ? "Autoplay is on" : "" });
     }
 }
