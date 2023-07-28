@@ -97,6 +97,7 @@ async function playPlaylist(url: string, channel: Discord.VoiceChannel, textChan
     playlist.items = await getPlaylistItems(url);
     playlist.position = listPos;
     console.log(playlist.items);
+    console.log(`Playing playlist ${playlist.id}, first video:${playlist.items[listPos]}`)
     playYoutube("https://www.youtube.com/watch?v=" + playlist.items[listPos], channel, textChannel);
 }
 
