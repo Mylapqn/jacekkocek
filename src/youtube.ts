@@ -126,7 +126,9 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
         .setURL(videoUrl);
 
     if (playlist.items.length > 0) {
-        embed.setFooter({ text: `${playlist.position + 1}/${playlist.items.length} in [${playlist.name}](https://www.youtube.com/playlist?list=${playlist.id})` });
+        embed
+            .setFooter({ text: `${playlist.position + 1}/${playlist.items.length} in ${playlist.name}` })
+            .setURL(`${videoUrl}&list=${playlist.id}`)
     }
 
     let newPlaying: YoutubeData = {
