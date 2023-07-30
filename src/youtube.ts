@@ -79,7 +79,7 @@ export async function playFromInteraction(interaction: Discord.ChatInputCommandI
 
             } catch (error) {
                 console.error(error);
-                interaction.editReply({ content: `Error: ${Utilities.limitString(error,20)}!` });
+                interaction.editReply({ content: `Error: ${Utilities.limitString("" + error, 20)}!` });
             }
         }
 
