@@ -253,24 +253,20 @@ async function getPlaylistName(playlistId: string) {
 }
 
 async function search(query: string) {
-    console.log(`Searching youtube for ${query}`);
+    console.log(`Searching youtube for ${Utilities.limitString(query, 20)}`);
     let response = await axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&eventType=none&maxResults=1&q=${query}&regionCode=US&relevanceLanguage=EN&safeSearch=none&type=video&key=${process.env.SEARCH_API_KEY}`);
-    console.log(`Searching result ${response.statusText},${response.status}`);
     if (response.status == 200) {
-        console.log("Good status");
-        console.log("Data",response.data);
-        console.log("Items",response.data.items);
         if (response.data.items && response.data.items.length > 0) {
-            console.log("SUCCESS! ID: " + response.data.items.items[0].id.videoId);
-            return (response.data.items.items[0].id.videoId);
+            console.log(`Successful search for ${Utilities.limitString(query, 20)}! ID: ${response.data.items[0].id.videoId}`);
+            return (response.data.items[0].id.videoId);
         }
         else {
-            console.log("No result for youtube")
+            console.log(`No results for ${Utilities.limitString(query, 20)}`)
             return null;
         }
     }
     else {
-        console.log("Error searching for youtube")
+        console.log("Error searching youtube")
         return null;
     }
 }
