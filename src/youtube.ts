@@ -210,6 +210,9 @@ function onVideoFinish() {
     if (playlist.items.length > 0 || autoplay && nextYoutubeData.url) {
         playVideo(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
     }
+    else {
+        removeLastUi();
+    }
 }
 
 async function removeLastUi() {
