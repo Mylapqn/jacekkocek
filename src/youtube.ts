@@ -46,7 +46,7 @@ export async function playFromInteraction(interaction: Discord.ChatInputCommandI
     let member = interaction.member as Discord.GuildMember;
     let voiceChannel = member.voice.channel as Discord.VoiceChannel;
     if (voiceChannel) {
-        interaction.deferReply();
+        await interaction.deferReply();
         Main.joinVoiceChannel(member.voice.channel);
         if (interaction.options.getBoolean("autoplay")) {
             autoplay = true;
@@ -264,7 +264,7 @@ async function getPlaylistName(playlistId: string) {
 
 async function search(query: string) {
     console.log(`Searching youtube for ${Utilities.limitString(query, 20)}`);
-    let response = await axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&eventType=none&maxResults=1&q=${query}&regionCode=US&relevanceLanguage=EN&safeSearch=none&type=video&key=${process.env.SEARCH_API_KEY}`);
+    let response = await axios.get(encodeURI(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&eventType=none&maxResults=1&q=${query}&regionCode=US&relevanceLanguage=EN&safeSearch=none&type=video&key=${process.env.SEARCH_API_KEY}`));
     if (response.status == 200) {
         if (response.data.items && response.data.items.length > 0) {
             console.log(`Successful search for ${Utilities.limitString(query, 20)}! ID: ${response.data.items[0].id.videoId}`);
