@@ -888,6 +888,7 @@ client.on('interactionCreate', async interaction => {
                 audioPlayer.stop(true);
                 Youtube.stop()
                 interaction.deferUpdate();
+                interaction.reply({content:"Stopped."});
                 break;
             }
             case "youtubeNext": {

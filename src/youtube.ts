@@ -356,11 +356,13 @@ export function stop() {
 export function toggleAutoplay() {
     autoplay = !autoplay;
     if ((!playlist || playlist.items.length <= 0) && playing[playing.length - 1]) {
-        playing[playing.length - 1].embed.setFooter({ text: autoplay ? "Autoplay is on" : null });
+        let p = playing[playing.length - 1];
+        p.embed.setFooter({ text: autoplay ? "Autoplay is on" : null });
         try {
-            (playing[playing.length - 1].statusMsg.components[0].components[3] as Discord.ButtonComponent) = new Discord.ButtonBuilder((playing[playing.length - 1].statusMsg.components[0].components[3] as Discord.ButtonComponent))
+            (p.statusMsg.components[0].components[3] as Discord.ButtonComponent) = new Discord.ButtonBuilder((playing[playing.length - 1].statusMsg.components[0].components[3] as Discord.ButtonComponent))
                 .setStyle(autoplay ? Discord.ButtonStyle.Primary : Discord.ButtonStyle.Secondary)
-                .data as Discord.ButtonComponent
+                .data as Discord.ButtonComponent;
+            p.statusMsg.edit({components:p.statusMsg.components});
         } catch (error) {
             console.log("Button update error:", error);
         }
