@@ -191,15 +191,29 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
     if (nextVideo) {
         let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
         videoStream.on("finish", () => { });
-        nextYoutubeTimeout = setTimeout(tryPlayNextYoutube, (length + 3) * 1000);
+        nextYoutubeTimeout = setTimeout(onVideoFinish, (length + 3) * 1000);
         nextYoutubeData = { url: nextUrl, channel: channel, textChannel: textChannel };
     }
+    await removeLastUi();
     playing.push(newPlaying);
 }
 
-function tryPlayNextYoutube() {
+function onVideoFinish() {
     if (playlist.items.length > 0 || autoplay && nextYoutubeData.url) {
         playYoutube(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
+    }
+}
+
+async function removeLastUi() {
+    if (playing.length > 0) {
+        let data = playing[playing.length - 1];
+        if (data.statusMsg && data.statusMsg.editable) {
+            try {
+                await data.statusMsg.edit({ components: [] })
+            } catch (error) {
+                console.error("Youtube ui remove error: ", error);
+            }
+        }
     }
 }
 
@@ -329,6 +343,7 @@ export function progressEmoji(progress: number) {
 }
 
 export function stop() {
+    removeLastUi();
     clearNextTimeout();
     playlist.items = [];
 }
