@@ -71,7 +71,7 @@ export async function play(interaction: Discord.ChatInputCommandInteraction) {
                 interaction.reply({ content: "Playing youtube in :sound:" + voiceChannel.name, ephemeral: false });
                 playYoutube("https://www.youtube.com/watch?v=" + id, voiceChannel, interaction.channel);
             } catch (error) {
-                interaction.reply({ content: "No results!", ephemeral: true });
+                interaction.reply({ content: `No results for _${vid}_!`, ephemeral: true });
             }
         }
 
