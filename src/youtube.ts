@@ -41,7 +41,7 @@ let playing: YoutubeData[] = [];
 
 let barUpdateInterval = 2000;
 
-export function play(interaction: Discord.ChatInputCommandInteraction) {
+export async function play(interaction: Discord.ChatInputCommandInteraction) {
     let vid = interaction.options.getString("video");
     let member = interaction.member as Discord.GuildMember;
     let voiceChannel = member.voice.channel as Discord.VoiceChannel;
@@ -66,10 +66,13 @@ export function play(interaction: Discord.ChatInputCommandInteraction) {
         }
         else {
             playlist.items = [];
-            search(vid).then((id) => {
+            try {
+                let id = await search(vid);
                 interaction.reply({ content: "Playing youtube in :sound:" + voiceChannel.name, ephemeral: false });
                 playYoutube("https://www.youtube.com/watch?v=" + id, voiceChannel, interaction.channel);
-            }).catch(() => { interaction.reply({ content: "No results!", ephemeral: true }); });
+            } catch (error) {
+                interaction.reply({ content: "No results!", ephemeral: true });
+            }
         }
 
     }
