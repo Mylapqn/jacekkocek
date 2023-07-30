@@ -556,7 +556,7 @@ client.on('interactionCreate', async interaction => {
                         break;
                     case "remove": {
                         const removed = removeReminder(interaction.user.id, parseInt(interaction.options.getString("reminder")));
-                        interaction.reply({content: removed.text + " removed", ephemeral: true});
+                        interaction.reply({ content: removed.text + " removed", ephemeral: true });
                     }
                         break;
                     case "list": {
@@ -887,17 +887,18 @@ client.on('interactionCreate', async interaction => {
             case "youtubeStop": {
                 audioPlayer.stop(true);
                 Youtube.stop()
+                await interaction.message.edit({ components: [] });
                 //interaction.deferUpdate();
-                interaction.reply({content:"Stopped."});
+                interaction.reply({ content: "Stopped." });
                 break;
             }
             case "youtubeNext": {
-                Youtube.skip(interaction.guild,1,interaction.message.channel)
+                Youtube.skip(interaction.guild, 1, interaction.message.channel)
                 interaction.deferUpdate();
                 break;
             }
             case "youtubePrevious": {
-                Youtube.skip(interaction.guild,-1,interaction.message.channel)
+                Youtube.skip(interaction.guild, -1, interaction.message.channel)
                 interaction.deferUpdate();
                 break;
             }

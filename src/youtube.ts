@@ -193,7 +193,7 @@ async function playVideo(videoUrl: string, channel: Discord.VoiceChannel, textCh
         nextYoutubeTimeout = setTimeout(onVideoFinish, (length + 3) * 1000);
         nextYoutubeData = { url: nextUrl, channel: channel, textChannel: textChannel };
     }
-    await removeLastUi();
+    await removeAllUi();
     playing.push(newPlaying);
 }
 
@@ -211,20 +211,22 @@ function onVideoFinish() {
         playVideo(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
     }
     else {
-        removeLastUi();
+        removeAllUi();
     }
 }
 
-async function removeLastUi() {
+async function removeAllUi() {
     if (playing.length > 0) {
-        let data = playing[playing.length - 1];
-        if (data.statusMsg && data.statusMsg.editable) {
-            try {
-                await data.statusMsg.edit({ components: [] })
-            } catch (error) {
-                console.error("Youtube ui remove error: ", error);
+        for (const data of playing) {
+            if (data.statusMsg && data.statusMsg.editable && data.statusMsg?.components?.length > 0) {
+                try {
+                    await data.statusMsg.edit({ components: [] })
+                } catch (error) {
+                    console.error("Youtube ui remove error: ", error);
+                }
             }
         }
+
     }
 }
 
@@ -355,7 +357,7 @@ export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.
 }
 
 export function stop() {
-    removeLastUi();
+    removeAllUi();
     clearNextTimeout();
     playlist.items = [];
 }
