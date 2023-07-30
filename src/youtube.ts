@@ -46,6 +46,7 @@ export async function playFromInteraction(interaction: Discord.ChatInputCommandI
     let member = interaction.member as Discord.GuildMember;
     let voiceChannel = member.voice.channel as Discord.VoiceChannel;
     if (voiceChannel) {
+        interaction.deferReply();
         Main.joinVoiceChannel(member.voice.channel);
         if (interaction.options.getBoolean("autoplay")) {
             autoplay = true;
@@ -55,12 +56,12 @@ export async function playFromInteraction(interaction: Discord.ChatInputCommandI
             if (vid.includes("list=")) {
                 let n = vid.indexOf("list=");
                 let listId = vid.slice(n + 5);
-                interaction.reply({ content: "Playing youtube in :sound:" + member.voice.channel.name, ephemeral: false });
+                interaction.editReply({ content: "Playing youtube in :sound:" + member.voice.channel.name });
                 playPlaylist(listId, voiceChannel, interaction.channel);
             }
             else {
                 playlist.items = [];
-                interaction.reply({ content: "Playing youtube in :sound:" + member.voice.channel.name, ephemeral: false });
+                interaction.editReply({ content: "Playing youtube in :sound:" + member.voice.channel.name });
                 playVideo(vid, voiceChannel, interaction.channel);
             }
         }
@@ -68,11 +69,11 @@ export async function playFromInteraction(interaction: Discord.ChatInputCommandI
             playlist.items = [];
             try {
                 let id = await search(vid);
-                interaction.reply({ content: "Playing youtube in :sound:" + voiceChannel.name, ephemeral: false });
+                interaction.editReply({ content: "Playing youtube in :sound:" + voiceChannel.name });
                 playVideo("https://www.youtube.com/watch?v=" + id, voiceChannel, interaction.channel);
             } catch (error) {
                 console.error(error);
-                interaction.reply({ content: `No results for _${vid}_!`, ephemeral: true });
+                interaction.editReply({ content: `No results for _${vid}_!` });
             }
         }
 
