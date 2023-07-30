@@ -69,11 +69,17 @@ export async function playFromInteraction(interaction: Discord.ChatInputCommandI
             playlist.items = [];
             try {
                 let id = await search(vid);
-                interaction.editReply({ content: "Playing youtube in :sound:" + voiceChannel.name });
-                playVideo("https://www.youtube.com/watch?v=" + id, voiceChannel, interaction.channel);
+                if (id) {
+                    interaction.editReply({ content: "Playing youtube in :sound:" + voiceChannel.name });
+                    playVideo("https://www.youtube.com/watch?v=" + id, voiceChannel, interaction.channel);
+                }
+                else {
+                    interaction.editReply({ content: `No results for _${vid}_!` });
+                }
+
             } catch (error) {
                 console.error(error);
-                interaction.editReply({ content: `No results for _${vid}_!` });
+                interaction.editReply({ content: `Error: ${Utilities.limitString(error,20)}!` });
             }
         }
 
@@ -272,12 +278,12 @@ async function search(query: string) {
         }
         else {
             console.log(`No results for ${Utilities.limitString(query, 20)}`)
-            return null;
+            return undefined;
         }
     }
     else {
         console.log("Error searching youtube")
-        return null;
+        return undefined;
     }
 }
 
