@@ -41,7 +41,7 @@ let playing: YoutubeData[] = [];
 
 let barUpdateInterval = 2000;
 
-export async function play(interaction: Discord.ChatInputCommandInteraction) {
+export async function playFromInteraction(interaction: Discord.ChatInputCommandInteraction) {
     let vid = interaction.options.getString("video");
     let member = interaction.member as Discord.GuildMember;
     let voiceChannel = member.voice.channel as Discord.VoiceChannel;
@@ -61,7 +61,7 @@ export async function play(interaction: Discord.ChatInputCommandInteraction) {
             else {
                 playlist.items = [];
                 interaction.reply({ content: "Playing youtube in :sound:" + member.voice.channel.name, ephemeral: false });
-                playYoutube(vid, voiceChannel, interaction.channel);
+                playVideo(vid, voiceChannel, interaction.channel);
             }
         }
         else {
@@ -69,7 +69,7 @@ export async function play(interaction: Discord.ChatInputCommandInteraction) {
             try {
                 let id = await search(vid);
                 interaction.reply({ content: "Playing youtube in :sound:" + voiceChannel.name, ephemeral: false });
-                playYoutube("https://www.youtube.com/watch?v=" + id, voiceChannel, interaction.channel);
+                playVideo("https://www.youtube.com/watch?v=" + id, voiceChannel, interaction.channel);
             } catch (error) {
                 console.error(error);
                 interaction.reply({ content: `No results for _${vid}_!`, ephemeral: true });
@@ -100,10 +100,10 @@ async function playPlaylist(url: string, channel: Discord.VoiceChannel, textChan
     playlist.position = listPos;
     console.log(playlist.items);
     console.log(`Playing playlist ${playlist.id}, first video:${playlist.items[listPos]}`)
-    playYoutube("https://www.youtube.com/watch?v=" + playlist.items[listPos], channel, textChannel);
+    playVideo("https://www.youtube.com/watch?v=" + playlist.items[listPos], channel, textChannel);
 }
 
-async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, textChannel: Discord.TextBasedChannel) {
+async function playVideo(videoUrl: string, channel: Discord.VoiceChannel, textChannel: Discord.TextBasedChannel) {
     console.log("playing " + videoUrl);
 
     let videoStream = ytdl(videoUrl, { filter: "audioonly", highWaterMark: 10e6 });
@@ -149,12 +149,7 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
         updateMessage(newPlaying);
     }, barUpdateInterval);
     try {
-        let actionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(
-            new Discord.ButtonBuilder({ emoji: { name: "backward", id: "1134483313235611648" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrevious" }),
-            new Discord.ButtonBuilder({ emoji: { name: "stop", id: "1134483316544913538" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
-            new Discord.ButtonBuilder({ emoji: { name: "forward", id: "1134483315290820678" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
-            new Discord.ButtonBuilder({ emoji: { name: "autoplay", id: "1134483312052797490" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
-        );
+        let actionRow = generateActionRow();
         textChannel.send({ embeds: [embed, generateProgressBar(0, length * 1000, 9)], components: [actionRow] }).then((msg: Discord.Message<boolean>) => {
             newPlaying.statusMsg = msg;
         });
@@ -202,9 +197,18 @@ async function playYoutube(videoUrl: string, channel: Discord.VoiceChannel, text
     playing.push(newPlaying);
 }
 
+function generateActionRow() {
+    return new Discord.ActionRowBuilder<Discord.ButtonBuilder>().addComponents(
+        new Discord.ButtonBuilder({ emoji: { name: "backward", id: "1134483313235611648" }, style: Discord.ButtonStyle.Secondary, customId: "youtubePrevious" }),
+        new Discord.ButtonBuilder({ emoji: { name: "stop", id: "1134483316544913538" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeStop" }),
+        new Discord.ButtonBuilder({ emoji: { name: "forward", id: "1134483315290820678" }, style: Discord.ButtonStyle.Secondary, customId: "youtubeNext" }),
+        new Discord.ButtonBuilder({ emoji: { name: "autoplay", id: "1134483312052797490" }, style: autoplay ? Discord.ButtonStyle.Primary : Discord.ButtonStyle.Secondary, customId: "youtubeAutoplay" }),
+    );
+}
+
 function onVideoFinish() {
     if (playlist.items.length > 0 || autoplay && nextYoutubeData.url) {
-        playYoutube(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
+        playVideo(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
     }
 }
 
@@ -271,6 +275,14 @@ async function search(query: string) {
     }
 }
 
+export function progressEmoji(progress: number) {
+    if (progress == 0) return "<:yt0:951917157304926238>";
+    else if (progress == 1) return "<:yt1:951917157212622858>";
+    else if (progress == 2) return "<:yt2:951917157275533352>";
+    else if (progress == 3) return "<:yt3:951917157279756378>";
+    else if (progress == 4) return "<:yt4:951917157216813056>";
+}
+
 async function updateMessage(data: YoutubeData) {
     data.elapsed = Math.min(data.elapsed + barUpdateInterval, data.length);
     if (data.statusMsg && data.statusMsg.editable) {
@@ -334,17 +346,9 @@ export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.
                     nextYoutubeData.url = "https://www.youtube.com/watch?v=" + recentList.pop();
                 }
             }
-            playYoutube(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
+            playVideo(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
         }
     }
-}
-
-export function progressEmoji(progress: number) {
-    if (progress == 0) return "<:yt0:951917157304926238>";
-    else if (progress == 1) return "<:yt1:951917157212622858>";
-    else if (progress == 2) return "<:yt2:951917157275533352>";
-    else if (progress == 3) return "<:yt3:951917157279756378>";
-    else if (progress == 4) return "<:yt4:951917157216813056>";
 }
 
 export function stop() {
@@ -359,10 +363,7 @@ export function toggleAutoplay() {
         let p = playing[playing.length - 1];
         p.embed.setFooter({ text: autoplay ? "Autoplay is on" : null });
         try {
-            (p.statusMsg.components[0].components[3] as Discord.ButtonComponent) = new Discord.ButtonBuilder((playing[playing.length - 1].statusMsg.components[0].components[3] as Discord.ButtonComponent))
-                .setStyle(autoplay ? Discord.ButtonStyle.Primary : Discord.ButtonStyle.Secondary)
-                .data as Discord.ButtonComponent;
-            p.statusMsg.edit({components:p.statusMsg.components});
+            p.statusMsg.edit({ components: [generateActionRow()] });
         } catch (error) {
             console.log("Button update error:", error);
         }

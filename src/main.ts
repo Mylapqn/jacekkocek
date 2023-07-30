@@ -577,7 +577,7 @@ client.on('interactionCreate', async interaction => {
             }
             case "youtube": {
                 if (await Matoshi.cost(member.id, policyValues.service.youtubeFee, interaction.guildId)) {
-                    Youtube.play(interaction);
+                    Youtube.playFromInteraction(interaction);
                 } else {
                     interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.youtubeFee + "₥", allowedMentions: { repliedUser: false } });
                 }
@@ -887,7 +887,7 @@ client.on('interactionCreate', async interaction => {
             case "youtubeStop": {
                 audioPlayer.stop(true);
                 Youtube.stop()
-                interaction.deferUpdate();
+                //interaction.deferUpdate();
                 interaction.reply({content:"Stopped."});
                 break;
             }
