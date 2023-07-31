@@ -328,8 +328,8 @@ var radioStations = [
         color: 0x197591,
         url: "https://kathy.torontocast.com:1825/stream"
     },
-
-
+    
+    
 ];
 
 export let letterEmoji = {
@@ -359,6 +359,9 @@ loadReminders();
 let baseUrl = "https://jacekkocek.coal.games";
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
+
+console.log(process.env.DISCORD_API_KEY);
+
 
 client.login(process.env.DISCORD_API_KEY);
 

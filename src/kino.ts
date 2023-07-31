@@ -7,31 +7,6 @@ import * as Discord from "discord.js";
 import * as Sheets from "./sheets"
 
 
-export class Film {
-    id: number;
-    name: string;
-    suggestedBy: string;
-    watched = false;
-    constructor(name: string, suggestedBy: string) {
-        this.name = name;
-        this.suggestedBy = suggestedBy;
-    }
-
-    static fromCommand(name: string, suggestedBy: string) {
-        let film = new Film(name, suggestedBy);
-        Database.KinoDatabase.createFilm(film);
-        return film;
-    }
-
-    static fromDatabase(id: number, name: string, suggestedBy: string, watched: boolean) {
-        let film = new Film(name, suggestedBy);
-        film.id = id;
-        film.suggestedBy = suggestedBy;
-        film.watched = watched;
-        return film;
-    }
-}
-
 
 export class Event {
     id: number;

@@ -241,8 +241,8 @@ export class PolicyDatabase {
         let policies: Array<Array<any>> = await connection.query(`SELECT * FROM Policies`);
         for (const row of policies) {
             let [category, policy] = row["name"].split(".");
-            if(Main.policyValues[category][policy] != null)
-            Main.policyValues[category][policy] = parseFloat(row["value"]);
+            if (Main.policyValues[category][policy] != null)
+                Main.policyValues[category][policy] = parseFloat(row["value"]);
         }
     }
 }

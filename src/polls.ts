@@ -3,11 +3,12 @@ import * as Database from "./database";
 import * as Main from "./main";
 import * as Utilities from "./utilities"
 import * as Youtube from "./youtube"
+import { DbObject, TopLevelDbObject } from "./dbObject";
 
 export type PollOptionFilter = (option: string) => Promise<string>;
 
 
-export class Poll {
+export class Poll extends TopLevelDbObject {
     id: number;
     messageId: string;
     message: Discord.Message;
@@ -20,6 +21,7 @@ export class Poll {
     optionFilter: PollOptionFilter = async (option: string) => Utilities.escapeFormatting(option);
 
     constructor(name = "Unnamed poll", maxVotesPerUser = 0, customOptionsAllowed = true) {
+        super();
         this.name = name;
         this.maxVotesPerUser = Math.max(0, maxVotesPerUser);
         this.customOptionsAllowed = customOptionsAllowed;
@@ -160,23 +162,25 @@ export class Poll {
     }
 }
 
-export class PollOption {
+export class PollOption extends DbObject{
     index: number;
     name: string;
     poll: Poll;
     votes: PollVote[] = [];
     constructor(poll: Poll, index: number, name: string) {
+        super();
         this.index = index;
         this.name = name;
         this.poll = poll;
     }
 }
 
-export class PollVote {
+export class PollVote extends DbObject {
     option: PollOption;
     userId: string;
     poll: Poll;
     constructor(poll: Poll, optionIndex: number, userId: string) {
+        super();
         this.poll = poll;
         this.option = this.poll.options[optionIndex];
         this.userId = userId;
