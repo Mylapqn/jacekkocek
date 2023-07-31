@@ -1,21 +1,22 @@
 import { Mongo, typeIdentifier } from "./mongo";
-import { TopLevelDbObject } from "./dbObject";
+import { DbObject } from "./dbObject";
 
 
-export class Film extends TopLevelDbObject {  
+export class Film extends DbObject {
     suggestedBy: string;
     watched = false;
     name: string;
-      
-    constructor(name: string, suggestedBy: string) {
-        super();
-        this.name = name;
-        this.suggestedBy = suggestedBy;
-    }
 
     static fromCommand(name: string, suggestedBy: string) {
-        let film = new Film(name, suggestedBy);
+        let film = Film.fromData({ name, suggestedBy });
         film.update();
         return film;
+    }
+
+
+    static override fromData(data: Partial<Film>): Film {
+        const newObj = super.fromData(data);
+        Object.assign(newObj, data);
+        return newObj as Film
     }
 }

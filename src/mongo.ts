@@ -1,21 +1,20 @@
-import { Collection, Db, MongoClient } from 'mongodb';
+import { Collection, Db, MongoClient, ObjectId } from 'mongodb';
 import { User } from "./user"
 import { Wallet } from './wallet';
-import { DbObject, SerializableObject, TopLevelDbObject, TopLevelSerializableObject } from './dbObject';
+import { DbObject, SerializableObject } from './dbObject';
 import { Film } from './film';
+import { Poll } from './polls';
 //import { Film } from './kino';
 
 export const typeIdentifier = "dbType";
 
-type ClassType = { new(...args: any[]): DbObject | TopLevelDbObject, name: string }
+type ClassType = { new(...args: any[]): DbObject | DbObject, name: string }
 
 const mongourl = process.env.MONGO_URL ?? "mongodb://10.200.140.14:27017";
 
 export class Mongo {
     private static db: Db;
     private static collections: Record<string, Collection> = {}
-
-    private static registeredTypes = new Map<string, ClassType>();
 
     static async connect() {
 
@@ -29,105 +28,37 @@ export class Mongo {
         Mongo.registerType(User);
         Mongo.registerType(Wallet);
         Mongo.registerType(Film);
-        Mongo.registerType(WalletStorage);
+        Mongo.registerType(Poll);
     }
 
     static async find(filter: Record<string, any>, collection: string) {
-        console.log(await this.collections[collection].findOne(filter));
-        
-        return await this.collections[collection].findOne(filter) as unknown as TopLevelSerializableObject;
+        return await this.collections[collection].findOne(filter);
     }
 
-    static async set(obj: TopLevelDbObject) {
+    static async set(obj: DbObject) {
         if (obj._id) {
-            this.collections[obj.dbType].replaceOne({ _id: obj._id }, obj.serialisable(), { upsert: true });
+            const res = await this.collections[obj.dbType].replaceOne({ _id: obj._id }, obj, { upsert: true });
+            return res.upsertedId;
         } else {
-            this.collections[obj.dbType].insertOne(obj.serialisable());
+            const res = await this.collections[obj.dbType].insertOne(obj);
+            return res.insertedId;
         }
     }
 
     static registerType(classType: ClassType) {
-        if ("isTopLevel" in classType) {
-
-            this.collections[classType.name] = this.db.collection(classType.name);
-        }
-        this.registeredTypes.set(classType.name, classType);
+        this.collections[classType.name] = this.db.collection(classType.name);
     }
 
-    static remove(obj: TopLevelDbObject) {
+    static remove(obj: DbObject) {
         this.collections[obj.dbType].deleteOne();
     }
-
-
-    static parseTopLevelObject<T>(obj: TopLevelSerializableObject) {
-        const classType = this.registeredTypes.get(obj[typeIdentifier]);
-
-        const newObject = new classType() as TopLevelDbObject;
-        delete obj[typeIdentifier];
-        Object.assign(newObject, obj);
-
-        for (const key in obj) {
-            const serializable = obj[key];
-            if (Mongo.isSerializableObject(serializable)) {
-                newObject[key] = this.parseSerializable(serializable, newObject);
-            }
-        }
-
-        return newObject as T
-    }
-
-    static parseSerializable(obj: SerializableObject, topLevelObject: TopLevelDbObject) {
-        const classType = this.registeredTypes.get(obj[typeIdentifier]);
-
-        const newObject = new classType();
-        delete obj[typeIdentifier];
-        Object.assign(newObject, obj);
-
-        for (const key in obj) {
-            const serializable = obj[key];
-            if (typeof serializable == 'object' && "length" in serializable) {
-                for (let index = 0; index < serializable.length; index++) {
-                    const element = serializable[index];
-                    if (Mongo.isSerializableObject(element)) {
-                        serializable[index] = this.parseSerializable(serializable, topLevelObject);
-                    }
-                }
-            } else if (Mongo.isSerializableObject(serializable)) {
-                newObject[key] = this.parseSerializable(serializable, topLevelObject);
-            }
-        }
-
-        newObject.dbParent = topLevelObject;
-
-        return newObject
-    }
-
-    private static isSerializableObject(obj: any): obj is SerializableObject {
-        return (typeof obj == 'object' && typeIdentifier in obj)
-    }
-}
-
-
-
-class WalletStorage extends TopLevelDbObject {
-    wallets = new Array<Wallet>;
-    name: string;
 }
 
 
 async function test() {
     await Mongo.connect();
-
-    let u = await User.get("pocek");
-    if (!u.wallet) u.wallet = new Wallet();
-    console.log(u);
-    u.wallet.matoshi += 5;
-    u.wallet.printMatoshi();
-    u.update();
-
-
-    //Film.fromCommand("Barbie", "Mylapqn");
-
-
+    const poll = Poll.fromData( await Poll.find({ _id: new ObjectId("64c80610b6b5183e3fafa715")}));
+    //poll.addOption("lole");
+    poll.addVote(0, "as");
 }
 test();
