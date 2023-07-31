@@ -40,7 +40,7 @@ const recentMax = 6;
 let playing: YoutubeData[] = [];
 
 const barUpdateInterval = 2000;
-const maxAutoplayVideoLength = 30 * 60;
+const maxSuggestedVideoLength = 30 * 60;
 
 export async function playFromInteraction(interaction: Discord.ChatInputCommandInteraction) {
     let vid = interaction.options.getString("video");
@@ -182,7 +182,9 @@ async function playVideo(videoUrl: string, channel: Discord.VoiceChannel, textCh
     else {
         for (let i = 0; i < info.related_videos.length; i++) {
             const next = info.related_videos[i];
-            if (!recentList.includes(next.id) && next.length_seconds < maxAutoplayVideoLength) {
+            channel.send(next.length_seconds.toString());
+            textChannel.send(next.length_seconds.toString());
+            if (!recentList.includes(next.id) && next.length_seconds < maxSuggestedVideoLength/*broky*/) {
                 nextVideo = next.id;
                 break;
             }
