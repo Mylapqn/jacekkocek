@@ -7,7 +7,7 @@ import * as Utilities from "./utilities";
 import axios from "axios";
 
 
-let nextYoutubeTimeout: string | number | NodeJS.Timeout;
+let videoEndTimeout: string | number | NodeJS.Timeout;
 let nextYoutubeData: VideoData;
 let autoplay = false;
 
@@ -91,8 +91,8 @@ function clearNextTimeout() {
     playing.forEach(d => {
         clearInterval(d.barInterval);
     })
-    if (nextYoutubeTimeout) clearTimeout(nextYoutubeTimeout);
-    nextYoutubeTimeout = null;
+    if (videoEndTimeout) clearTimeout(videoEndTimeout);
+    videoEndTimeout = null;
 }
 
 async function playPlaylist(url: string, channel: Discord.VoiceChannel, textChannel: Discord.TextBasedChannel) {
@@ -182,8 +182,7 @@ async function playVideo(videoUrl: string, channel: Discord.VoiceChannel, textCh
     else {
         for (let i = 0; i < info.related_videos.length; i++) {
             const next = info.related_videos[i];
-            channel.send(next.length_seconds.toString());
-            textChannel.send(next.length_seconds.toString());
+            textChannel.send(next.title + " - " + (next.length_seconds / 60).toFixed(0));
             if (!recentList.includes(next.id) && next.length_seconds < maxSuggestedVideoLength/*broky*/) {
                 nextVideo = next.id;
                 break;
@@ -200,8 +199,11 @@ async function playVideo(videoUrl: string, channel: Discord.VoiceChannel, textCh
     if (nextVideo) {
         let nextUrl = "https://www.youtube.com/watch?v=" + nextVideo;
         videoStream.on("finish", () => { });
-        nextYoutubeTimeout = setTimeout(onVideoFinish, (length + 3) * 1000);
+        videoEndTimeout = setTimeout(onVideoFinish, (length + 3) * 1000);
         nextYoutubeData = { url: nextUrl, channel: channel, textChannel: textChannel };
+    }
+    else {
+        nextYoutubeData = undefined;
     }
     await removeAllUi();
     playing.push(newPlaying);
@@ -217,7 +219,7 @@ function generateActionRow() {
 }
 
 function onVideoFinish() {
-    if (playlist.items.length > 0 || autoplay && nextYoutubeData.url) {
+    if ((playlist.items.length > 0 || autoplay) && nextYoutubeData && nextYoutubeData.url) {
         playVideo(nextYoutubeData.url, nextYoutubeData.channel, nextYoutubeData.textChannel);
     }
     else {
@@ -334,7 +336,7 @@ function generateProgressBar(elapsed: number, length: number, count: number) {
 }
 
 export function skip(guild: Discord.Guild, amount: number, textChannel: Discord.TextBasedChannel) {
-    if (nextYoutubeTimeout && (playlist.items.length > 0 || nextYoutubeData.url)) {
+    if (videoEndTimeout && (playlist.items.length > 0 || nextYoutubeData?.url)) {
         let voice = guild.members.me.voice.channel;
         if (voice) {
             if (amount > 0 && playlist.items.length > 0) {
