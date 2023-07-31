@@ -114,7 +114,7 @@ async function playPlaylist(url: string, channel: Discord.VoiceChannel, textChan
 async function playVideo(videoUrl: string, channel: Discord.VoiceChannel, textChannel: Discord.TextBasedChannel) {
     console.log("playing " + videoUrl);
 
-    let videoStream = ytdl(videoUrl, { filter: "audioonly", highWaterMark: 10e6 });
+    let videoStream = ytdl(videoUrl, { filter: "audioonly", highWaterMark: 3e7 });
 
     let info: ytdl.videoInfo = await new Promise(resolve => {
         videoStream.once("info", resolve)

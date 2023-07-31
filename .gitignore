@@ -2,6 +2,8 @@ kinoPlaylist.json
 reminders.json
 matoshiBalance.json
 
+env.bat
+
 # Logs
 logs
 *.log
