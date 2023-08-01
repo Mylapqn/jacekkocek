@@ -1,12 +1,12 @@
 import * as Discord from "discord.js";
-//import * as Utilities from "./utilities"
+import * as Utilities from "./utilities";
+import * as Main from "./main";
+import * as Youtube from "./youtube";
 import { DbObject } from "./dbObject";
 
 export type PollOptionFilter = (option: string) => Promise<string>;
 
-
 export class Poll extends DbObject {
-    messageId: string;
     message: Discord.Message;
     name: string;
     options: PollOption[] = [];
@@ -14,14 +14,19 @@ export class Poll extends DbObject {
     maxVotesPerUser = 0;
     customOptionsAllowed = true;
 
-    optionFilter: PollOptionFilter = async (option: string) => option //option.escapeFormatting(option);
+    optionFilter: PollOptionFilter = async (option: string) => Utilities.escapeFormatting(option);
 
+    override serialisable() {
+        const data = super.serialisable();
+        data.message = Utilities.messageToUid(this.message);
+        return data;
+    }
 
     static async fromCommand(name: string, interaction: Discord.Interaction, maxVotesPerUser = 0, customOptionsAllowed = true) {
-        let poll = Poll.fromData({ name, maxVotesPerUser, customOptionsAllowed });
+        let poll = await Poll.fromData({ name, maxVotesPerUser, customOptionsAllowed });
         Poll.list.push(poll);
-        //await poll.sendMessage(interaction);
-        poll._id = await poll.update();
+        await poll.sendMessage(interaction);
+        await poll.dbUpdate();
         console.log("Creating poll with id " + poll._id);
         return poll;
     }
@@ -39,7 +44,7 @@ export class Poll extends DbObject {
     }
 
     async lock() {
-        this.name += " [Locked]"
+        this.name += " [Locked]";
         let newMessage = this.generateMessage();
         this.message.edit({ embeds: [newMessage.embeds[0].setFooter({ text: "You can't vote in this poll anymore" }).setColor(0x888888)] });
         Poll.list.splice(Poll.list.indexOf(this), 1);
@@ -47,7 +52,7 @@ export class Poll extends DbObject {
     }
 
     generateMessage() {
-        let embed = new Discord.EmbedBuilder().setColor(0x18C3B1).setTitle(this.name);
+        let embed = new Discord.EmbedBuilder().setColor(0x18c3b1).setTitle(this.name);
         let description = "";
         let footerText = "";
         /*for (const option of this.options) {
@@ -64,21 +69,33 @@ export class Poll extends DbObject {
         if (footerText != "") embed.setFooter({ text: footerText });
         for (const option of this.options) {
             let votes = option.votes.length;
-            let percentage = Math.round((votes / (this.totalVotes || 1) * 100));
-            //description += "\n" + Main.letterEmoji[(option.index + 1).toString()] + " " + Youtube.progressEmoji(Math.round(percentage / 25)) + " **" + option.name + "** (" + votes + " votes - " + percentage + "%)"
+            let percentage = Math.round((votes / (this.totalVotes || 1)) * 100);
+            description +=
+                "\n" +
+                Main.letterEmoji[(option.index + 1).toString()] +
+                " " +
+                Youtube.progressEmoji(Math.round(percentage / 25)) +
+                " **" +
+                option.name +
+                "** (" +
+                votes +
+                " votes - " +
+                percentage +
+                "%)";
         }
         embed.setDescription(description);
         return { embeds: [embed] };
     }
+
     async updateMessage() {
-        //this.message.edit({ embeds: this.generateMessage().embeds });
+        this.message.edit({ embeds: this.generateMessage().embeds });
     }
+
     async sendMessage(interaction: Discord.Interaction) {
         if (interaction instanceof Discord.AutocompleteInteraction) throw new Error("Unexpected autocomplete interaction");
         this.message = await interaction.reply({ embeds: this.generateMessage().embeds, fetchReply: true });
-        this.messageId = this.message.id;
         for (let i = 1; i <= this.options.length && i <= 9; i++) {
-            //this.message.react(Main.letterEmoji[i.toString()]);
+            this.message.react(Main.letterEmoji[i.toString()]);
         }
         return this.message;
     }
@@ -92,8 +109,8 @@ export class Poll extends DbObject {
             console.error("Poll filter error: " + error);
         }
         if (!newName) return;
-        if (this.options.some(option => option.name == newName)) throw new Error("Option already exists");
-        newName = newName.replace(/[\r\n]/gm, ''); //Remove line breaks
+        if (this.options.some((option) => option.name == newName)) throw new Error("Option already exists");
+        newName = newName.replace(/[\r\n]/gm, ""); //Remove line breaks
         newName.trim();
         if (newName.length > 244) {
             newName = newName.substring(0, 240) + "...";
@@ -102,9 +119,9 @@ export class Poll extends DbObject {
         this.options.push(newOption);
         if (this.message != undefined) {
             this.updateMessage();
-            //this.message.react(Main.letterEmoji[this.options.length.toString()]);
+            this.message.react(Main.letterEmoji[this.options.length.toString()]);
         }
-        this.update();
+        this.dbUpdate();
         console.log(`Added option to poll "${this.name}" with name ${newName}`);
         return newOption;
     }
@@ -113,17 +130,17 @@ export class Poll extends DbObject {
         if (optionIndex < this.options.length && optionIndex >= 0) {
             if (this.maxVotesPerUser != 0) {
                 let voteCount = 0;
-                for (const option of this.options) voteCount += option.votes.find(v => v.userId == userId) ? 1 : 0;
+                for (const option of this.options) voteCount += option.votes.find((v) => v.userId == userId) ? 1 : 0;
                 if (voteCount >= this.maxVotesPerUser) {
                     //:frowning:
                     return false;
                 }
             }
-            let newVote = new PollVote(userId)
+            let newVote = new PollVote(userId);
             this.options[optionIndex].votes.push(newVote);
             this.totalVotes++;
             this.updateMessage();
-            this.update();
+            this.dbUpdate();
             console.log(`Added vote to poll "${this.name}" from user ${userId} for option ${optionIndex}`);
             return true;
         }
@@ -138,7 +155,7 @@ export class Poll extends DbObject {
                     this.options[optionIndex].votes.splice(i, 1);
                     this.totalVotes--;
                     this.updateMessage();
-                    this.update();
+                    this.dbUpdate();
                     console.log(`Removed vote from poll "${this.name}" from user ${userId} for option ${optionIndex}`);
                     break;
                 }
@@ -146,15 +163,39 @@ export class Poll extends DbObject {
         }
     }
 
-    static override fromData(data: Partial<Poll>): Poll {
-        const newObj = super.fromData(data);
+    static override async fromData(data: Partial<Poll>): Promise<Poll> {
+        const newObj = (await super.fromData(data)) as Poll;
         Object.apply(newObj, data);
-        return newObj as Poll;
+        newObj.message = data.message ? await Utilities.messageFromUid(data.message as unknown as string) : undefined;
+        return newObj;
     }
 
     static list = new Array<Poll>();
     static getPollFromMessage(message: Discord.Message) {
-        // return Poll.list.find(element => { return Utilities.matchMessages(element.message, message) });
+        return Poll.list.find((element) => {
+            return Utilities.matchMessages(element.message, message);
+        });
+    }
+
+    static async loadPolls() {
+        const pollsData = (await this.dbFindAll({})) as Poll[];
+        for (const data of pollsData) {
+            let age = Date.now() - data.lastInteracted;
+            if (age > 604800000) {
+                //remobing
+                console.log(`removing old poll`);
+            } else {
+                this.list.push(await Poll.fromData(data));
+            }
+        }
+
+        console.log(`loaded ${Poll.list.length} polls.`);
+    }
+
+    lastInteracted = 0;
+    override async dbUpdate(): Promise<void> {
+        this.lastInteracted = Date.now();
+        await super.dbUpdate();
     }
 }
 

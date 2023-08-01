@@ -1,10 +1,10 @@
-import { ObjectId } from "mongodb"
-import { Mongo, typeIdentifier } from "./mongo"
+import { Filter, FindOptions, ObjectId } from "mongodb";
+import { Mongo, typeIdentifier } from "./mongo";
 
 export type SerializableObject = {
-    [typeIdentifier]: string
-    [key: string]: SerializableObject | any
-}
+    [typeIdentifier]: string;
+    [key: string]: SerializableObject | any;
+};
 
 export class DbObject {
     static dbIgnore: string[] = ["dbIgnore", "dbParent"];
@@ -14,25 +14,26 @@ export class DbObject {
         return this.constructor.name;
     }
 
-
-    public set dbType(v: string) {
-    }
-
+    public set dbType(v: string) {}
 
     public get dbIgnore(): string[] {
         return (<typeof DbObject>this.constructor).dbIgnore;
     }
 
-    static async find(filter: Record<string, any>): Promise<any> {
-        return Mongo.find(filter, this.name)
+    static async dbFind<T>(filter: Filter<T>): Promise<T> {
+        return (await Mongo.find(filter, this.name)) as unknown as T;
     }
 
-    static async set(obj: DbObject) {
-        return await Mongo.set(obj.serialisable());
+    static async dbFindAll<T>(filter: Filter<T>, options?: FindOptions<T>): Promise<T[]> {
+        return (await Mongo.findAll(filter, options, this.name)) as unknown as T[];
     }
 
-    async update() {
-        return await Mongo.set(this.serialisable());
+    static async dbSet(obj: DbObject) {
+        obj._id = await Mongo.set(obj.serialisable());
+    }
+
+    async dbUpdate() {
+        this._id = await Mongo.set(this.serialisable());
     }
 
     serialisable(): any {
@@ -44,7 +45,7 @@ export class DbObject {
         return result;
     }
 
-    static fromData(data: Partial<DbObject>){
+    static async fromData(data: Partial<DbObject>) {
         const newObject = new this();
         Object.assign(newObject, data);
         return newObject;

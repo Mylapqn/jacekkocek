@@ -1,31 +1,31 @@
 import * as Main from "./main";
 import * as Utilities from "./utilities";
-import * as Database from "./database";
 import * as Matoshi from "./matoshi";
 import * as Polls from "./polls";
 import * as Discord from "discord.js";
-import * as Sheets from "./sheets"
+import * as Sheets from "./sheets";
+import { DbObject } from "./dbObject";
+import { ObjectId } from "mongodb";
 
-
-
-export class Event {
+export class Event extends DbObject {
     id: number;
     film: Film;
     date: Date;
     datePoll: Polls.Poll;
     filmPoll: Polls.Poll;
-    attendeeIds: string[]
+    attendeeIds: string[];
     dateLocked = false;
     watched = false;
     lockMessageId: string = "";
     guildEventId: string;
     constructor() {
+        super();
         Event.list.push(this);
     }
 
     static fromCommand() {
         let event = new Event();
-        Database.KinoDatabase.createEvent(event);
+        event.dbUpdate();
         return event;
     }
 
@@ -33,16 +33,15 @@ export class Event {
         let response = "";
         if (!this.watched) {
             const todayVoters = this.attendeeIds;
-            let onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
+            let onTimeUsers = Main.mainVoiceChannel.members.map((member) => member.id);
             setTimeout(async () => {
-                onTimeUsers = Main.mainVoiceChannel.members.map(member => member.id);
+                onTimeUsers = Main.mainVoiceChannel.members.map((member) => member.id);
                 Main.kinoChannel.send(await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name));
                 this.film.watched = true;
-                Database.KinoDatabase.setFilm(this.film);
-            }, 120 * 1000)
-            response = "Kino is starting, late fees in 120s! " + this.attendeeIds.filter(id => !onTimeUsers.includes(id)).map(id => `<@${id}>`);
-        }
-        else {
+                this.film.dbUpdate();
+            }, 120 * 1000);
+            response = "Kino is starting, late fees in 120s! " + this.attendeeIds.filter((id) => !onTimeUsers.includes(id)).map((id) => `<@${id}>`);
+        } else {
             response = "Event already watched";
         }
         return response;
@@ -50,19 +49,17 @@ export class Event {
 
     static async kinoReward() {
         const guildEvents = await Main.mainGuild.scheduledEvents.fetch();
-        const activeEvent = this.list.find(k => guildEvents.find((e, id) => k.guildEventId == id && e.isActive()));
+        const activeEvent = this.list.find((k) => guildEvents.find((e, id) => k.guildEventId == id && e.isActive()));
         if (activeEvent && !activeEvent.watched) {
             activeEvent.watched = true;
-            const voiceMembers = Main.mainVoiceChannel.members.map(member => member.user);
-            Main.kinoChannel.send(
-                await Matoshi.watchReward(voiceMembers, activeEvent.film.name)
-            );
+            const voiceMembers = Main.mainVoiceChannel.members.map((member) => member.user);
+            Main.kinoChannel.send(await Matoshi.watchReward(voiceMembers, activeEvent.film.name));
 
             Sheets.setKinoToday(activeEvent.film.name);
 
             const userData = await Sheets.getUserData();
             for (const [id, data] of userData) {
-                if (voiceMembers.find(u => u.id == id)) {
+                if (voiceMembers.find((u) => u.id == id)) {
                     data.weight = Math.min(1, data.weight + 0.05);
                     if (activeEvent.attendeeIds.includes(id)) data.reliability = Math.min(1, data.reliability + 0.1);
                 } else {
@@ -73,23 +70,23 @@ export class Event {
 
             Sheets.setUserData(userData);
 
-            Database.KinoDatabase.setEvent(activeEvent);
+            activeEvent.dbUpdate();
         }
     }
     static filmVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
-        let film = await Database.KinoDatabase.getFilmByName(name);
+        let film = await Film.dbFind({ name: name });
         if (film == undefined) throw new Error("Invalid option");
         return Utilities.toTitleCase(name);
-    }
+    };
     static dateVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
-        let date = Utilities.dateFromKinoString(name)
+        let date = Utilities.dateFromKinoString(name);
         if (date == undefined) {
             throw new Error("Invalid date");
         }
         let score = await Sheets.getDay(date);
         if (!score) throw new Error("Invalid kino date");
         return Event.dateOptionName(date, score);
-    }
+    };
 
     async filmVote(interaction: Discord.ChatInputCommandInteraction) {
         this.filmPoll = await Polls.Poll.fromCommand("Co kino?", interaction, 0, true);
@@ -97,12 +94,12 @@ export class Event {
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockFilmVote", label: "Confirm film selection", style: Discord.ButtonStyle.Success }));
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
         this.filmPoll.optionFilter = Event.filmVoteOptionFilter;
-        Database.KinoDatabase.setEvent(this);
+        this.dbUpdate();
     }
 
     async dateVote(interaction: Discord.Interaction) {
         if (this.filmPoll && !this.film) {
-            this.film = await Database.KinoDatabase.getFilmByName(this.filmPoll.getWinner().name);
+            this.film = await Film.dbFind({ name: this.filmPoll.getWinner().name });
             this.filmPoll.lock();
         }
 
@@ -125,13 +122,13 @@ export class Event {
             console.error("Error populating kino date poll: " + error);
         }
         this.datePoll.optionFilter = Event.dateVoteOptionFilter;
-        Database.KinoDatabase.setEvent(this);
+        this.dbUpdate();
     }
 
     async lockDate() {
         if (!this.dateLocked) {
             this.dateLocked = true;
-            this.attendeeIds = this.datePoll.getWinner().votes.map(v => v.userId);
+            this.attendeeIds = this.datePoll.getWinner().votes.map((v) => v.userId);
             let dateFields = this.datePoll.getWinner().name.split(" ")[1].split(".");
             this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
             this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
@@ -139,22 +136,22 @@ export class Event {
             let guildEventOptions: Discord.GuildScheduledEventCreateOptions = {
                 name: "Kino: " + this.film.name,
                 scheduledStartTime: this.date,
-                scheduledEndTime: new Date(this.date.valueOf() + (1000 * 3600 * 2)),
+                scheduledEndTime: new Date(this.date.valueOf() + 1000 * 3600 * 2),
                 privacyLevel: Discord.GuildScheduledEventPrivacyLevel.GuildOnly,
                 entityType: Discord.GuildScheduledEventEntityType.Voice,
                 channel: Main.mainVoiceChannel as Discord.VoiceChannel,
                 description: "Kino session of " + this.film.name,
-            }
+            };
             try {
                 let filmImageUrl = (await Main.googleSearch(Main.SearchEngines.EVERYTHING, "Movie still " + this.film.name, Main.SearchTypes.IMAGE))[0].link;
                 guildEventOptions.image = filmImageUrl;
             } catch (error) {
                 console.error("KinoEvent Image search error:" + error.message);
             }
-            let guildEvent = await Main.mainGuild.scheduledEvents.create(guildEventOptions)
+            let guildEvent = await Main.mainGuild.scheduledEvents.create(guildEventOptions);
             this.guildEventId = guildEvent.id;
             this.datePoll.message.channel.send(await guildEvent.createInviteURL({ maxAge: 0 }));
-            Database.KinoDatabase.setEvent(this);
+            this.dbUpdate();
         }
     }
 
@@ -178,31 +175,70 @@ export class Event {
     }
 
     static list = new Array<Event>();
+
+    override serialisable() {
+        const data = super.serialisable();
+        data.datePoll = this.datePoll?._id;
+        data.filmPoll = this.filmPoll?._id;
+
+        return data;
+    }
+
+    static override async fromData(data: Partial<Event>): Promise<Event> {
+        const newObject = (await super.fromData(data)) as Event;
+        Object.assign(newObject, data);
+        newObject.datePoll = Polls.Poll.list.find((p) => (data.datePoll as unknown as ObjectId) == p._id);
+        newObject.filmPoll = Polls.Poll.list.find((p) => (data.filmPoll as unknown as ObjectId) == p._id);
+        return newObject;
+    }
+
+    static async loadEvents() {
+        const eventData = (await this.dbFindAll({})) as Event[];
+        for (const data of eventData) {
+            this.list.push(await Event.fromData(data));
+        }
+    }
 }
 
 export interface EventOptions {
-    id: number,
-    film?: Film,
-    date?: Date,
-    dateLocked: boolean,
-    watched: boolean,
-    filmPoll?: Polls.Poll,
-    datePoll?: Polls.Poll,
-    lockMessageId?: string,
-    attendeeIds?: string[],
-    guildEventId?: string,
+    id: number;
+    film?: Film;
+    date?: Date;
+    dateLocked: boolean;
+    watched: boolean;
+    filmPoll?: Polls.Poll;
+    datePoll?: Polls.Poll;
+    lockMessageId?: string;
+    attendeeIds?: string[];
+    guildEventId?: string;
 }
-
 
 export async function interactionWeightCheck(interaction: Discord.Interaction) {
     let userWeight = (await Sheets.getUserData()).get(interaction.user.id).weight;
-    const minWeight = .9;
-    if (userWeight >= minWeight || (interaction.member.roles as Discord.GuildMemberRoleManager).cache.find(e => e == Main.managerRole)) {
+    const minWeight = 0.9;
+    if (userWeight >= minWeight || (interaction.member.roles as Discord.GuildMemberRoleManager).cache.find((e) => e == Main.managerRole)) {
         return true;
-    }
-    else {
+    } else {
         if (!(interaction instanceof Discord.AutocompleteInteraction))
             interaction.reply({ content: "Only users with kino weight over " + minWeight + " can do this! (Your weight is " + userWeight + ")", ephemeral: true });
         return false;
+    }
+}
+
+export class Film extends DbObject {
+    suggestedBy: string;
+    watched = false;
+    name: string;
+
+    static async fromCommand(name: string, suggestedBy: string) {
+        let film = await Film.fromData({ name, suggestedBy });
+        film.dbUpdate();
+        return film;
+    }
+
+    static override async fromData(data: Partial<Film>): Promise<Film> {
+        const newObj = (await super.fromData(data)) as Film;
+        Object.assign(newObj, data);
+        return newObj;
     }
 }

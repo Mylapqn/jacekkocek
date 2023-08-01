@@ -7,7 +7,6 @@ import ytdl from "@distube/ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
-import * as Database from "./database";
 import * as Stocks from "./stocks";
 import * as Matoshi from "./matoshi";
 import * as Api from "./api";
@@ -21,6 +20,7 @@ import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
 import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
+import { Mongo } from "./mongo";
 require('console-stamp')(console, {
     format: ':date(dd/mm/yyyy HH:MM:ss.l)'
 });
@@ -81,7 +81,7 @@ export async function setPolicyValue(name: string, value: number) {
         }
     }
     await Promise.all(promises);
-    await Database.PolicyDatabase.setPolicy(name, value);
+    //await Database.PolicyDatabase.setPolicy(name, value);
 }
 
 export function getPolicyValue(name: string) {
@@ -360,8 +360,6 @@ let baseUrl = "https://jacekkocek.coal.games";
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
-console.log(process.env.DISCORD_API_KEY);
-
 
 client.login(process.env.DISCORD_API_KEY);
 
@@ -395,7 +393,9 @@ client.on('ready', async () => {
 
     Stocks.init();
     preparePolicyInfluence();
-    await Database.init();
+    await Mongo.connect();
+    await Polls.Poll.loadPolls();
+    Kino.Event.loadEvents();
     Matoshi.init();
     Api.init();
 
@@ -471,7 +471,7 @@ client.on('interactionCreate', async interaction => {
                 switch (interaction.options.getSubcommand()) {
                     case "suggest": {
                         let filmName = Utilities.toTitleCase(interaction.options.getString("film"));
-                        let existingFilm = await Database.KinoDatabase.getFilmByName(filmName);
+                        let existingFilm = await Kino.Film.dbFind<Kino.Film>({name: filmName});
                         if (existingFilm) {
                             interaction.reply({ content: "***" + filmName + "*** has already been suggested by **" + (await client.users.fetch(existingFilm.suggestedBy)).username + "**.", ephemeral: true });
                         }
@@ -487,7 +487,7 @@ client.on('interactionCreate', async interaction => {
                     }
                     case "playlist": {
                         let filter = interaction.options.getString("filter") || "unwatched";
-                        let kinoFilms = await Database.KinoDatabase.getAllFilms(filter);
+                        let kinoFilms = await Kino.Film.dbFindAll<Kino.Film>({watched: filter != "unwatched"});
                         if (kinoFilms.length > 0) {
                             let newMessage = "**__Film suggestions:__**\n";
                             for (const f of kinoFilms) {

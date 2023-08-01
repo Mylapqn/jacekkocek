@@ -145,3 +145,12 @@ export async function getAsync(url: string): Promise<Readable> {
 export function limitString(str: string, n: number) {
     return (str.length > n) ? str.slice(0, n - 1) + '...' : str;
 };
+
+export async function messageFromUid(uid: string): Promise<Discord.Message> {
+    let ids = uid.split("/")
+    return await fetchMessage(ids[0], ids[1]);
+}
+
+export function messageToUid(message: Discord.Message): string {
+    return message.channelId + "/" + message.id;
+}

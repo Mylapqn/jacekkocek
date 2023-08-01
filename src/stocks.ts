@@ -1,10 +1,10 @@
 import Canvas from "canvas";
 import axios from "axios";
-import * as Database from "./database";
 import * as Matoshi from "./matoshi";
 import * as Utilities from "./utilities";
 import * as Main from "./main";
 import { setStockPolicyDefaults, stockPresets } from "./stockPresets";
+import { User } from "./user";
 
 const stockApiKey = "c8oe5maad3iatn99i470";
 
@@ -20,14 +20,14 @@ const resolutions = {
     day: "D",
     week: "W",
     month: "M",
-}
+};
 
 export let stockData = new Map<string, Array<number>>();
 
 export function init() {
-    stockPresets.forEach(preset => {
+    stockPresets.forEach((preset) => {
         stockData.set(preset.id, []);
-    })
+    });
     setInterval(() => {
         getStockData();
     }, 3600000 / stockUpdatesPerHour);
@@ -67,7 +67,7 @@ export function generateGraph(stockId: string) {
 
             //ctx.moveTo(600, 300 - stockHistory[stockHistory.length - 1]);
             for (let i = 0; i < stockHistory.length; i++) {
-                let y = (stockHistory[stockHistory.length - i - 1] - min) / (max - min) * graphHeight + axisOffsetY;
+                let y = ((stockHistory[stockHistory.length - i - 1] - min) / (max - min)) * graphHeight + axisOffsetY;
                 if (min == max) y = graphHeight / 2 + axisOffsetY;
                 ctx.lineTo(width - i * (graphWidth / (stockHistory.length - 1)), height - y);
             }
@@ -99,8 +99,7 @@ export function generateGraph(stockId: string) {
             ctx.lineTo(width, axisOffsetY);
             ctx.stroke();
 
-
-            let y = height - ((stockHistory[stockHistory.length - 1] - min) / (max - min) * graphHeight + axisOffsetY);
+            let y = height - (((stockHistory[stockHistory.length - 1] - min) / (max - min)) * graphHeight + axisOffsetY);
             ctx.beginPath();
             ctx.moveTo(0, y);
             ctx.lineTo(width, y);
@@ -125,16 +124,14 @@ export function generateGraph(stockId: string) {
         } catch (error) {
             return false;
         }
-    }
-    else return false;
+    } else return false;
 }
 
 function formatCurrency(num: number): string {
-    if(!num) return "Unknown"
+    if (!num) return "Unknown";
     if (num >= 100) {
         return Math.round(num).toString();
-    }
-    else {
+    } else {
         return num.toFixed(3);
     }
 }
@@ -142,8 +139,7 @@ function formatCurrency(num: number): string {
 export function currentPrice(stockName: string) {
     if (stockData.has(stockName)) {
         let data = stockData.get(stockName) || [];
-        if (data.length >= 1)
-            return data[data.length - 1];
+        if (data.length >= 1) return data[data.length - 1];
     }
     return undefined;
 }
@@ -157,77 +153,74 @@ function getStockData() {
         const stock = stockPresets[i];
         //console.log(stock.id);
         //console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
-        axios.get(`https://finnhub.io/api/v1/${stock.type}/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`).then((res) => {
-            if (res.data.c && Utilities.isValid(res.data.c[0])) {
-                //console.log(stock.id + " First: " + res.data.c[0]);
-            }
-            else {
-                //console.log(stock.id + " INVALID DATA");
-            }
-            stockData.set(stock.id, res.data.c);
-            //info[stock.id] = res.data.c;
-            if (i == stockPresets.length - 1) {
-                //console.log("Updated all stocks.");
-            }
-        }).catch(e => {
-            //throw new Error("Error updating stocks (" + stock.symbol + "): " + e.response.status + " " + e.response.statusText + " on " + e.config.url + " " + e.response.headers.date);
-            throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
-        });
+        axios
+            .get(`https://finnhub.io/api/v1/${stock.type}/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`)
+            .then((res) => {
+                if (res.data.c && Utilities.isValid(res.data.c[0])) {
+                    //console.log(stock.id + " First: " + res.data.c[0]);
+                } else {
+                    //console.log(stock.id + " INVALID DATA");
+                }
+                stockData.set(stock.id, res.data.c);
+                //info[stock.id] = res.data.c;
+                if (i == stockPresets.length - 1) {
+                    //console.log("Updated all stocks.");
+                }
+            })
+            .catch((e) => {
+                //throw new Error("Error updating stocks (" + stock.symbol + "): " + e.response.status + " " + e.response.statusText + " on " + e.config.url + " " + e.response.headers.date);
+                throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
+            });
     }
 }
 
 export function list() {
-    let str = "Available stocks:\n"
-    stockPresets.forEach(stock => {
-        str += stock.name + " (" + stock.id + ") - Current price: " + formatCurrency(currentPrice(stock.id)) + " ₥\n"
+    let str = "Available stocks:\n";
+    stockPresets.forEach((stock) => {
+        str += stock.name + " (" + stock.id + ") - Current price: " + formatCurrency(currentPrice(stock.id)) + " ₥\n";
     });
     return str;
 }
 
-
-export async function buy(user: string, stock: string, amount: number) {
+export async function buy(userId: string, stock: string, amount: number) {
     let price = currentPrice(stock);
     if (Utilities.isValid(price)) {
-        if (await Matoshi.pay({ from: user, to: Main.client.user.id, amount: amount }, false)) {
-            let data = await Database.getUser(user);
-            let currentStock = data.wallets.get(stock) || 0;
-            currentStock += amount * (1 - Main.policyValues.stock[stock+"fee"] / 100) / price;
-            data.wallets.set(stock, currentStock);
-            await Database.setUser(data);
+        if (await Matoshi.pay({ from: userId, to: Main.client.user.id, amount: amount }, false)) {
+            let user = await User.get(userId);
+            let currentStock = user.wallet.stocks[stock] || 0;
+            currentStock += (amount * (1 - Main.policyValues.stock[stock + "fee"] / 100)) / price;
+            user.wallet.stocks[stock] = currentStock;
+            user.dbUpdate();
             return true;
-        }
-        else return false;
-    }
-    else return false;
+        } else return false;
+    } else return false;
 }
 
-export async function sell(user: string, stock: string, amount: number) {
+export async function sell(userId: string, stock: string, amount: number) {
     let price = currentPrice(stock);
-    let data = await Database.getUser(user);
-    let currentStock = data.wallets.get(stock);
+    let user = await User.get(userId);
+    let currentStock = user.wallet.stocks[stock];
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
-        if (await Matoshi.pay({ from: Main.client.user.id, to: user, amount: Math.floor(amount * (1 - Main.policyValues.stock[stock + "fee"] / 100)) }, false)) {
-            data.wallets.set(stock, currentStock);
-            await Database.setUser(data);
+        if (await Matoshi.pay({ from: Main.client.user.id, to: userId, amount: Math.floor(amount * (1 - Main.policyValues.stock[stock + "fee"] / 100)) }, false)) {
+            user.wallet.stocks[stock] = currentStock;
+            await user.dbUpdate();
             return true;
-        }
-        else return false;
-    }
-    else return false;
+        } else return false;
+    } else return false;
 }
 
-export async function balance(user, stock) {
-    let data = await Database.getUser(user);
-    let currentStock = data.wallets.get(stock);
+export async function balance(userId, stock) {
+    let user = await User.get(userId, true);
+    let currentStock = user.wallet.stocks[stock];
     return currentStock;
 }
 
-export async function balanceAll(user): Promise<Array<{ stock: string, balance: number }>> {
-    let data = await Database.getUser(user);
-    let out = []
-    for (const [stock, balance] of data.wallets) {
-        out.push({stock, balance});
+export async function balanceAll(userId): Promise<Array<{ stock: string; balance: number }>> {
+    let user = await User.get(userId, true);
+    let out = [];
+    for (const stock in user.wallet.stocks) {
+        out.push({ stock, balance: user.wallet.stocks[stock] });
     }
 
     return out;
