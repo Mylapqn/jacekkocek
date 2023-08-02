@@ -34,8 +34,6 @@ export class Mongo {
     }
 
     static async set(obj: DbObject) {
-        console.log(obj);
-        
         if (obj._id) {
             await this.collections[obj.dbType].replaceOne({ _id: obj._id }, obj, { upsert: true });
             return obj._id;

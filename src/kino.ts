@@ -187,8 +187,8 @@ export class Event extends DbObject {
     static override async fromData(data: Partial<Event>): Promise<Event> {
         const newObject = (await super.fromData(data)) as Event;
         Object.assign(newObject, data);
-        newObject.datePoll = Polls.Poll.list.find((p) => (data.datePoll as unknown as ObjectId) == p._id);
-        newObject.filmPoll = Polls.Poll.list.find((p) => (data.filmPoll as unknown as ObjectId) == p._id);
+        newObject.datePoll = Polls.Poll.list.find((p) => p._id.equals(data.datePoll as unknown as ObjectId));
+        newObject.filmPoll = Polls.Poll.list.find((p) => p._id.equals(data.filmPoll as unknown as ObjectId));
         return newObject;
     }
 
