@@ -129,7 +129,7 @@ export class Policy extends DbObject {
 
         await this.createOrLoad({
             category: "matoshi",
-            name: "transactionFeePercent",
+            name: "transactionFeeMin",
             symbol: "₥",
             description: "Matoshi minimum transaction fee",
             value: 1,
