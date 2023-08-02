@@ -7,7 +7,6 @@ import ytdl from "@distube/ytdl-core";
 import fs from "fs";
 import axios from "axios";
 import express from "express";
-import * as Database from "./database";
 import * as Stocks from "./stocks";
 import * as Matoshi from "./matoshi";
 import * as Api from "./api";
@@ -21,6 +20,9 @@ import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
 import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
+import { Mongo } from "./mongo";
+import { Policy } from "./policy";
+import { migrate } from "./migry";
 require('console-stamp')(console, {
     format: ':date(dd/mm/yyyy HH:MM:ss.l)'
 });
@@ -71,75 +73,6 @@ export const port = process.env.PORT;
 export const httpServer = express();
 httpServer.use(express.json());
 
-export async function setPolicyValue(name: string, value: number) {
-    let [category, policy] = name.split(".");
-    policyValues[category][policy] = value;
-    let promises = [];
-    if (policyRelation[category] != undefined && policyRelation[category][policy] != undefined) {
-        for (const related of policyRelation[category][policy]) {
-            promises.push(setPolicyValue(related, value));
-        }
-    }
-    await Promise.all(promises);
-    await Database.PolicyDatabase.setPolicy(name, value);
-}
-
-export function getPolicyValue(name: string) {
-    let [category, policy] = name.split(".");
-    return policyValues[category][policy];
-}
-
-export function getPolicyName(name: string) {
-    let [category, policy] = name.split(".");
-    return policyNames[category][policy];
-}
-
-export function generatePolicyList() {
-    let list = "**__JacekKocek Policy List:__**\n";
-    const name = 0;
-    const unit = 1;
-
-    for (const category in policyValues) {
-        list += "**" + Utilities.toTitleCase(category) + ":**\n";
-        for (const policy in policyValues[category]) {
-            const value = policyValues[category][policy];
-            if (policyInfluence[category + "." + policy] == null || getPolicyValue(policyInfluence[category + "." + policy]) != value)
-                list += "• " + policyNames[category][policy][name] + ": **" + value + " " + policyNames[category][policy][unit] + "**\n";
-        }
-    }
-    return list;
-}
-
-export let policyRelation = {
-    service: {
-        defaultFee: [
-            "service.searchFee",
-            "service.radioFee",
-            "service.youtubeFee",
-            "service.fryPleaseFee",
-            "service.remindFee",
-            "service.imageFee",
-            "service.calcFee"],
-    }
-};
-
-let policyInfluence = {}
-
-function preparePolicyInfluence() {
-    policyInfluence = (() => {
-        let result = {};
-        for (const category in policyRelation) {
-            for (const policy in policyRelation[category]) {
-                const relations = policyRelation[category][policy];
-                for (const name of relations) {
-                    result[name] = category + "." + policy;
-                }
-            }
-        }
-        return result;
-    })();
-}
-
 export let policyValues = {
     kino: {
         suggestReward: 50,
@@ -166,34 +99,6 @@ export let policyValues = {
     },
     stock: {
         defaultFee: 0.5,
-    },
-};
-export let policyNames = {
-    kino: {
-        suggestReward: ["Kino suggest reward", "₥"],
-        watchReward: ["Kino watch reward", "₥"],
-        defaultTimeHrs: ["Kino default time", "hours"],
-        lateFee: ["Kino late fee", "₥"],
-    },
-    matoshi: {
-        transactionFeePercent: ["Matoshi transaction fee percentage (Doesn't apply if below minimum fee)", "%"],
-        transactionFeeMin: ["Matoshi minimum transaction fee", "₥"],
-        weeklyTaxPercent: ["Weekly percent tax", "%"],
-        weeklyTaxFlat: ["Weekly flat tax", "₥"],
-    },
-    service: {
-        defaultFee: ["Service fee", "₥"],
-        searchFee: ["Search fee", "₥"],
-        radioFee: ["Radio fee", "₥"],
-        youtubeFee: ["Youtube fee", "₥"],
-        fryPleaseFee: ["Usmažit prosím fee", "₥"],
-        remindFee: ["Remind fee", "₥"],
-        nukeFee: ["Nuke fee", "₥"],
-        imageFee: ["Image search fee", "₥"],
-        calcFee: ["Kalkulačka fee", "₥"],
-    },
-    stock: {
-        defaultFee: ["Stock transaction fee", "%"],
     },
 };
 
@@ -328,8 +233,8 @@ var radioStations = [
         color: 0x197591,
         url: "https://kathy.torontocast.com:1825/stream"
     },
-
-
+    
+    
 ];
 
 export let letterEmoji = {
@@ -359,6 +264,7 @@ loadReminders();
 let baseUrl = "https://jacekkocek.coal.games";
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
+
 
 client.login(process.env.DISCORD_API_KEY);
 
@@ -390,11 +296,15 @@ client.on('ready', async () => {
     client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
     startDate = new Date();
 
+    await Mongo.connect();
+    await Policy.init();
     Stocks.init();
-    preparePolicyInfluence();
-    await Database.init();
+    await Polls.Poll.loadPolls();
+    Kino.Event.loadEvents();
     Matoshi.init();
     Api.init();
+
+    migrate(); //remobe this!!!!!!
 
     httpServer.get("/radio/play", (req, res) => {
         try {
@@ -468,7 +378,7 @@ client.on('interactionCreate', async interaction => {
                 switch (interaction.options.getSubcommand()) {
                     case "suggest": {
                         let filmName = Utilities.toTitleCase(interaction.options.getString("film"));
-                        let existingFilm = await Database.KinoDatabase.getFilmByName(filmName);
+                        let existingFilm = await Kino.Film.dbFind<Kino.Film>({name: filmName});
                         if (existingFilm) {
                             interaction.reply({ content: "***" + filmName + "*** has already been suggested by **" + (await client.users.fetch(existingFilm.suggestedBy)).username + "**.", ephemeral: true });
                         }
@@ -484,7 +394,7 @@ client.on('interactionCreate', async interaction => {
                     }
                     case "playlist": {
                         let filter = interaction.options.getString("filter") || "unwatched";
-                        let kinoFilms = await Database.KinoDatabase.getAllFilms(filter);
+                        let kinoFilms = await Kino.Film.dbFindAll<Kino.Film>({watched: filter != "unwatched"});
                         if (kinoFilms.length > 0) {
                             let newMessage = "**__Film suggestions:__**\n";
                             for (const f of kinoFilms) {
@@ -781,7 +691,7 @@ client.on('interactionCreate', async interaction => {
                 break;
             }
             case "policy-list": {
-                interaction.reply(generatePolicyList());
+                interaction.reply(Policy.generatePolicyList());
                 break;
             }
             case "issue": {
@@ -816,12 +726,12 @@ client.on('interactionCreate', async interaction => {
                         switch (interaction.options.getSubcommandGroup()) {
                             case "policy": {
                                 try {
-                                    let policy = interaction.options.getString("policy");
+                                    let policyId = interaction.options.getString("policy");
                                     let newValue = interaction.options.getNumber("value");
-                                    let curValue = getPolicyValue(policy);
-                                    let policyName = getPolicyName(policy)
-                                    await setPolicyValue(policy, newValue);
-                                    interaction.reply({ content: `<@${member.id}> changed the policy **${policyName[0]}** to **${newValue} ${policyName[1]}** (previously ${curValue} ${policyName[1]})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
+                                    let policy = Policy.get(policyId);
+                                    const oldValue = policy.value;
+                                    await policy.setValue(newValue);
+                                    interaction.reply({ content: `<@${member.id}> changed the policy **${policy.description}** to **${newValue} ${policy.symbol}** (previously ${oldValue} ${policy.symbol})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
                                 } catch (error) {
                                     console.log(error);
                                     interaction.reply({ content: "Policy setting failed!", ephemeral: true });

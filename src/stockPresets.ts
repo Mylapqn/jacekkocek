@@ -1,4 +1,5 @@
 import * as Main from "./main";
+import { Policy } from "./policy";
 
 export type StockPreset = {
     id: string,
@@ -57,18 +58,17 @@ export function getStockChoices() {
     return choices;
 }
 
-export async function setStockPolicyDefaults() {
-    let policyRelation = {stock: {defaultFee: []}};
-    let stockPolicies = {};
-    let stockNames = {};
+export function setStockPolicyDefaults() {
     for (const stock of stockPresets) {
-        stockPolicies[stock.id + "fee"] = Main.policyValues.stock.defaultFee;
-        stockNames[stock.id + "fee"] = [stock.id + " stock transaction fee", "%"];
-        policyRelation.stock.defaultFee.push("stock."+stock.id + "fee");
+        Policy.createOrLoad({
+            category: "stock",
+            name: stock.symbol+"fee",
+            symbol: "%",
+            description: "Stock transaction fee for " + stock.name,
+            value: 0,
+            parent: Policy.get("stock", "defaultFee")
+        });
     }
-    Object.assign(Main.policyValues.stock, stockPolicies);
-    Object.assign(Main.policyNames.stock, stockNames);
-    Object.assign(Main.policyRelation, policyRelation);    
 }
 
 export function getStockFeeHints() {
