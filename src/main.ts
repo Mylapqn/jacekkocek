@@ -22,7 +22,6 @@ import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
 import { Mongo } from "./mongo";
 import { Policy } from "./policy";
-import { migrate } from "./migry";
 require('console-stamp')(console, {
     format: ':date(dd/mm/yyyy HH:MM:ss.l)'
 });
@@ -303,8 +302,6 @@ client.on('ready', async () => {
     Kino.Event.loadEvents();
     Matoshi.init();
     Api.init();
-
-    migrate(); //remobe this!!!!!!
 
     httpServer.get("/radio/play", (req, res) => {
         try {
