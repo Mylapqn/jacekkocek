@@ -238,7 +238,7 @@ export class Film extends DbObject {
 
     static async fromCommand(name: string, suggestedBy: string) {
         let film = await Film.fromData({ name, suggestedBy });
-        film.dbUpdate();
+        await film.dbUpdate();
         return film;
     }
 
