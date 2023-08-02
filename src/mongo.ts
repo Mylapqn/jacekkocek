@@ -1,10 +1,7 @@
 import { Collection, Db, Filter, FindOptions, MongoClient, ObjectId } from "mongodb";
 import { DbObject, SerializableObject } from "./dbObject";
-//import { Film } from './kino';
 
 export const typeIdentifier = "dbType";
-
-type ClassType = { new (...args: any[]): DbObject | DbObject; name: string };
 
 const mongourl = process.env.MONGO_URL ?? "mongodb://10.200.140.14:27017";
 

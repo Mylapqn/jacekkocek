@@ -26,7 +26,7 @@ export class KinoDatabase {
         let films = new Array<Kino.Film>;
         for (const entry of filmData) {
             const film = await Kino.Film.fromCommand( entry["name"], entry["suggested_by"]);
-            film.watched = entry["watched"];
+            film.watched = entry["watched"] == 1;
             film.dbUpdate();
         }
         return films;
