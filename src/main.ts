@@ -375,7 +375,7 @@ client.on('interactionCreate', async interaction => {
                 switch (interaction.options.getSubcommand()) {
                     case "suggest": {
                         let filmName = Utilities.toTitleCase(interaction.options.getString("film"));
-                        let existingFilm = await Kino.Film.dbFind<Kino.Film>({name: filmName});
+                        let existingFilm = await Kino.Film.get( filmName);
                         if (existingFilm) {
                             interaction.reply({ content: "***" + filmName + "*** has already been suggested by **" + (await client.users.fetch(existingFilm.suggestedBy)).username + "**.", ephemeral: true });
                         }
