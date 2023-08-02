@@ -3,6 +3,8 @@ import * as Utilities from "./utilities";
 import * as Main from "./main";
 import * as Youtube from "./youtube";
 import { DbObject } from "./dbObject";
+import { EventEmitter } from "events";
+import { Event } from "./kino";
 
 export type PollOptionFilter = (option: string) => Promise<string>;
 
@@ -185,7 +187,15 @@ export class Poll extends DbObject {
                 //remobing
                 console.log(`removing old poll`);
             } else {
-                this.list.push(await Poll.fromData(data));
+                const newPoll = await Poll.fromData(data);
+                this.list.push(newPoll);
+                //@ts-ignore
+                const eventFilm = await Event.dbFind<Event>({filmPoll: newPoll._id });
+                if(eventFilm) newPoll.optionFilter = Event.filmVoteOptionFilter;
+                //@ts-ignore
+                const eventDate = await Event.dbFind<Event>({datePoll: newPoll._id });
+                if(eventDate) newPoll.optionFilter = Event.dateVoteOptionFilter;
+
             }
         }
 

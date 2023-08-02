@@ -23,6 +23,7 @@ export class Mongo {
         Mongo.registerType("Film");
         Mongo.registerType("Poll");
         Mongo.registerType("Event");
+        Mongo.registerType("Policy");
     }
 
     static async find(filter: Filter<any>, collection: string) {

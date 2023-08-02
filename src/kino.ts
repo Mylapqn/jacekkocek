@@ -98,8 +98,12 @@ export class Event extends DbObject {
     }
 
     async dateVote(interaction: Discord.Interaction) {
+        console.log(this.film);
+
         if (this.filmPoll && !this.film) {
-            this.film = await Film.dbFind({ name: this.filmPoll.getWinner().name });
+            console.log(this.filmPoll.getWinner().name);
+
+            this.film = await Film.get(this.filmPoll.getWinner().name);
             this.filmPoll.lock();
         }
 
@@ -180,6 +184,7 @@ export class Event extends DbObject {
         const data = super.serialisable();
         data.datePoll = this.datePoll?._id;
         data.filmPoll = this.filmPoll?._id;
+        data.film = this.film?.name;
 
         return data;
     }
@@ -189,6 +194,7 @@ export class Event extends DbObject {
         Object.assign(newObject, data);
         newObject.datePoll = Polls.Poll.list.find((p) => p._id.equals(data.datePoll as unknown as ObjectId));
         newObject.filmPoll = Polls.Poll.list.find((p) => p._id.equals(data.filmPoll as unknown as ObjectId));
+        newObject.film = await Film.get(data.film as unknown as string);
         return newObject;
     }
 
@@ -240,5 +246,11 @@ export class Film extends DbObject {
         const newObj = (await super.fromData(data)) as Film;
         Object.assign(newObj, data);
         return newObj;
+    }
+
+    static async get(name: string) {
+        const filmData = await Film.dbFind({ name });
+        if (!filmData) return undefined;
+        return await this.fromData(filmData);
     }
 }
