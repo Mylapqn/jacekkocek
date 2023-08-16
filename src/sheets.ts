@@ -25,7 +25,7 @@ async function getDayIndex(date = new Date()) {
         valueRenderOption: "FORMATTED_VALUE"
 
     });
-    let today = (date.getDate()) + "." + (date.getMonth() + 1) + ".";
+    let today = (date.getDate()) + "." + (date.getMonth() + 1) + "." + date.getFullYear();
     let todayIndex = result.data.values.findIndex((value: string[], index, values) => {
         if (value[0] == today) return true;
         return false;
