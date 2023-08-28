@@ -23,7 +23,7 @@ async function getDayIndex(date = new Date()) {
         range: "Díly!B6:B",
         valueRenderOption: "UNFORMATTED_VALUE",
     });
-    let today = Math.floor(date.getTime() / (24 * 60 * 60 * 1000) + 25567);
+    let today = Math.floor(date.getTime() / (24 * 60 * 60 * 1000) + 25569);
     let todayIndex =
         result.data.values.findIndex((value: string[], index, values) => {
             if (value[0] == today.toFixed()) return true;
