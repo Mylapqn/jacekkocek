@@ -126,6 +126,9 @@ export async function requestPayment(options: PaymentRequestOptions) {
 }
 
 async function collectAndReportTax() {
+    if (Main.policyValues.matoshi.weeklyTaxFlat == 0 && Main.policyValues.matoshi.weeklyTaxPercent == 0) {
+        return undefined;
+    }
     let sorted = (await User.dbFindAll<User>({ wallet: { $exists: true } })).sort((a, b) => b.wallet.matoshi - a.wallet.matoshi);
     let msg = "Matoshi tax report:\n";
     for (let i = 0; i < sorted.length; i++) {
@@ -237,7 +240,8 @@ async function scheduleTax() {
     let delay = date.valueOf() - Date.now();
 
     setTimeout(async () => {
-        Main.notifyTextChannel.send(await collectAndReportTax());
+        const msg = await collectAndReportTax();
+        if (msg) Main.notifyTextChannel.send(msg);
         lastTaxTime = Date.now();
         scheduleTax();
     }, delay);
