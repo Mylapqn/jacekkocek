@@ -74,7 +74,7 @@ export class Event extends DbObject {
         }
     }
     static filmVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
-        let film = await Film.dbFind({ name: name });
+        let film = await Film.dbFind({ name: new RegExp(name, "i") });
         if (film == undefined) throw new Error("Invalid option");
         return Utilities.toTitleCase(name);
     };
