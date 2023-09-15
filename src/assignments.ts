@@ -58,17 +58,17 @@ export class Assignment extends DbObject {
         user.taskIds.splice(user.taskIds.indexOf(this._id), 1);
         if (fail) {
             if (user.streak > 0) {
-                this.thread.send(`Task failed. Your streak of ${user.streak} is lost.`);
+                await this.thread.send(`Task failed. Your streak of ${user.streak} is lost.`);
                 user.streak = 0;
                 await user.dbUpdate();
             } else {
-                this.thread.send(`Task failed.`);
+                await this.thread.send(`Task failed.`);
             }
         } else {
-            this.thread.send(`Task canceled.`);
+            await this.thread.send(`Task canceled.`);
         }
         if (this.supervisorId) {
-            this.thread.send(`<@${this.supervisorId}>, you are now relieved from your duties.`);
+            await this.thread.send(`<@${this.supervisorId}>, you are now relieved from your duties.`);
         }
         this.closed = true;
         await this.thread.setLocked(true);
@@ -123,7 +123,7 @@ export class Assignment extends DbObject {
         Matoshi.pay({ amount: this.reward, from: client.user.id, to: this.userId }, false);
         this.closed = true;
         user.streak++;
-        this.thread.send(`Confirmed. <@${this.userId}> your streak is now ${user.streak}`);
+        await this.thread.send(`Confirmed. <@${this.userId}> your streak is now ${user.streak}`);
         await Promise.all([this.dbUpdate(), user.dbUpdate()]);
         await this.thread.setLocked(true);
         await this.thread.setArchived(true);
