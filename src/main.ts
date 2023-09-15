@@ -22,8 +22,10 @@ import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
 import { Mongo } from "./mongo";
 import { Policy } from "./policy";
-require('console-stamp')(console, {
-    format: ':date(dd/mm/yyyy HH:MM:ss.l)'
+import {Assignment} from "./assignments";
+import { User } from "./user";
+require("console-stamp")(console, {
+    format: ":date(dd/mm/yyyy HH:MM:ss.l)",
 });
 
 //const icecastParser = require("icecast-parser");
@@ -46,6 +48,7 @@ export const client = new Discord.Client({ intents: intents });
 
 export let mainGuild: Discord.Guild;
 export let kinoChannel: Discord.TextChannel;
+export let operationsChannel: Discord.TextChannel;
 export let mainVoiceChannel: Discord.VoiceChannel;
 export let notifyTextChannel: Discord.TextChannel;
 export let managerRole: Discord.Role;
@@ -55,9 +58,9 @@ let audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: Di
 
 //TODO TEMP DISCORD WORKAROUND
 const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-    const newUdp = Reflect.get(newNetworkState, 'udp');
+    const newUdp = Reflect.get(newNetworkState, "udp");
     clearInterval(newUdp?.keepAliveInterval);
-}
+};
 
 var kocek = 0;
 var lastSearchResults = null;
@@ -101,8 +104,6 @@ export let policyValues = {
     },
 };
 
-
-
 var helpCommands = [
     {
         name: "help",
@@ -139,14 +140,15 @@ var helpCommands = [
         prefix: true,
         arguments: "song name or id",
         description: "Play one song in your voice chat",
-        longDescription: "Play one song in your voice chat. The argument can be song name, song id, or nothing for a random song."
+        longDescription: "Play one song in your voice chat. The argument can be song name, song id, or nothing for a random song.",
     },
     {
         name: "songs",
         prefix: true,
         arguments: "song name or id",
         description: "Start playing songs in your voice chat",
-        longDescription: "Start playing songs in your voice chat. The starting song can be specified, the following ones will be random.\nThe argument can be song name, song id, or nothing for a random song."
+        longDescription:
+            "Start playing songs in your voice chat. The starting song can be specified, the following ones will be random.\nThe argument can be song name, song id, or nothing for a random song.",
     },
     {
         name: "stop",
@@ -160,89 +162,117 @@ var helpCommands = [
         arguments: "",
         description: "Play noise in your voice channel",
     },
-
 ];
-
 
 var changelog = {
     version: "1.22.2",
     releaseDate: "28.7.2023",
-    changes: [
-        "Not specified",
-    ]
+    changes: ["Not specified"],
 };
 
 var radioStations = [
     {
         name: "Evropa 2",
-        color: 0x3C50DC,
-        url: "http://ice.actve.net/fm-evropa2-128"
+        color: 0x3c50dc,
+        url: "http://ice.actve.net/fm-evropa2-128",
     },
     {
         name: "Anime Radio 1 ヾ(⌒∇⌒*)♪",
-        color: 0xEB87B4,
+        color: 0xeb87b4,
         //url: "https://japanimradiotokyo.fr/8002/stream"
         //url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
-        url: "https://listen.moe/stream"
+        url: "https://listen.moe/stream",
     },
     {
         name: "Anime Radio 2 ♪(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
-        color: 0xEB87B4,
+        color: 0xeb87b4,
         //url: "https://japanimradiotokyo.fr/8002/stream"
         //url: "https://streamingv2.shoutcast.com/japanimradio-tokyo"
-        url: "https://kathy.torontocast.com:3060/;"
+        url: "https://kathy.torontocast.com:3060/;",
     },
     {
         name: "Anime Radio 3 ☆٩(◕‿◕｡)۶☆",
-        color: 0xEB87B4,
-        url: "http://79.111.119.111:8002/anime"
+        color: 0xeb87b4,
+        url: "http://79.111.119.111:8002/anime",
     },
     {
         name: "SOCKENSCHUSS X",
-        color: 0x6400B4,
-        url: "https://stream.laut.fm/sockenschuss-x"
+        color: 0x6400b4,
+        url: "https://stream.laut.fm/sockenschuss-x",
     },
     {
         name: "Nightdrive",
         color: 0x000000,
-        url: "https://stream.laut.fm/nightdrive"
+        url: "https://stream.laut.fm/nightdrive",
     },
     {
         name: "Instrumental Radio",
-        color: 0x43D1CC,
-        url: "http://agnes.torontocast.com:8151/;"
+        color: 0x43d1cc,
+        url: "http://agnes.torontocast.com:8151/;",
     },
     {
         name: "Radcap Synthwave",
-        color: 0xC80046,
-        url: "http://79.120.39.202:8002/retrowave"
+        color: 0xc80046,
+        url: "http://79.120.39.202:8002/retrowave",
     },
     {
         name: "Radcap Space",
-        color: 0xC80046,
-        url: "http://79.111.119.111:8002/spacemusic"
+        color: 0xc80046,
+        url: "http://79.111.119.111:8002/spacemusic",
     },
     {
         name: "Radcap Spacesynth",
-        color: 0xC80046,
-        url: "http://79.120.39.202:8002/spacesynth"
+        color: 0xc80046,
+        url: "http://79.120.39.202:8002/spacesynth",
     },
     {
         name: "Cinemix",
         color: 0x197591,
-        url: "https://kathy.torontocast.com:1825/stream"
+        url: "https://kathy.torontocast.com:1825/stream",
     },
-    
-    
 ];
 
 export let letterEmoji = {
-    a: "🇦", b: "🇧", c: "🇨", d: "🇩", e: "🇪", f: "🇫", g: "🇬", h: "🇭", i: "🇮", j: "🇯", k: "🇰", l: "🇱", m: "🇲", n: "🇳", o: "🇴", p: "🇵", q: "🇶", r: "🇷", s: "🇸", t: "🇹", u: "🇺", v: "🇻", w: "🇼", x: "🇽", y: "🇾", z: "🇿",
+    a: "🇦",
+    b: "🇧",
+    c: "🇨",
+    d: "🇩",
+    e: "🇪",
+    f: "🇫",
+    g: "🇬",
+    h: "🇭",
+    i: "🇮",
+    j: "🇯",
+    k: "🇰",
+    l: "🇱",
+    m: "🇲",
+    n: "🇳",
+    o: "🇴",
+    p: "🇵",
+    q: "🇶",
+    r: "🇷",
+    s: "🇸",
+    t: "🇹",
+    u: "🇺",
+    v: "🇻",
+    w: "🇼",
+    x: "🇽",
+    y: "🇾",
+    z: "🇿",
     "#": "#️⃣",
-    "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣", "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣"
+    "0": "0️⃣",
+    "1": "1️⃣",
+    "2": "2️⃣",
+    "3": "3️⃣",
+    "4": "4️⃣",
+    "5": "5️⃣",
+    "6": "6️⃣",
+    "7": "7️⃣",
+    "8": "8️⃣",
+    "9": "9️⃣",
 };
 
-console.log("\n-----------RESTART-----------")
+console.log("\n-----------RESTART-----------");
 
 export const weekDayNames = ["po", "ut", "st", "ct", "pa", "so", "ne"];
 
@@ -264,33 +294,37 @@ let baseUrl = "https://jacekkocek.coal.games";
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 
-
 client.login(process.env.DISCORD_API_KEY);
 
-const defaultMainGuildId = '549589656606343178';
-const defaultNotifyTextChannelId = '753323827093569588';
-const defaultMainVoiceChannelId = '1024767805586935888';
-const defaultManagerRoleId = '1046868723048382494';
-const defaultAdminId = ['532918953014722560'];
-const defaultKinoChannelId = '662455047451574292';
+const defaultMainGuildId = "549589656606343178";
+const defaultNotifyTextChannelId = "753323827093569588";
+const defaultMainVoiceChannelId = "1024767805586935888";
+const defaultManagerRoleId = "1046868723048382494";
+const defaultAdminId = ["532918953014722560"];
+const defaultKinoChannelId = "662455047451574292";
+const defaultAssignmentsChannelId = "1089979084802629692";
 
-client.on('ready', async () => {
+client.on("ready", async () => {
     const mainGuildId = process.env.MAIN_GUILD_ID ?? defaultMainGuildId;
     const notifyTextChannelId = process.env.NOTIFY_TEXT_CHANNEL_ID ?? defaultNotifyTextChannelId;
     const kinoChannelId = process.env.KINO_CHANNEL_ID ?? defaultKinoChannelId;
+    const AssignmentsChannelId = process.env.OPERATIONS_CHANNEL_ID ?? defaultAssignmentsChannelId;
     const mainVoiceChannelId = process.env.MAIN_VOICE_CHANNEL_ID ?? defaultMainVoiceChannelId;
     const managerRoleId = process.env.MANAGER_ROLE_ID ?? defaultManagerRoleId;
     const production = defaultMainGuildId == mainGuildId;
 
     mainGuild = client.guilds.cache.get(mainGuildId);
-    kinoChannel = await mainGuild.channels.fetch(kinoChannelId) as Discord.TextChannel;
-    notifyTextChannel = await mainGuild.channels.fetch(notifyTextChannelId) as Discord.TextChannel;
-    mainVoiceChannel = await mainGuild.channels.fetch(mainVoiceChannelId) as Discord.VoiceChannel;
+    kinoChannel = (await mainGuild.channels.fetch(kinoChannelId)) as Discord.TextChannel;
+    operationsChannel = (await mainGuild.channels.fetch(AssignmentsChannelId)) as Discord.TextChannel;
+    notifyTextChannel = (await mainGuild.channels.fetch(notifyTextChannelId)) as Discord.TextChannel;
+    mainVoiceChannel = (await mainGuild.channels.fetch(mainVoiceChannelId)) as Discord.VoiceChannel;
     managerRole = await mainGuild.roles.fetch(managerRoleId);
-    adminId = process.env.ADMIN_ID?.split(',') ?? defaultAdminId;
+    adminId = process.env.ADMIN_ID?.split(",") ?? defaultAdminId;
 
     if (production)
-        client.guilds.fetch('728312628413333584').then(guild => { guild.emojis.fetch() });
+        client.guilds.fetch("728312628413333584").then((guild) => {
+            guild.emojis.fetch();
+        });
     console.error("\n-----------RESTART-----------\n" + new Date().toUTCString() + "\n");
     client.user.setActivity({ name: prefix + "help", type: Discord.ActivityType.Listening });
     startDate = new Date();
@@ -302,6 +336,7 @@ client.on('ready', async () => {
     Kino.Event.loadEvents();
     Matoshi.init();
     Api.init();
+    await Assignment.loadTasks();
 
     httpServer.get("/radio/play", (req, res) => {
         try {
@@ -331,7 +366,7 @@ client.on('ready', async () => {
 
     httpServer.listen(port, () => {
         console.log("HTTP Listening on port " + port);
-    })
+    });
 
     /*
     client.guilds.fetch("549589656606343178").then(guild => {
@@ -349,13 +384,12 @@ client.on('ready', async () => {
     }, reminderThreshold * 1000);
     //console.log(upcomingReminders);
 
-
-    console.log('' + new Date().toUTCString() + ' I am ready! Discord.js v' + Discord.version);
+    console.log("" + new Date().toUTCString() + " I am ready! Discord.js v" + Discord.version);
 });
 
 client.on("guildScheduledEventUpdate", async (oldEvent, newEvent) => {
     if (oldEvent.status != newEvent.status && newEvent.status == Discord.GuildScheduledEventStatus.Active && newEvent.guild == mainGuild) {
-        let kinoEvent = Kino.Event.list.find(e => e.guildEventId == newEvent.id);
+        let kinoEvent = Kino.Event.list.find((e) => e.guildEventId == newEvent.id);
         if (kinoEvent) {
             console.log("Kino Event Started");
             let response = await kinoEvent.start();
@@ -364,7 +398,7 @@ client.on("guildScheduledEventUpdate", async (oldEvent, newEvent) => {
     }
 });
 
-client.on('interactionCreate', async interaction => {
+client.on("interactionCreate", async (interaction) => {
     //console.log("Interaction", interaction);
     const uid = interaction.user.id;
     const member = interaction.member as Discord.GuildMember;
@@ -375,38 +409,39 @@ client.on('interactionCreate', async interaction => {
                 switch (interaction.options.getSubcommand()) {
                     case "suggest": {
                         let filmName = Utilities.toTitleCase(interaction.options.getString("film"));
-                        let existingFilm = await Kino.Film.get( filmName);
+                        let existingFilm = await Kino.Film.get(filmName);
                         if (existingFilm) {
-                            interaction.reply({ content: "***" + filmName + "*** has already been suggested by **" + (await client.users.fetch(existingFilm.suggestedBy)).username + "**.", ephemeral: true });
+                            interaction.reply({
+                                content: "***" + filmName + "*** has already been suggested by **" + (await client.users.fetch(existingFilm.suggestedBy)).username + "**.",
+                                ephemeral: true,
+                            });
                         }
                         /* IF KINOEVENT for this film
                         interaction.reply({ content: "There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
                         */
                         Kino.Film.fromCommand(filmName, interaction.user.id);
                         interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: " + policyValues.kino.suggestReward + " ₥");
-                        if (!await Matoshi.pay({ from: client.user.id, to: interaction.user.id, amount: policyValues.kino.suggestReward }, false)) {
+                        if (!(await Matoshi.pay({ from: client.user.id, to: interaction.user.id, amount: policyValues.kino.suggestReward }, false))) {
                             interaction.channel.send("Not enough matoshi available for reward. Sorry! :(");
                         }
                         break;
                     }
                     case "playlist": {
                         let filter = interaction.options.getString("filter") || "unwatched";
-                        let kinoFilms = await Kino.Film.dbFindAll<Kino.Film>({watched: filter != "unwatched"});
+                        let kinoFilms = await Kino.Film.dbFindAll<Kino.Film>({ watched: filter != "unwatched" });
                         if (kinoFilms.length > 0) {
                             let newMessage = "**__Film suggestions:__**\n";
                             for (const f of kinoFilms) {
                                 newMessage += "• ";
                                 if (f.watched) {
                                     newMessage += "~~*" + f.name + "*~~";
-                                }
-                                else {
+                                } else {
                                     newMessage += "***" + f.name + "***";
                                 }
                                 newMessage += "\n";
                             }
-                            await interaction.reply(newMessage).catch(e => console.error);
-                        }
-                        else {
+                            await interaction.reply(newMessage).catch((e) => console.error);
+                        } else {
                             interaction.reply({ content: "The playlist is empty!", ephemeral: true });
                         }
                         break;
@@ -437,7 +472,6 @@ client.on('interactionCreate', async interaction => {
                         else if (time > 31968000) interaction.reply({ content: "Cannot create timers over 1 year!", ephemeral: true });
                         else if (time > 0) {
                             if (await Matoshi.cost(member.id, policyValues.service.remindFee, interaction.guildId)) {
-
                                 let remText = interaction.options.getString("text").trim();
                                 if (remText == "") remText = "Unnamed reminder";
                                 let newRem = {
@@ -446,25 +480,25 @@ client.on('interactionCreate', async interaction => {
                                     text: remText,
                                     timestamp: Math.round(nowSeconds() + time),
                                     author: interaction.user.id,
-                                    mentions: []
-                                }
+                                    mentions: [],
+                                };
                                 setReminder(newRem);
                                 interaction.reply({
                                     content: `Added reminder for **_${remText}_** at <t:${newRem.timestamp}> (<t:${newRem.timestamp}:R>)`,
-                                    allowedMentions: { parse: [] }
+                                    allowedMentions: { parse: [] },
                                 });
                             } else {
                                 interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.remindFee + "₥", allowedMentions: { repliedUser: false } });
                             }
-                        }
-                        else {
+                        } else {
                             interaction.reply({ content: "Invalid time!", ephemeral: true });
                         }
                         break;
-                    case "remove": {
-                        const removed = removeReminder(interaction.user.id, parseInt(interaction.options.getString("reminder")));
-                        interaction.reply({ content: removed.text + " removed", ephemeral: true });
-                    }
+                    case "remove":
+                        {
+                            const removed = removeReminder(interaction.user.id, parseInt(interaction.options.getString("reminder")));
+                            interaction.reply({ content: removed.text + " removed", ephemeral: true });
+                        }
                         break;
                     case "list": {
                         cleanupReminders();
@@ -525,16 +559,19 @@ client.on('interactionCreate', async interaction => {
                             newMessage += "`" + i + "` - **" + station.name + "**\n";
                         }
                         interaction.reply({
-                            embeds: [{
-                                title: "JacekKocek Internet Radio",
-                                fields: [
-                                    {
-                                        name: "List of available stations", value: newMessage
-                                    }
-                                ],
-                                color: 0x18C3B1
-                            }]
-                        })
+                            embeds: [
+                                {
+                                    title: "JacekKocek Internet Radio",
+                                    fields: [
+                                        {
+                                            name: "List of available stations",
+                                            value: newMessage,
+                                        },
+                                    ],
+                                    color: 0x18c3b1,
+                                },
+                            ],
+                        });
                         break;
                     }
                 }
@@ -549,8 +586,7 @@ client.on('interactionCreate', async interaction => {
                             let target = interaction.options.getUser("user");
                             await Matoshi.modify(target.id, amount);
                             interaction.reply({ content: "Successfully awarded " + amount + " ₥ to **" + target.username + "**", ephemeral: false });
-                        }
-                        else {
+                        } else {
                             interaction.reply({ content: "You are not permitted to mint matoshi! 1 ₥ deducted! :angry:", ephemeral: false });
                             await Matoshi.modify(interaction.user.id, -1);
                         }
@@ -563,8 +599,7 @@ client.on('interactionCreate', async interaction => {
 
                         if (await Matoshi.pay({ from: from.id, to: to.id, amount: amount })) {
                             interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee " + Matoshi.calcFee(amount) + " ₥)", ephemeral: false });
-                        }
-                        else {
+                        } else {
                             interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
                         }
                         break;
@@ -590,7 +625,9 @@ client.on('interactionCreate', async interaction => {
                         break;
                     }
                     case "list": {
-                        Matoshi.generateLeaderboard().then(msg => { interaction.reply({ content: msg, ephemeral: false }); });
+                        Matoshi.generateLeaderboard().then((msg) => {
+                            interaction.reply({ content: msg, ephemeral: false });
+                        });
                         break;
                     }
                 }
@@ -605,25 +642,23 @@ client.on('interactionCreate', async interaction => {
                 }
                 switch (interaction.options.getSubcommand()) {
                     case "buy": {
-                        Stocks.buy(interaction.user.id, stockId, interaction.options.getInteger("amount")).then(res => {
+                        Stocks.buy(interaction.user.id, stockId, interaction.options.getInteger("amount")).then((res) => {
                             if (res) {
                                 interaction.reply("Successfully purchased " + displayString + " for " + interaction.options.getInteger("amount") + " ₥.");
-                            }
-                            else {
+                            } else {
                                 interaction.reply("Purchase of " + displayString + " failed.");
                             }
-                        })
+                        });
                         break;
                     }
                     case "sell": {
-                        Stocks.sell(interaction.user.id, stockId, interaction.options.getInteger("amount")).then(res => {
+                        Stocks.sell(interaction.user.id, stockId, interaction.options.getInteger("amount")).then((res) => {
                             if (res) {
                                 interaction.reply("Successfully sold " + displayString + " for " + interaction.options.getInteger("amount") + " ₥.");
-                            }
-                            else {
+                            } else {
                                 interaction.reply("Sell of " + displayString + " failed.");
                             }
-                        })
+                        });
                         break;
                     }
                     case "info": {
@@ -631,12 +666,10 @@ client.on('interactionCreate', async interaction => {
                             let buf = Stocks.generateGraph(stockId);
                             if (buf) {
                                 interaction.reply({ content: displayString + " prices for <t:" + nowSeconds() + "> - Current " + Stocks.currentPrice(stockId), files: [buf] });
-                            }
-                            else {
+                            } else {
                                 interaction.reply("Failed to create graph!");
                             }
-                        }
-                        else {
+                        } else {
                             interaction.reply("Invalid stock!");
                         }
                         break;
@@ -648,7 +681,7 @@ client.on('interactionCreate', async interaction => {
                     case "balance": {
                         let user = interaction.options.getUser("user");
                         if (!user) user = interaction.user;
-                        Stocks.balance(user.id, stockId).then(balance => {
+                        Stocks.balance(user.id, stockId).then((balance) => {
                             let price = Stocks.currentPrice(stockId);
                             let stockBalanceMatoshi = Math.floor(balance * price);
                             interaction.reply(displayString + " balance for **" + user.username + "**: " + balance + " (worth " + stockBalanceMatoshi + " ₥)");
@@ -659,7 +692,7 @@ client.on('interactionCreate', async interaction => {
                     case "total": {
                         let user = interaction.options.getUser("user");
                         if (!user) user = interaction.user;
-                        Stocks.balanceAll(user.id).then(stocks => {
+                        Stocks.balanceAll(user.id).then((stocks) => {
                             let reply = "Balance for **" + user.username + "**: \n";
                             let total = 0;
 
@@ -679,7 +712,12 @@ client.on('interactionCreate', async interaction => {
             }
             case "poll": {
                 let customOptionsEnabled = interaction.options.getBoolean("custom-options-enabled") === null || interaction.options.getBoolean("custom-options-enabled");
-                let poll = await Polls.Poll.fromCommand(Utilities.escapeFormatting(interaction.options.getString("name")), interaction, interaction.options.getInteger("max-votes") || 0, customOptionsEnabled);
+                let poll = await Polls.Poll.fromCommand(
+                    Utilities.escapeFormatting(interaction.options.getString("name")),
+                    interaction,
+                    interaction.options.getInteger("max-votes") || 0,
+                    customOptionsEnabled
+                );
                 for (let i = 1; i < 10; i++) {
                     let optionName = interaction.options.getString("option" + i);
                     if (!optionName) continue;
@@ -697,7 +735,7 @@ client.on('interactionCreate', async interaction => {
                 let issueType = interaction.options.getString("type") || "request";
                 try {
                     await interaction.deferReply();
-                    let url = await Github.createIssue(issueName, issueDesc, issueType, member.user.username)
+                    let url = await Github.createIssue(issueName, issueDesc, issueType, member.user.username);
                     interaction.editReply("Successfully added issue **" + issueName + "**\n" + url);
                 } catch (e) {
                     interaction.editReply({ content: "Error creating issue!" });
@@ -728,7 +766,11 @@ client.on('interactionCreate', async interaction => {
                                     let policy = Policy.get(policyId);
                                     const oldValue = policy.value;
                                     await policy.setValue(newValue);
-                                    interaction.reply({ content: `<@${member.id}> changed the policy **${policy.description}** to **${newValue} ${policy.symbol}** (previously ${oldValue} ${policy.symbol})`, ephemeral: false, allowedMentions: { users: [], parse: [] } })
+                                    interaction.reply({
+                                        content: `<@${member.id}> changed the policy **${policy.description}** to **${newValue} ${policy.symbol}** (previously ${oldValue} ${policy.symbol})`,
+                                        ephemeral: false,
+                                        allowedMentions: { users: [], parse: [] },
+                                    });
                                 } catch (error) {
                                     console.log(error);
                                     interaction.reply({ content: "Policy setting failed!", ephemeral: true });
@@ -740,9 +782,76 @@ client.on('interactionCreate', async interaction => {
                 }
                 break;
             }
+            case "assignment": {
+                switch (interaction.options.getSubcommand()) {
+                    case "create": {
+                        let reward = interaction.options.getInteger("reward");
+                        let days = interaction.options.getInteger("days");
+                        let description = interaction.options.getString("description");
+                        let supervisor = interaction.options.getUser("supervisor");
+                        let dueDate = new Date();
+                        dueDate.setHours(23);
+                        dueDate.setMinutes(59);
+                        dueDate.setSeconds(0);
+                        dueDate = new Date(dueDate.valueOf() + days * 24 * 60 * 60 * 1000);
+                        const task = await Assignment.assign(description, dueDate, await User.get(interaction.user.id), reward, supervisor?.id);
+
+                        interaction.reply({ content: "Task created", ephemeral: true });
+                        break;
+                    }
+
+                    case "supervise": {
+                        const task = await Assignment.getByThread(interaction.channelId);
+                        await interaction.deferReply();
+                        await interaction.deleteReply();
+                        task.setSupervisior(interaction.user.id);
+                        break;
+                    }
+
+                    case "complete": {
+                        const task = await Assignment.getByThread(interaction.channelId);
+                        if (task.userId == interaction.user.id) {
+                            task.complete();
+                            await interaction.deferReply();
+                            await interaction.deleteReply();
+                        } else {
+                            interaction.reply({ content: "You are not the assignee", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "confirm": {
+                        const task = await Assignment.getByThread(interaction.channelId);
+                        if (task.supervisorId == interaction.user.id) {
+                            task.confirmComplete();
+                            await interaction.deferReply();
+                            await interaction.deleteReply();
+                        } else {
+                            interaction.reply({ content: "You are not the supervisor", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "cancel": {
+                        const task = await Assignment.getByThread(interaction.channelId);
+                        if (task.supervisorId == interaction.user.id) {
+                            task.cancel(false);
+                            await interaction.deferReply();
+                            await interaction.deleteReply();
+                        } else if (task.userId == interaction.user.id) {
+                            task.requestCancel();
+                            await interaction.deferReply();
+                            await interaction.deleteReply();
+                        } else {
+                            interaction.reply({ content: "You are not the assignee, nor the supervisor", ephemeral: true });
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
         }
-    }
-    else if (interaction.isButton()) {
+    } else if (interaction.isButton()) {
         switch (interaction.customId) {
             case "acceptPayment": {
                 let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
@@ -752,8 +861,7 @@ client.on('interactionCreate', async interaction => {
                             interaction.reply("Payment successful!");
                             Matoshi.paymentMessages.delete(interaction.message.id);
                             Utilities.disableMessageButtons(interaction.message);
-                        }
-                        else {
+                        } else {
                             interaction.reply("Payment failed!");
                         }
                     }
@@ -773,7 +881,7 @@ client.on('interactionCreate', async interaction => {
             }
             case "lockFilmVote": {
                 if (await Kino.interactionWeightCheck(interaction)) {
-                    let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
+                    let event = Kino.Event.list.find((e) => e.lockMessageId == interaction.message.id);
                     if (event && event?.filmPoll.options.length > 0) {
                         interaction.message.delete();
                         event.dateVote(interaction);
@@ -783,7 +891,7 @@ client.on('interactionCreate', async interaction => {
             }
             case "lockDayVote": {
                 if (await Kino.interactionWeightCheck(interaction)) {
-                    let event = Kino.Event.list.find(e => e.lockMessageId == interaction.message.id);
+                    let event = Kino.Event.list.find((e) => e.lockMessageId == interaction.message.id);
                     if (event && event?.datePoll?.options.length > 0) {
                         interaction.message.delete();
                         event.lockDate();
@@ -793,48 +901,47 @@ client.on('interactionCreate', async interaction => {
             }
             case "youtubeStop": {
                 audioPlayer.stop(true);
-                Youtube.stop()
+                Youtube.stop();
                 await interaction.message.edit({ components: [] });
                 //interaction.deferUpdate();
                 interaction.reply({ content: "Stopped." });
                 break;
             }
             case "youtubeNext": {
-                Youtube.skip(interaction.guild, 1, interaction.message.channel)
+                Youtube.skip(interaction.guild, 1, interaction.message.channel);
                 interaction.deferUpdate();
                 break;
             }
             case "youtubePrevious": {
-                Youtube.skip(interaction.guild, -1, interaction.message.channel)
+                Youtube.skip(interaction.guild, -1, interaction.message.channel);
                 interaction.deferUpdate();
                 break;
             }
             case "youtubeAutoplay": {
-                Youtube.toggleAutoplay()
+                Youtube.toggleAutoplay();
                 interaction.deferUpdate();
                 break;
             }
         }
-    }
-    else if (interaction.isContextMenuCommand()) {
+    } else if (interaction.isContextMenuCommand()) {
         switch (interaction.commandName) {
             case "Nuke Here": {
                 let maxDelete = 20;
                 if (await Matoshi.cost(interaction.user.id, policyValues.service.nukeFee, interaction.guildId)) {
                     if (adminId.includes(interaction.user.id)) maxDelete = 100;
-                    interaction.channel.messages.fetch({ limit: maxDelete }).then(messages => {
+                    interaction.channel.messages.fetch({ limit: maxDelete }).then((messages) => {
                         const previousMessages = Array.from(messages.values()) as Discord.Message[];
-                        const nukeIndex = previousMessages.findIndex(m => { return m.id == interaction.targetId });
+                        const nukeIndex = previousMessages.findIndex((m) => {
+                            return m.id == interaction.targetId;
+                        });
                         if (nukeIndex < 0 || nukeIndex >= maxDelete) {
                             interaction.reply({ content: "Cannot nuke this far!", ephemeral: true });
-                        }
-                        else {
+                        } else {
                             interaction.reply({ content: "Nuking " + (nukeIndex + 1) + " messages", ephemeral: true });
                             for (let i = 0; i <= nukeIndex; i++) {
                                 previousMessages[i].delete();
                             }
                         }
-
                     });
                 } else {
                     interaction.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.nukeFee + "₥", ephemeral: true });
@@ -846,22 +953,23 @@ client.on('interactionCreate', async interaction => {
             case "remind": {
                 if (interaction.options.getSubcommand() == "remove") {
                     const focused = interaction.options.getFocused();
-                    interaction.respond(getAuthorsReminders(interaction.user.id).filter(r => r.text.toLocaleLowerCase().includes(focused.toLocaleLowerCase())).map(r => ({ name: `${r.text} - ${Utilities.dateString(new Date(r.timestamp * 1000))}`, value: r.timestamp + "" })));
+                    interaction.respond(
+                        getAuthorsReminders(interaction.user.id)
+                            .filter((r) => r.text.toLocaleLowerCase().includes(focused.toLocaleLowerCase()))
+                            .map((r) => ({ name: `${r.text} - ${Utilities.dateString(new Date(r.timestamp * 1000))}`, value: r.timestamp + "" }))
+                    );
                 }
             }
         }
     }
 });
 
-client.on('messageCreate', async message => {
+client.on("messageCreate", async (message) => {
     const channel = message.channel as Discord.TextBasedChannel;
     if (message.author.id != client.user.id) {
-
         if (message.mentions.has(client.user) && message.type != Discord.MessageType.Reply) {
             channel.send(message.author.toString());
-        }
-        else if (message.content === ':gif2:') {
-
+        } else if (message.content === ":gif2:") {
             kocek++;
 
             //channel.send(message.author.username,{files:[{attachment:message.author.displayAvatarURL()}],embed:{title:"kok",color:15158332,image:{url:message.author.displayAvatarURL()},fields:[{name:"ko",value:"text"}]}});
@@ -871,23 +979,15 @@ client.on('messageCreate', async message => {
             message.delete();
             channel.send(client.emojis.cache.get("728583366030393414").toString());
 
-
             //channel.send(client.emojis.get("728583366030393414"));
-        }
-        else if (message.content === ':spin:') {
-
+        } else if (message.content === ":spin:") {
             message.delete();
             channel.send(client.emojis.cache.get("708663999201411122").toString());
-
-        }
-        else if (message.content === ':loading:') {
-
+        } else if (message.content === ":loading:") {
             message.delete();
             channel.send(client.emojis.cache.get("772234862652424203").toString());
-
-        }
-        else if (message.type == Discord.MessageType.Reply) {
-            channel.messages.fetch(message.reference.messageId).then(async repliedMessage => {
+        } else if (message.type == Discord.MessageType.Reply) {
+            channel.messages.fetch(message.reference.messageId).then(async (repliedMessage) => {
                 let lowerCase = message.content.toLowerCase();
                 let poll = Polls.Poll.getPollFromMessage(repliedMessage);
                 if (poll != undefined) {
@@ -903,49 +1003,55 @@ client.on('messageCreate', async message => {
                     let url = null;
                     if (repliedMessage.attachments.size > 0) {
                         url = repliedMessage.attachments.first().proxyURL;
-                    }
-                    else if (repliedMessage.content.includes("http")) {
+                    } else if (repliedMessage.content.includes("http")) {
                         url = repliedMessage.content.substr(repliedMessage.content.indexOf("http"));
                     }
                     if (url != null) {
                         if (await Matoshi.cost(message.author.id, policyValues.service.fryPleaseFee, message.guildId)) {
-                            Jimp.read(url).then(image => {
-                                console.log("jimp start");
-                                const maxSize = 512;
-                                let w = image.getWidth();
-                                let h = image.getHeight();
-                                if (w > maxSize || h > maxSize) {
-                                    image.scaleToFit(maxSize, maxSize)
-                                }
-                                let kernelSharpen = [[0, -3, 0], [-3, 13, -3], [0, -3, 0]];
-                                image
-                                    .quality(10)
-                                    .convolute(kernelSharpen)
-                                    .contrast(.99)
-                                    //.color([{ apply: "saturate", params: [70] }])
-                                    .convolute(kernelSharpen)
-                                    .writeAsync("./outputImg.jpg").then(e => {
-                                        console.log("jimp done")
-                                        message.reply({ files: ["./outputImg.jpg"] }).then(
-                                            function () { fs.unlink("./outputImg.jpg", null) });
-                                    });
-                            }).catch(error => { channel.send(error.name + ": " + error.message) })
+                            Jimp.read(url)
+                                .then((image) => {
+                                    console.log("jimp start");
+                                    const maxSize = 512;
+                                    let w = image.getWidth();
+                                    let h = image.getHeight();
+                                    if (w > maxSize || h > maxSize) {
+                                        image.scaleToFit(maxSize, maxSize);
+                                    }
+                                    let kernelSharpen = [
+                                        [0, -3, 0],
+                                        [-3, 13, -3],
+                                        [0, -3, 0],
+                                    ];
+                                    image
+                                        .quality(10)
+                                        .convolute(kernelSharpen)
+                                        .contrast(0.99)
+                                        //.color([{ apply: "saturate", params: [70] }])
+                                        .convolute(kernelSharpen)
+                                        .writeAsync("./outputImg.jpg")
+                                        .then((e) => {
+                                            console.log("jimp done");
+                                            message.reply({ files: ["./outputImg.jpg"] }).then(function () {
+                                                fs.unlink("./outputImg.jpg", null);
+                                            });
+                                        });
+                                })
+                                .catch((error) => {
+                                    channel.send(error.name + ": " + error.message);
+                                });
                         } else {
                             message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.fryPleaseFee + "₥", allowedMentions: { repliedUser: false } });
                         }
                     }
-
                 }
             });
-        }
-        else if (message.content.startsWith(prefix)) {
+        } else if (message.content.startsWith(prefix)) {
             var withoutPrefix = message.content.slice(prefix.length);
             var command, argument;
             if (withoutPrefix.indexOf(" ") != -1) {
                 command = withoutPrefix.substr(0, withoutPrefix.indexOf(" "));
                 argument = withoutPrefix.substr(withoutPrefix.indexOf(" ") + 1);
-            }
-            else {
+            } else {
                 command = withoutPrefix;
                 argument = null;
             }
@@ -954,11 +1060,13 @@ client.on('messageCreate', async message => {
                 case "cheese":
                     message.delete();
                     channel.send({
-                        embeds: [{
-                            title: "Cheese",
-                            color: 0xFEB502,
-                            description: 'Cheese'
-                        }]
+                        embeds: [
+                            {
+                                title: "Cheese",
+                                color: 0xfeb502,
+                                description: "Cheese",
+                            },
+                        ],
                     });
                     break;
                 case "say":
@@ -970,13 +1078,11 @@ client.on('messageCreate', async message => {
                         argument = argument.replace(/ /g, "").toLowerCase();
                         console.log("Sanitized argument: " + argument);
                         channel.messages.fetch({ limit: 1 }).then((messages: Discord.Collection<string, Discord.Message>) => {
-
                             var previousMessage = messages.first();
                             for (var i = 0; i < argument.length; i++) {
                                 //channel.send(argument.charAt(i));
                                 previousMessage.react(letterEmoji[argument.charAt(i)]);
                             }
-
                         });
                     });
 
@@ -986,7 +1092,7 @@ client.on('messageCreate', async message => {
                     var emoji = "🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿";
                     var result = "";
                     for (var i = 0; i < alphabet.length; i++) {
-                        result += alphabet.charAt(i) + " : \"\\" + emoji.slice(i * 2, i * 2 + 2) + "\",\n";
+                        result += alphabet.charAt(i) + ' : "\\' + emoji.slice(i * 2, i * 2 + 2) + '",\n';
                         //message.react(emoji.slice(i, i + 1));
                         message.react("🆗");
                         console.log(emoji.length);
@@ -999,7 +1105,7 @@ client.on('messageCreate', async message => {
                 case "version": {
                     message.delete();
                     let changeChanges = "";
-                    changelog.changes.forEach(str => {
+                    changelog.changes.forEach((str) => {
                         changeChanges += "• ";
                         changeChanges += str;
                         changeChanges += "\n";
@@ -1007,23 +1113,25 @@ client.on('messageCreate', async message => {
                     channel.send({
                         embeds: [
                             {
-                                color: 0x18C3B1,
-                                title: "JacekKocek v" + changelog.version, description: "Released " + changelog.releaseDate, fields: [
+                                color: 0x18c3b1,
+                                title: "JacekKocek v" + changelog.version,
+                                description: "Released " + changelog.releaseDate,
+                                fields: [
                                     {
-                                        name: "Changes", value: changeChanges
+                                        name: "Changes",
+                                        value: changeChanges,
                                     },
-                                ]
-                            }
-                        ]
+                                ],
+                            },
+                        ],
                     });
                     break;
                 }
                 case "help":
                     console.log(argument);
                     if (argument == null) {
-
                         var helpBasic = "";
-                        helpCommands.forEach(command => {
+                        helpCommands.forEach((command) => {
                             helpBasic += "`";
                             if (command.prefix) helpBasic += prefix;
                             helpBasic += command.name;
@@ -1032,39 +1140,39 @@ client.on('messageCreate', async message => {
                             helpBasic += "\n";
                         });
 
-
                         channel.send({
-                            embeds: [{
-                                color: 0x18C3B1,
-                                title: "Help", description: "Type `" + prefix + "help <command>` to get further info on a command", fields: [
-                                    {
-                                        name: "Commands", value: helpBasic
-                                    },
-
-                                ]
-                            }]
+                            embeds: [
+                                {
+                                    color: 0x18c3b1,
+                                    title: "Help",
+                                    description: "Type `" + prefix + "help <command>` to get further info on a command",
+                                    fields: [
+                                        {
+                                            name: "Commands",
+                                            value: helpBasic,
+                                        },
+                                    ],
+                                },
+                            ],
                         });
-
-                    }
-                    else if (argument == "help") {
+                    } else if (argument == "help") {
                         channel.send("If you use " + prefix + "help to get help for " + prefix + "help you need help");
-                    }
-                    else {
+                    } else {
                         var cleanArg;
                         if (argument.startsWith(prefix)) {
                             cleanArg = argument.slice(prefix.length);
-                        }
-                        else cleanArg = argument;
+                        } else cleanArg = argument;
                         var c = findCommand(cleanArg);
                         if (c != null) {
                             channel.send({
-                                embeds: [{
-                                    title: "Help - " + c.name, description: (c.longDescription != null ? c.longDescription : c.description)
-                                }]
+                                embeds: [
+                                    {
+                                        title: "Help - " + c.name,
+                                        description: c.longDescription != null ? c.longDescription : c.description,
+                                    },
+                                ],
                             });
-
-                        }
-                        else {
+                        } else {
                             channel.send("`" + argument + "` is not a command!");
                         }
                     }
@@ -1078,8 +1186,7 @@ client.on('messageCreate', async message => {
                         } catch (error) {
                             message.reply("No results!");
                         }
-                    }
-                    else {
+                    } else {
                         message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.imageFee + "₥", allowedMentions: { repliedUser: false } });
                     }
                     break;
@@ -1092,8 +1199,7 @@ client.on('messageCreate', async message => {
                         } catch (error) {
                             message.reply("No results!");
                         }
-                    }
-                    else {
+                    } else {
                         message.reply({ content: "Insufficient matoshi! This service costs " + policyValues.service.imageFee + "₥", allowedMentions: { repliedUser: false } });
                     }
                     break;
@@ -1107,22 +1213,19 @@ client.on('messageCreate', async message => {
                                 if (argNumber > 0) {
                                     if (argNumber > 20 && !adminId.includes(message.author.id)) argNumber = 20;
                                     let channelName = channel.id;
-                                    if (Utilities.isActualChannel(channel))
-                                        channelName = "#" + channel.name;
+                                    if (Utilities.isActualChannel(channel)) channelName = "#" + channel.name;
                                     else if (channel.type === Discord.ChannelType.DM) {
                                         channelName = "DM with " + channel.recipient.username;
                                     }
                                     console.log("Deleting " + argNumber + " last messages in " + channelName + ", command by " + message.author.username);
-                                    channel.messages.fetch({ limit: argNumber }).then(messages => {
-
+                                    channel.messages.fetch({ limit: argNumber }).then((messages) => {
                                         var previousMessages = Array.from(messages.values()) as Discord.Message[];
                                         for (var i = 0; i < argNumber; i++) {
-                                            var reacts = Array.from(previousMessages[i].reactions.cache.mapValues(reaction => reaction.emoji.name).values());
+                                            var reacts = Array.from(previousMessages[i].reactions.cache.mapValues((reaction) => reaction.emoji.name).values());
                                             //channel.send(argument.charAt(i));
                                             previousMessages[i].delete();
                                             if (reacts.includes("♋")) break;
                                         }
-
                                     });
                                     /*channel.fetch().then(channel => {for (var i = 0; i < argNumber; i++) {
                                       let lastMessage= channel.lastMessage;
@@ -1154,7 +1257,6 @@ client.on('messageCreate', async message => {
                      
                         }, function (e) { console.log("REJECTED!!!", e) });
                         */
-
                     }
                     break;
                 }
@@ -1188,14 +1290,16 @@ client.on('messageCreate', async message => {
                     message.delete();
                     if (message.member.voice.channel) {
                         fs.existsSync("mlp-mix.ogg");
-                        voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5).catch(console.error);
+                        voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", 0.5).catch(console.error);
                         //voiceChannelPlay(message.member.voice.channel, "mlp-mix.ogg", .5);
                         channel.send({
-                            embeds: [{
-                                title: "► " + "MLP Mix",
-                                color: 0x9F65E0,
-                                description: '4:17 | From *Andrej*'
-                            }]
+                            embeds: [
+                                {
+                                    title: "► " + "MLP Mix",
+                                    color: 0x9f65e0,
+                                    description: "4:17 | From *Andrej*",
+                                },
+                            ],
                         });
                     }
                     break;
@@ -1203,9 +1307,9 @@ client.on('messageCreate', async message => {
                 case "stop": {
                     let connection = DiscordVoice.getVoiceConnection(message.guildId);
                     audioPlayer.stop(true);
-                    voiceListeners.forEach(l => {
+                    voiceListeners.forEach((l) => {
                         l.destroy();
-                    })
+                    });
                     if (connection) {
                         connection.disconnect();
                         message.delete();
@@ -1227,15 +1331,17 @@ client.on('messageCreate', async message => {
                             guildId: channel.guild.id,
                             //TODO Workaround for Discord.js types bug
                             adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordVoice.DiscordGatewayAdapterCreator,
-                            selfDeaf: false
-                        })
+                            selfDeaf: false,
+                        });
                         //let receiver = new DiscordVoice.VoiceReceiver(connection);
                         //connection.subscribe(audioPlayer);
                         let receiver = connection.receiver;
                         let audioStream = receiver.subscribe(target.id);
-                        voiceListeners.push(audioStream.on("data", (data) => {
-                            connection.playOpusPacket(data);
-                        }));
+                        voiceListeners.push(
+                            audioStream.on("data", (data) => {
+                                connection.playOpusPacket(data);
+                            })
+                        );
                         //receiver.onWsPacket((p)=>{console.log("data!!");connection.playOpusPacket(p)});
                     }
                     break;
@@ -1250,8 +1356,7 @@ client.on('messageCreate', async message => {
                     let num = parseInt(argument);
                     if (!isNaN(num)) {
                         Youtube.skip(message.guild, num, channel);
-                    }
-                    else {
+                    } else {
                         Youtube.skip(message.guild, 1, channel);
                     }
                     break;
@@ -1259,23 +1364,19 @@ client.on('messageCreate', async message => {
                 case "restart": {
                     if (adminId.includes(message.author.id)) {
                         message.delete().then(() => {
-                            process.exit()
+                            process.exit();
                         });
-                    }
-                    else {
+                    } else {
                         channel.send("insufficient permissions!");
                     }
                     break;
                 }
                 default:
                     channel.send("Unknown command :disappointed:");
-
             }
-        }
-        else if (message.content.startsWith("#")) {
+        } else if (message.content.startsWith("#")) {
             let reg = /^#([0-9a-f]{3}){1,2}$/i;
             if (reg.test(message.content)) {
-
                 let can = Canvas.createCanvas(100, 100);
                 let ctx = can.getContext("2d");
                 ctx.fillStyle = message.content;
@@ -1283,9 +1384,7 @@ client.on('messageCreate', async message => {
                 let buf = can.createPNGStream();
                 channel.send({ files: [buf] });
             }
-
-        }
-        else if (isCalc(message.content)) {
+        } else if (isCalc(message.content)) {
             if (Matoshi.cost(message.author.id, policyValues.service.calcFee, message.guild.id)) {
                 let result = calc(message);
                 if (result) channel.send(result);
@@ -1301,9 +1400,6 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 client.on("messageReactionRemove", (messageReaction, user) => {
     handleMessageReaction(messageReaction, user, true);
 });
-
-
-
 
 //#region REMINDERS
 
@@ -1327,35 +1423,35 @@ function parseTime(durationString: string) {
 }
 
 type ReminderData = {
-    channel: string,
-    text: string,
-    timestamp: number,
-    author: string,
-    timeout?: any
-}
+    channel: string;
+    text: string;
+    timestamp: number;
+    author: string;
+    timeout?: any;
+};
 
 function setReminder(newRem: ReminderData) {
     let time = newRem.timestamp - nowSeconds();
     if (time <= reminderThreshold) {
         newRem.timeout = setTimeout(() => {
             executeReminder(newRem);
-        }, (time) * 1000);;
+        }, time * 1000);
         upcomingReminders.push(newRem);
-        console.log("Set up 1 reminder immediately.")
+        console.log("Set up 1 reminder immediately.");
     }
     reminders.push(newRem);
     saveReminders();
 }
 
 function removeReminder(authorId: string, timestamp: number) {
-    const rem = reminders.find(r => (r.author == authorId || !r.author) && r.timestamp == timestamp);
+    const rem = reminders.find((r) => (r.author == authorId || !r.author) && r.timestamp == timestamp);
     const removed = reminders.splice(reminders.indexOf(rem), 1);
     saveReminders();
     return removed[0];
 }
 
 function getAuthorsReminders(authorId: string) {
-    return reminders.filter(r => r.author == authorId || !r.author);
+    return reminders.filter((r) => r.author == authorId || !r.author);
 }
 
 function cleanupReminders() {
@@ -1382,8 +1478,7 @@ function setupReminders() {
             upcomingReminders.push(rem);
         }
     }
-    if (upcomingReminders.length > 0)
-        console.log("Set up " + upcomingReminders.length + " reminders.")
+    if (upcomingReminders.length > 0) console.log("Set up " + upcomingReminders.length + " reminders.");
 }
 
 export function nowSeconds() {
@@ -1391,7 +1486,7 @@ export function nowSeconds() {
 }
 
 async function executeReminder(rem: ReminderData) {
-    let channel = await client.channels.fetch(rem.channel) as Discord.TextBasedChannel;
+    let channel = (await client.channels.fetch(rem.channel)) as Discord.TextBasedChannel;
     let toSend = "**Reminder: **" + rem.text;
     /*let mentions = "";
     if (rem.mentions) {
@@ -1417,10 +1512,9 @@ async function executeReminder(rem: ReminderData) {
 
 //#region KINO
 
-
 export function updateKinoMessage(kinoEntry) {
     let newMessage = "";
-    kinoEntry.users.forEach(u => {
+    kinoEntry.users.forEach((u) => {
         if (u.response == 0) newMessage = newMessage + "❓ ";
         if (u.response == 1) newMessage = newMessage + "✅ ";
         if (u.response == 2) newMessage = newMessage + "<:white_cross:767907092907687956> ";
@@ -1432,11 +1526,6 @@ export function updateKinoMessage(kinoEntry) {
     kinoEntry.message.edit("Bude ***" + kinoEntry.filmName + "***?\n" + newMessage);
 }
 
-
-
-
-
-
 function saveReminders() {
     let f = [];
     for (const r of reminders) {
@@ -1445,15 +1534,17 @@ function saveReminders() {
             channel: r.channel,
             text: r.text,
             timestamp: r.timestamp,
-            author: r.author
-        })
+            author: r.author,
+        });
     }
-    fs.writeFile(remindersFileName, JSON.stringify(f), (e) => { console.log("Finished writing", e) });
+    fs.writeFile(remindersFileName, JSON.stringify(f), (e) => {
+        console.log("Finished writing", e);
+    });
 }
 
 function loadReminders() {
     try {
-        let read = fs.readFileSync(remindersFileName, { encoding: 'utf8' });
+        let read = fs.readFileSync(remindersFileName, { encoding: "utf8" });
         reminders = JSON.parse(read);
         console.log("Loaded reminders.");
         //console.log(reminders);
@@ -1466,8 +1557,8 @@ function loadReminders() {
 
 async function setupCommands() {
     try {
-        const globalCommands = JSON.parse(fs.readFileSync("globalCommands.json", { encoding: 'utf8' }));
-        const guildCommands = JSON.parse(fs.readFileSync("guildCommands.json", { encoding: 'utf8' }));
+        const globalCommands = JSON.parse(fs.readFileSync("globalCommands.json", { encoding: "utf8" }));
+        const guildCommands = JSON.parse(fs.readFileSync("guildCommands.json", { encoding: "utf8" }));
 
         generateGuildCommandOptions(guildCommands);
 
@@ -1482,22 +1573,27 @@ async function setupCommands() {
 }
 
 function generateGuildCommandOptions(commands: Array<any>) {
-    let stock = commands.find(o => o.name == "stocks");
+    let stock = commands.find((o) => o.name == "stocks");
     for (const subcommand of stock.options) {
         if (["buy", "sell", "info", "balance"].includes(subcommand.name)) {
             for (const option of subcommand.options) {
-                if (option.name == "stock")
-                    option.choices = getStockChoices();
+                if (option.name == "stock") option.choices = getStockChoices();
             }
         }
     }
 
-
-    let stockPolicy: { choices: Array<any> } = commands.find(o => o.name == "sudo").options.find(o => o.name == "policy").options.find(o => o.name == "stock").options.find(o => o.name == "policy");
+    let stockPolicy: { choices: Array<any> } = commands
+        .find((o) => o.name == "sudo")
+        .options.find((o) => o.name == "policy")
+        .options.find((o) => o.name == "stock")
+        .options.find((o) => o.name == "policy");
     stockPolicy.choices = stockPolicy.choices.concat(getStockFeeHints());
 }
 
-type CommandChange = { type: 'delete', command: Discord.ApplicationCommandResolvable } | { type: 'add', command: Discord.ApplicationCommandData } | { type: 'edit', oldCommand: Discord.ApplicationCommandResolvable, newCommand: Discord.ApplicationCommandData };
+type CommandChange =
+    | { type: "delete"; command: Discord.ApplicationCommandResolvable }
+    | { type: "add"; command: Discord.ApplicationCommandData }
+    | { type: "edit"; oldCommand: Discord.ApplicationCommandResolvable; newCommand: Discord.ApplicationCommandData };
 
 async function compareCommandsAndApply(manager: Discord.ApplicationCommandManager, targetArray: Discord.ApplicationCommandData[], guildId?: Discord.Snowflake) {
     const source = await manager.fetch({ guildId: guildId });
@@ -1509,37 +1605,34 @@ async function compareCommandsAndApply(manager: Discord.ApplicationCommandManage
     // build command changes array
     const changes: CommandChange[] = [];
     source.each((command) => {
-        if (command.guildId != guildId)
-            return;
+        if (command.guildId != guildId) return;
 
         const targetItem = target[command.name];
-        if (targetItem == null)
-            changes.push({ type: 'delete', command: command });
+        if (targetItem == null) changes.push({ type: "delete", command: command });
         else if (!command.equals(targetItem)) {
-            changes.push({ type: 'edit', oldCommand: command, newCommand: targetItem });
+            changes.push({ type: "edit", oldCommand: command, newCommand: targetItem });
         }
 
         delete target[command.name];
     });
 
     Object.values(target).forEach((newCommand) => {
-        changes.push({ type: 'add', command: newCommand });
+        changes.push({ type: "add", command: newCommand });
     });
 
     // apply command changes
     const promises = changes.map(async (change) => {
-        if (change.type == 'delete') {
+        if (change.type == "delete") {
             await manager.delete(change.command, guildId);
-        } else if (change.type == 'add') {
+        } else if (change.type == "add") {
             await manager.create(change.command, guildId);
-        } else if (change.type == 'edit') {
+        } else if (change.type == "edit") {
             await manager.delete(change.oldCommand, guildId);
             await manager.create(change.newCommand, guildId);
         }
     });
     await Promise.all(promises);
 }
-
 
 //#endregion
 
@@ -1558,19 +1651,19 @@ function findCommand(name) {
 export enum SearchEngines {
     CSFD = "513b4641b78f8096a",
     EVERYTHING = "003836403838224750691:axl53a8emck",
-    WIKIPEDIA = "003836403838224750691:wcw78s5sqwm"
+    WIKIPEDIA = "003836403838224750691:wcw78s5sqwm",
 }
 export enum SearchTypes {
     IMAGE = "image",
-    PAGE = "searchTypeUndefined"
+    PAGE = "searchTypeUndefined",
 }
 
 export async function googleSearch(engine: SearchEngines, searchTerm: string, searchType: SearchTypes = SearchTypes.PAGE): Promise<any[]> {
-    let response = await axios.get(`https://www.googleapis.com/customsearch/v1?key=${process.env.SEARCH_API_KEY}&cx=${engine}&q=${encodeURIComponent(searchTerm)}&searchType=${searchType}&num=2`)
+    let response = await axios.get(`https://www.googleapis.com/customsearch/v1?key=${process.env.SEARCH_API_KEY}&cx=${engine}&q=${encodeURIComponent(searchTerm)}&searchType=${searchType}&num=2`);
     if (!response.data.items || response.data?.items.length == 0) {
         console.error("No search results");
         return [];
-    }//console.log(response.data.items);
+    } //console.log(response.data.items);
     return response.data.items;
 }
 //#endregion
@@ -1583,10 +1676,9 @@ export async function voiceChannelPlay(channel: Discord.VoiceBasedChannel, audio
         joinVoiceChannel(channel);
     }
     let audioReadable: Readable;
-    if (typeof audio == 'string') {
+    if (typeof audio == "string") {
         audioReadable = await Utilities.getAsync(audio);
-    } else
-        audioReadable = audio;
+    } else audioReadable = audio;
 
     let res = DiscordVoice.createAudioResource(audioReadable, { inlineVolume: true });
     let v = volume ?? 1;
@@ -1596,7 +1688,6 @@ export async function voiceChannelPlay(channel: Discord.VoiceBasedChannel, audio
     audioPlayer.play(res);
 }
 
-
 export function joinVoiceChannel(channel) {
     let conn = DiscordVoice.joinVoiceChannel({
         channelId: channel.id,
@@ -1604,21 +1695,20 @@ export function joinVoiceChannel(channel) {
         adapterCreator: channel.guild.voiceAdapterCreator,
     });
     //TODO TEMP DISCORD WORKAROUND
-    conn.on('stateChange', (oldState, newState) => {
-        const oldNetworking = Reflect.get(oldState, 'networking');
-        const newNetworking = Reflect.get(newState, 'networking');
+    conn.on("stateChange", (oldState, newState) => {
+        const oldNetworking = Reflect.get(oldState, "networking");
+        const newNetworking = Reflect.get(newState, "networking");
 
-        oldNetworking?.off('stateChange', networkStateChangeHandler);
-        newNetworking?.on('stateChange', networkStateChangeHandler);
+        oldNetworking?.off("stateChange", networkStateChangeHandler);
+        newNetworking?.on("stateChange", networkStateChangeHandler);
     });
     conn.subscribe(audioPlayer);
     return conn;
 }
 
-
 function mlpSong(voice, index, autoplay, channel) {
     let id = index;
-    if (!index || index == "") id = Math.round(Math.random() * 202)
+    if (!index || index == "") id = Math.round(Math.random() * 202);
     Https.get("https://ponyweb.ml/v1/song/" + id + "?time=second", function (res) {
         console.log(res.statusCode);
         var body;
@@ -1626,7 +1716,6 @@ function mlpSong(voice, index, autoplay, channel) {
             body += data;
         });
         res.on("end", function () {
-
             var parsed = JSON.parse(body.substring(9, body.length));
             let nextSong = 0;
             if (parsed.data.length > 0) {
@@ -1637,11 +1726,13 @@ function mlpSong(voice, index, autoplay, channel) {
                 console.log(songData.video);
                 if (channel) {
                     channel.send({
-                        embeds: [{
-                            title: "► " + songData.name,
-                            description: Math.floor(songData.length / 60) + ":" + Utilities.addZero(songData.length % 60) + " | From *" + songData.episode + "*",
-                            color: alternateFluttershyColor()
-                        }]
+                        embeds: [
+                            {
+                                title: "► " + songData.name,
+                                description: Math.floor(songData.length / 60) + ":" + Utilities.addZero(songData.length % 60) + " | From *" + songData.episode + "*",
+                                color: alternateFluttershyColor(),
+                            },
+                        ],
                     });
                 }
                 voiceChannelPlay(voice, ytdl(songData.video, { filter: "audioonly" }), 0.5);
@@ -1650,8 +1741,7 @@ function mlpSong(voice, index, autoplay, channel) {
                         mlpSong(voice, "", true, channel);
                     }, nextSong * 1000 + 6000);
                 }
-            }
-            else {
+            } else {
                 console.log("No song found, argument:", id);
                 mlpSong(voice, "", true, channel);
             }
@@ -1667,7 +1757,6 @@ function playRadio(voice, channel) {
             body += data;
         });
         res.on("end", function () {
-
             var parsed = JSON.parse(body.substring(9, body.length));
             let timeout_time = 0;
 
@@ -1678,23 +1767,25 @@ function playRadio(voice, channel) {
 
                 console.log("Playing radio");
 
-                voiceChannelPlay(voice, "https://ponyweb.ml/" + parsed.current.Source, .5);
+                voiceChannelPlay(voice, "https://ponyweb.ml/" + parsed.current.Source, 0.5);
 
                 if (radioTimer) clearTimeout(radioTimer);
                 if (channel) {
                     channel.send({
-                        embeds: [{
-                            title: "♫ " + parsed.current.Name, description: Math.floor(parsed.current.PlayTime / 60) + ":" + Utilities.addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
-                            color: alternateFluttershyColor(),
-                            footer: { text: "Next: " + parsed.next.Name }
-                        }]
+                        embeds: [
+                            {
+                                title: "♫ " + parsed.current.Name,
+                                description: Math.floor(parsed.current.PlayTime / 60) + ":" + Utilities.addZero(Math.round(parsed.current.PlayTime % 60)) + " | From *" + parsed.current.Episode + "*",
+                                color: alternateFluttershyColor(),
+                                footer: { text: "Next: " + parsed.next.Name },
+                            },
+                        ],
                     });
                 }
             }
             radioTimer = setTimeout(() => {
                 playRadio(voice, channel);
             }, timeout_time);
-
         });
     });
 }
@@ -1718,44 +1809,46 @@ function radioApiKeyGet() {
 
 function alternateFluttershyColor() {
     fluttershy = !fluttershy;
-    if (fluttershy) return 0xF3E488;
-    else return 0xE581B1;
+    if (fluttershy) return 0xf3e488;
+    else return 0xe581b1;
 }
 
 async function playStation(voice, id) {
     let station;
-    if (typeof (id) == "string") {
+    if (typeof id == "string") {
         station = {
             name: "Custom Station",
             color: 0x808080,
-            url: id
+            url: id,
         };
-    }
-    else {
+    } else {
         station = radioStations[id];
     }
 
     try {
         await voiceChannelPlay(voice, station.url, 0.6);
-        return ({
-            embeds: [{
-                title: "♫ " + station.name,
-                color: station.color,
-                footer: { text: "Now playing" },
-            }]
-        });
+        return {
+            embeds: [
+                {
+                    title: "♫ " + station.name,
+                    color: station.color,
+                    footer: { text: "Now playing" },
+                },
+            ],
+        };
     } catch (e) {
         console.error(e);
 
         audioPlayer.stop();
-        return ({
-            embeds: [{
-                title: "Connection to radio failed!",
-                color: 0xFF0000
-            }]
-        });
+        return {
+            embeds: [
+                {
+                    title: "Connection to radio failed!",
+                    color: 0xff0000,
+                },
+            ],
+        };
     }
 }
 
 //#endregion
-
