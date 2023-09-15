@@ -632,5 +632,59 @@
                 ]
             }
         ]
+    },
+    {
+        "name": "assignment",
+        "description": "Operation commands",
+        "options": [
+            {
+                "type": 1,
+                "name": "create",
+                "description": "Create a new assignment",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "description",
+                        "description": "A description of this assignment",
+                        "required": true
+                    },
+                    {
+                        "type": 4,
+                        "name": "reward",
+                        "description": "Base reward for completing this assignment",
+                        "required": true
+                    },
+                    {
+                        "type": 4,
+                        "name": "days",
+                        "description": "Days until deadline",
+                        "required": true
+                    }
+                    ,
+                    {
+                        "type": 6,
+                        "name": "supervisor",
+                        "description": "Who will be the Supervisor",
+                        "required": false
+                    }
+                ]
+            },{
+                "type": 1,
+                "name": "supervise",
+                "description": "Assign yourself as a Supervisor"
+            },{
+                "type": 1,
+                "name": "complete",
+                "description": "Mark this assignment as completed"
+            },{
+                "type": 1,
+                "name": "confirm",
+                "description": "Confirm the completion of this task as the Supervisor"
+            },{
+                "type": 1,
+                "name": "cancel",
+                "description": "Cancel this task"
+            }
+        ]
     }
 ]

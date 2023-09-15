@@ -1,8 +1,13 @@
+import { ObjectId } from "mongodb";
 import { DbObject } from "./dbObject";
+import { Assignment } from "./assignments";
 
 export class User extends DbObject {
     id: string;
     wallet?: Wallet;
+    taskIds: Array<ObjectId> = [];
+    streak = 0;
+    lastTask = 0;
 
     static async get(id: string, wallet = false): Promise<User> {
         const result = (await User.dbFind({ id })) as User;
