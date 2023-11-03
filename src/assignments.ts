@@ -261,6 +261,7 @@ export class Assignment extends DbObject {
     static override async fromData(data?: Partial<Assignment>) {
         const newObject = (await super.fromData(data)) as Assignment;
         Object.assign(newObject, data);
+        if(data.version == undefined) newObject.version = undefined;
         newObject.timerToken = Assignment.timerCache.get(newObject._id.toHexString());
         newObject.warningTimerToken = Assignment.timerCache.get(newObject._id.toHexString() + "w");
         return newObject;
