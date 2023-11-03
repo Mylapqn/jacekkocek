@@ -27,7 +27,7 @@ export class Policy extends DbObject {
         policy.description = description;
         this.categories.add(category);
         policy.value = value;
-        policy.loadValues();
+        await policy.loadValues();
         policy.updateProxy();
 
         this.list.push(policy);
@@ -36,6 +36,9 @@ export class Policy extends DbObject {
             parent.children.push(policy);
         }
         return policy;
+    }
+
+    static generateHints(){
     }
 
     static generatePolicyList() {
@@ -149,6 +152,14 @@ export class Policy extends DbObject {
             symbol: "₥",
             description: "Weekly flat tax",
             value: 0,
+        });
+
+        await this.createOrLoad({
+            category: "matoshi",
+            name: "assignmentSupervisionReward",
+            symbol: "₥",
+            description: "Reward for supervising a task",
+            value: 10,
         });
 
         const serviceDefaultFee = await this.createOrLoad({
