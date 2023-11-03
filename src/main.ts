@@ -22,7 +22,7 @@ import { Readable } from "stream";
 import { getStockChoices, getStockFeeHints } from "./stockPresets";
 import { Mongo } from "./mongo";
 import { Policy } from "./policy";
-import {Assignment} from "./assignments";
+import { Assignment } from "./assignments";
 import { User } from "./user";
 require("console-stamp")(console, {
     format: ":date(dd/mm/yyyy HH:MM:ss.l)",
@@ -87,6 +87,7 @@ export let policyValues = {
         transactionFeeMin: 1,
         weeklyTaxPercent: 0,
         weeklyTaxFlat: 0,
+        assignmentSupervisionReward: 0,
     },
     service: {
         defaultFee: 0,
@@ -783,71 +784,22 @@ client.on("interactionCreate", async (interaction) => {
                 break;
             }
             case "assignment": {
-                switch (interaction.options.getSubcommand()) {
-                    case "create": {
-                        let reward = interaction.options.getInteger("reward");
-                        let days = interaction.options.getInteger("days");
-                        let description = interaction.options.getString("description");
-                        let supervisor = interaction.options.getUser("supervisor");
-                        let dueDate = new Date();
-                        dueDate.setHours(23);
-                        dueDate.setMinutes(59);
-                        dueDate.setSeconds(0);
-                        dueDate = new Date(dueDate.valueOf() + days * 24 * 60 * 60 * 1000);
-                        const task = await Assignment.assign(description, dueDate, await User.get(interaction.user.id), reward, supervisor?.id);
-
-                        interaction.reply({ content: "Task created", ephemeral: true });
-                        break;
-                    }
-
-                    case "supervise": {
-                        const task = await Assignment.getByThread(interaction.channelId);
-                        await interaction.deferReply();
-                        await interaction.deleteReply();
-                        task.setSupervisior(interaction.user.id);
-                        break;
-                    }
-
-                    case "complete": {
-                        const task = await Assignment.getByThread(interaction.channelId);
-                        if (task.userId == interaction.user.id) {
-                            task.complete();
-                            await interaction.deferReply();
-                            await interaction.deleteReply();
-                        } else {
-                            interaction.reply({ content: "You are not the assignee", ephemeral: true });
-                        }
-                        break;
-                    }
-
-                    case "confirm": {
-                        const task = await Assignment.getByThread(interaction.channelId);
-                        if (task.supervisorId == interaction.user.id) {
-                            task.confirmComplete();
-                            await interaction.deferReply();
-                            await interaction.deleteReply();
-                        } else {
-                            interaction.reply({ content: "You are not the supervisor", ephemeral: true });
-                        }
-                        break;
-                    }
-
-                    case "cancel": {
-                        const task = await Assignment.getByThread(interaction.channelId);
-                        if (task.supervisorId == interaction.user.id) {
-                            task.cancel(false);
-                            await interaction.deferReply();
-                            await interaction.deleteReply();
-                        } else if (task.userId == interaction.user.id) {
-                            task.requestCancel();
-                            await interaction.deferReply();
-                            await interaction.deleteReply();
-                        } else {
-                            interaction.reply({ content: "You are not the assignee, nor the supervisor", ephemeral: true });
-                        }
-                        break;
-                    }
+                let reward = interaction.options.getInteger("reward");
+                let days = interaction.options.getInteger("days");
+                let description = interaction.options.getString("description");
+                let assignee = interaction.options.getUser("assignee");
+                let dueDate = new Date();
+                dueDate.setHours(23);
+                dueDate.setMinutes(59);
+                dueDate.setSeconds(0);
+                dueDate = new Date(dueDate.valueOf() + days * 24 * 60 * 60 * 1000);
+                if (assignee && assignee.id != interaction.user.id) {
+                    Assignment.temporaryTask(description, dueDate, await User.get(assignee.id), reward, await User.get(interaction.user.id));
+                } else {
+                    const task = await Assignment.assign(description, dueDate, await User.get(interaction.user.id), reward);
                 }
+
+                interaction.reply({ content: "Task created", ephemeral: true });
                 break;
             }
         }
@@ -920,6 +872,83 @@ client.on("interactionCreate", async (interaction) => {
             case "youtubeAutoplay": {
                 Youtube.toggleAutoplay();
                 interaction.deferUpdate();
+                break;
+            }
+            case "assignmentSupervise": {
+                const task = await Assignment.getByThread(interaction.channelId);
+                const err = await task.setSupervisior(interaction.user.id);
+                if (!err) {
+                    interaction.deferUpdate();
+                } else {
+                    interaction.reply({ content: err, ephemeral: true });
+                }
+
+                break;
+            }
+            case "assignmentComplete": {
+                const task = await Assignment.getByThread(interaction.channelId);
+                if (task.userId == interaction.user.id) {
+                    task.complete();
+                    interaction.deferUpdate();
+                } else {
+                    interaction.reply({ content: "You are not the assignee", ephemeral: true });
+                }
+                break;
+            }
+
+            case "assignmentConfirm": {
+                const task = await Assignment.getByThread(interaction.channelId);
+                if (task.supervisorId == interaction.user.id) {
+                    await task.confirmComplete();
+                    interaction.deferUpdate();
+                } else {
+                    interaction.reply({ content: "You are not the supervisor", ephemeral: true });
+                }
+                break;
+            }
+
+            case "assignmentCancel": {
+                const task = await Assignment.getByThread(interaction.channelId);
+                if (task.supervisorId == interaction.user.id) {
+                    task.cancel(false);
+                    interaction.deferUpdate();
+                } else if (task.userId == interaction.user.id) {
+                    task.requestCancel();
+                    interaction.deferUpdate();
+                } else {
+                    interaction.reply({ content: "You are not the assignee, nor the supervisor", ephemeral: true });
+                }
+                break;
+            }
+
+            case "assignmentAccept": {
+                const task = Assignment.temporaryTasks.get(interaction.channelId);
+                if (task == undefined && interaction.channel.isThread()) {
+                    interaction.reply({ content: "You cannot accept this", ephemeral: true });
+                    break;
+                }
+
+                if (task.userId == interaction.user.id) {
+                    task.acceptTask();
+                    interaction.deferUpdate();
+                } else if (task.userId == interaction.user.id) {
+                    interaction.reply({ content: "You are not the intended assignee", ephemeral: true });
+                }
+                break;
+            }
+
+            case "assignmentDecline": {
+                const task = Assignment.temporaryTasks.get(interaction.channelId);
+                if (!task) {
+                    interaction.reply({ content: "You cannot decline this", ephemeral: true });
+                    break;
+                }
+                if (task.userId == interaction.user.id) {
+                    task.declineTask();
+                    interaction.deferUpdate();
+                } else if (task.userId == interaction.user.id) {
+                    interaction.reply({ content: "You are not the intended assignee", ephemeral: true });
+                }
                 break;
             }
         }
@@ -1573,7 +1602,9 @@ async function setupCommands() {
 }
 
 function generateGuildCommandOptions(commands: Array<any>) {
-    let stock = commands.find((o) => o.name == "stocks");
+    //const policy = commands.find((o) => o.name == "sudo").options.find((o) => o.name == "policy");
+
+    const stock = commands.find((o) => o.name == "stocks");
     for (const subcommand of stock.options) {
         if (["buy", "sell", "info", "balance"].includes(subcommand.name)) {
             for (const option of subcommand.options) {
@@ -1582,7 +1613,7 @@ function generateGuildCommandOptions(commands: Array<any>) {
         }
     }
 
-    let stockPolicy: { choices: Array<any> } = commands
+    const stockPolicy: { choices: Array<any> } = commands
         .find((o) => o.name == "sudo")
         .options.find((o) => o.name == "policy")
         .options.find((o) => o.name == "stock")
