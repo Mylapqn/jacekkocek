@@ -189,7 +189,7 @@ export class Assignment extends DbObject {
         if (supervisorId == this.userId) {
             return `You cannot be Supervisor for your own task.`;
         } else {
-            if (!this.supervisorId) {
+            if (this.supervisorId) {
                 return `<@${this.supervisorId}> is already supervising this task`;
             }
         }
