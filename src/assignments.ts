@@ -84,7 +84,7 @@ export class Assignment extends DbObject {
 
     async start(description: string, due: Date, user: User, reward: number, supervisor?: User) {
         const streakBonus = Math.min(Math.max(user.streak / 10, 0), 1) + 1;
-        this.reward = reward * streakBonus;
+        this.reward = Math.floor(reward * streakBonus);
         this.description = description;
         this.due = due.valueOf();
         this.userId = user.id;
@@ -261,7 +261,7 @@ export class Assignment extends DbObject {
     static override async fromData(data?: Partial<Assignment>) {
         const newObject = (await super.fromData(data)) as Assignment;
         Object.assign(newObject, data);
-        if(data.version == undefined) newObject.version = undefined;
+        if (data.version == undefined) newObject.version = undefined;
         newObject.timerToken = Assignment.timerCache.get(newObject._id.toHexString());
         newObject.warningTimerToken = Assignment.timerCache.get(newObject._id.toHexString() + "w");
         return newObject;
