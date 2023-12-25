@@ -145,32 +145,33 @@ export function currentPrice(stockName: string) {
 }
 
 function getStockData() {
-    //console.log("Updating stocks...");
-    //let info = {};
-    let to = Main.nowSeconds();
-    let from = to - stockHistoryHours * 3600;
     for (let i = 0; i < stockPresets.length; i++) {
         const stock = stockPresets[i];
-        //console.log(stock.id);
-        //console.log(`https://finnhub.io/api/v1/stock/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`);
-        axios
-            .get(`https://finnhub.io/api/v1/${stock.type}/candle?symbol=${stock.symbol}&resolution=${resolutions.m15}&from=${from}&to=${to}&token=${stockApiKey}`)
-            .then((res) => {
-                if (res.data.c && Utilities.isValid(res.data.c[0])) {
-                    //console.log(stock.id + " First: " + res.data.c[0]);
-                } else {
-                    //console.log(stock.id + " INVALID DATA");
-                }
-                stockData.set(stock.id, res.data.c);
-                //info[stock.id] = res.data.c;
-                if (i == stockPresets.length - 1) {
-                    //console.log("Updated all stocks.");
-                }
-            })
-            .catch((e) => {
-                //throw new Error("Error updating stocks (" + stock.symbol + "): " + e.response.status + " " + e.response.statusText + " on " + e.config.url + " " + e.response.headers.date);
-                throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
-            });
+        if (stock.id == "BTC") {
+            axios
+                .get("https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?slug=bitcoin", {
+                    headers: {
+                        "X-CMC_PRO_API_KEY": process.env.COIN_API_KEY,
+                    },
+                })
+                .then((res) => {
+                    if (!stockData.has(stock.id)) stockData.set(stock.id, []);
+                    stockData.get(stock.id).push(res.data.data['1'].quote.USD.price);
+                })
+                .catch((e) => {
+                    throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
+                });
+        } else {
+            axios
+                .get(`https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${stockApiKey}`)
+                .then((res) => {
+                    if (!stockData.has(stock.id)) stockData.set(stock.id, []);
+                    stockData.get(stock.id).push(res.data.c);
+                })
+                .catch((e) => {
+                    throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
+                });
+        }
     }
 }
 
