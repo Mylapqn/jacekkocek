@@ -8,6 +8,7 @@ export class User extends DbObject {
     taskIds: Array<ObjectId> = [];
     streak = 0;
     lastTask = 0;
+    rank = 0;
 
     static async get(id: string, wallet = false): Promise<User> {
         const result = (await User.dbFind({ id })) as User;

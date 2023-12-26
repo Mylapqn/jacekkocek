@@ -28,6 +28,10 @@ export class Mongo {
         return await this.collections[collection].findOne(filter);
     }
 
+    static async delete(filter: Filter<any>, collection: string) {
+        return await this.collections[collection].deleteOne(filter);
+    }
+
     static async findAll(filter: Filter<any>, options: FindOptions<any>, collection: string) {
         return await this.collections[collection].find(filter, options).toArray();
     }

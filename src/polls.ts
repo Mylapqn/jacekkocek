@@ -185,6 +185,7 @@ export class Poll extends DbObject {
             let age = Date.now() - data.lastInteracted;
             if (age > 604800000) {
                 //remobing
+                Poll.dbDelete({_id: data._id});
                 console.log(`removing old poll`);
             } else {
                 const newPoll = await Poll.fromData(data);

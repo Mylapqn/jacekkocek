@@ -990,6 +990,9 @@ client.on("interactionCreate", async (interaction) => {
                 }
             }
         }
+    } else if (interaction.isModalSubmit()) {
+        switch (interaction.customId) {
+        }
     }
 });
 

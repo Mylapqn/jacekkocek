@@ -56,14 +56,18 @@ export function calcFee(amount: number) {
 }
 
 export async function pay(options: PaymentOptions, feeApplies = false) {
-    const fee = feeApplies ? calcFee(options.amount) : 0;
-    const amount = Math.round(options.amount);
-    if ((await balance(options.from)) >= amount && amount > fee) {
-        await modify(options.from, -amount);
-        await modify(options.to, amount - fee);
-        await modify(Main.client.user.id, fee);
-        return true;
-    } else return false;
+    try {
+        const fee = feeApplies ? calcFee(options.amount) : 0;
+        const amount = Math.round(options.amount);
+        if ((await balance(options.from)) >= amount && amount > fee) {
+            await modify(options.from, -amount);
+            await modify(options.to, amount - fee);
+            await modify(Main.client.user.id, fee);
+            return true;
+        } else return false;
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export async function cost(user: string, amount: number, guild: string) {

@@ -6,8 +6,11 @@ export type SerializableObject = {
     [key: string]: SerializableObject | any;
 };
 
+export type DbOperation = () => Promise<void>;
+
 export class DbObject {
     static dbIgnore: string[] = ["dbIgnore", "dbParent"];
+    private dbOperations = new Array<DbOperation>();
     _id: ObjectId;
 
     public get dbType(): string {
@@ -22,6 +25,10 @@ export class DbObject {
 
     static async dbFind<T>(filter: Filter<T>): Promise<T> {
         return (await Mongo.find(filter, this.name)) as unknown as T;
+    }
+
+    static async dbDelete<T>(filter: Filter<T>): Promise<T> {
+        return (await Mongo.delete(filter, this.name)) as unknown as T;
     }
 
     static async dbFindAll<T>(filter: Filter<T>, options?: FindOptions<T>): Promise<T[]> {
