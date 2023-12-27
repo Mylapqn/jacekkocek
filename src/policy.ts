@@ -247,5 +247,37 @@ export class Policy extends DbObject {
             description: "Stock transaction fee",
             value: 0,
         });
+
+        await this.createOrLoad({
+            category: "rank",
+            name: "dailyCost",
+            symbol: "₥",
+            description: "Cost of 1 rank per day",
+            value: 10,
+        });
+
+        await this.createOrLoad({
+            category: "rank",
+            name: "rankUp",
+            symbol: "₥",
+            description: "Cost to increase rank",
+            value: 50,
+        });
+
+        await this.createOrLoad({
+            category: "rank",
+            name: "streakProtect",
+            symbol: "",
+            description: "How many ranks does assigment streak protect",
+            value: 0.5,
+        });
+
+        await this.createOrLoad({
+            category: "rank",
+            name: "kinoProtect",
+            symbol: "",
+            description: "How many ranks does kino weight protect",
+            value: 5,
+        });
     }
 }
