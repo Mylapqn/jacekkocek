@@ -8,7 +8,7 @@ import { simpleDateString } from "./utilities";
 import * as lt from "long-timeout";
 
 export class Assignment extends DbObject {
-    static dbIgnore: string[] = [...super.dbIgnore, "timerToken", "declineTimerToken", "warningTimerToken"];
+    static dbIgnore: string[] = [...super.dbIgnore, "timerToken", "declineTimerToken", "warningTimerToken", "oversightWarningToken"];
     description = "";
     due = 0;
     userId = "";
@@ -20,6 +20,7 @@ export class Assignment extends DbObject {
     declineTimerToken: lt.Timeout;
     timerToken: lt.Timeout;
     warningTimerToken: lt.Timeout;
+    oversightWarningToken: lt.Timeout;
     version = 1;
 
     static timerCache = new Map<string, lt.Timeout>();
@@ -42,10 +43,10 @@ export class Assignment extends DbObject {
         const embed = new Discord.EmbedBuilder()
             .setColor(0x00ffff)
             .setDescription(`<@${supervisor.id}> suggested a task for you, <@${user.id}>: ${description}.`)
-            .addFields([
+            .addFields(
                 { inline: false, name: "Deadline", value: `<t:${Math.floor(task.due / 1000)}:R>` },
-                { inline: false, name: "Reward", value: `${reward} x ${streakBonus} (from ${user.streak} streak) = ${task.reward * streakBonus} ₥` },
-            ]);
+                { inline: false, name: "Reward", value: `${reward} x ${streakBonus} (from ${user.streak} streak) = ${task.reward * streakBonus} ₥` }
+            );
 
         task.thread.send({ components: [this.acceptButton()], embeds: [embed], content: `<@${user.id}> <@${supervisor.id}>` }).then((msg) => msg.edit(""));
 
@@ -152,20 +153,21 @@ export class Assignment extends DbObject {
         if (fail) {
             if (user.streak > 0) {
                 user.streak = 0;
-                await user.dbUpdate();
             }
             result = "failure";
         } else {
             result = "canceled";
         }
-
         this.closed = true;
+        user.lastTask = Date.now();
+        await user.dbUpdate();
         await this.showResult(result, this.reward, user.streak, !!this.supervisorId);
         await this.thread.setLocked(true);
         await this.thread.setArchived(true);
-        this.dbUpdate();
         lt.clearTimeout(this.timerToken);
         lt.clearTimeout(this.warningTimerToken);
+        lt.clearTimeout(this.oversightWarningToken);
+        this.dbUpdate();
     }
 
     async showResult(result: "success" | "failure" | "canceled", rewarded: number, newstreak: number, supervisor: boolean) {
@@ -194,22 +196,32 @@ export class Assignment extends DbObject {
             }
         }
         this.thread.send(`Okay. <@${supervisorId}> is now Supervisor for this task.`);
+        lt.clearTimeout(this.oversightWarningToken);
         this.supervisorId = supervisorId;
         this.dbUpdate();
     }
 
     private readonly warnTime = 6 * 60 * 60 * 1000;
+    private readonly noSupervisorWarnTime = 6 * 60 * 60 * 1000;
 
     timer() {
         const delay = this.due - Date.now();
         if (delay > 0) {
             this.timerToken = lt.setTimeout(() => this.deadline(), delay);
+            this.oversightWarningToken = lt.setTimeout(() => this.noSupervisor(), this.noSupervisorWarnTime);
             if (delay - this.warnTime > 0) this.warningTimerToken = lt.setTimeout(() => this.warning(), delay - this.warnTime);
             Assignment.timerCache.set(this._id.toHexString(), this.timerToken);
             Assignment.timerCache.set(this._id.toHexString() + "w", this.warningTimerToken);
+            Assignment.timerCache.set(this._id.toHexString() + "o", this.oversightWarningToken);
         } else {
             this.deadline();
         }
+    }
+
+    noSupervisor() {
+        operationsChannel.send(`<#${this.threadId}> is looking for supervision.`);
+        this.oversightWarningToken = lt.setTimeout(() => this.noSupervisor(), this.noSupervisorWarnTime);
+        Assignment.timerCache.set(this._id.toHexString() + "o", this.oversightWarningToken);
     }
 
     warning() {
@@ -239,17 +251,19 @@ export class Assignment extends DbObject {
 
     async confirmComplete() {
         const user = await User.get(this.userId);
-        Matoshi.pay({ amount: this.reward, from: client.user.id, to: this.userId }, false);
-        Matoshi.pay({ amount: policyValues.matoshi.assignmentSupervisionReward, from: client.user.id, to: this.supervisorId }, false);
         this.closed = true;
         user.streak++;
+        user.lastTask = Date.now();
+        await Matoshi.pay({ amount: this.reward, from: client.user.id, to: user }, false);
         await this.showResult("success", this.reward, user.streak, true);
         await Promise.all([this.dbUpdate(), user.dbUpdate()]);
         await this.thread.setLocked(true);
         await this.thread.setArchived(true);
+        await Matoshi.pay({ amount: policyValues.matoshi.assignmentSupervisionReward, from: client.user.id, to: this.supervisorId }, false);
     }
 
     async deadline() {
+        lt.clearTimeout(this.oversightWarningToken);
         try {
             await this.cancel();
         } catch (error) {
@@ -264,6 +278,7 @@ export class Assignment extends DbObject {
         if (data.version == undefined) newObject.version = undefined;
         newObject.timerToken = Assignment.timerCache.get(newObject._id.toHexString());
         newObject.warningTimerToken = Assignment.timerCache.get(newObject._id.toHexString() + "w");
+        newObject.oversightWarningToken = Assignment.timerCache.get(newObject._id.toHexString() + "o");
         return newObject;
     }
 

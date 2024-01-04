@@ -6,8 +6,8 @@ import { User } from "./user";
 export let paymentMessages = new Map<string, PaymentOptions>();
 
 interface PaymentOptions {
-    from: string;
-    to: string;
+    from: string | User;
+    to: string | User;
     amount: number;
 }
 
@@ -28,10 +28,16 @@ export async function init() {
         }
     });
     scheduleTax();
+    scheduleDaily();
 }
 
-export async function balance(userId: string) {
-    const user = await User.get(userId, true);
+export async function balance(userId: string | User) {
+    let user;
+    if (typeof userId == "string") {
+        user = await User.get(userId, true);
+    } else {
+        user = userId;
+    }
     let b = user.wallet.matoshi;
     if (b == null || b == undefined || isNaN(b)) {
         user.wallet.matoshi = 0;
@@ -40,10 +46,15 @@ export async function balance(userId: string) {
     return user.wallet.matoshi;
 }
 
-export async function modify(userId: string, amount: number) {
+export async function modify(userId: string | User, amount: number) {
+    let user;
+    if (typeof userId == "string") {
+        user = await User.get(userId, true);
+    } else {
+        user = userId;
+    }
     amount = Math.round(amount);
     if (amount != 0) {
-        const user = await User.get(userId, true);
         let m = await balance(userId);
         user.wallet.matoshi = m + amount;
         await user.dbUpdate();
@@ -56,14 +67,18 @@ export function calcFee(amount: number) {
 }
 
 export async function pay(options: PaymentOptions, feeApplies = false) {
-    const fee = feeApplies ? calcFee(options.amount) : 0;
-    const amount = Math.round(options.amount);
-    if ((await balance(options.from)) >= amount && amount > fee) {
-        await modify(options.from, -amount);
-        await modify(options.to, amount - fee);
-        await modify(Main.client.user.id, fee);
-        return true;
-    } else return false;
+    try {
+        const fee = feeApplies ? calcFee(options.amount) : 0;
+        const amount = Math.round(options.amount);
+        if ((await balance(options.from)) >= amount && amount > fee) {
+            await modify(options.from, -amount);
+            await modify(options.to, amount - fee);
+            await modify(Main.client.user.id, fee);
+            return true;
+        } else return false;
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export async function cost(user: string, amount: number, guild: string) {
@@ -91,8 +106,12 @@ export async function generateLeaderboard() {
 }
 
 async function generatePaymentMessage(options: PaymentRequestOptions) {
-    const fromMember = await Main.mainGuild.members.fetch(options.from);
-    const toMember = await Main.mainGuild.members.fetch(options.to);
+    let from = options.from;
+    let to = options.to;
+    if(typeof from != "string") from = from.id;
+    if(typeof to != "string") to = to.id;
+    const fromMember = await Main.mainGuild.members.fetch(from);
+    const toMember = await Main.mainGuild.members.fetch(to);
     let confirmUsersList = fromMember.displayName;
     if (fromMember.user == Main.client.user && Main.managerRole.members.size > 0) {
         confirmUsersList += " or " + Main.managerRole.members.first().displayName;
@@ -246,4 +265,25 @@ async function scheduleTax() {
         scheduleTax();
     }, delay);
     console.log("Tax collection in: " + (delay / 1000 / 60 / 60).toFixed(2) + "h");
+}
+
+let dailyTime = 0;
+async function scheduleDaily() {
+    let date = new Date();
+    date.setHours(15);
+    date.setMinutes(6);
+    date.setSeconds(59);
+
+    let delay = date.valueOf() - Date.now();
+
+    if (delay < 0) {
+        delay += 24 * 60 * 60 * 1000;
+    }
+
+    setTimeout(async () => {
+        dailyTime = Date.now();
+        await User.dailyCheck();
+        scheduleDaily();
+    }, delay);
+    console.log("Daily check in: " + (delay / 1000 / 60 / 60).toFixed(2) + "h");
 }

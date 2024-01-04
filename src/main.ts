@@ -103,6 +103,12 @@ export let policyValues = {
     stock: {
         defaultFee: 0.5,
     },
+    rank: {
+        dailyCost: 100,
+        rankUp: 50,
+        streakProtect: 0.5,
+        kinoProtect: 5,
+    },
 };
 
 var helpCommands = [
@@ -711,6 +717,23 @@ client.on("interactionCreate", async (interaction) => {
                 }
                 break;
             }
+            case "rank": {
+                switch (interaction.options.getSubcommand()) {
+                    case "up": {
+                        const user = await User.get(interaction.user.id, true);
+                        const reply = await user.rankUp();
+                        interaction.reply(reply);
+                        break;
+                    }
+                    case "check": {
+                        const user = await User.get(interaction.options.getUser("user")?.id ?? interaction.user.id, true);
+                        const builder = await user.rankMessage();
+                        interaction.reply({ embeds: [builder] });
+                        break;
+                    }
+                }
+                break;
+            }
             case "poll": {
                 let customOptionsEnabled = interaction.options.getBoolean("custom-options-enabled") === null || interaction.options.getBoolean("custom-options-enabled");
                 let poll = await Polls.Poll.fromCommand(
@@ -989,6 +1012,9 @@ client.on("interactionCreate", async (interaction) => {
                     );
                 }
             }
+        }
+    } else if (interaction.isModalSubmit()) {
+        switch (interaction.customId) {
         }
     }
 });
