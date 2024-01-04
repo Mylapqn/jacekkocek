@@ -3,7 +3,8 @@ import { DbObject } from "./dbObject";
 import * as Matoshi from "./matoshi";
 import { client, notifyTextChannel, operationsChannel, policyValues } from "./main";
 import { getUserData } from "./sheets";
-import { EmbedBuilder } from "@discordjs/builders";
+import * as Discord from "discord.js";
+
 
 export class User extends DbObject {
     id: string;
@@ -117,7 +118,7 @@ export class User extends DbObject {
             this.taskIds.length == 0 ? (this.streak > 0 ? `<t:${Math.floor((this.lastTask + User.assignmentGrace - 24 * 60 * 60 * 1000) / 1000)}:d>` : "off streak") : "active task",
         ].join("\n");
 
-        const embed = new EmbedBuilder()
+        const embed = new Discord.EmbedBuilder()
             .setTitle(discordUser.username)
             .setColor(discordUser.accentColor ?? 0xffffff)
             .addFields([
