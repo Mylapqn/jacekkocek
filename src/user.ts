@@ -42,7 +42,6 @@ export class User extends DbObject {
     static async dailyCheck() {
         const assignmentGrace = policyValues.matoshi.assignmentStreakKeep * 24 * 60 * 60 * 1000;
         const users = await User.dbFindAll<User>({});
-        operationsChannel.send(`<t:${Math.floor((Date.now() - assignmentGrace - 60 * 60 * 1000 * 24) / 1000)}>`);
 
         for (const userData of users) {
             let user = await User.fromData(userData);

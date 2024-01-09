@@ -279,7 +279,6 @@ async function scheduleDaily() {
     if (delay < 0) {
         delay += 24 * 60 * 60 * 1000;
     }
-    await User.dailyCheck();
 
     setTimeout(async () => {
         dailyTime = Date.now();
