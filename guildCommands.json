@@ -515,6 +515,10 @@
                                     {
                                         "name": "Reward for task supervision (₥)",
                                         "value": "matoshi.assignmentSupervisionReward"
+                                    },
+                                    {
+                                        "name": "Assignment streak keep (d)",
+                                        "value": "matoshi.assignmentStreakKeep"
                                     }
                                 ]
                             },
@@ -540,43 +544,6 @@
                                     {
                                         "name": "Fee per stock transaction (% of transaction)",
                                         "value": "stock.defaultFee"
-                                    }
-                                ]
-                            },
-                            {
-                                "type": 10,
-                                "name": "value",
-                                "description": "The new value for the policy",
-                                "required": true
-                            }
-                        ]
-                    },
-                    {
-                        "type": 1,
-                        "name": "rank",
-                        "description": "Edit the value of a stock policy",
-                        "options": [
-                            {
-                                "type": 3,
-                                "name": "policy",
-                                "description": "The policy to change",
-                                "required": true,
-                                "choices": [
-                                    {
-                                        "name": "Cost of 1 rank per day (₥)",
-                                        "value": "rank.dailyCost"
-                                    },
-                                    {
-                                        "name": "Cost to increase rank",
-                                        "value": "rank.rankUp"
-                                    },
-                                    {
-                                        "name": "How many ranks does assigment streak protect",
-                                        "value": "rank.streakProtect"
-                                    },
-                                    {
-                                        "name": "How many ranks does kino weight protect",
-                                        "value": "rank.kinoProtect"
                                     }
                                 ]
                             },
@@ -668,31 +635,6 @@
                         "type": 3,
                         "name": "description",
                         "description": "A description of the request",
-                        "required": false
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "name": "rank",
-        "description": "Rank",
-        "options": [
-            {
-                "type": 1,
-                "name": "up",
-                "description": "Purchase a rank upgrade",
-                "options": []
-            },
-            {
-                "type": 1,
-                "name": "check",
-                "description": "Check the rank of someone",
-                "options": [
-                    {
-                        "type": 6,
-                        "name": "user",
-                        "description": "Whose rank to check (default: you)",
                         "required": false
                     }
                 ]
