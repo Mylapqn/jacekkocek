@@ -162,6 +162,14 @@ export class Policy extends DbObject {
             value: 10,
         });
 
+        await this.createOrLoad({
+            category: "matoshi",
+            name: "assignmentStreakKeep",
+            symbol: "d",
+            description: "Assignment streak keep",
+            value: 14,
+        });
+
         const serviceDefaultFee = await this.createOrLoad({
             category: "service",
             name: "defaultFee",
@@ -248,36 +256,5 @@ export class Policy extends DbObject {
             value: 0,
         });
 
-        await this.createOrLoad({
-            category: "rank",
-            name: "dailyCost",
-            symbol: "₥",
-            description: "Cost of 1 rank per day",
-            value: 10,
-        });
-
-        await this.createOrLoad({
-            category: "rank",
-            name: "rankUp",
-            symbol: "₥",
-            description: "Cost to increase rank",
-            value: 50,
-        });
-
-        await this.createOrLoad({
-            category: "rank",
-            name: "streakProtect",
-            symbol: "",
-            description: "How many ranks does assigment streak protect",
-            value: 0.5,
-        });
-
-        await this.createOrLoad({
-            category: "rank",
-            name: "kinoProtect",
-            symbol: "",
-            description: "How many ranks does kino weight protect",
-            value: 5,
-        });
     }
 }
