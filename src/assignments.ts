@@ -202,7 +202,7 @@ export class Assignment extends DbObject {
     }
 
     private readonly warnTime = 6 * 60 * 60 * 1000;
-    private readonly noSupervisorWarnTime = 20000; //6 * 60 * 60 * 1000;
+    private readonly noSupervisorWarnTime = 6 * 60 * 60 * 1000;
 
     timer() {
         const delay = this.due - Date.now();
