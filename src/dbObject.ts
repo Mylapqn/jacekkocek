@@ -43,6 +43,11 @@ export class DbObject {
         this._id = await Mongo.set(this.serialisable());
     }
 
+    async dbRefresh() {
+        const data = (<typeof DbObject>this.constructor).dbFind({ _id: this._id });
+        Object.assign(this, data);
+    }
+
     serialisable(): any {
         const result = { dbType: this.dbType };
         for (const key in this) {
