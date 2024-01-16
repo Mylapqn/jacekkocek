@@ -218,11 +218,13 @@ export class Assignment extends DbObject {
         }
     }
 
-    noSupervisor() {
+    async noSupervisor() {
+        await this.dbRefresh();
         if (this.supervisorId) return;
         operationsChannel.send(`<#${this.threadId}> is looking for supervision.`);
         this.oversightWarningToken = lt.setTimeout(() => this.noSupervisor(), this.noSupervisorWarnTime);
         Assignment.timerCache.set(this._id.toHexString() + "o", this.oversightWarningToken);
+        await this.dbUpdate();
     }
 
     warning() {
