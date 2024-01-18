@@ -276,7 +276,7 @@ async function scheduleDaily() {
 
     let delay = date.valueOf() - Date.now();
 
-    if (delay < 0) {
+    if (delay < 10000) {
         delay += 24 * 60 * 60 * 1000;
     }
 
