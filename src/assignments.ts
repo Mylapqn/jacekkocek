@@ -80,6 +80,7 @@ export class Assignment extends DbObject {
         await task.dbUpdate();
         user.taskIds.push(task._id);
         task.start(description, due, user, reward, supervisor);
+        await user.dbUpdate();
         return task;
     }
 
