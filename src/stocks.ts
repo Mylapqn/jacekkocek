@@ -147,6 +147,7 @@ export function currentPrice(stockName: string) {
 function getStockData() {
     for (let i = 0; i < stockPresets.length; i++) {
         const stock = stockPresets[i];
+        if (!stockData.has(stock.id)) stockData.set(stock.id, []);
         if (stock.id == "BTC") {
             axios
                 .get("https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?slug=bitcoin", {
@@ -155,8 +156,7 @@ function getStockData() {
                     },
                 })
                 .then((res) => {
-                    if (!stockData.has(stock.id)) stockData.set(stock.id, []);
-                    stockData.get(stock.id).push(res.data.data['1'].quote.USD.price);
+                    stockData.get(stock.id).push(res.data.data["1"].quote.USD.price);
                 })
                 .catch((e) => {
                     throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
@@ -165,12 +165,15 @@ function getStockData() {
             axios
                 .get(`https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${stockApiKey}`)
                 .then((res) => {
-                    if (!stockData.has(stock.id)) stockData.set(stock.id, []);
                     stockData.get(stock.id).push(res.data.c);
                 })
                 .catch((e) => {
                     throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
                 });
+        }
+
+        if (stockData.get(stock.id).length > stockHistoryHours * stockUpdatesPerHour) {
+            stockData.get(stock.id).shift();
         }
     }
 }
@@ -204,6 +207,7 @@ export async function sell(userId: string, stock: string, amount: number) {
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
         if (await Matoshi.pay({ from: Main.client.user.id, to: userId, amount: Math.floor(amount * (1 - Main.policyValues.stock[stock + "fee"] / 100)) }, false)) {
+            let user = await User.get(userId);
             user.wallet.stocks[stock] = currentStock;
             await user.dbUpdate();
             return true;

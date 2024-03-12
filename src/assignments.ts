@@ -193,6 +193,12 @@ export class Assignment extends DbObject {
             return `You cannot be Supervisor for your own task.`;
         } else {
             if (this.supervisorId) {
+                if(this.supervisorId == supervisorId){
+                    this.supervisorId = undefined;
+                    this.dbUpdate();
+                    return `<@${supervisorId}> is no longer supervising this task.`;
+
+                }
                 return `<@${this.supervisorId}> is already supervising this task`;
             }
         }

@@ -62,7 +62,7 @@ export function setStockPolicyDefaults() {
     for (const stock of stockPresets) {
         Policy.createOrLoad({
             category: "stock",
-            name: stock.symbol+"fee",
+            name: stock.id+"fee",
             symbol: "%",
             description: "Stock transaction fee for " + stock.name,
             value: 0,
