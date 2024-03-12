@@ -47,7 +47,7 @@ export async function balance(userId: string | User) {
 }
 
 export async function modify(userId: string | User, amount: number) {
-    let user;
+    let user: User;
     if (typeof userId == "string") {
         user = await User.get(userId, true);
     } else {
@@ -95,13 +95,16 @@ export async function cost(user: string, amount: number, guild: string) {
 export async function generateLeaderboard() {
     let sorted = (await User.dbFindAll<User>({ wallet: { $exists: true } })).sort((a, b) => b.wallet.matoshi - a.wallet.matoshi);
     let msg = "Matoshi balance leaderboard:\n";
+    let total = 0;
     for (let i = 0; i < sorted.length && i < 10; i++) {
         let usr = await Main.mainGuild.members.fetch(sorted[i].id);
         let usrn: string;
         if (!usr) usrn = "Unknown user";
         else usrn = usr.user.username;
         msg += "`" + (i + 1) + "` " + "**" + usrn + "**: " + sorted[i].wallet.matoshi + " ₥\n";
+        total+= sorted[i].wallet.matoshi;
     }
+    msg += `there is ${total} ₥ in total.`;
     return msg;
 }
 
@@ -220,7 +223,7 @@ export async function watchReward(users: Discord.User[], filmName: string): Prom
     for (const discordUser of users) {
         const user = await User.get(discordUser.id);
         if (!user.wallet) continue;
-        pay({ from: Main.client.user.id, to: discordUser.id, amount: Main.policyValues.kino.watchReward }, false);
+        await pay({ from: Main.client.user.id, to: discordUser.id, amount: Main.policyValues.kino.watchReward }, false);
         namesColumn += discordUser.toString() + "\n";
         valuesColumn += Main.policyValues.kino.watchReward + " ₥\n";
     }

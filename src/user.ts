@@ -1,9 +1,6 @@
 import { ObjectId } from "mongodb";
 import { DbObject } from "./dbObject";
-import * as Matoshi from "./matoshi";
-import { client, notifyTextChannel, operationsChannel, policyValues } from "./main";
-import { getUserData } from "./sheets";
-import * as Discord from "discord.js";
+import { client, operationsChannel, policyValues } from "./main";
 
 export class User extends DbObject {
     id: string;

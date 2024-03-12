@@ -156,7 +156,7 @@ function getStockData() {
                     },
                 })
                 .then((res) => {
-                    stockData.get(stock.id).push(res.data.data['1'].quote.USD.price);
+                    stockData.get(stock.id).push(res.data.data["1"].quote.USD.price);
                 })
                 .catch((e) => {
                     throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
@@ -171,8 +171,8 @@ function getStockData() {
                     throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
                 });
         }
-        
-        if(stockData.get(stock.id).length > stockHistoryHours * stockUpdatesPerHour){
+
+        if (stockData.get(stock.id).length > stockHistoryHours * stockUpdatesPerHour) {
             stockData.get(stock.id).shift();
         }
     }
@@ -207,6 +207,7 @@ export async function sell(userId: string, stock: string, amount: number) {
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
         if (await Matoshi.pay({ from: Main.client.user.id, to: userId, amount: Math.floor(amount * (1 - Main.policyValues.stock[stock + "fee"] / 100)) }, false)) {
+            let user = await User.get(userId);
             user.wallet.stocks[stock] = currentStock;
             await user.dbUpdate();
             return true;
