@@ -59,7 +59,7 @@ export class User extends DbObject {
             }
 
             if (user.wallet) {
-                user.wallet.dailySale = policyValues.stock.saleLimit;
+                user.wallet.dailySale = 0;
             }
 
             await user.dbUpdate();

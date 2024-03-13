@@ -206,11 +206,11 @@ export async function sell(userId: string, stock: string, amount: number) {
     let currentStock = user.wallet.stocks[stock];
     if (currentStock >= amount / price && Utilities.isValid(currentStock) && Utilities.isValid(price)) {
         currentStock -= amount / price;
-        if (amount > user.wallet.dailySale) return "Sales limit exceeded";
+        if (user.wallet.dailySale + amount > Main.policyValues.stock.saleLimit) return "Sales limit exceeded";
         if (await Matoshi.pay({ from: Main.client.user.id, to: userId, amount: Math.floor(amount * (1 - Main.policyValues.stock[stock + "fee"] / 100)) }, false)) {
             let user = await User.get(userId);
             user.wallet.stocks[stock] = currentStock;
-            user.wallet.dailySale -= amount;
+            user.wallet.dailySale += amount;
             await user.dbUpdate();
             return true;
         } else return "Transation failed";
@@ -223,11 +223,10 @@ export async function balance(userId, stock) {
     return currentStock;
 }
 
-
 type StockTotalInfo = {
-    stocks: Array<{ stock: string; balance: number }>
-    limit: number
-}
+    stocks: Array<{ stock: string; balance: number }>;
+    limit: number;
+};
 export async function balanceAll(userId): Promise<StockTotalInfo> {
     let user = await User.get(userId, true);
     let out = [];
@@ -235,5 +234,5 @@ export async function balanceAll(userId): Promise<StockTotalInfo> {
         out.push({ stock, balance: user.wallet.stocks[stock] });
     }
 
-    return {limit: user.wallet.dailySale, stocks: out};
+    return { limit: user.wallet.dailySale, stocks: out };
 }

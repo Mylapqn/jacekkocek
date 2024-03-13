@@ -88,7 +88,7 @@ export let policyValues = {
         weeklyTaxPercent: 0,
         weeklyTaxFlat: 0,
         assignmentSupervisionReward: 0,
-        assignmentStreakKeep: 7
+        assignmentStreakKeep: 7,
     },
     service: {
         defaultFee: 0,
@@ -103,7 +103,7 @@ export let policyValues = {
     },
     stock: {
         defaultFee: 0.5,
-        saleLimit: 1000
+        saleLimit: 1000,
     },
 };
 
@@ -705,7 +705,7 @@ client.on("interactionCreate", async (interaction) => {
                                 total += isNaN(price) ? 0 : price;
                             }
                             reply += "Total: " + total + " ₥\n";
-                            reply += "Limit: " + stocks.limit + " ₥";
+                            reply += `Sold: ${stocks.limit}/${policyValues.stock.saleLimit}₥`;
                             interaction.reply(reply);
                             setCalcContext(total, interaction.channelId);
                         });
