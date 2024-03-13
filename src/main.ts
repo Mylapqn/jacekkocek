@@ -88,7 +88,7 @@ export let policyValues = {
         weeklyTaxPercent: 0,
         weeklyTaxFlat: 0,
         assignmentSupervisionReward: 0,
-        assignmentStreakKeep: 7
+        assignmentStreakKeep: 7,
     },
     service: {
         defaultFee: 0,
@@ -103,6 +103,7 @@ export let policyValues = {
     },
     stock: {
         defaultFee: 0.5,
+        saleLimit: 1000,
     },
 };
 
@@ -655,10 +656,10 @@ client.on("interactionCreate", async (interaction) => {
                     }
                     case "sell": {
                         Stocks.sell(interaction.user.id, stockId, interaction.options.getInteger("amount")).then((res) => {
-                            if (res) {
+                            if (res == true) {
                                 interaction.reply("Successfully sold " + displayString + " for " + interaction.options.getInteger("amount") + " ₥.");
                             } else {
-                                interaction.reply("Sell of " + displayString + " failed.");
+                                interaction.reply("Sell of " + displayString + " failed.\n" + res);
                             }
                         });
                         break;
@@ -698,12 +699,13 @@ client.on("interactionCreate", async (interaction) => {
                             let reply = "Balance for **" + user.username + "**: \n";
                             let total = 0;
 
-                            for (const stock of stocks) {
+                            for (const stock of stocks.stocks) {
                                 const price = Math.floor(Stocks.currentPrice(stock.stock) * stock.balance);
                                 reply += stock.stock + ": " + stock.balance + ((isNaN(price) ? "" : " (worth " + price + " ₥)") + "\n");
                                 total += isNaN(price) ? 0 : price;
                             }
-                            reply += "Total: " + total + " ₥";
+                            reply += "Total: " + total + " ₥\n";
+                            reply += `Sold: ${stocks.limit}/${policyValues.stock.saleLimit}₥`;
                             interaction.reply(reply);
                             setCalcContext(total, interaction.channelId);
                         });

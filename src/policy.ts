@@ -256,5 +256,14 @@ export class Policy extends DbObject {
             value: 0,
         });
 
+        
+        await this.createOrLoad({
+            category: "stock",
+            name: "saleLimit",
+            symbol: "₥",
+            description: "Daily stock sales limit",
+            value: 1000,
+        });
+
     }
 }

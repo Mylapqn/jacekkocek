@@ -273,8 +273,8 @@ async function scheduleTax() {
 let dailyTime = 0;
 async function scheduleDaily() {
     let date = new Date();
-    date.setHours(15);
-    date.setMinutes(6);
+    date.setHours(11);
+    date.setMinutes(29);
     date.setSeconds(59);
 
     let delay = date.valueOf() - Date.now();

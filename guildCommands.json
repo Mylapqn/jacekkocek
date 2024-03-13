@@ -544,6 +544,10 @@
                                     {
                                         "name": "Fee per stock transaction (% of transaction)",
                                         "value": "stock.defaultFee"
+                                    },
+                                    {
+                                        "name": "Daily stock sales limit (₥)",
+                                        "value": "stock.saleLimit"
                                     }
                                 ]
                             },
