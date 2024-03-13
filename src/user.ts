@@ -45,7 +45,6 @@ export class User extends DbObject {
             if (user.id == client.user.id || user.id == "") continue;
             if (user.lastTask == 0) {
                 user.lastTask = Date.now();
-                await user.dbUpdate();
             }
 
             if (user.streak > 0 && user.taskIds.length == 0) {
@@ -53,12 +52,17 @@ export class User extends DbObject {
                     if (Date.now() - user.lastTask > assignmentGrace) {
                         user.streak = 0;
                         operationsChannel.send(`<@${user.id}> your streak is now 0.`);
-                        await user.dbUpdate();
                     } else {
                         operationsChannel.send(`<@${user.id}> you are about to loose your streak! <t:${Math.floor(user.lastTask / 1000)}>`);
                     }
                 }
             }
+
+            if (user.wallet) {
+                user.wallet.dailySale = policyValues.stock.saleLimit;
+            }
+
+            await user.dbUpdate();
         }
     }
 }
@@ -72,6 +76,7 @@ export class Wallet extends DbObject {
     }
     matoshi: number = 0;
     stocks: Record<string, number> = {};
+    dailySale = 0;
     printMatoshi() {
         console.log(this.matoshi);
     }
