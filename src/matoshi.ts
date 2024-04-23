@@ -66,7 +66,7 @@ export function calcFee(amount: number) {
     return Math.ceil(Math.max(Main.policyValues.matoshi.transactionFeeMin, (Main.policyValues.matoshi.transactionFeePercent / 100) * amount));
 }
 
-export async function pay(options: PaymentOptions, feeApplies = false) {
+export async function pay(options: PaymentOptions, feeApplies: boolean) {
     try {
         const fee = feeApplies ? calcFee(options.amount) : 0;
         const amount = Math.round(options.amount);
@@ -102,7 +102,7 @@ export async function generateLeaderboard() {
         if (!usr) usrn = "Unknown user";
         else usrn = usr.user.username;
         msg += "`" + (i + 1) + "` " + "**" + usrn + "**: " + sorted[i].wallet.matoshi + " ₥\n";
-        total+= sorted[i].wallet.matoshi;
+        total += sorted[i].wallet.matoshi;
     }
     msg += `there is ${total} ₥ in total.`;
     return msg;
@@ -111,8 +111,8 @@ export async function generateLeaderboard() {
 async function generatePaymentMessage(options: PaymentRequestOptions) {
     let from = options.from;
     let to = options.to;
-    if(typeof from != "string") from = from.id;
-    if(typeof to != "string") to = to.id;
+    if (typeof from != "string") from = from.id;
+    if (typeof to != "string") to = to.id;
     const fromMember = await Main.mainGuild.members.fetch(from);
     const toMember = await Main.mainGuild.members.fetch(to);
     let confirmUsersList = fromMember.displayName;

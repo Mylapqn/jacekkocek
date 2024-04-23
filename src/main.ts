@@ -600,7 +600,7 @@ client.on("interactionCreate", async (interaction) => {
                         let to = interaction.options.getUser("user");
                         let amount = interaction.options.getInteger("amount");
 
-                        if (await Matoshi.pay({ from: from.id, to: to.id, amount: amount })) {
+                        if (await Matoshi.pay({ from: from.id, to: to.id, amount: amount }, true)) {
                             interaction.reply({ content: "Successfully paid **" + amount + "** ₥ to **" + to.username + "** (fee " + Matoshi.calcFee(amount) + " ₥)", ephemeral: false });
                         } else {
                             interaction.reply({ content: "Insufficient matoshi! :disappointed:", ephemeral: false });
@@ -812,7 +812,7 @@ client.on("interactionCreate", async (interaction) => {
                 let paymentData = Matoshi.paymentMessages.get(interaction.message.id);
                 if (paymentData) {
                     if (uid == paymentData.from || (paymentData.from == client.user.id && member.roles.cache.has(managerRole.id))) {
-                        if (await Matoshi.pay(paymentData)) {
+                        if (await Matoshi.pay(paymentData, true)) {
                             interaction.reply("Payment successful!");
                             Matoshi.paymentMessages.delete(interaction.message.id);
                             Utilities.disableMessageButtons(interaction.message);
