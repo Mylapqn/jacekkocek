@@ -161,6 +161,15 @@ function getStockData() {
                 .catch((e) => {
                     throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
                 });
+        } else if (stock.id == "XAU") {
+            axios
+                .get("https://api.gold-api.com/price/XAU")
+                .then((res) => {
+                    stockData.get(stock.id).push(res.data.price);
+                })
+                .catch((e) => {
+                    throw new Error("Error updating stocks (" + stock.symbol + "): " + e);
+                });
         } else {
             axios
                 .get(`https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${stockApiKey}`)

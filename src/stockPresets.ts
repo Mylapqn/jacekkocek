@@ -45,6 +45,12 @@ export const stockPresets = [
         symbol: "META",
         name: "Meta",
     },
+    {
+        id: "XAU",
+        type: "metal",
+        symbol: "XAU",
+        name: "Gold",
+    },
 ] as Array<StockPreset>;
 
 export function getStockChoices() {
