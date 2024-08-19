@@ -119,6 +119,7 @@ export class Game extends DbObject {
         this.players.push(player);
         player.items.push(this.enhanceItem(ItemType.shipCore));
         player.items.push(this.enhanceItem(ItemType.laserCannon));
+        player.items.push(this.enhanceItem(ItemType.laserCannon));
         player.items.push(this.enhanceItem(ItemType.armorPlating));
         player.stowage.push(this.enhanceItem(ItemType.surveillancePost));
         player.stowage.push(this.enhanceItem(ItemType.researchLab));
@@ -267,7 +268,7 @@ export class Game extends DbObject {
 
         for (const player of this.activePlayers) {
             const ratio = (player.science / totalScience) * scienceRatio;
-            player.science += Math.floor(ratio * this.availableScience);
+            player.science += Math.round(ratio * this.availableScience);
         }
 
         let totalIntel = 0;
@@ -282,7 +283,7 @@ export class Game extends DbObject {
 
         for (const player of this.activePlayers) {
             const ratio = (player.intel / totalIntel) * intelRatio;
-            player.intel += Math.floor(ratio * this.availableIntel);
+            player.intel += Math.round(ratio * this.availableIntel);
         }
     }
 
@@ -335,8 +336,8 @@ export class Game extends DbObject {
         for (let index = 0; index < this.scienceSlots; index++) {
             this.store.push({
                 player: undefined,
-                bid: this.randomInt(5, 50),
-                item: { item: pickRandom(sciencePool), bonus: { value: 0, alterable: pickRandom(bonusPool) } },
+                bid: this.randomInt(1, 15),
+                item: { item: pickRandom([...sciencePool, pickRandom(commonPool)]), bonus: { value: 1, alterable: pickRandom(bonusPool) } },
                 currency: Currency.science,
             });
         }
@@ -344,15 +345,15 @@ export class Game extends DbObject {
         for (let index = 0; index < this.intelSlots; index++) {
             this.store.push({
                 player: undefined,
-                bid: this.randomInt(5, 50),
-                item: { item: pickRandom(intelPool), bonus: { value: 0, alterable: pickRandom(bonusPool) } },
+                bid: this.randomInt(1, 15),
+                item: { item: pickRandom([...intelPool, pickRandom(commonPool)]), bonus: { value: 1, alterable: pickRandom(bonusPool) } },
                 currency: Currency.intel,
             });
         }
 
-        this.damage = Math.floor(Math.random() * 10 + this.difficulty / 10);
-        this.availableIntel = Math.floor(Math.random() * 3 + this.difficulty / 10 + 3);
-        this.availableScience = Math.floor(Math.random() * 3 + this.difficulty / 10 + 3);
+        this.damage = Math.floor(Math.random() * 5 + this.difficulty / 5);
+        this.availableIntel = Math.floor(Math.random() * 3 + this.difficulty + 3);
+        this.availableScience = Math.floor(Math.random() * 3 + this.difficulty + 3);
 
         this.report(`Next objective:`);
 
@@ -361,12 +362,18 @@ export class Game extends DbObject {
         this.bonusResources.splice(Math.floor(Math.random() * this.bonusResources.length), 1);
         this.report(`${this.bonusResources.join(" and ")} will count as power`);
 
-        this.report(`Damage: ${this.damage}`);
-        this.report(`Available Intel: ${this.availableIntel}`);
-        this.report(`Available Science: ${this.availableScience}`);
-        Main.gameChannel.send(this.reportContent.join("\n"));
-        this.reportContent = [];
-        this.dbUpdate();
+        Mathoshi.balance(Main.client.user.id).then((bal) => {
+            let available = bal - 5000;
+            this.matoshiPool = Math.floor(Math.min(available / (100 - this.difficulty), available / 50));
+            this.report(`Difficulty: ${this.difficulty}`);
+            this.report(`Damage: ${this.damage}`);
+            this.report(`Matoshi: ${this.matoshiPool}`);
+            this.report(`Available Intel: ${this.availableIntel}`);
+            this.report(`Available Science: ${this.availableScience}`);
+            Main.gameChannel.send(this.reportContent.join("\n"));
+            this.reportContent = [];
+            this.dbUpdate();
+        });
     }
 
     bonusResources: Array<Alterable> = [];
@@ -391,6 +398,8 @@ export class Game extends DbObject {
                 }
 
                 totalPower += player.power;
+            }else{
+                player.power = 0;
             }
         }
 
@@ -440,7 +449,7 @@ export class Game extends DbObject {
         const currentBid = this.store[bid];
         if (currentBid.player) {
             if (currentBid.currency == Currency.matoshi) {
-                Mathoshi.pay({ amount: currentBid.bid, from: player.id, to: currentBid.player }, false);
+                Mathoshi.pay({ amount: currentBid.bid, from: Main.client.user.id, to: currentBid.player }, false);
             } else if (currentBid.currency == Currency.intel) {
                 player.intel += currentBid.bid;
             } else if (currentBid.currency == Currency.science) {
@@ -467,6 +476,8 @@ function itemPrinter(item: EnhancableItem) {
         }
     }
 
+    text.push(`Bonus: ${item.bonus.value} ${item.bonus.alterable}`);
+
     return text.join("\n");
 }
 
@@ -484,7 +495,7 @@ class Player {
     crew = 0;
 
     intel = 0;
-    science = 0
+    science = 0;
     ammo = 0;
 
     setTarget(target: string, attack: number) {
@@ -509,7 +520,7 @@ class Player {
     }
 
     printItems() {
-        return this.items.map((item, index) => `${index} | ${itemPrinter(item)}`).join("\n\n") + "\n\n" + `Ammo: ${this.ammo}\nIntel: ${this.intel}\nScience: ${this.science}\n`;
+        return this.items.map((item, index) => `${index} | ${itemPrinter(item)}`).join("\n\n") + "\n\n" + `Ammo: ${this.ammo}\nIntel: ${this.intel}\nScience: ${this.science}\nPower: ${this.power}`;
     }
 
     printStowage() {
@@ -527,7 +538,7 @@ class Player {
 
     stow(id: number) {
         //move item from items to stowage
-        if (this.items.length < id) {
+        if (this.items.length <= id) {
             return "No such item in inventory.";
         }
         const item = this.items[id];
@@ -539,7 +550,7 @@ class Player {
 
     unstow(id: number) {
         //move item from stowage to items
-        if (this.stowage.length < id) {
+        if (this.stowage.length <= id) {
             return "No such item in stowage.";
         }
 
@@ -554,12 +565,12 @@ class Player {
     }
 
     giveItemToPlayer(player: Player, id: number) {
-        if (this.items.length < id) {
+        if (this.stowage.length < id) {
             return "No such item in inventory.";
         }
-        const item = this.items[id];
+        const item = this.stowage[id];
         player.stowage.push(item);
-        this.items.splice(id, 1);
+        this.stowage.splice(id, 1);
         return `Gave ${itemDefinitons[item.item].name} to <@${player.id}>.`;
     }
 
@@ -765,8 +776,9 @@ class Player {
             if (item.currency == Currency.matoshi) {
                 const balance = await Mathoshi.balance(this.id);
                 if (balance >= value) {
-                    Mathoshi.pay({ amount: value, from: this.id, to: Main.client.user.id }, false);
-                    this.game.handleBid(this, value, id);
+                    Mathoshi.pay({ amount: value, from: this.id, to: Main.client.user.id }, false).then(() => {
+                        this.game.handleBid(this, value, id);
+                    });
                     return { success: true, message: `<@${this.id}> bid ${value} ${item.currency} for ${itemDefinitons[item.item.item].name}` };
                 } else {
                     return { success: false, message: `not enough ${item.currency} (you have ${balance} ${item.currency})` };
@@ -814,7 +826,7 @@ class Player {
     }
 
     enhanceCommand(itemId: number, spendId: number) {
-        if (this.stowage.length < itemId && this.stowage.length < spendId) {
+        if (this.stowage.length > itemId && this.stowage.length > spendId) {
             if (itemId == spendId) {
                 return "You can't enhance the item by itself";
             } else {
@@ -822,6 +834,8 @@ class Player {
                 const spend = this.stowage[spendId];
                 if (item.item == spend.item) {
                     this.enhance(item, 1);
+                    //remove spend item
+                    this.stowage.splice(spendId, 1);
                     return ":)";
                 } else {
                     return "You can only enhance items of the same type";
