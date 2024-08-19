@@ -74,9 +74,9 @@ const commonPool: Array<ItemType> = [
 
 const rarePool: Array<ItemType> = [ItemType.addScience, ItemType.removeScience, ItemType.addIntel, ItemType.removeIntel];
 
-const sciencePool: Array<ItemType> = [ItemType.medbay, ItemType.ammoCrate];
+const sciencePool: Array<ItemType> = [ItemType.medbay, ItemType.ammoCrate, ItemType.removeScience, ItemType.addIntel];
 
-const intelPool: Array<ItemType> = [ItemType.ammoCrate];
+const intelPool: Array<ItemType> = [ItemType.ammoCrate, ItemType.removeIntel, ItemType.addScience, ItemType.armorPlating];
 
 enum Alterable {
     power = "power",
@@ -246,7 +246,7 @@ export class Game extends DbObject {
 
     dealDamage() {
         const damage = this.damage - this.teamDefence;
-        this.report(`In total, there is ${this.damage}. You defend with ${this.teamDefence}.`);
+        this.report(`In total, there is ${this.damage} damage. You defend with ${this.teamDefence} team defence.`);
         if (damage > 0) {
             this.report(`There is still ${damage} left.`);
             for (let index = 0; index < damage; index++) {
@@ -298,10 +298,10 @@ export class Game extends DbObject {
                 const target = this.activePlayers.find((p) => p.id == player.target);
 
                 if (target == undefined) continue;
-                this.report(`${player.id} engages <@${player.target}>! ${player.attack} damage.`);
 
                 const attack = Math.min(player.attack, Math.floor(player.power / 10));
                 player.power -= attack * 10;
+                this.report(`${player.id} engages <@${player.target}>! ${attack} damage.`);
 
                 for (let index = 0; index < attack; index++) {
                     target.damage();
@@ -322,6 +322,7 @@ export class Game extends DbObject {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
     }
+
     generate() {
         this.store = [];
         for (let index = 0; index < this.storeSlots - this.scienceSlots - this.intelSlots; index++) {
@@ -378,7 +379,7 @@ export class Game extends DbObject {
 
     bonusResources: Array<Alterable> = [];
 
-    award() {
+    async award() {
         let totalPower = 0;
         for (const player of this.activePlayers) {
             if (player.defence > 0) {
@@ -398,7 +399,7 @@ export class Game extends DbObject {
                 }
 
                 totalPower += player.power;
-            }else{
+            } else {
                 player.power = 0;
             }
         }
@@ -415,11 +416,17 @@ export class Game extends DbObject {
             this.report(`Difficulty reset to ${this.difficulty}.`);
         }
 
-        for (const player of this.activePlayers) {
+        const sortedPlayers = this.activePlayers.sort((a, b) => b.power - a.power);
+        let remainingReward = this.matoshiPool;
+        for (const player of sortedPlayers) {
             if (player.defence > 0) {
                 const ratio = (player.power / totalPower) * rewardRatio;
                 const reward = Math.floor(ratio * this.matoshiPool);
-                Mathoshi.pay({ amount: reward, from: Main.client.user.id, to: player.id }, false);
+                const toPay = Math.min(reward, remainingReward);
+                remainingReward -= toPay;
+                if (toPay > 0) {
+                    await Mathoshi.pay({ amount: toPay, from: Main.client.user.id, to: player.id }, false);
+                }
             }
         }
     }
@@ -427,7 +434,7 @@ export class Game extends DbObject {
     cleanup() {
         this.teamDefence = 0;
         for (const player of this.activePlayers) {
-            player.processSimpleItems();
+            player.cleanup();
         }
     }
 
@@ -501,6 +508,7 @@ class Player {
     setTarget(target: string, attack: number) {
         this.target = target;
         this.attack = attack;
+        this.game.dbUpdate();
         return `Target set to <@${target}>.`;
     }
 
@@ -517,6 +525,7 @@ class Player {
             this.game.activePlayers.push(this);
             return "You are now ready.";
         }
+        this.game.dbUpdate();
     }
 
     printItems() {
@@ -534,6 +543,7 @@ class Player {
             this.game.activePlayers.splice(this.game.activePlayers.indexOf(this), 1);
             return "You are now unready.";
         }
+        this.game.dbUpdate();
     }
 
     stow(id: number) {
@@ -544,7 +554,7 @@ class Player {
         const item = this.items[id];
         this.stowage.push(item);
         this.items.splice(id, 1);
-
+        this.game.dbUpdate();
         return `Stowaged ${itemDefinitons[item.item].name}.`;
     }
 
@@ -561,6 +571,7 @@ class Player {
         const item = this.stowage[id];
         this.items.push(item);
         this.stowage.splice(id, 1);
+        this.game.dbUpdate();
         return `Unstowaged ${itemDefinitons[item.item].name}.`;
     }
 
@@ -571,6 +582,7 @@ class Player {
         const item = this.stowage[id];
         player.stowage.push(item);
         this.stowage.splice(id, 1);
+        this.game.dbUpdate();
         return `Gave ${itemDefinitons[item.item].name} to <@${player.id}>.`;
     }
 
@@ -580,6 +592,7 @@ class Player {
         }
         player.ammo += amount;
         this.ammo -= amount;
+        this.game.dbUpdate();
         return `Gave ${amount} ammo to <@${player.id}>.`;
     }
 
@@ -589,6 +602,7 @@ class Player {
         }
         player.science += amount;
         this.science -= amount;
+        this.game.dbUpdate();
         return `Gave ${amount} science to <@${player.id}>.`;
     }
 
@@ -598,6 +612,7 @@ class Player {
         }
         player.intel += amount;
         this.intel -= amount;
+        this.game.dbUpdate();
         return `Gave ${amount} intel to <@${player.id}>.`;
     }
 
