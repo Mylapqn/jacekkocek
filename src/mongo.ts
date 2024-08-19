@@ -22,6 +22,7 @@ export class Mongo {
         Mongo.registerType("Event");
         Mongo.registerType("Policy");
         Mongo.registerType("Assignment");
+        Mongo.registerType("Game");
     }
 
     static async find(filter: Filter<any>, collection: string) {
