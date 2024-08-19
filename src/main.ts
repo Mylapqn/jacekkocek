@@ -930,6 +930,30 @@ client.on("interactionCreate", async (interaction) => {
                         }
                         break;
                     }
+
+                    case "items": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.printItems();
+                            interaction.reply({ content: out });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "stowage": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.printStowage();
+                            interaction.reply({ content: out });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
                 }
             }
             case "sudo": {

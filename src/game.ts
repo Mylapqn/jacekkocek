@@ -475,17 +475,17 @@ class Player {
     attack = 1;
     game: Game;
     id: string;
-    power: number;
-    defence: number;
+    power = 0;
+    defence = 0;
     items = new Array<EnhancableItem>();
     stowage = new Array<EnhancableItem>();
-    speed: number;
-    sensors: number;
-    crew: number;
+    speed = 0;
+    sensors = 0;
+    crew = 0;
 
-    intel: number;
-    science: number;
-    ammo: number;
+    intel = 0;
+    science = 0
+    ammo = 0;
 
     setTarget(target: string, attack: number) {
         this.target = target;
@@ -506,6 +506,14 @@ class Player {
             this.game.activePlayers.push(this);
             return "You are now ready.";
         }
+    }
+
+    printItems() {
+        return this.items.map((item, index) => `${index} | ${itemPrinter(item)}`).join("\n\n") + "\n\n" + `Ammo: ${this.ammo}\nIntel: ${this.intel}\nScience: ${this.science}\n`;
+    }
+
+    printStowage() {
+        return this.stowage.map((item, index) => `${index} | ${itemPrinter(item)}`).join("\n\n");
     }
 
     unready() {
