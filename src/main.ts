@@ -24,6 +24,7 @@ import { Mongo } from "./mongo";
 import { Policy } from "./policy";
 import { Assignment } from "./assignments";
 import { User } from "./user";
+import { Game } from "./game";
 require("console-stamp")(console, {
     format: ":date(dd/mm/yyyy HH:MM:ss.l)",
 });
@@ -48,6 +49,7 @@ export const client = new Discord.Client({ intents: intents });
 
 export let mainGuild: Discord.Guild;
 export let kinoChannel: Discord.TextChannel;
+export let gameChannel: Discord.TextChannel;
 export let operationsChannel: Discord.TextChannel;
 export let mainVoiceChannel: Discord.VoiceChannel;
 export let notifyTextChannel: Discord.TextChannel;
@@ -305,12 +307,14 @@ const defaultMainVoiceChannelId = "1024767805586935888";
 const defaultManagerRoleId = "1046868723048382494";
 const defaultAdminId = ["532918953014722560"];
 const defaultKinoChannelId = "662455047451574292";
+const defaultGameChannelId = "753323827093569588";
 const defaultAssignmentsChannelId = "1089979084802629692";
 
 client.on("ready", async () => {
     const mainGuildId = process.env.MAIN_GUILD_ID ?? defaultMainGuildId;
     const notifyTextChannelId = process.env.NOTIFY_TEXT_CHANNEL_ID ?? defaultNotifyTextChannelId;
     const kinoChannelId = process.env.KINO_CHANNEL_ID ?? defaultKinoChannelId;
+    const gameChannelId = process.env.GAME_CHANNEL_ID ?? defaultGameChannelId;
     const AssignmentsChannelId = process.env.OPERATIONS_CHANNEL_ID ?? defaultAssignmentsChannelId;
     const mainVoiceChannelId = process.env.MAIN_VOICE_CHANNEL_ID ?? defaultMainVoiceChannelId;
     const managerRoleId = process.env.MANAGER_ROLE_ID ?? defaultManagerRoleId;
@@ -320,6 +324,7 @@ client.on("ready", async () => {
     kinoChannel = (await mainGuild.channels.fetch(kinoChannelId)) as Discord.TextChannel;
     operationsChannel = (await mainGuild.channels.fetch(AssignmentsChannelId)) as Discord.TextChannel;
     notifyTextChannel = (await mainGuild.channels.fetch(notifyTextChannelId)) as Discord.TextChannel;
+    gameChannel = (await mainGuild.channels.fetch(gameChannelId)) as Discord.TextChannel;
     mainVoiceChannel = (await mainGuild.channels.fetch(mainVoiceChannelId)) as Discord.VoiceChannel;
     managerRole = await mainGuild.roles.fetch(managerRoleId);
     adminId = process.env.ADMIN_ID?.split(",") ?? defaultAdminId;
@@ -337,6 +342,7 @@ client.on("ready", async () => {
     Stocks.init();
     await Polls.Poll.loadPolls();
     Kino.Event.loadEvents();
+    await Game.load();
     Matoshi.init();
     Api.init();
     await Assignment.loadTasks();
@@ -745,6 +751,186 @@ client.on("interactionCreate", async (interaction) => {
                     interaction.editReply({ content: "Error creating issue!" });
                 }
                 break;
+            }
+            case "game": {
+                switch (interaction.options.getSubcommand()) {
+                    case "join": {
+                        let user = interaction.user;
+                        if (!user) user = interaction.user;
+                        const out = Game.current.createShip(user.id);
+                        interaction.reply({ content: out });
+                        break;
+                    }
+                    case "ready": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.ready();
+                            interaction.reply({ content: out });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+                    case "unready": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.unready();
+                            interaction.reply({ content: out });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+                    case "bids": {
+                        const out = Game.current.printBids();
+                        interaction.reply(out);
+                        break;
+                    }
+                    case "bid": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = await player.bid(interaction.options.getInteger("item-id"), interaction.options.getInteger("amount"));
+                            if (out.success) {
+                                interaction.reply({ content: out.message });
+                            } else {
+                                interaction.reply({ content: out.message, ephemeral: true });
+                            }
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+                    case "stow": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.stow(interaction.options.getInteger("item-id"));
+                            interaction.reply({ content: out, ephemeral: true });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "unstow": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.unstow(interaction.options.getInteger("item-id"));
+                            interaction.reply({ content: out, ephemeral: true });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "target": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.setTarget(interaction.options.getUser("user").id, interaction.options.getInteger("power"));
+                            interaction.reply({ content: out, ephemeral: true });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "enhance": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.enhanceCommand(interaction.options.getInteger("item-id"), interaction.options.getInteger("spend-id"));
+                            interaction.reply({ content: out });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "trash": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.trashItemFromStowage(interaction.options.getInteger("item-id"));
+                            interaction.reply({ content: out, ephemeral: true });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "give-intel": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const targetPlayer = Game.current.getPlayer(interaction.options.getUser("player").id);
+                            if (targetPlayer) {
+                                const out = player.giveIntelToPlayer(targetPlayer, interaction.options.getInteger("amount"));
+                                interaction.reply({ content: out });
+                            } else {
+                                interaction.reply({ content: "Target player is not in the game!", ephemeral: true });
+                            }
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "give-science": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const targetPlayer = Game.current.getPlayer(interaction.options.getUser("player").id);
+                            if (targetPlayer) {
+                                const out = player.giveSicenceToPlayer(targetPlayer, interaction.options.getInteger("amount"));
+                                interaction.reply({ content: out });
+                            } else {
+                                interaction.reply({ content: "Target player is not in the game!", ephemeral: true });
+                            }
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "give-ammo": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const targetPlayer = Game.current.getPlayer(interaction.options.getUser("player").id);
+                            if (targetPlayer) {
+                                const out = player.giveAmmoToPlayer(targetPlayer, interaction.options.getInteger("amount"));
+                                interaction.reply({ content: out });
+                            } else {
+                                interaction.reply({ content: "Target player is not in the game!", ephemeral: true });
+                            }
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
+                    case "give-item": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const targetPlayer = Game.current.getPlayer(interaction.options.getUser("player").id);
+                            if (targetPlayer) {
+                                const out = player.giveItemToPlayer(targetPlayer, interaction.options.getInteger("id"));
+                                interaction.reply({ content: out });
+                            } else {
+                                interaction.reply({ content: "Target player is not in the game!", ephemeral: true });
+                            }
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+                }
             }
             case "sudo": {
                 switch (interaction.options.getSubcommand()) {

@@ -675,5 +675,214 @@
                 "required": false
             }
         ]
+    },
+    {
+        "type": 1,
+        "name": "game",
+        "description": "Game-related commands",
+        "options": [
+            {
+                "name": "join",
+                "description": "Create a new player instance in the game",
+                "type": 1
+            },
+            {
+                "name": "bids",
+                "description": "Show bids in the game",
+                "type": 1
+            },
+            {
+                "name": "items",
+                "description": "Show your currently equipped items",
+                "type": 1
+            },
+            {
+                "name": "stowage",
+                "description": "Show your items in stowage",
+                "type": 1
+            },
+            {
+                "name": "ready",
+                "description": "Set yourself as ready for the next mission",
+                "type": 1
+            },
+            {
+                "name": "unready",
+                "description": "Set yourself as not ready for the next mission",
+                "type": 1
+            },
+            {
+                "name": "bid",
+                "description": "Place a bid on an item in the store",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "item-id",
+                        "description": "The ID of the item to bid on",
+                        "type": 4,
+                        "required": true
+                    },
+                    {
+                        "name": "amount",
+                        "description": "The amount to bid on the item",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "stow",
+                "description": "Move an item to stowage",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "item-id",
+                        "description": "The ID of the item to move to stowage",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "unstow",
+                "description": "Equip an item from stowage",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "item-id",
+                        "description": "The ID of the item to equip from stowage",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "target",
+                "description": "Target a user",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "user",
+                        "description": "The user to target",
+                        "type": 6,
+                        "required": true
+                    },
+                    {
+                        "name": "power",
+                        "description": "The power level to use when targeting",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "enhance",
+                "description": "Merge two items of the same type to upgrade them",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "item-id",
+                        "description": "The ID of the item to enhance",
+                        "type": 4,
+                        "required": true
+                    },
+                    {
+                        "name": "spend-id",
+                        "description": "The ID of the item to merge with",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "trash",
+                "description": "Remove an item in stowage (remove entirely)",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "item-id",
+                        "description": "The ID of the item to remove",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "give-intel",
+                "description": "Give Intel to a player",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "player",
+                        "description": "The player to receive the Intel",
+                        "type": 6,
+                        "required": true
+                    },
+                    {
+                        "name": "amount",
+                        "description": "The amount of Intel to give",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "give-science",
+                "description": "Give Science to a player",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "player",
+                        "description": "The player to receive the Science",
+                        "type": 6,
+                        "required": true
+                    },
+                    {
+                        "name": "amount",
+                        "description": "The amount of Science to give",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "give-ammo",
+                "description": "Give Ammo to a player",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "player",
+                        "description": "The player to receive the Ammo",
+                        "type": 6,
+                        "required": true
+                    },
+                    {
+                        "name": "amount",
+                        "description": "The amount of Ammo to give",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "name": "give-item",
+                "description": "Give an Item to a player",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "player",
+                        "description": "The player to receive the Item",
+                        "type": 6,
+                        "required": true
+                    },
+                    {
+                        "name": "id",
+                        "description": "The ID of the item to give",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            }
+        ]
     }
 ]
