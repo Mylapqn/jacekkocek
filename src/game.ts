@@ -111,6 +111,8 @@ export class Game extends DbObject {
         return this.players.find((p) => p.id == id);
     }
 
+    newContentCounter = 0;
+
     createShip(id: string) {
         if (this.players.find((p) => p.id == id)) return "You already have a ship!";
         const player = new Player();
@@ -268,6 +270,7 @@ export class Game extends DbObject {
 
         for (const player of this.activePlayers) {
             const ratio = (player.science / totalScience) * scienceRatio;
+            this.report(`<@${player.id}> gets ${Math.round(ratio * this.availableScience)} science.`);
             player.science += Math.round(ratio * this.availableScience);
         }
 
@@ -283,6 +286,7 @@ export class Game extends DbObject {
 
         for (const player of this.activePlayers) {
             const ratio = (player.intel / totalIntel) * intelRatio;
+            this.report(`<@${player.id}> gets ${Math.round(ratio * this.availableIntel)} intel.`);
             player.intel += Math.round(ratio * this.availableIntel);
         }
     }
@@ -291,7 +295,7 @@ export class Game extends DbObject {
         for (const player of this.activePlayers) {
             if (player.target) {
                 if (player.attack == 0) {
-                    this.report(`${player.id} complains about <@${player.target}>.`);
+                    this.report(`<@${player.id}> complains about <@${player.target}>.`);
                     continue;
                 }
 
@@ -301,7 +305,7 @@ export class Game extends DbObject {
 
                 const attack = Math.min(player.attack, Math.floor(player.power / 10));
                 player.power -= attack * 10;
-                this.report(`${player.id} engages <@${player.target}>! ${attack} damage.`);
+                this.report(`<@${player.id}> engages <@${player.target}>! ${attack} damage.`);
 
                 for (let index = 0; index < attack; index++) {
                     target.damage();
@@ -352,7 +356,7 @@ export class Game extends DbObject {
             });
         }
 
-        this.damage = Math.floor(Math.random() * 5 + this.difficulty / 5);
+        this.damage = Math.floor(Math.random() * 5 + this.difficulty / 2);
         this.availableIntel = Math.floor(Math.random() * 3 + this.difficulty + 3);
         this.availableScience = Math.floor(Math.random() * 3 + this.difficulty + 3);
 
@@ -362,6 +366,8 @@ export class Game extends DbObject {
         //remove one random element from the array
         this.bonusResources.splice(Math.floor(Math.random() * this.bonusResources.length), 1);
         this.report(`${this.bonusResources.join(" and ")} will count as power`);
+
+
 
         Mathoshi.balance(Main.client.user.id).then((bal) => {
             let available = bal - 5000;
@@ -424,10 +430,28 @@ export class Game extends DbObject {
                 const reward = Math.floor(ratio * this.matoshiPool);
                 const toPay = Math.min(reward, remainingReward);
                 remainingReward -= toPay;
+                this.report(`<@${player.id}> receives ${toPay} ${Currency.matoshi}`);
+
                 if (toPay > 0) {
                     await Mathoshi.pay({ amount: toPay, from: Main.client.user.id, to: player.id }, false);
                 }
             }
+        }
+
+        if (this.newContentCounter == 0) {
+            this.newContentCounter = 3;
+            let candidates = [...this.activePlayers];
+
+            //get the smallest contentCount
+            const minimum = candidates.sort((a, b) => a.contentCount - b.contentCount)[0].contentCount;
+
+            //filter out all the candidates withcontentCount above the minimum
+            candidates = candidates.filter((c) => c.contentCount >= minimum[0].contentCount);
+
+            const player = pickRandom(candidates);
+            this.report(`<@${player.id}> was picked to create new content.`);
+        } else {
+            this.newContentCounter--;
         }
     }
 
@@ -490,6 +514,7 @@ function itemPrinter(item: EnhancableItem) {
 
 class Player {
     target?: string;
+    contentCount = 0;
     attack = 1;
     game: Game;
     id: string;
