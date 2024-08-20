@@ -523,9 +523,9 @@ class Player {
             return "You are already ready.";
         } else {
             this.game.activePlayers.push(this);
+            this.game.dbUpdate();
             return "You are now ready.";
         }
-        this.game.dbUpdate();
     }
 
     printItems() {
@@ -541,9 +541,9 @@ class Player {
             return "You are not ready.";
         } else {
             this.game.activePlayers.splice(this.game.activePlayers.indexOf(this), 1);
+            this.game.dbUpdate();
             return "You are now unready.";
         }
-        this.game.dbUpdate();
     }
 
     stow(id: number) {
