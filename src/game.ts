@@ -293,7 +293,7 @@ export class Game extends DbObject {
         for (const player of this.activePlayers) {
             if (player.target) {
                 if (player.attack == 0) {
-                    this.report(`${player.id} complains about <@${player.target}>.`);
+                    this.report(`<@${player.id}> complains about <@${player.target}>.`);
                     continue;
                 }
 
@@ -303,7 +303,7 @@ export class Game extends DbObject {
 
                 const attack = Math.min(player.attack, Math.floor(player.power / 10));
                 player.power -= attack * 10;
-                this.report(`${player.id} engages <@${player.target}>! ${attack} damage.`);
+                this.report(`<@${player.id}> engages <@${player.target}>! ${attack} damage.`);
 
                 for (let index = 0; index < attack; index++) {
                     target.damage();
