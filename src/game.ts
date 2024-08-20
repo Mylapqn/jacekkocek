@@ -354,7 +354,7 @@ export class Game extends DbObject {
             });
         }
 
-        this.damage = Math.floor(Math.random() * 5 + this.difficulty / 5);
+        this.damage = Math.floor(Math.random() * 5 + this.difficulty / 2);
         this.availableIntel = Math.floor(Math.random() * 3 + this.difficulty + 3);
         this.availableScience = Math.floor(Math.random() * 3 + this.difficulty + 3);
 
