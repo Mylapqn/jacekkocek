@@ -111,6 +111,8 @@ export class Game extends DbObject {
         return this.players.find((p) => p.id == id);
     }
 
+    newContentCounter = 0;
+
     createShip(id: string) {
         if (this.players.find((p) => p.id == id)) return "You already have a ship!";
         const player = new Player();
@@ -365,6 +367,8 @@ export class Game extends DbObject {
         this.bonusResources.splice(Math.floor(Math.random() * this.bonusResources.length), 1);
         this.report(`${this.bonusResources.join(" and ")} will count as power`);
 
+
+
         Mathoshi.balance(Main.client.user.id).then((bal) => {
             let available = bal - 5000;
             this.matoshiPool = Math.floor(Math.min(available / (100 - this.difficulty), available / 50));
@@ -433,6 +437,22 @@ export class Game extends DbObject {
                 }
             }
         }
+
+        if (this.newContentCounter == 0) {
+            this.newContentCounter = 3;
+            let candidates = [...this.activePlayers];
+
+            //get the smallest contentCount
+            const minimum = candidates.sort((a, b) => a.contentCount - b.contentCount)[0].contentCount;
+
+            //filter out all the candidates withcontentCount above the minimum
+            candidates = candidates.filter((c) => c.contentCount >= minimum[0].contentCount);
+
+            const player = pickRandom(candidates);
+            this.report(`<@${player.id}> was picked to create new content.`);
+        } else {
+            this.newContentCounter--;
+        }
     }
 
     cleanup() {
@@ -494,6 +514,7 @@ function itemPrinter(item: EnhancableItem) {
 
 class Player {
     target?: string;
+    contentCount = 0;
     attack = 1;
     game: Game;
     id: string;
