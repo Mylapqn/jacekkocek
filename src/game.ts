@@ -268,6 +268,7 @@ export class Game extends DbObject {
 
         for (const player of this.activePlayers) {
             const ratio = (player.science / totalScience) * scienceRatio;
+            this.report(`<@${player.id}> gets ${Math.round(ratio * this.availableScience)} science.`);
             player.science += Math.round(ratio * this.availableScience);
         }
 
@@ -283,6 +284,7 @@ export class Game extends DbObject {
 
         for (const player of this.activePlayers) {
             const ratio = (player.intel / totalIntel) * intelRatio;
+            this.report(`<@${player.id}> gets ${Math.round(ratio * this.availableIntel)} intel.`);
             player.intel += Math.round(ratio * this.availableIntel);
         }
     }
@@ -424,6 +426,8 @@ export class Game extends DbObject {
                 const reward = Math.floor(ratio * this.matoshiPool);
                 const toPay = Math.min(reward, remainingReward);
                 remainingReward -= toPay;
+                this.report(`<@${player.id}> receives ${toPay} ${Currency.matoshi}`);
+
                 if (toPay > 0) {
                     await Mathoshi.pay({ amount: toPay, from: Main.client.user.id, to: player.id }, false);
                 }
