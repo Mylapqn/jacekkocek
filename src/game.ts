@@ -443,7 +443,7 @@ export class Game extends DbObject {
             const minimum = candidates.sort((a, b) => a.contentCount - b.contentCount)[0].contentCount;
 
             //filter out all the candidates withcontentCount above the minimum
-            candidates = candidates.filter((c) => c.contentCount >= minimum[0].contentCount);
+            candidates = candidates.filter((c) => c.contentCount >= minimum);
 
             const player = pickRandom(candidates);
             player.contentCount++;
