@@ -882,6 +882,11 @@
                         "required": true
                     }
                 ]
+            },
+            {
+                "name": "tick",
+                "type": 1,
+                "description": "(Tajemník only) Tick the game"
             }
         ]
     }

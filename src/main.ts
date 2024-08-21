@@ -943,6 +943,17 @@ client.on("interactionCreate", async (interaction) => {
                         break;
                     }
 
+                    case "tick": {
+                        const isManager = member.roles.cache.has(managerRole.id);
+                        if(isManager){
+                            Game.current.tick();
+                            interaction.reply({ content: "Tick!", ephemeral: true });
+                        }else{
+                            interaction.reply({ content: "Only Tajemník can use this command!", ephemeral: true });
+                        }
+                        break;
+                    }
+
                     case "stowage": {
                         let user = interaction.user;
                         const player = Game.current.getPlayer(user.id);
