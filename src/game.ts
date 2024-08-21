@@ -103,7 +103,6 @@ export class Game extends DbObject {
         } else {
             this.current = new Game();
         }
-
         this.current.checkReady();
     }
 
@@ -123,9 +122,9 @@ export class Game extends DbObject {
         player.items.push(this.enhanceItem(ItemType.laserCannon));
         player.items.push(this.enhanceItem(ItemType.laserCannon));
         player.items.push(this.enhanceItem(ItemType.armorPlating));
-        player.stowage.push(this.enhanceItem(ItemType.surveillancePost));
-        player.stowage.push(this.enhanceItem(ItemType.researchLab));
-        player.stowage.push(this.enhanceItem(ItemType.ionTurret));
+        player.addToStowage(this.enhanceItem(ItemType.surveillancePost));
+        player.addToStowage(this.enhanceItem(ItemType.researchLab));
+        player.addToStowage(this.enhanceItem(ItemType.ionTurret));
         return `<@${id}> ` + "Ship created!";
     }
 
@@ -220,13 +219,13 @@ export class Game extends DbObject {
         console.log(`Next tick at ${nextTick}`);
     }
 
-    tick() {
+    async tick() {
         if (this.activePlayers.length != 0) {
             this.processItems();
             this.awardResources();
             this.blueOnBlue();
             this.dealDamage();
-            this.award();
+            await this.award();
             this.cleanup();
         } else {
             this.report("No players joined, skipping.");
@@ -241,7 +240,7 @@ export class Game extends DbObject {
         for (const bid of this.store) {
             if (bid.player) {
                 const player = this.getPlayer(bid.player);
-                player.stowage.push(bid.item);
+                player.addToStowage(bid.item);
             }
         }
     }
@@ -367,8 +366,6 @@ export class Game extends DbObject {
         this.bonusResources.splice(Math.floor(Math.random() * this.bonusResources.length), 1);
         this.report(`${this.bonusResources.join(" and ")} will count as power`);
 
-
-
         Mathoshi.balance(Main.client.user.id).then((bal) => {
             let available = bal - 5000;
             this.matoshiPool = Math.floor(Math.min(available / (100 - this.difficulty), available / 50));
@@ -449,6 +446,8 @@ export class Game extends DbObject {
             candidates = candidates.filter((c) => c.contentCount >= minimum[0].contentCount);
 
             const player = pickRandom(candidates);
+            player.contentCount++;
+
             this.report(`<@${player.id}> was picked to create new content.`);
         } else {
             this.newContentCounter--;
@@ -464,11 +463,11 @@ export class Game extends DbObject {
 
     processItems() {
         for (const player of this.activePlayers) {
-            player.processItems();
+            player.processSimpleItems();
         }
 
         for (const player of this.activePlayers) {
-            player.processSimpleItems();
+            player.processItems();
         }
     }
 
@@ -497,6 +496,7 @@ function itemPrinter(item: EnhancableItem) {
     let text = [];
     const def = itemDefinitons[item.item];
     text.push(def.name);
+    if(def.singleUse) text.push("(single use)")
 
     for (const effect of def.effects) {
         if (effect.condition) {
@@ -577,11 +577,12 @@ class Player {
             return "No such item in inventory.";
         }
         const item = this.items[id];
-        this.stowage.push(item);
+        this.addToStowage(item);
         this.items.splice(id, 1);
         this.game.dbUpdate();
         return `Stowaged ${itemDefinitons[item.item].name}.`;
     }
+
 
     unstow(id: number) {
         //move item from stowage to items
@@ -600,12 +601,17 @@ class Player {
         return `Unstowaged ${itemDefinitons[item.item].name}.`;
     }
 
+    addToStowage(item: EnhancableItem){
+        this.stowage.push(item);
+        this.stowage.sort((a, b) => a.item - b.item);
+    }
+
     giveItemToPlayer(player: Player, id: number) {
         if (this.stowage.length < id) {
             return "No such item in inventory.";
         }
         const item = this.stowage[id];
-        player.stowage.push(item);
+        player.addToStowage(item);
         this.stowage.splice(id, 1);
         this.game.dbUpdate();
         return `Gave ${itemDefinitons[item.item].name} to <@${player.id}>.`;
@@ -644,15 +650,15 @@ class Player {
     processItems() {
         for (const item of [...this.items]) {
             const def = itemDefinitons[item.item];
-
-            if (def.singleUse) {
-                this.removeItem(item);
-            }
-
+            
             for (const effect of def.effects) {
                 if (effect.condition && this.conditionsMet(effect.condition)) {
                     this.applyAlterations(effect.alterations);
                 }
+            }
+
+            if (def.singleUse) {
+                this.removeItem(item);
             }
         }
     }
