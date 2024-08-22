@@ -232,7 +232,6 @@ export class Game extends DbObject {
         }
         this.giveBids();
         this.generate();
-        this.activePlayers = [];
         this.schedule();
     }
 
