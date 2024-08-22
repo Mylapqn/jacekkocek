@@ -1,6 +1,7 @@
 import * as Mathoshi from "./matoshi";
 import * as Main from "./main";
 import { DbObject } from "./dbObject";
+import { shuffle } from "./utilities";
 
 enum Currency {
     matoshi = "₥",
@@ -426,14 +427,13 @@ export class Game extends DbObject {
             this.report(`Difficulty reset to ${this.difficulty}.`);
         }
 
-        const sortedPlayers = this.activePlayers.sort((a, b) => b.power - a.power);
-        let remainingReward = this.matoshiPool;
-        for (const player of sortedPlayers) {
+        shuffle(this.activePlayers);
+        const rewardPartition = this.runResourceElection(this.activePlayers.map(player => player.defence > 0 ? player.power : 0), Math.floor(this.matoshiPool * rewardRatio));
+
+        for (let i = 0; i < this.activePlayers.length; i++) {
+            const player = this.activePlayers[i];
             if (player.defence > 0) {
-                const ratio = (player.power / totalPower) * rewardRatio;
-                const reward = Math.floor(ratio * this.matoshiPool);
-                const toPay = Math.min(reward, remainingReward);
-                remainingReward -= toPay;
+                const toPay = rewardPartition[i];
                 this.report(`<@${player.id}> receives ${toPay} ${Currency.matoshi}`);
 
                 if (toPay > 0) {
