@@ -40,6 +40,7 @@ enum ItemType {
     mobileLab,
     researchLab,
     surveillancePost,
+    cameraArray,
     ionCannon,
     ionTurret,
 
@@ -67,6 +68,7 @@ const commonPool: Array<ItemType> = [
     ItemType.mobileLab,
     ItemType.researchLab,
     ItemType.surveillancePost,
+    ItemType.cameraArray,
     ItemType.ionCannon,
     ItemType.ionTurret,
     ItemType.ammoCrate,
@@ -86,8 +88,8 @@ enum Alterable {
     crew = "crew",
     teamDefence = "teamDefence",
     ammo = "ammo",
-    intel = "intel",
-    science = "science",
+    electionIntel = "electionIntel",
+    electionScience = "electionScience",
     intelSlots = "intelSlots",
     scienceSlots = "scienceSlots",
 }
@@ -232,7 +234,6 @@ export class Game extends DbObject {
         }
         this.giveBids();
         this.generate();
-        this.activePlayers = [];
         this.schedule();
     }
 
@@ -256,37 +257,50 @@ export class Game extends DbObject {
         }
     }
 
+    electionSignpostSequence(seats: number): number {
+        // Webster/Sainte-Laguë method
+        return seats + 0.5;
+    }
+
+    runResourceElection(votes: number[], numberOfSeats: number): number[] {
+        if (votes.length == 0) // no one is in the election
+            return [];
+
+        let seats = votes.map(() => 0);
+
+        if (Math.max(...votes) <= 0) // all candidates in the election has zero votes, they get nothing
+            return seats;
+
+        for (let i = 0; i < numberOfSeats; i++) {
+            let bestCandidate = -1;
+            let bestRatio = -1;
+
+            // pick a candidate with the highest vote average
+            for (let j = 0; j < votes.length; j++) {
+                let currentRatio = votes[j] / this.electionSignpostSequence(seats[j]);
+
+                if (currentRatio > bestRatio) {
+                    bestCandidate = j;
+                    bestRatio = currentRatio;
+                }
+            }
+
+            seats[bestCandidate]++;
+        }
+
+        return seats;
+    }
+
     awardResources() {
-        let totalScience = 0;
-        for (const player of this.activePlayers) {
-            totalScience += player.science;
-        }
+        let intelPartition = this.runResourceElection(this.activePlayers.map(player => player.electionIntel), this.availableIntel);
+        let sciencePartition = this.runResourceElection(this.activePlayers.map(player => player.electionScience), this.availableScience);
 
-        let scienceRatio = totalScience / this.availableScience;
-        if (totalScience >= this.availableScience) {
-            scienceRatio = 1;
-        }
+        for (let i = 0; i < this.activePlayers.length; i++) {
+            const player = this.activePlayers[i];
+            player.intel += intelPartition[i];
+            player.science += sciencePartition[i];
 
-        for (const player of this.activePlayers) {
-            const ratio = (player.science / totalScience) * scienceRatio;
-            this.report(`<@${player.id}> gets ${Math.round(ratio * this.availableScience)} science.`);
-            player.science += Math.round(ratio * this.availableScience);
-        }
-
-        let totalIntel = 0;
-        for (const player of this.activePlayers) {
-            totalIntel += player.intel;
-        }
-
-        let intelRatio = totalIntel / this.availableIntel;
-        if (totalIntel >= this.availableIntel) {
-            intelRatio = 1;
-        }
-
-        for (const player of this.activePlayers) {
-            const ratio = (player.intel / totalIntel) * intelRatio;
-            this.report(`<@${player.id}> gets ${Math.round(ratio * this.availableIntel)} intel.`);
-            player.intel += Math.round(ratio * this.availableIntel);
+            this.report(`<@${player.id}> gets ${intelPartition[i]} intel and ${sciencePartition[i]} science.`);
         }
     }
 
@@ -496,7 +510,7 @@ function itemPrinter(item: EnhancableItem) {
     let text = [];
     const def = itemDefinitons[item.item];
     text.push(def.name);
-    if(def.singleUse) text.push("(single use)")
+    if (def.singleUse) text.push("(single use)")
 
     for (const effect of def.effects) {
         if (effect.condition) {
@@ -525,6 +539,8 @@ class Player {
     speed = 0;
     sensors = 0;
     crew = 0;
+    electionIntel = 0;
+    electionScience = 0;
 
     intel = 0;
     science = 0;
@@ -601,7 +617,7 @@ class Player {
         return `Unstowaged ${itemDefinitons[item.item].name}.`;
     }
 
-    addToStowage(item: EnhancableItem){
+    addToStowage(item: EnhancableItem) {
         this.stowage.push(item);
         this.stowage.sort((a, b) => a.item - b.item);
     }
@@ -650,7 +666,7 @@ class Player {
     processItems() {
         for (const item of [...this.items]) {
             const def = itemDefinitons[item.item];
-            
+
             for (const effect of def.effects) {
                 if (effect.condition && this.conditionsMet(effect.condition)) {
                     this.applyAlterations(effect.alterations);
@@ -712,10 +728,10 @@ class Player {
                 return this.sensors;
             case Alterable.crew:
                 return this.crew;
-            case Alterable.intel:
-                return this.intel;
-            case Alterable.science:
-                return this.science;
+            case Alterable.electionIntel:
+                return this.electionIntel;
+            case Alterable.electionScience:
+                return this.electionScience;
             case Alterable.ammo:
                 return this.ammo;
             case Alterable.teamDefence:
@@ -752,12 +768,12 @@ class Player {
                     this.crew += alteration.value;
                     break;
 
-                case Alterable.intel:
-                    this.intel += alteration.value;
+                case Alterable.electionIntel:
+                    this.electionIntel += alteration.value;
                     break;
 
-                case Alterable.science:
-                    this.science += alteration.value;
+                case Alterable.electionScience:
+                    this.electionScience += alteration.value;
                     break;
 
                 case Alterable.ammo:
@@ -810,6 +826,8 @@ class Player {
         this.crew = 0;
         this.sensors = 0;
         this.speed = 0;
+        this.electionIntel = 0;
+        this.electionScience = 0;
         this.target = undefined;
     }
 
@@ -1201,11 +1219,11 @@ const itemDefinitons: Record<ItemType, ItemDefinition> = {
         effects: [
             {
                 condition: [{ type: ConditionType.bestInTeam, alterable: Alterable.speed }],
-                alterations: [{ alterable: Alterable.science, value: 9 }],
+                alterations: [{ alterable: Alterable.electionScience, value: 5 }],
             },
             {
                 alterations: [
-                    { alterable: Alterable.science, value: 1 },
+                    { alterable: Alterable.electionScience, value: 1 },
                     { alterable: Alterable.sensors, value: -3 },
                 ],
             },
@@ -1219,7 +1237,7 @@ const itemDefinitons: Record<ItemType, ItemDefinition> = {
         effects: [
             {
                 alterations: [
-                    { alterable: Alterable.science, value: 3 },
+                    { alterable: Alterable.electionScience, value: 3 },
                     { alterable: Alterable.crew, value: -3 },
                 ],
             },
@@ -1231,16 +1249,29 @@ const itemDefinitons: Record<ItemType, ItemDefinition> = {
         singleUse: false,
         effects: [
             {
-                condition: [{ type: ConditionType.bestInTeam, alterable: Alterable.intel }],
-                alterations: [{ alterable: Alterable.intel, value: 9 }],
+                condition: [{ type: ConditionType.bestInTeam, alterable: Alterable.electionIntel }],
+                alterations: [{ alterable: Alterable.electionIntel, value: 5 }],
             },
             {
                 alterations: [
-                    { alterable: Alterable.intel, value: 1 },
+                    { alterable: Alterable.electionIntel, value: 1 },
                     { alterable: Alterable.sensors, value: -3 },
                 ],
             },
         ],
+    },
+    [ItemType.cameraArray]: {
+        name: "Camera Array",
+        type: ItemType.cameraArray,
+        singleUse: false,
+        effects: [
+            {
+                alterations: [
+                    { alterable: Alterable.electionScience, value: 3 },
+                    { alterable: Alterable.sensors, value: -3 }
+                ]
+            }
+        ]
     },
 
     [ItemType.ammoCrate]: {
