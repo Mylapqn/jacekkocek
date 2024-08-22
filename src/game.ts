@@ -1267,8 +1267,8 @@ const itemDefinitons: Record<ItemType, ItemDefinition> = {
         effects: [
             {
                 alterations: [
-                    { alterable: Alterable.electionScience, value: 3 },
-                    { alterable: Alterable.sensors, value: -3 }
+                    { alterable: Alterable.electionIntel, value: 3 },
+                    { alterable: Alterable.crew, value: -3 }
                 ]
             }
         ]
