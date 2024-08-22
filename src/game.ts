@@ -485,12 +485,13 @@ export class Game extends DbObject {
     handleBid(player: Player, value: number, bid: number) {
         const currentBid = this.store[bid];
         if (currentBid.player) {
+            const oldPlayer = this.getPlayer(currentBid.player);
             if (currentBid.currency == Currency.matoshi) {
                 Mathoshi.pay({ amount: currentBid.bid, from: Main.client.user.id, to: currentBid.player }, false);
             } else if (currentBid.currency == Currency.intel) {
-                player.intel += currentBid.bid;
+                oldPlayer.intel += currentBid.bid;
             } else if (currentBid.currency == Currency.science) {
-                player.science += currentBid.bid;
+                oldPlayer.science += currentBid.bid;
             }
         }
 
