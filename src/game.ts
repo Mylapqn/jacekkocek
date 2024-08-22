@@ -16,39 +16,32 @@ type Bid = {
 };
 
 enum ItemType {
-    shipCore,
-    armorPlating,
-
-    sensorArray,
-    sonar,
-
-    crewQuarters,
-    medbay,
-    armory,
-    fighterBay,
-
-    ionThruster,
-    plasmaThruster,
-
-    laserCannon,
-    plasmaCannon,
-    missileLauncher,
-
-    fordwardShield,
-    pointDefence,
-
-    mobileLab,
-    researchLab,
-    surveillancePost,
-    cameraArray,
-    ionCannon,
-    ionTurret,
-
-    ammoCrate,
-    addScience,
-    removeScience,
-    addIntel,
-    removeIntel,
+    shipCore = 0,
+    armorPlating = 1,
+    sensorArray = 2,
+    sonar = 3,
+    crewQuarters = 4,
+    medbay = 5,
+    armory = 6,
+    fighterBay = 7,
+    ionThruster = 8,
+    plasmaThruster = 9,
+    laserCannon = 10,
+    plasmaCannon = 11,
+    missileLauncher = 12,
+    fordwardShield = 13,
+    pointDefence = 14,
+    mobileLab = 15,
+    researchLab = 16,
+    surveillancePost = 17,
+    ionCannon = 18,
+    ionTurret = 19,
+    ammoCrate = 20,
+    addScience = 21,
+    removeScience = 22,
+    addIntel = 23,
+    removeIntel = 24,
+    cameraArray = 25,
 }
 
 const commonPool: Array<ItemType> = [
@@ -503,6 +496,7 @@ export class Game extends DbObject {
 
         currentBid.player = player.id;
         currentBid.bid = value;
+        this.dbUpdate();
     }
 }
 
