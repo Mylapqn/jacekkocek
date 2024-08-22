@@ -40,6 +40,7 @@ enum ItemType {
     mobileLab,
     researchLab,
     surveillancePost,
+    cameraArray,
     ionCannon,
     ionTurret,
 
@@ -67,6 +68,7 @@ const commonPool: Array<ItemType> = [
     ItemType.mobileLab,
     ItemType.researchLab,
     ItemType.surveillancePost,
+    ItemType.cameraArray,
     ItemType.ionCannon,
     ItemType.ionTurret,
     ItemType.ammoCrate,
@@ -1257,6 +1259,19 @@ const itemDefinitons: Record<ItemType, ItemDefinition> = {
                 ],
             },
         ],
+    },
+    [ItemType.cameraArray]: {
+        name: "Camera Array",
+        type: ItemType.cameraArray,
+        singleUse: false,
+        effects: [
+            {
+                alterations: [
+                    { alterable: Alterable.electionScience, value: 3 },
+                    { alterable: Alterable.sensors, value: -3 }
+                ]
+            }
+        ]
     },
 
     [ItemType.ammoCrate]: {
