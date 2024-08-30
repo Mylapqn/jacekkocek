@@ -851,6 +851,18 @@ client.on("interactionCreate", async (interaction) => {
                         break;
                     }
 
+                    case "science-enhance": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.enhanceScience(interaction.options.getInteger("item-id"));
+                            interaction.reply({ content: out });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
                     case "trash": {
                         let user = interaction.user;
                         const player = Game.current.getPlayer(user.id);

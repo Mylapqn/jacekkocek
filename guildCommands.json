@@ -795,6 +795,19 @@
                 ]
             },
             {
+                "name": "science-enhance",
+                "description": "enhance an item, spend 25 science",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "item-id",
+                        "description": "The ID of the item to enhance",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
                 "name": "trash",
                 "description": "Remove an item in stowage (remove entirely)",
                 "type": 1,
