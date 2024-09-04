@@ -258,12 +258,14 @@ export class Game extends DbObject {
     }
 
     runResourceElection(votes: number[], numberOfSeats: number): number[] {
-        if (votes.length == 0) // no one is in the election
+        if (votes.length == 0)
+            // no one is in the election
             return [];
 
         let seats = votes.map(() => 0);
 
-        if (Math.max(...votes) <= 0) // all candidates in the election has zero votes, they get nothing
+        if (Math.max(...votes) <= 0)
+            // all candidates in the election has zero votes, they get nothing
             return seats;
 
         for (let i = 0; i < numberOfSeats; i++) {
@@ -287,8 +289,14 @@ export class Game extends DbObject {
     }
 
     awardResources() {
-        let intelPartition = this.runResourceElection(this.activePlayers.map(player => player.electionIntel), this.availableIntel);
-        let sciencePartition = this.runResourceElection(this.activePlayers.map(player => player.electionScience), this.availableScience);
+        let intelPartition = this.runResourceElection(
+            this.activePlayers.map((player) => player.electionIntel),
+            this.availableIntel
+        );
+        let sciencePartition = this.runResourceElection(
+            this.activePlayers.map((player) => player.electionScience),
+            this.availableScience
+        );
 
         for (let i = 0; i < this.activePlayers.length; i++) {
             const player = this.activePlayers[i];
@@ -367,7 +375,7 @@ export class Game extends DbObject {
         }
 
         this.damage = Math.floor(Math.random() * 5 + this.difficulty / 2);
-        this.availableIntel = Math.floor(Math.random() * 3 + this.difficulty + 3);
+        this.availableIntel = Math.floor(Math.random() * 3 + this.difficulty / 2);
         this.availableScience = Math.floor(Math.random() * 3 + this.difficulty + 3);
 
         this.report(`Next objective:`);
@@ -432,7 +440,10 @@ export class Game extends DbObject {
         }
 
         shuffle(this.activePlayers);
-        const rewardPartition = this.runResourceElection(this.activePlayers.map(player => player.defence > 0 ? player.power : 0), Math.floor(this.matoshiPool * rewardRatio));
+        const rewardPartition = this.runResourceElection(
+            this.activePlayers.map((player) => (player.defence > 0 ? player.power : 0)),
+            Math.floor(this.matoshiPool * rewardRatio)
+        );
 
         for (let i = 0; i < this.activePlayers.length; i++) {
             const player = this.activePlayers[i];
@@ -510,7 +521,7 @@ function itemPrinter(item: EnhancableItem) {
     let text = [];
     const def = itemDefinitons[item.item];
     text.push(def.name);
-    if (def.singleUse) text.push("(single use)")
+    if (def.singleUse) text.push("(single use)");
 
     for (const effect of def.effects) {
         if (effect.condition) {
@@ -599,14 +610,13 @@ class Player {
         return `Stowaged ${itemDefinitons[item.item].name}.`;
     }
 
-
     unstow(id: number) {
         //move item from stowage to items
         if (this.stowage.length <= id) {
             return "No such item in stowage.";
         }
 
-        if (this.items.length >= 6) {
+        if (this.items.filter((item) => !itemDefinitons[item.item].singleUse).length >= 6) {
             return "You can't equip any more items.";
         }
 
@@ -908,6 +918,21 @@ class Player {
             }
         } else {
             return "No such items in inventory";
+        }
+    }
+
+    enhanceScience(itemId: number) {
+        const cost = 25;
+        if (this.stowage.length > itemId) {
+            if (this.science >= cost) {
+                const item = this.stowage[itemId];
+                this.enhance(item, 1);
+                return `-${cost} science.`;
+            } else {
+                return `Not enough science (you need ${cost} science, you have ${this.science}) `;
+            }
+        } else {
+            return "No such item in inventory";
         }
     }
 
@@ -1269,10 +1294,10 @@ const itemDefinitons: Record<ItemType, ItemDefinition> = {
             {
                 alterations: [
                     { alterable: Alterable.electionIntel, value: 3 },
-                    { alterable: Alterable.crew, value: -3 }
-                ]
-            }
-        ]
+                    { alterable: Alterable.crew, value: -3 },
+                ],
+            },
+        ],
     },
 
     [ItemType.ammoCrate]: {
