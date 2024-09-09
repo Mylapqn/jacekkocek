@@ -821,6 +821,19 @@
                 ]
             },
             {
+                "name": "use-item",
+                "description": "Use a single-use item (from stowage)",
+                "type": 1,
+                "options": [
+                    {
+                        "name": "item-id",
+                        "description": "The ID of the item to remove",
+                        "type": 4,
+                        "required": true
+                    }
+                ]
+            },
+            {
                 "name": "give-intel",
                 "description": "Give Intel to a player",
                 "type": 1,
