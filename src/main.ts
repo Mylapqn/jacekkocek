@@ -803,6 +803,18 @@ client.on("interactionCreate", async (interaction) => {
                         }
                         break;
                     }
+
+                    case "use-item": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.useSingleUseItem(interaction.options.getInteger("item-id"));
+                            interaction.reply({ content: out, ephemeral: true });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
                     case "stow": {
                         let user = interaction.user;
                         const player = Game.current.getPlayer(user.id);

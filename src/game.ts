@@ -526,7 +526,7 @@ function itemPrinter(item: EnhancableItem) {
             text.push(`(always)\n ${effect.alterations.map((alteration) => `${alteration.alterable} ${alteration.value}`).join(", ")}`);
         }
     }
-
+    
     text.push(`Bonus: ${item.bonus.value} ${item.bonus.alterable}`);
 
     return text.join("\n");
@@ -616,6 +616,9 @@ class Player {
         }
 
         const item = this.stowage[id];
+        if(itemDefinitons[item.item].singleUse) {
+            return "You can't unstow single use items.";
+        }
         this.items.push(item);
         this.stowage.splice(id, 1);
         this.game.dbUpdate();
@@ -625,6 +628,28 @@ class Player {
     addToStowage(item: EnhancableItem) {
         this.stowage.push(item);
         this.stowage.sort((a, b) => a.item - b.item);
+    }
+
+    useSingleUseItem(id: number) {
+        if (this.stowage.length <= id) {
+            return "No such item in stowage.";
+        }
+
+        const item = this.stowage[id];
+        if(!itemDefinitons[item.item].singleUse) {
+            return "This item is not a single use item.";
+        }
+        const def = itemDefinitons[item.item];
+
+        for (const effect of def.effects) {
+            if (effect.condition == undefined) {
+                this.applyAlterations(effect.alterations);
+            }
+        }
+        
+        this.stowage.splice(id, 1);
+        this.game.dbUpdate();
+        return `Used ${def.name}.`;
     }
 
     giveItemToPlayer(player: Player, id: number) {
@@ -676,10 +701,6 @@ class Player {
                 if (effect.condition && this.conditionsMet(effect.condition)) {
                     this.applyAlterations(effect.alterations);
                 }
-            }
-
-            if (def.singleUse) {
-                this.removeItem(item);
             }
         }
     }
@@ -920,6 +941,7 @@ class Player {
         if (this.stowage.length > itemId) {
             if (this.science >= cost) {
                 const item = this.stowage[itemId];
+                this.science -= cost;
                 this.enhance(item, 1);
                 return `-${cost} science.`;
             } else {
@@ -932,6 +954,7 @@ class Player {
 
     enhance(item: EnhancableItem, severity: number) {
         item.bonus.value += severity;
+        this.game.dbUpdate();
     }
 }
 
