@@ -174,7 +174,12 @@ export class Poll extends DbObject {
 
     static list = new Array<Poll>();
     static getPollFromMessage(message: Discord.Message) {
+        console.log("finding poll from message");
         return Poll.list.find((element) => {
+            console.log(element.name);
+            console.log(element.message);
+            console.log(message);
+            if(!element.message || message) return false;
             return Utilities.matchMessages(element.message, message);
         });
     }

@@ -1270,7 +1270,7 @@ client.on("messageCreate", async (message) => {
             channel.messages.fetch(message.reference.messageId).then(async (repliedMessage) => {
                 let lowerCase = message.content.toLowerCase();
                 let poll = Polls.Poll.getPollFromMessage(repliedMessage);
-                if (poll != undefined) {
+                if (poll != undefined && poll != null) {
                     try {
                         if (!poll.customOptionsAllowed) throw new Error("Poll custom options disabled");
                         poll.addOption(message.content);
