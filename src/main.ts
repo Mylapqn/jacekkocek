@@ -875,6 +875,18 @@ client.on("interactionCreate", async (interaction) => {
                         break;
                     }
 
+                    case "intel-defence": {
+                        let user = interaction.user;
+                        const player = Game.current.getPlayer(user.id);
+                        if (player) {
+                            const out = player.addDefenceFromIntel();
+                            interaction.reply({ content: out });
+                        } else {
+                            interaction.reply({ content: "You are not in the game!", ephemeral: true });
+                        }
+                        break;
+                    }
+
                     case "trash": {
                         let user = interaction.user;
                         const player = Game.current.getPlayer(user.id);
@@ -969,10 +981,10 @@ client.on("interactionCreate", async (interaction) => {
 
                     case "tick": {
                         const isManager = member.roles.cache.has(managerRole.id);
-                        if(isManager){
+                        if (isManager) {
                             Game.current.tick();
                             interaction.reply({ content: "Tick!", ephemeral: true });
-                        }else{
+                        } else {
                             interaction.reply({ content: "Only Tajemník can use this command!", ephemeral: true });
                         }
                         break;
