@@ -970,6 +970,7 @@ class Player {
         if (this.intel >= cost) {
             this.intel -= cost;
             this.defence += 1;
+            return `-${cost} intel.`;
         } else {
             return `Not enough intel (you need ${cost} intel, you have ${this.intel}) `;
         }
