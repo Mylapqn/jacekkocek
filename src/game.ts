@@ -44,6 +44,7 @@ enum ItemType {
     addIntel = 23,
     removeIntel = 24,
     cameraArray = 25,
+    energyShield = 26,
 }
 
 const commonPool: Array<ItemType> = [
@@ -67,6 +68,7 @@ const commonPool: Array<ItemType> = [
     ItemType.ionCannon,
     ItemType.ionTurret,
     ItemType.ammoCrate,
+    ItemType.energyShield,
 ];
 
 const rarePool: Array<ItemType> = [ItemType.addScience, ItemType.removeScience, ItemType.addIntel, ItemType.removeIntel];
@@ -531,7 +533,7 @@ function itemPrinter(item: EnhancableItem) {
             text.push(`(always)\n ${effect.alterations.map((alteration) => `${alteration.alterable} ${alteration.value}`).join(", ")}`);
         }
     }
-    
+
     text.push(`Bonus: ${item.bonus.value} ${item.bonus.alterable}`);
 
     return text.join("\n");
@@ -581,7 +583,7 @@ class Player {
     }
 
     printItems() {
-        return this.items.map((item, index) => `${index} | ${itemPrinter(item)}`).join("\n\n") + "\n\n" + `Ammo: ${this.ammo}\nIntel: ${this.intel}\nScience: ${this.science}\nPower: ${this.power}`;
+        return this.items.map((item, index) => `${index} | ${itemPrinter(item)}`).join("\n\n") + "\n\n" + `Ammo: ${this.ammo}\nIntel: ${this.intel}\nScience: ${this.science}\nPower: ${this.power}\nAdditional defence: ${this.defence}`;
     }
 
     printStowage() {
@@ -621,7 +623,7 @@ class Player {
         }
 
         const item = this.stowage[id];
-        if(itemDefinitons[item.item].singleUse) {
+        if (itemDefinitons[item.item].singleUse) {
             return "You can't unstow single use items.";
         }
         this.items.push(item);
@@ -641,7 +643,7 @@ class Player {
         }
 
         const item = this.stowage[id];
-        if(!itemDefinitons[item.item].singleUse) {
+        if (!itemDefinitons[item.item].singleUse) {
             return "This item is not a single use item.";
         }
         const def = itemDefinitons[item.item];
@@ -651,7 +653,7 @@ class Player {
                 this.applyAlterations(effect.alterations);
             }
         }
-        
+
         this.stowage.splice(id, 1);
         this.game.dbUpdate();
         return `Used ${def.name}.`;
@@ -961,6 +963,17 @@ class Player {
     enhance(item: EnhancableItem, severity: number) {
         item.bonus.value += severity;
         this.game.dbUpdate();
+    }
+
+    addDefenceFromIntel() {
+        const cost = 20;
+        if (this.intel >= cost) {
+            this.intel -= cost;
+            this.defence += 1;
+            return `-${cost} intel.`;
+        } else {
+            return `Not enough intel (you need ${cost} intel, you have ${this.intel}) `;
+        }
     }
 }
 
@@ -1375,6 +1388,20 @@ const itemDefinitons: Record<ItemType, ItemDefinition> = {
             {
                 alterations: [{ alterable: Alterable.intelSlots, value: -1 }],
             },
+        ],
+    },
+
+    [ItemType.energyShield]: {
+        name: "Energy Shield",
+        type: ItemType.energyShield,
+        singleUse: false,
+        effects: [
+            {
+                alterations: [
+                    { alterable: Alterable.defence, value: 5 },
+                    { alterable: Alterable.power, value: -3 }
+                ]
+            }
         ],
     },
 };

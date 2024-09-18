@@ -808,6 +808,11 @@
                 ]
             },
             {
+                "name": "intel-defence",
+                "description": "get additional defence for a single turn, spend 20 intel",
+                "type": 1
+            },
+            {
                 "name": "trash",
                 "description": "Remove an item in stowage (remove entirely)",
                 "type": 1,
