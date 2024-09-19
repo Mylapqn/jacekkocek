@@ -312,7 +312,7 @@ export class Game extends DbObject {
     blueOnBlue() {
         for (const player of this.activePlayers) {
             if (player.target) {
-                this.reportPings.push(player.target);
+                this.reportPings.add(player.target);
                 if (player.attack == 0) {
                     this.report(`<@${player.id}> complains about <@${player.target}>.`);
                     continue;
@@ -333,7 +333,7 @@ export class Game extends DbObject {
         }
     }
 
-    reportPings: Snowflake[] = [];
+    reportPings: Set<Snowflake> = new Set();
     reportContent: string[] = [];
     report(text: string) {
         this.reportContent.push(text);
@@ -395,9 +395,9 @@ export class Game extends DbObject {
             this.report(`Matoshi: ${this.matoshiPool}`);
             this.report(`Available Intel: ${this.availableIntel}`);
             this.report(`Available Science: ${this.availableScience}`);
-            Main.gameChannel.send({ content: this.reportContent.join("\n"), allowedMentions: { users: this.reportPings } });
+            Main.gameChannel.send({ content: this.reportContent.join("\n"), allowedMentions: { users: [...this.reportPings] } });
             this.reportContent = [];
-            this.reportPings = [];
+            this.reportPings.clear();
             this.dbUpdate();
         });
     }
@@ -473,7 +473,7 @@ export class Game extends DbObject {
             player.contentCount++;
 
             this.report(`<@${player.id}> was picked to create new content.`);
-            this.reportPings.push(player.id);
+            this.reportPings.add(player.id);
         } else {
             this.newContentCounter--;
         }
@@ -920,7 +920,7 @@ class Player {
 
         const def = itemDefinitons[item.item];
         this.game.report(`<@${this.id}> takes damage! ${def.name} is hit!`);
-        this.game.reportPings.push(this.id);
+        this.game.reportPings.add(this.id);
     }
 
     enhanceCommand(itemId: number, spendId: number) {
