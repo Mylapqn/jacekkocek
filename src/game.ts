@@ -138,7 +138,7 @@ export class Game extends DbObject {
     }
 
     public get dbIgnore(): string[] {
-        return ["activePlayers", "players"];
+        return ["activePlayers", "players", "reportPings"];
     }
 
     override serialisable() {
@@ -165,7 +165,7 @@ export class Game extends DbObject {
         for (const player of data.activePlayers as unknown as string[]) {
             newObject.activePlayers.push(newObject.players.find((p) => p.id === player));
         }
-
+        newObject.reportPings = new Set(); // remobe l8tr
         return newObject;
     }
 
