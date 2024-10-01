@@ -191,7 +191,7 @@ async function playVideo(videoUrl: string, channel: Discord.VoiceChannel, textCh
     }
     clearNextTimeout();
     try {
-        console.log("starting youtube in voice");
+        //console.log("starting youtube in voice");
         Main.voiceChannelPlay(null, videoStream, 0.8);
     } catch (e) {
         console.error(e);
