@@ -1965,6 +1965,7 @@ export async function googleSearch(engine: SearchEngines, searchTerm: string, se
 //#region SONGS AND YOUTUBE
 
 export async function voiceChannelPlay(channel: Discord.VoiceBasedChannel, audio: string | Readable, volume: number) {
+    if(!audio) throw new Error("No audio stream");
     if (channel != null) {
         //audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
         joinVoiceChannel(channel);

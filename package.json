@@ -13,7 +13,7 @@
     "dependencies": {
         "@discordjs/opus": "^0.8.0",
         "@discordjs/voice": "^0.11.0",
-        "@distube/ytdl-core": "^4.11.10",
+        "@distube/ytdl-core": "^4.14.4",
         "@googleapis/sheets": "^3.0.2",
         "@octokit/request-error": "^3.0.3",
         "@types/long-timeout": "^0.1.1",
@@ -33,8 +33,7 @@
         "mongodb": "^5.7.0",
         "octokit": "=2.0.10",
         "process": "^0.11.10",
-        "promise-mysql": "^5.2.0",
-        "ytdl-core": "^4.11.5"
+        "promise-mysql": "^5.2.0"
     },
     "devDependencies": {
         "@jimp/core": "^0.16.1",
