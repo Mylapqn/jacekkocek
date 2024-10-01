@@ -136,11 +136,14 @@ export class Event extends DbObject {
             let dateFields = this.datePoll.getWinner().name.split(" ")[1].split(".");
             this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
             this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
+            this.date.setMinutes((Main.policyValues.kino.defaultTimeHrs % 1) * 60);
+            this.date = new Date(this.date.valueOf() + Utilities.getTimeOffset(new Date(), Main.defaultTimeZone))
+            console.log(this.date);
             this.datePoll.lock();
             let guildEventOptions: Discord.GuildScheduledEventCreateOptions = {
                 name: "Kino: " + this.film.name,
                 scheduledStartTime: this.date,
-                scheduledEndTime: new Date(this.date.valueOf() + 1000 * 3600 * 2),
+                scheduledEndTime: this.date.valueOf() + 2 * 60 * 60 * 1000,
                 privacyLevel: Discord.GuildScheduledEventPrivacyLevel.GuildOnly,
                 entityType: Discord.GuildScheduledEventEntityType.Voice,
                 channel: Main.mainVoiceChannel as Discord.VoiceChannel,
