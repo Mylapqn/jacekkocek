@@ -68,7 +68,7 @@ var kocek = 0;
 var lastSearchResults = null;
 const prefix = "$";
 let startDate: Date;
-let defaultTimeZone = "Europe/Prague";
+export let defaultTimeZone = "Europe/Prague";
 
 let voiceListeners = [];
 
