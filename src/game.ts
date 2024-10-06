@@ -197,6 +197,7 @@ export class Game extends DbObject {
     }
 
     schedule() {
+        return;
         //schedule the next tick
         //tick should happen every day at 7:00 and 16:00
         const now = new Date();
