@@ -6,7 +6,7 @@
             {
                 "type": 1,
                 "name": "create",
-                "description": "Play a radio station in the voice chat",
+                "description": "Create a reminder with a specified delay",
                 "options": [
                     {
                         "type": 3,
