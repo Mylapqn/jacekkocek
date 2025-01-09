@@ -1,13 +1,15 @@
-import * as Main from "./main";
-import * as Utilities from "./utilities";
-import * as Matoshi from "./matoshi";
-import * as Polls from "./polls";
 import * as Discord from "discord.js";
-import * as Sheets from "./sheets";
-import { DbObject } from "./dbObject";
 import { ObjectId } from "mongodb";
+import { DbObject } from "../dbObject";
+import { Film, Event, undefined, EventOptions } from "./kino";
+import * as Main from "../main";
+import * as Matoshi from "../matoshi";
+import * as Polls from "../polls";
+import * as Sheets from "../sheets";
+import * as Utilities from "../utilities";
 
-export class Event extends DbObject {
+
+export class GenericKinoEvent extends DbObject {
     id: number;
     film: Film;
     date: Date;
@@ -137,7 +139,7 @@ export class Event extends DbObject {
             this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
             this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
             this.date.setMinutes((Main.policyValues.kino.defaultTimeHrs % 1) * 60);
-            this.date = new Date(this.date.valueOf() + Utilities.getTimeOffset(new Date(), Main.defaultTimeZone))
+            this.date = new Date(this.date.valueOf() + Utilities.getTimeOffset(new Date(), Main.defaultTimeZone));
             console.log(this.date);
             this.datePoll.lock();
             let guildEventOptions: Discord.GuildScheduledEventCreateOptions = {
@@ -206,54 +208,5 @@ export class Event extends DbObject {
         for (const data of eventData) {
             this.list.push(await Event.fromData(data));
         }
-    }
-}
-
-export interface EventOptions {
-    id: number;
-    film?: Film;
-    date?: Date;
-    dateLocked: boolean;
-    watched: boolean;
-    filmPoll?: Polls.Poll;
-    datePoll?: Polls.Poll;
-    lockMessageId?: string;
-    attendeeIds?: string[];
-    guildEventId?: string;
-}
-
-export async function interactionWeightCheck(interaction: Discord.Interaction) {
-    let userWeight = (await Sheets.getUserData()).get(interaction.user.id).weight;
-    const minWeight = 0.9;
-    if (userWeight >= minWeight || (interaction.member.roles as Discord.GuildMemberRoleManager).cache.find((e) => e == Main.managerRole)) {
-        return true;
-    } else {
-        if (!(interaction instanceof Discord.AutocompleteInteraction))
-            interaction.reply({ content: "Only users with kino weight over " + minWeight + " can do this! (Your weight is " + userWeight + ")", ephemeral: true });
-        return false;
-    }
-}
-
-export class Film extends DbObject {
-    suggestedBy: string;
-    watched = false;
-    name: string;
-
-    static async fromCommand(name: string, suggestedBy: string) {
-        let film = await Film.fromData({ name, suggestedBy });
-        await film.dbUpdate();
-        return film;
-    }
-
-    static override async fromData(data: Partial<Film>): Promise<Film> {
-        const newObj = (await super.fromData(data)) as Film;
-        Object.assign(newObj, data);
-        return newObj;
-    }
-
-    static async get(name: string) {
-        const filmData = await Film.dbFind({ name });
-        if (!filmData) return undefined;
-        return await this.fromData(filmData);
     }
 }

@@ -15,7 +15,7 @@ import * as Utilities from "./utilities";
 import * as Github from "./github";
 import { calc, isCalc, setCalcContext } from "./calc";
 import * as Polls from "./polls";
-import * as Kino from "./kino";
+import * as Kino from "./kino/kino";
 import * as Sheets from "./sheets";
 import { handleMessageReaction } from "./reactions";
 import { Readable } from "stream";
@@ -366,6 +366,23 @@ client.on("ready", async () => {
         try {
             console.log("Kino start event received!");
             res.setHeader("Access-Control-Allow-Origin", "*");
+            res.send("OK");
+            Kino.Event.kinoReward();
+        } catch (e) {
+            res.send("Something went wrong :(");
+        }
+    });
+    
+    //Not implemented yet
+    httpServer.get("/kino/episode", (req, res) => {
+        try {
+            console.log("Kino episode event received!");
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            if (req.query.episode) {
+                let episode = parseInt(req.query.episode as string);
+                let series = 0;
+                if(req.query.series) series = parseInt(req.query.series as string);
+            }
             res.send("OK");
             Kino.Event.kinoReward();
         } catch (e) {

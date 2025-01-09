@@ -4,7 +4,7 @@ import * as Main from "./main";
 import * as Youtube from "./youtube";
 import { DbObject } from "./dbObject";
 import { EventEmitter } from "events";
-import { Event } from "./kino";
+import { Event } from "./kino/kino";
 
 export type PollOptionFilter = (option: string) => Promise<string>;
 
