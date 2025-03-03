@@ -438,6 +438,7 @@ client.on("interactionCreate", async (interaction) => {
                     case "playlist": {
                         let filter = interaction.options.getString("filter") || "unwatched";
                         let kinoFilms = await Kino.Film.dbFindAll<Kino.Film>({ watched: filter != "unwatched" });
+                        kinoFilms.sort((a, b) => a.name.length - b.name.length);
                         if (kinoFilms.length > 0) {
                             let newMessage = "**__Film suggestions:__**\n";
                             for (const f of kinoFilms) {
