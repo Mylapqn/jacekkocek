@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { DbObject } from "./dbObject";
 import { client, operationsChannel, policyValues } from "./main";
+import { Assignment } from "./assignments";
 
 export class User extends DbObject {
     id: string;
@@ -8,6 +9,7 @@ export class User extends DbObject {
     taskIds: Array<ObjectId> = [];
     streak = 0;
     lastTask = 0;
+    supervisionStreak = 0;
 
     static async get(id: string, wallet = false): Promise<User> {
         const result = (await User.dbFind({ id })) as User;
@@ -33,6 +35,12 @@ export class User extends DbObject {
     static override async fromData(data?: Partial<User>) {
         const newObject = (await super.fromData(data)) as User;
         Object.assign(newObject, data);
+        let validTasks = [];
+        for (const taskId of newObject.taskIds) {
+            const task = await Assignment.dbFind<Assignment>({ _id: taskId });
+            if(task && task.closed == false) validTasks.push(taskId);
+        }
+        newObject.taskIds = validTasks;
         return newObject;
     }
 
