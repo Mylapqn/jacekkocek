@@ -121,6 +121,21 @@ export class Policy extends DbObject {
             description: "Kino default time",
             value: 19,
         });
+        await this.createOrLoad({
+            category: "kino",
+            name: "voteBonusHrs",
+            symbol: "hours",
+            description: "Max Poll Age for vote bonus",
+            value: 18,
+        });
+
+        await this.createOrLoad({
+            category: "kino",
+            name: "voteBonusReward",
+            symbol: "₥",
+            description: "Vote bonus reward",
+            value: 100,
+        });
 
         await this.createOrLoad({
             category: "matoshi",

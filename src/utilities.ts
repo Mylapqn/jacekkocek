@@ -26,6 +26,11 @@ export function getTimeOffset(date: Date, timeZone: string) {
     let offset = Date.parse(`${dateString} ${tz}`) - Date.parse(`${dateString} UTC`);
     return offset;
 }
+
+export function H2Ms(hours: number) {
+    return hours * 60 * 60 * 1000;
+}
+
 /**
  * @param {String} phrase
  */

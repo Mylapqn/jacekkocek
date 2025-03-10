@@ -83,6 +83,8 @@ export let policyValues = {
         watchReward: 200,
         lateFee: 100,
         defaultTimeHrs: 19,
+        voteBonusHrs: 18,
+        voteBonusReward: 100
     },
     matoshi: {
         transactionFeePercent: 0,
