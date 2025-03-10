@@ -15,17 +15,21 @@ export class Poll extends DbObject {
     totalVotes = 0;
     maxVotesPerUser = 0;
     customOptionsAllowed = true;
+    softDeadline?: Date;
+    earlyVoters = new Set<string>();
 
     optionFilter: PollOptionFilter = async (option: string) => Utilities.escapeFormatting(option);
 
     override serialisable() {
         const data = super.serialisable();
         data.message = Utilities.messageToUid(this.message);
+        data.earlyVoters = Array.from(this.earlyVoters);
+        data.softDeadline = this.softDeadline?.valueOf();
         return data;
     }
 
-    static async fromCommand(name: string, interaction: Discord.Interaction, maxVotesPerUser = 0, customOptionsAllowed = true) {
-        let poll = await Poll.fromData({ name, maxVotesPerUser, customOptionsAllowed });
+    static async fromCommand(name: string, interaction: Discord.Interaction, maxVotesPerUser = 0, customOptionsAllowed = true, softDeadline?: Date) {
+        let poll = await Poll.fromData({ name, maxVotesPerUser, customOptionsAllowed, softDeadline });
         Poll.list.push(poll);
         await poll.sendMessage(interaction);
         await poll.dbUpdate();
@@ -68,6 +72,10 @@ export class Poll extends DbObject {
             if (footerText != "") footerText += " | ";
             footerText += "Reply to this message to add custom options";
         }
+        if (this.softDeadline) {
+            if (footerText != "") footerText += " | ";
+            footerText += "Soft deadline";
+        }
         if (footerText != "") embed.setFooter({ text: footerText });
         for (const option of this.options) {
             let votes = option.votes.length;
@@ -85,6 +93,7 @@ export class Poll extends DbObject {
                 percentage +
                 "%)";
         }
+        embed.setTimestamp(this.softDeadline);
         embed.setDescription(description);
         return { embeds: [embed] };
     }
@@ -141,6 +150,11 @@ export class Poll extends DbObject {
             let newVote = new PollVote(userId);
             this.options[optionIndex].votes.push(newVote);
             this.totalVotes++;
+            if (this.softDeadline) {
+                if (Date.now() < this.softDeadline.valueOf()) {
+                    this.earlyVoters.add(userId);
+                }
+            }
             this.updateMessage();
             this.dbUpdate();
             console.log(`Added vote to poll "${this.name}" from user ${userId} for option ${optionIndex}`);
@@ -169,13 +183,16 @@ export class Poll extends DbObject {
         const newObj = (await super.fromData(data)) as Poll;
         Object.apply(newObj, data);
         newObj.message = data.message ? await Utilities.messageFromUid(data.message as unknown as string) : undefined;
+        newObj.softDeadline = data.softDeadline ? new Date(data.softDeadline) : undefined;
+        if(data.earlyVoters && Array.isArray(data.earlyVoters)) newObj.earlyVoters = new Set(data.earlyVoters);
+        newObj.earlyVoters = new Set();
         return newObj;
     }
 
     static list = new Array<Poll>();
     static getPollFromMessage(message: Discord.Message) {
         return Poll.list.find((element) => {
-            if(!element.message) return false;
+            if (!element.message) return false;
             return Utilities.matchMessages(element.message, message);
         });
     }
@@ -186,18 +203,17 @@ export class Poll extends DbObject {
             let age = Date.now() - data.lastInteracted;
             if (age > 604800000) {
                 //remobing
-                Poll.dbDelete({_id: data._id});
+                Poll.dbDelete({ _id: data._id });
                 console.log(`removing old poll`);
             } else {
                 const newPoll = await Poll.fromData(data);
                 this.list.push(newPoll);
                 //@ts-ignore
-                const eventFilm = await Event.dbFind<Event>({filmPoll: newPoll._id });
-                if(eventFilm) newPoll.optionFilter = Event.filmVoteOptionFilter;
+                const eventFilm = await Event.dbFind<Event>({ filmPoll: newPoll._id });
+                if (eventFilm) newPoll.optionFilter = Event.filmVoteOptionFilter;
                 //@ts-ignore
-                const eventDate = await Event.dbFind<Event>({datePoll: newPoll._id });
-                if(eventDate) newPoll.optionFilter = Event.dateVoteOptionFilter;
-
+                const eventDate = await Event.dbFind<Event>({ datePoll: newPoll._id });
+                if (eventDate) newPoll.optionFilter = Event.dateVoteOptionFilter;
             }
         }
 

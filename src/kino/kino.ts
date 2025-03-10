@@ -6,10 +6,14 @@ import * as Discord from "discord.js";
 import * as Sheets from "../sheets";
 import { DbObject } from "../dbObject";
 import { ObjectId } from "mongodb";
+import * as lt from "long-timeout";
+
+const earlyWarningHours = 6;
 
 export class Event extends DbObject {
+    static dbIgnore = [...super.dbIgnore, "softDeadlineWarningToken"];
     id: number;
-    film: Film;
+    film?: Film;
     date: Date;
     datePoll: Polls.Poll;
     filmPoll: Polls.Poll;
@@ -18,6 +22,7 @@ export class Event extends DbObject {
     watched = false;
     lockMessageId: string = "";
     guildEventId: string;
+    softDeadlineWarningToken?: lt.Timeout;
     constructor() {
         super();
         Event.list.push(this);
@@ -89,7 +94,14 @@ export class Event extends DbObject {
     };
 
     async filmVote(interaction: Discord.ChatInputCommandInteraction) {
-        this.filmPoll = await Polls.Poll.fromCommand("Co kino?", interaction, 0, true);
+        const softDeadline = new Date(Date.now() + Utilities.H2Ms(Main.policyValues.kino.voteBonusHrs));
+
+        this.filmPoll = await Polls.Poll.fromCommand("Co kino?", interaction, 0, true, softDeadline);
+
+        this.softDeadlineWarningToken = lt.setTimeout(async () => {
+            this.remindHeavyVoters(this.filmPoll.earlyVoters);
+        }, Utilities.H2Ms(Main.policyValues.kino.voteBonusHrs - earlyWarningHours));
+
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockFilmVote", label: "Confirm film selection", style: Discord.ButtonStyle.Success }));
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
@@ -102,15 +114,22 @@ export class Event extends DbObject {
 
         if (this.filmPoll && !this.film) {
             console.log(this.filmPoll.getWinner().name);
+            await this.rewardEarlyVoters(this.filmPoll);
 
             this.film = await Film.get(this.filmPoll.getWinner().name);
             this.filmPoll.lock();
+            if (this.softDeadlineWarningToken) lt.clearTimeout(this.softDeadlineWarningToken);
         }
 
-        this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true);
+        const softDeadline = new Date(Date.now() + Utilities.H2Ms(Main.policyValues.kino.voteBonusHrs));
+        this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true, softDeadline);
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }));
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
+
+        this.softDeadlineWarningToken = lt.setTimeout(async () => {
+            this.remindHeavyVoters(this.datePoll.earlyVoters);
+        }, Utilities.H2Ms(Main.policyValues.kino.voteBonusHrs - earlyWarningHours));
 
         try {
             let dayScores = await Sheets.getDaysScores();
@@ -129,15 +148,44 @@ export class Event extends DbObject {
         this.dbUpdate();
     }
 
+    async rewardEarlyVoters(poll: Polls.Poll) {
+        if (Main.policyValues.kino.voteBonusReward > 0) {
+            for (const userId of poll.earlyVoters) {
+                Matoshi.pay({ amount: Main.policyValues.kino.voteBonusReward, from: Main.client.user.id, to: userId }, false);
+            }
+            await Main.kinoChannel.send(`Thank you for voting early ${[...poll.earlyVoters].map((id) => `<@${id}>`).join(", ")}! ${Main.policyValues.kino.voteBonusReward}₥ awarded.`);
+        }
+    }
+
+    async remindHeavyVoters(skipVoters: Set<string>) {
+        if (Main.policyValues.kino.voteBonusReward > 0) {
+            let usersToPing = [];
+            const data = await Sheets.getUserData();
+            for (const [userId, datum] of data) {
+                if (skipVoters.has(userId)) continue;
+                if (datum.weight > 0.5) {
+                    usersToPing.push(userId);
+                }
+            }
+
+            if (usersToPing.length > 0) {
+                await Main.kinoChannel.send(`Make sure to vote soon ${[...usersToPing].map((id) => `<@${id}>`).join(", ")}! ${earlyWarningHours} hours left.`);
+            } else {
+                await Main.kinoChannel.send(`Lots of votes! :relieved:`);
+            }
+        }
+    }
+
     async lockDate() {
         if (!this.dateLocked) {
+            await this.rewardEarlyVoters(this.datePoll);
             this.dateLocked = true;
             this.attendeeIds = this.datePoll.getWinner().votes.map((v) => v.userId);
             let dateFields = this.datePoll.getWinner().name.split(" ")[1].split(".");
             this.date = new Date(Date.parse(new Date().getFullYear() + " " + dateFields[1] + " " + dateFields[0]));
             this.date.setHours(Main.policyValues.kino.defaultTimeHrs);
             this.date.setMinutes((Main.policyValues.kino.defaultTimeHrs % 1) * 60);
-            this.date = new Date(this.date.valueOf() + Utilities.getTimeOffset(new Date(), Main.defaultTimeZone))
+            this.date = new Date(this.date.valueOf() + Utilities.getTimeOffset(new Date(), Main.defaultTimeZone));
             console.log(this.date);
             this.datePoll.lock();
             let guildEventOptions: Discord.GuildScheduledEventCreateOptions = {
@@ -198,6 +246,16 @@ export class Event extends DbObject {
         newObject.datePoll = Polls.Poll.list.find((p) => p._id.equals(data.datePoll as unknown as ObjectId));
         newObject.filmPoll = Polls.Poll.list.find((p) => p._id.equals(data.filmPoll as unknown as ObjectId));
         newObject.film = await Film.get(data.film as unknown as string);
+        if (!data.watched && (newObject.datePoll || newObject.filmPoll)) {
+            let relevantPoll = data.film ? newObject.datePoll : newObject.filmPoll;
+            if (relevantPoll.message) {
+                if (relevantPoll.softDeadline) {
+                    newObject.softDeadlineWarningToken = lt.setTimeout(async () => {
+                        newObject.remindHeavyVoters(relevantPoll.earlyVoters);
+                    }, relevantPoll.softDeadline.valueOf() - Date.now());
+                }
+            }
+        }
         return newObject;
     }
 
@@ -257,5 +315,3 @@ export class Film extends DbObject {
         return await this.fromData(filmData);
     }
 }
-
-
