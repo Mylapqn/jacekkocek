@@ -263,7 +263,13 @@ async function scheduleTax() {
 
     setTimeout(async () => {
         const msg = await collectAndReportTax();
-        if (msg) Main.notifyTextChannel.send(msg);
+        const threads = await Main.notifyTextChannel.threads.fetch();
+        let taxThread = threads.threads.find(t => t.name == "Tax report");
+        if( taxThread == undefined) {
+            // @ts-ignore
+            taxThread = await Main.notifyTextChannel.threads.create({ type: Discord.ChannelType.PublicThread, name: "Tax report" });
+        }
+        if (msg) taxThread.send(msg);
         lastTaxTime = Date.now();
         scheduleTax();
     }, delay);
