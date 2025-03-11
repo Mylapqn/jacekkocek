@@ -440,6 +440,14 @@
                                 "required": true,
                                 "choices": [
                                     {
+                                        "name": "Kino vote bonus deadline (₥)",
+                                        "value": "kino.voteBonusHrs"
+                                    },
+                                    {
+                                        "name": "Kino reward for early vote bonus (₥)",
+                                        "value": "kino.voteBonusReward"
+                                    },
+                                    {
                                         "name": "Kino reward for suggestion (₥)",
                                         "value": "kino.suggestReward"
                                     },
