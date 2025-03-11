@@ -151,9 +151,14 @@ export class Assignment extends DbObject {
         const user = await User.get(this.userId);
         user.taskIds.splice(user.taskIds.indexOf(this._id), 1);
         let result;
+        let supervisor = undefined as User | undefined;
+        if (this.supervisorId) {
+            supervisor = await User.get(this.supervisorId);
+        }
         if (fail) {
             if (user.streak > 0) {
                 user.streak = 0;
+                if (supervisor) supervisor.supervisionStreak = 0;
             }
             result = "failure";
         } else {
@@ -162,7 +167,7 @@ export class Assignment extends DbObject {
         this.closed = true;
         user.lastTask = Date.now();
         await user.dbUpdate();
-        await this.showResult(result, this.reward, user.streak, !!this.supervisorId);
+        await this.showResult(result, this.reward, user.streak, !!this.supervisorId, 0, supervisor.supervisionStreak);
         await this.thread.setLocked(true);
         await this.thread.setArchived(true);
         lt.clearTimeout(this.timerToken);
@@ -171,12 +176,12 @@ export class Assignment extends DbObject {
         this.dbUpdate();
     }
 
-    async showResult(result: "success" | "failure" | "canceled", rewarded: number, newstreak: number, supervisor: boolean) {
+    async showResult(result: "success" | "failure" | "canceled", rewarded: number, newstreak: number, supervisor: boolean, supervisorRewarded: number, newSupervisorStreak: number) {
         let embed = new Discord.EmbedBuilder();
         if (result == "success") {
             embed.setColor(0x99ff99).setTitle(`Task completed`);
             embed.addFields([{ name: "Reward", value: rewarded + " ₥" }]);
-            if (supervisor) embed.addFields([{ name: "Supervision reward", value: policyValues.matoshi.assignmentSupervisionReward + "₥" }]);
+            if (supervisor) embed.addFields([{ name: "Supervision reward", value: Math.floor(supervisorRewarded) + "₥" }]);
         } else if (result == "canceled") {
             embed.setColor(0xffff99).setTitle(`Task canceled`);
         } else {
@@ -184,6 +189,7 @@ export class Assignment extends DbObject {
         }
 
         embed.addFields([{ name: "New streak", value: newstreak + "" }]);
+        if (supervisor) embed.addFields([{ name: "New supervision streak", value: newSupervisorStreak + "" }]);
 
         await this.thread.send({ embeds: [embed], content: `<@${this.userId}>` + (supervisor ? `<@${this.supervisorId}>` : "") }).then((msg) => msg.edit(""));
     }
@@ -193,16 +199,16 @@ export class Assignment extends DbObject {
             return `You cannot be Supervisor for your own task.`;
         } else {
             if (this.supervisorId) {
-                if(this.supervisorId == supervisorId){
+                if (this.supervisorId == supervisorId) {
                     this.supervisorId = undefined;
                     this.dbUpdate();
                     return `<@${supervisorId}> is no longer supervising this task.`;
-
                 }
                 return `<@${this.supervisorId}> is already supervising this task`;
             }
         }
-        this.thread.send(`Okay. <@${supervisorId}> is now Supervisor for this task.`);
+        const supervisor = await User.get(supervisorId);
+        this.thread.send(`Okay. This task is now supervised by <@${supervisorId}> (${supervisor.supervisionStreak} supervision streak).`);
         lt.clearTimeout(this.oversightWarningToken);
         this.supervisorId = supervisorId;
         this.dbUpdate();
@@ -261,15 +267,23 @@ export class Assignment extends DbObject {
 
     async confirmComplete() {
         const user = await User.get(this.userId);
+        const supervisor = await User.get(this.supervisorId);
+        user.taskIds.splice(user.taskIds.indexOf(this._id), 1);
         this.closed = true;
         user.streak++;
         user.lastTask = Date.now();
+        const supervisorReward = this.supervisionReward(supervisor.supervisionStreak);
+        supervisor.supervisionStreak++;
         await Matoshi.pay({ amount: this.reward, from: client.user.id, to: user }, false);
-        await this.showResult("success", this.reward, user.streak, true);
-        await Promise.all([this.dbUpdate(), user.dbUpdate()]);
+        await this.showResult("success", this.reward, user.streak, true, supervisorReward, supervisor.supervisionStreak);
+        await Promise.all([this.dbUpdate(), user.dbUpdate(), supervisor.dbUpdate()]);
         await this.thread.setLocked(true);
         await this.thread.setArchived(true);
-        await Matoshi.pay({ amount: policyValues.matoshi.assignmentSupervisionReward, from: client.user.id, to: this.supervisorId }, false);
+        await Matoshi.pay({ amount: supervisorReward, from: client.user.id, to: this.supervisorId }, false);
+    }
+
+    private supervisionReward(streak: number) {
+        return policyValues.matoshi.assignmentSupervisionReward * Math.min(1 + streak / 10, 2);
     }
 
     async deadline() {
