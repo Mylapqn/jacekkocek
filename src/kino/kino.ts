@@ -23,6 +23,7 @@ export class Event extends DbObject {
     lockMessageId: string = "";
     guildEventId: string;
     softDeadlineWarningToken?: lt.Timeout;
+    earlyVoterAlertScheduled = true;
     constructor() {
         super();
         Event.list.push(this);
@@ -118,6 +119,7 @@ export class Event extends DbObject {
 
             this.film = await Film.get(this.filmPoll.getWinner().name);
             this.filmPoll.lock();
+            this.earlyVoterAlertScheduled = true;
             if (this.softDeadlineWarningToken) lt.clearTimeout(this.softDeadlineWarningToken);
         }
 
@@ -173,6 +175,8 @@ export class Event extends DbObject {
             } else {
                 await Main.kinoChannel.send(`Lots of votes! :relieved:`);
             }
+            this.earlyVoterAlertScheduled = false;
+            await this.dbUpdate();
         }
     }
 
@@ -247,12 +251,14 @@ export class Event extends DbObject {
         newObject.filmPoll = Polls.Poll.list.find((p) => p._id.equals(data.filmPoll as unknown as ObjectId));
         newObject.film = await Film.get(data.film as unknown as string);
         if (!data.watched && (newObject.datePoll || newObject.filmPoll)) {
-            let relevantPoll = data.film ? newObject.datePoll : newObject.filmPoll;
-            if (relevantPoll.message) {
-                if (relevantPoll.softDeadline) {
-                    newObject.softDeadlineWarningToken = lt.setTimeout(async () => {
-                        newObject.remindHeavyVoters(relevantPoll.earlyVoters);
-                    }, relevantPoll.softDeadline.valueOf() - Date.now());
+            if (data.earlyVoterAlertScheduled == true) {
+                let relevantPoll = data.film ? newObject.datePoll : newObject.filmPoll;
+                if (relevantPoll.message) {
+                    if (relevantPoll.softDeadline) {
+                        newObject.softDeadlineWarningToken = lt.setTimeout(async () => {
+                            newObject.remindHeavyVoters(relevantPoll.earlyVoters);
+                        }, relevantPoll.softDeadline.valueOf() - Date.now());
+                    }
                 }
             }
         }
