@@ -184,8 +184,12 @@ export class Poll extends DbObject {
         Object.apply(newObj, data);
         newObj.message = data.message ? await Utilities.messageFromUid(data.message as unknown as string) : undefined;
         newObj.softDeadline = data.softDeadline ? new Date(data.softDeadline) : undefined;
-        if(data.earlyVoters && Array.isArray(data.earlyVoters)) newObj.earlyVoters = new Set(data.earlyVoters);
-        newObj.earlyVoters = new Set();
+        if (data.earlyVoters && Array.isArray(data.earlyVoters)) {
+            newObj.earlyVoters = new Set(data.earlyVoters);
+        } else {
+            newObj.earlyVoters = new Set();
+        }
+
         return newObj;
     }
 
