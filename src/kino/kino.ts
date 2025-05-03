@@ -155,7 +155,10 @@ export class Event extends DbObject {
             for (const userId of poll.earlyVoters) {
                 Matoshi.pay({ amount: Main.policyValues.kino.voteBonusReward, from: Main.client.user.id, to: userId }, false);
             }
-            await Main.kinoChannel.send(`Thank you for voting early ${[...poll.earlyVoters].map((id) => `<@${id}>`).join(", ")}! ${Main.policyValues.kino.voteBonusReward}₥ awarded.`);
+            await Main.kinoChannel.send({
+                content: `Thank you for voting early ${[...poll.earlyVoters].map((id) => `<@${id}>`).join(", ")}! ${Main.policyValues.kino.voteBonusReward}₥ awarded.`,
+                allowedMentions: { parse: [] },
+            });
         }
     }
 
