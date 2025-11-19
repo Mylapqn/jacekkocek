@@ -374,7 +374,7 @@ client.on("ready", async () => {
             res.send("Something went wrong :(");
         }
     });
-    
+
     //Not implemented yet
     httpServer.get("/kino/episode", (req, res) => {
         try {
@@ -383,7 +383,7 @@ client.on("ready", async () => {
             if (req.query.episode) {
                 let episode = parseInt(req.query.episode as string);
                 let series = 0;
-                if(req.query.series) series = parseInt(req.query.series as string);
+                if (req.query.series) series = parseInt(req.query.series as string);
             }
             res.send("OK");
             Kino.Event.kinoReward();
@@ -616,7 +616,7 @@ client.on("interactionCreate", async (interaction) => {
                             interaction.reply({ content: "Successfully awarded " + amount + " ₥ to **" + target.username + "**", ephemeral: false });
                         } else {
                             interaction.reply({ content: "You are not permitted to mint matoshi! 1 ₥ deducted! :angry:", ephemeral: false });
-                            await Matoshi.modify(interaction.user.id, -1);
+                            await Matoshi.cost(interaction.user.id, -1, interaction.guildId);
                         }
                         break;
                     }
@@ -1984,7 +1984,7 @@ export async function googleSearch(engine: SearchEngines, searchTerm: string, se
 //#region SONGS AND YOUTUBE
 
 export async function voiceChannelPlay(channel: Discord.VoiceBasedChannel, audio: string | Readable, volume: number) {
-    if(!audio) throw new Error("No audio stream");
+    if (!audio) throw new Error("No audio stream");
     if (channel != null) {
         //audioPlayer = DiscordVoice.createAudioPlayer({ behaviors: { noSubscriber: "pause" } });
         joinVoiceChannel(channel);
