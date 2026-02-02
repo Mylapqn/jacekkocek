@@ -1715,22 +1715,22 @@ client.on("messageReactionRemove", (messageReaction, user) => {
 //#region REMINDERS
 
 function parseTime(durationString: string) {
-    const regex = /(?:(\d+)w)?\s?(?:(\d+)d)?\s?(?:(\d+)h)?\s?(?:(\d+)m)?\s?(?:(\d+)s)?/;
+    const regex = /(?:(\d+(?:\.\d+)?)w)?\s?(?:(\d+(?:\.\d+)?)d)?\s?(?:(\d+(?:\.\d+)?)h)?\s?(?:(\d+(?:\.\d+)?)m)?\s?(?:(\d+(?:\.\d+)?)s)?/;
     const matches = durationString.match(regex);
 
     if (!matches) {
         throw new Error("Invalid duration format");
     }
 
-    const weeks = matches[1] ? parseInt(matches[1]) : 0;
-    const days = matches[2] ? parseInt(matches[2]) : 0;
-    const hours = matches[3] ? parseInt(matches[3]) : 0;
-    const minutes = matches[4] ? parseInt(matches[4]) : 0;
-    const seconds = matches[5] ? parseInt(matches[5]) : 0;
+    const weeks = matches[1] ? parseFloat(matches[1]) : 0;
+    const days = matches[2] ? parseFloat(matches[2]) : 0;
+    const hours = matches[3] ? parseFloat(matches[3]) : 0;
+    const minutes = matches[4] ? parseFloat(matches[4]) : 0;
+    const seconds = matches[5] ? parseFloat(matches[5]) : 0;
 
     const totalSeconds = weeks * 7 * 24 * 60 * 60 + days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
 
-    return totalSeconds;
+    return Math.round(totalSeconds);
 }
 
 type ReminderData = {
