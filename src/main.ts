@@ -1167,7 +1167,7 @@ client.on("interactionCreate", async (interaction) => {
             case "assignmentComplete": {
                 const task = await Assignment.getByThread(interaction.channelId);
                 if (task.userId == interaction.user.id) {
-                    task.complete();
+                    task.buttonComplete();
                     interaction.deferUpdate();
                 } else {
                     interaction.reply({ content: "You are not the assignee", ephemeral: true });
@@ -1178,7 +1178,7 @@ client.on("interactionCreate", async (interaction) => {
             case "assignmentConfirm": {
                 const task = await Assignment.getByThread(interaction.channelId);
                 if (task.supervisorId == interaction.user.id) {
-                    await task.confirmComplete();
+                    await task.buttonConfirmComplete();
                     interaction.deferUpdate();
                 } else {
                     interaction.reply({ content: "You are not the supervisor", ephemeral: true });
@@ -1189,7 +1189,7 @@ client.on("interactionCreate", async (interaction) => {
             case "assignmentCancel": {
                 const task = await Assignment.getByThread(interaction.channelId);
                 if (task.supervisorId == interaction.user.id) {
-                    task.cancel(false);
+                    task.buttonCancel();
                     interaction.deferUpdate();
                 } else if (task.userId == interaction.user.id) {
                     task.requestCancel();
