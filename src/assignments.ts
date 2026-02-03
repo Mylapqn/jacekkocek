@@ -7,12 +7,14 @@ import { client, operationsChannel, policyValues } from "./main";
 import { simpleDateString } from "./utilities";
 import * as lt from "long-timeout";
 
+type AssignmentResultStatus = "success" | "failure" | "canceled";
+
 export class Assignment extends DbObject {
-    static dbIgnore: string[] = [...super.dbIgnore, "timerToken", "declineTimerToken", "warningTimerToken", "oversightWarningToken"];
+    static dbIgnore: string[] = [...super.dbIgnore, "timerToken", "declineTimerToken", "warningTimerToken", "oversightWarningToken", "warnTime", "noSupervisorWarnTime"];
     description = "";
     due = 0;
     userId = "";
-    supervisorId = "";
+    supervisorId: string = undefined;
     reward = 0;
     done = false;
     closed = false;
@@ -26,8 +28,8 @@ export class Assignment extends DbObject {
     static timerCache = new Map<string, lt.Timeout>();
     static temporaryTasks = new Map<string, Assignment>();
 
-    public get thread(): ThreadChannel<boolean> {
-        return operationsChannel.threads.cache.find((t) => t.id == this.threadId);
+    async getThread() {
+        return operationsChannel.threads.fetch(this.threadId);
     }
 
     static async temporaryTask(description: string, due: Date, user: User, reward: number, supervisor: User) {
@@ -48,7 +50,8 @@ export class Assignment extends DbObject {
                 { inline: false, name: "Reward", value: `${reward} x ${streakBonus} (from ${user.streak} streak) = ${task.reward * streakBonus} ₥` }
             );
 
-        task.thread.send({ components: [this.acceptButton()], embeds: [embed], content: `<@${user.id}> <@${supervisor.id}>` }).then((msg) => msg.edit(""));
+        const thread = await task.getThread();
+        thread.send({ components: [this.acceptButton()], embeds: [embed], content: `<@${user.id}> <@${supervisor.id}>` }).then((msg) => msg.edit(""));
 
         this.temporaryTasks.set(task.threadId, task);
         task.declineTimerToken = lt.setTimeout(() => task.declineTask(), 60 * 60 * 1000);
@@ -66,8 +69,9 @@ export class Assignment extends DbObject {
 
     async declineTask() {
         lt.clearTimeout(this.declineTimerToken);
-        await this.thread.setLocked(true);
-        await this.thread.setArchived(true);
+        const thread = await this.getThread();
+        await thread.setLocked(true);
+        await thread.setArchived(true);
         Assignment.temporaryTasks.delete(this.threadId);
     }
 
@@ -107,7 +111,8 @@ export class Assignment extends DbObject {
         } else {
             newActionRow = Assignment.addButtons(false);
         }
-        this.thread.send({ components: [newActionRow], embeds: [embed], content: `<@${user.id}>` + (supervisor ? `<@${supervisor.id}>` : "") }).then((msg) => msg.edit(""));
+        const thread = await this.getThread();
+        thread.send({ components: [newActionRow], embeds: [embed], content: `<@${user.id}>` + (supervisor ? `<@${supervisor.id}>` : "") }).then((msg) => msg.edit(""));
         await this.dbUpdate();
         this.timer();
     }
@@ -139,9 +144,21 @@ export class Assignment extends DbObject {
         return newActionRow;
     }
 
+    buttonCancel() {
+        if (this.closed) return;
+        this.cancel(false);
+    }
+
+    buttonComplete() {
+        if (this.closed) return;
+        this.complete();
+    }
+
     async requestCancel() {
+        if (this.closed) return;
         if (this.supervisorId) {
-            this.thread.send(`Contact the Supervisor <@${this.supervisorId}> to cancel this task.`);
+            const thread = await this.getThread();
+            thread.send(`Contact the Supervisor <@${this.supervisorId}> to cancel this task.`);
         } else {
             await this.cancel(false);
         }
@@ -150,7 +167,7 @@ export class Assignment extends DbObject {
     async cancel(fail = true) {
         const user = await User.get(this.userId);
         user.taskIds.splice(user.taskIds.indexOf(this._id), 1);
-        let result;
+        let result: AssignmentResultStatus;
         let supervisor = undefined as User | undefined;
         if (this.supervisorId) {
             supervisor = await User.get(this.supervisorId);
@@ -158,7 +175,10 @@ export class Assignment extends DbObject {
         if (fail) {
             if (user.streak > 0) {
                 user.streak = 0;
-                if (supervisor) supervisor.supervisionStreak = 0;
+                if (supervisor) {
+                    supervisor.supervisionStreak = 0;
+                    await supervisor.dbUpdate();
+                }
             }
             result = "failure";
         } else {
@@ -166,17 +186,20 @@ export class Assignment extends DbObject {
         }
         this.closed = true;
         user.lastTask = Date.now();
+
+        const thread = await this.getThread();
+
         await user.dbUpdate();
-        await this.showResult(result, this.reward, user.streak, !!this.supervisorId, 0, supervisor.supervisionStreak);
-        await this.thread.setLocked(true);
-        await this.thread.setArchived(true);
+        await this.showResult(result, this.reward, user.streak, !!this.supervisorId, 0, supervisor?.supervisionStreak);
+        await thread.setLocked(true);
+        await thread.setArchived(true);
         lt.clearTimeout(this.timerToken);
         lt.clearTimeout(this.warningTimerToken);
         lt.clearTimeout(this.oversightWarningToken);
-        this.dbUpdate();
+        await this.dbUpdate();
     }
 
-    async showResult(result: "success" | "failure" | "canceled", rewarded: number, newstreak: number, supervisor: boolean, supervisorRewarded: number, newSupervisorStreak: number) {
+    async showResult(result: AssignmentResultStatus, rewarded: number, newstreak: number, supervisor: boolean, supervisorRewarded: number, newSupervisorStreak: number) {
         let embed = new Discord.EmbedBuilder();
         if (result == "success") {
             embed.setColor(0x99ff99).setTitle(`Task completed`);
@@ -191,10 +214,12 @@ export class Assignment extends DbObject {
         embed.addFields([{ name: "New streak", value: newstreak + "" }]);
         if (supervisor) embed.addFields([{ name: "New supervision streak", value: newSupervisorStreak + "" }]);
 
-        await this.thread.send({ embeds: [embed], content: `<@${this.userId}>` + (supervisor ? `<@${this.supervisorId}>` : "") }).then((msg) => msg.edit(""));
+        const thread = await this.getThread();
+        await thread.send({ embeds: [embed], content: `<@${this.userId}>` + (supervisor ? `<@${this.supervisorId}>` : "") }).then((msg) => msg.edit(""));
     }
 
     async setSupervisior(supervisorId: string): Promise<string | undefined> {
+        if (this.closed) return;
         if (supervisorId == this.userId) {
             return `You cannot be Supervisor for your own task.`;
         } else {
@@ -208,7 +233,8 @@ export class Assignment extends DbObject {
             }
         }
         const supervisor = await User.get(supervisorId);
-        this.thread.send(`Okay. This task is now supervised by <@${supervisorId}> (${supervisor.supervisionStreak} supervision streak).`);
+        const thread = await this.getThread();
+        thread.send(`Okay. This task is now supervised by <@${supervisorId}> (${supervisor.supervisionStreak} supervision streak).`);
         lt.clearTimeout(this.oversightWarningToken);
         this.supervisorId = supervisorId;
         this.dbUpdate();
@@ -240,32 +266,35 @@ export class Assignment extends DbObject {
         await this.dbUpdate();
     }
 
-    warning() {
+    async warning() {
         let embed = new Discord.EmbedBuilder();
         embed.setColor(0xffaa00).setTitle(`Deadline in ${((this.due - Date.now()) / 1000 / 60 / 60).toFixed(1)} hours`);
-        this.thread.send({ embeds: [embed], content: `<@${this.userId}>` }).then((msg) => msg.edit(""));
+        const thread = await this.getThread();
+        thread.send({ embeds: [embed], content: `<@${this.userId}>` }).then((msg) => msg.edit(""));
     }
 
-    complete() {
+    async complete() {
         lt.clearTimeout(this.timerToken);
         lt.clearTimeout(this.warningTimerToken);
 
         this.done = true;
-        const newActionRow = Assignment.confirmButton(undefined == this.supervisorId);
+        const newActionRow = Assignment.confirmButton(this.supervisorId == undefined);
         let text = `Task completed before deadline. Find a Supervisor who can confirm this.`;
         if (this.supervisorId) {
             text = `Task completed before deadline. Your Supervisor <@${this.supervisorId}> will now confirm this.`;
         }
-        this.thread.send({ components: [newActionRow], content: text });
+        const thread = await this.getThread();
+        thread.send({ components: [newActionRow], content: text });
         this.dbUpdate();
     }
 
     static async getByThread(id: string) {
-        const task = await this.fromData(await Assignment.dbFind<Assignment>({ threadId: id }));
+        const task = await Assignment.fromData(await Assignment.dbFind<Assignment>({ threadId: id }));
         return task;
     }
 
-    async confirmComplete() {
+    async buttonConfirmComplete() {
+        if (this.closed) return;
         const user = await User.get(this.userId);
         const supervisor = await User.get(this.supervisorId);
         user.taskIds.splice(user.taskIds.indexOf(this._id), 1);
@@ -277,8 +306,9 @@ export class Assignment extends DbObject {
         await Matoshi.pay({ amount: this.reward, from: client.user.id, to: user }, false);
         await this.showResult("success", this.reward, user.streak, true, supervisorReward, supervisor.supervisionStreak);
         await Promise.all([this.dbUpdate(), user.dbUpdate(), supervisor.dbUpdate()]);
-        await this.thread.setLocked(true);
-        await this.thread.setArchived(true);
+        const thread = await this.getThread();
+        await thread.setLocked(true);
+        await thread.setArchived(true);
         await Matoshi.pay({ amount: supervisorReward, from: client.user.id, to: this.supervisorId }, false);
     }
 
@@ -293,6 +323,7 @@ export class Assignment extends DbObject {
         } catch (error) {
             this.closed = true;
             this.dbUpdate();
+            console.error(error);
         }
     }
 
@@ -314,7 +345,8 @@ export class Assignment extends DbObject {
                 task.timer();
                 if (task.version == undefined) {
                     task.version = 1;
-                    task.thread.send({ components: [Assignment.addButtons(task.supervisorId != undefined)] });
+                    const thread = await task.getThread();
+                    thread.send({ components: [Assignment.addButtons(task.supervisorId != undefined)] });
                     task.dbUpdate();
                 }
             }

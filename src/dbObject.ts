@@ -6,11 +6,9 @@ export type SerializableObject = {
     [key: string]: SerializableObject | any;
 };
 
-export type DbOperation = () => Promise<void>;
 
 export class DbObject {
     static dbIgnore: string[] = ["dbIgnore", "dbParent"];
-    private dbOperations = new Array<DbOperation>();
     _id: ObjectId;
 
     public get dbType(): string {
