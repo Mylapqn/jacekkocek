@@ -40,6 +40,7 @@ export class GenericKinoEvent extends DbObject {
                 onTimeUsers = Main.mainVoiceChannel.members.map((member) => member.id);
                 Main.kinoChannel.send(await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name));
                 this.film.watched = true;
+                this.film.watchedAt = new Date();
                 this.film.dbUpdate();
             }, 120 * 1000);
             response = "Kino is starting, late fees in 120s! " + this.attendeeIds.filter((id) => !onTimeUsers.includes(id)).map((id) => `<@${id}>`);

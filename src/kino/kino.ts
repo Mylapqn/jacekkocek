@@ -44,6 +44,7 @@ export class Event extends DbObject {
                 onTimeUsers = Main.mainVoiceChannel.members.map((member) => member.id);
                 Main.kinoChannel.send(await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name));
                 this.film.watched = true;
+                this.film.watchedAt = new Date();
                 this.film.dbUpdate();
             }, 120 * 1000);
             response = "Kino is starting, late fees in 120s! " + this.attendeeIds.filter((id) => !onTimeUsers.includes(id)).map((id) => `<@${id}>`);
@@ -327,9 +328,11 @@ export class Film extends DbObject {
     suggestedBy: string;
     watched = false;
     name: string;
+    suggestedAt: Date;
+    watchedAt?: Date;
 
     static async fromCommand(name: string, suggestedBy: string) {
-        let film = await Film.fromData({ name, suggestedBy });
+        let film = await Film.fromData({ name, suggestedBy, suggestedAt: new Date() });
         await film.dbUpdate();
         return film;
     }
@@ -337,6 +340,9 @@ export class Film extends DbObject {
     static override async fromData(data: Partial<Film>): Promise<Film> {
         const newObj = (await super.fromData(data)) as Film;
         Object.assign(newObj, data);
+        if (!newObj.suggestedAt && newObj._id) {
+            newObj.suggestedAt = newObj._id.getTimestamp();
+        }
         return newObj;
     }
 
