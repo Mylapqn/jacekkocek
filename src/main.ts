@@ -439,14 +439,19 @@ client.on("interactionCreate", async (interaction) => {
                         let filmName = Utilities.toTitleCase(interaction.options.getString("film"));
                         let existingFilm = await Kino.Film.get(filmName);
                         if (existingFilm) {
-                            interaction.reply({
-                                content: "***" + filmName + "*** has already been suggested by **" + (await client.users.fetch(existingFilm.suggestedBy)).username + "**.",
-                                ephemeral: true,
-                            });
+                            let suggester = await client.users.fetch(existingFilm.suggestedBy);
+                            let suggestedDate = `<t:${Math.floor(existingFilm.suggestedAt.getTime() / 1000)}:D>`;
+                            let content = `***${filmName}*** has already been suggested by **${suggester.username}** on ${suggestedDate}.`;
+                            if (existingFilm.watched) {
+                                let watchedDate = "";
+                                if (existingFilm.watchedAt) {
+                                    watchedDate = ` on <t:${Math.floor(existingFilm.watchedAt.getTime() / 1000)}:D>`;
+                                }
+                                content += ` It was already watched${watchedDate}.`;
+                            }
+                            interaction.reply({ content });
+                            return;
                         }
-                        /* IF KINOEVENT for this film
-                        interaction.reply({ content: "There is already a plan to watch ***" + Utilities.toTitleCase(filmName) + "***: " + kinoData.get(filmName).message.url, ephemeral: true });
-                        */
                         Kino.Film.fromCommand(filmName, interaction.user.id);
                         interaction.reply("**" + interaction.user.username + "** added ***" + filmName + "*** to film suggestions. Reward: " + policyValues.kino.suggestReward + " ₥");
                         if (!(await Matoshi.pay({ from: client.user.id, to: interaction.user.id, amount: policyValues.kino.suggestReward }, false))) {
