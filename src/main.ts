@@ -1697,7 +1697,7 @@ client.on("messageCreate", async (message) => {
             }
         } else if (isCalc(message.content)) {
             if (Matoshi.cost(message.author.id, policyValues.service.calcFee, message.guild.id)) {
-                let result = calc(message);
+                let result = await calc(message);
                 if (result) channel.send(result);
             }
         }
