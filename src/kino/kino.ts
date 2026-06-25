@@ -44,6 +44,7 @@ export class Event extends DbObject {
                 onTimeUsers = Main.mainVoiceChannel.members.map((member) => member.id);
                 Main.kinoChannel.send(await Matoshi.lateFees(onTimeUsers, todayVoters, this.film.name));
                 this.film.watched = true;
+                this.film.watchedAt = new Date();
                 this.film.dbUpdate();
             }, 120 * 1000);
             response = "Kino is starting, late fees in 120s! " + this.attendeeIds.filter((id) => !onTimeUsers.includes(id)).map((id) => `<@${id}>`);
@@ -126,7 +127,10 @@ export class Event extends DbObject {
         const softDeadline = new Date(Date.now() + Utilities.H2Ms(Main.policyValues.kino.voteBonusHrs));
         this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true, softDeadline);
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
-        newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }));
+        newActionRow.addComponents(
+            new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }),
+            new Discord.ButtonBuilder({ customId: "refreshDayScores", label: "Refresh scores", style: Discord.ButtonStyle.Primary })
+        );
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
 
         this.softDeadlineWarningToken = lt.setTimeout(async () => {
@@ -148,6 +152,25 @@ export class Event extends DbObject {
         }
         this.datePoll.optionFilter = Event.dateVoteOptionFilter;
         this.dbUpdate();
+    }
+
+    async refreshDatePollScores() {
+        if (!this.datePoll) return;
+        let dayScores = await Sheets.getDaysScores();
+        for (const option of this.datePoll.options) {
+            let dateStr = option.name.split(" ")[1];
+            if (!dateStr) continue;
+            let date = Utilities.dateFromKinoString(dateStr);
+            if (!date) continue;
+            for (const [day, score] of dayScores) {
+                if (day.getTime() === date.getTime()) {
+                    option.name = Event.dateOptionName(day, score);
+                    break;
+                }
+            }
+        }
+        await this.datePoll.updateMessage();
+        this.datePoll.dbUpdate();
     }
 
     async rewardEarlyVoters(poll: Polls.Poll) {
@@ -232,7 +255,7 @@ export class Event extends DbObject {
         return event;
     }
 
-    private static dateOptionName(date: Date, score: number): string {
+    static dateOptionName(date: Date, score: number): string {
         return `${Utilities.weekdayEmoji(date.getDay())} ${Utilities.simpleDateString(date)} (${score})`;
     }
 
@@ -305,9 +328,11 @@ export class Film extends DbObject {
     suggestedBy: string;
     watched = false;
     name: string;
+    suggestedAt: Date;
+    watchedAt?: Date;
 
     static async fromCommand(name: string, suggestedBy: string) {
-        let film = await Film.fromData({ name, suggestedBy });
+        let film = await Film.fromData({ name, suggestedBy, suggestedAt: new Date() });
         await film.dbUpdate();
         return film;
     }
@@ -315,6 +340,9 @@ export class Film extends DbObject {
     static override async fromData(data: Partial<Film>): Promise<Film> {
         const newObj = (await super.fromData(data)) as Film;
         Object.assign(newObj, data);
+        if (!newObj.suggestedAt && newObj._id) {
+            newObj.suggestedAt = newObj._id.getTimestamp();
+        }
         return newObj;
     }
 
