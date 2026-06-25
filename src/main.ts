@@ -459,6 +459,26 @@ client.on("interactionCreate", async (interaction) => {
                         }
                         break;
                     }
+                    case "suggest-info": {
+                        let filmName = Utilities.toTitleCase(interaction.options.getString("film"));
+                        let existingFilm = await Kino.Film.get(filmName);
+                        if (existingFilm) {
+                            let suggester = await client.users.fetch(existingFilm.suggestedBy);
+                            let suggestedDate = `<t:${Math.floor(existingFilm.suggestedAt.getTime() / 1000)}:D>`;
+                            let content = `***${filmName}*** has already been suggested by **${suggester.username}** on ${suggestedDate}.`;
+                            if (existingFilm.watched) {
+                                let watchedDate = "";
+                                if (existingFilm.watchedAt) {
+                                    watchedDate = ` on <t:${Math.floor(existingFilm.watchedAt.getTime() / 1000)}:D>`;
+                                }
+                                content += ` It was already watched${watchedDate}.`;
+                            }
+                            interaction.reply({ content });
+                        } else {
+                            interaction.reply({ content: "Not suggested yet", ephemeral: true });
+                        }
+                        break;
+                    }
                     case "playlist": {
                         let filter = interaction.options.getString("filter") || "unwatched";
                         let kinoFilms = await Kino.Film.dbFindAll<Kino.Film>({ watched: filter != "unwatched" });

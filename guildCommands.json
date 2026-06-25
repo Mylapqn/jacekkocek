@@ -18,6 +18,19 @@
             },
             {
                 "type": 1,
+                "name": "suggest-info",
+                "description": "Check if a film has been suggested already",
+                "options": [
+                    {
+                        "type": 3,
+                        "name": "film",
+                        "description": "The name of the film",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": 1,
                 "name": "playlist",
                 "description": "See the film suggestions",
                 "options": [
