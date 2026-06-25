@@ -126,7 +126,10 @@ export class Event extends DbObject {
         const softDeadline = new Date(Date.now() + Utilities.H2Ms(Main.policyValues.kino.voteBonusHrs));
         this.datePoll = await Polls.Poll.fromCommand(`Kdy bude ${this.film.name}?`, interaction, 0, true, softDeadline);
         let newActionRow = new Discord.ActionRowBuilder<Discord.ButtonBuilder>();
-        newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }));
+        newActionRow.addComponents(
+            new Discord.ButtonBuilder({ customId: "lockDayVote", label: "Confirm day selection", style: Discord.ButtonStyle.Success }),
+            new Discord.ButtonBuilder({ customId: "refreshDayScores", label: "Refresh scores", style: Discord.ButtonStyle.Primary })
+        );
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
 
         this.softDeadlineWarningToken = lt.setTimeout(async () => {
@@ -148,6 +151,25 @@ export class Event extends DbObject {
         }
         this.datePoll.optionFilter = Event.dateVoteOptionFilter;
         this.dbUpdate();
+    }
+
+    async refreshDatePollScores() {
+        if (!this.datePoll) return;
+        let dayScores = await Sheets.getDaysScores();
+        for (const option of this.datePoll.options) {
+            let dateStr = option.name.split(" ")[1];
+            if (!dateStr) continue;
+            let date = Utilities.dateFromKinoString(dateStr);
+            if (!date) continue;
+            for (const [day, score] of dayScores) {
+                if (day.getTime() === date.getTime()) {
+                    option.name = Event.dateOptionName(day, score);
+                    break;
+                }
+            }
+        }
+        await this.datePoll.updateMessage();
+        this.datePoll.dbUpdate();
     }
 
     async rewardEarlyVoters(poll: Polls.Poll) {
@@ -232,7 +254,7 @@ export class Event extends DbObject {
         return event;
     }
 
-    private static dateOptionName(date: Date, score: number): string {
+    static dateOptionName(date: Date, score: number): string {
         return `${Utilities.weekdayEmoji(date.getDay())} ${Utilities.simpleDateString(date)} (${score})`;
     }
 
