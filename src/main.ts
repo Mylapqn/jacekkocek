@@ -1130,6 +1130,14 @@ client.on("interactionCreate", async (interaction) => {
                 }
                 break;
             }
+            case "refreshDayScores": {
+                let event = Kino.Event.list.find((e) => e.lockMessageId == interaction.message.id);
+                if (event && event?.datePoll?.options.length > 0) {
+                    await interaction.deferUpdate();
+                    await event.refreshDatePollScores();
+                }
+                break;
+            }
             case "youtubeStop": {
                 audioPlayer.stop(true);
                 Youtube.stop();
