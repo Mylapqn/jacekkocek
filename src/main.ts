@@ -297,6 +297,8 @@ let upcomingReminders = [];
 const remindersFileName = "reminders.json";
 loadReminders();
 
+const snoozeMessages: Map<string, { text: string; author: string; channel: string }> = new Map();
+
 let baseUrl = "https://jacekkocek.coal.games";
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
@@ -1330,7 +1332,7 @@ client.on("messageCreate", async (message) => {
         } else if (message.content === ":loading:") {
             message.delete();
             channel.send(client.emojis.cache.get("772234862652424203").toString());
-        } else if (message.type == Discord.MessageType.Reply) {
+            } else if (message.type == Discord.MessageType.Reply) {
             channel.messages.fetch(message.reference.messageId).then(async (repliedMessage) => {
                 let lowerCase = message.content.toLowerCase();
                 let poll = Polls.Poll.getPollFromMessage(repliedMessage);
@@ -1342,6 +1344,24 @@ client.on("messageCreate", async (message) => {
                         Utilities.messageError(channel, error);
                     }
                     message.delete();
+                }
+                let snoozeData = snoozeMessages.get(message.reference.messageId);
+                if (snoozeData != undefined) {
+                    let timeString = message.content.trim();
+                    if (timeString.toLowerCase().startsWith("snooze")) {
+                        timeString = timeString.slice(6).trim();
+                    }
+                    let time = parseTime(timeString);
+                    if (!isNaN(time) && time > 0) {
+                        let newRem = {
+                            channel: message.channelId,
+                            text: snoozeData.text,
+                            timestamp: Math.round(nowSeconds() + time),
+                            author: message.author.id,
+                        };
+                        setReminder(newRem);
+                        message.reply({ content: `Snoozed reminder for **_${snoozeData.text}_** at <t:${newRem.timestamp}> (<t:${newRem.timestamp}:R>)`, allowedMentions: { parse: [] } });
+                    }
                 }
                 if (lowerCase == "usmažit prosím" || lowerCase == "deep fried please") {
                     let url = null;
@@ -1832,23 +1852,8 @@ export function nowSeconds() {
 async function executeReminder(rem: ReminderData) {
     let channel = (await client.channels.fetch(rem.channel)) as Discord.TextBasedChannel;
     let toSend = "**Reminder: **" + rem.text;
-    /*let mentions = "";
-    if (rem.mentions) {
-      rem.mentions.forEach(m => {
-        mentions += "<@!" + m + "> ";
-      });
-    }
-    let toSend = {
-      embeds: [{
-        title: "Reminder",
-        color: [0x18C3B1],
-        description: rem.text
-      }]
-      if (mentions != "") {
-        toSend.content = mentions
-      }
-    }*/
-    channel.send(toSend);
+    let sentMessage = await channel.send(toSend);
+    snoozeMessages.set(sentMessage.id, { text: rem.text, author: rem.author, channel: rem.channel });
     reminders.splice(reminders.indexOf(rem), 1);
 }
 
