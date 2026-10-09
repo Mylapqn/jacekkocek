@@ -81,8 +81,10 @@ export class Event extends DbObject {
         }
     }
     static filmVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
-        let film = await Film.dbFind({ name: Utilities.toTitleCase(name) });
+        let film = await Film.get(Utilities.toTitleCase(name));
         if (film == undefined) throw new Error("Invalid option");
+        film.timesInVoting = (film.timesInVoting ?? 0) + 1;
+        await film.dbUpdate();
         return Utilities.toTitleCase(name);
     };
     static dateVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
@@ -330,6 +332,7 @@ export class Film extends DbObject {
     name: string;
     suggestedAt: Date;
     watchedAt?: Date;
+    timesInVoting = 0;
 
     static async fromCommand(name: string, suggestedBy: string) {
         let film = await Film.fromData({ name, suggestedBy, suggestedAt: new Date() });
@@ -343,6 +346,7 @@ export class Film extends DbObject {
         if (!newObj.suggestedAt && newObj._id) {
             newObj.suggestedAt = newObj._id.getTimestamp();
         }
+        newObj.timesInVoting = data.timesInVoting ?? 0;
         return newObj;
     }
 
@@ -351,4 +355,34 @@ export class Film extends DbObject {
         if (!filmData) return undefined;
         return await this.fromData(filmData);
     }
+}
+
+const topMoviesCount = 5;
+
+export async function playlistMessages(filter: string): Promise<string[]> {
+    const allFilms = await Film.dbFindAll<Film>({});
+    const films = allFilms.filter((f) => (filter == "all" ? true : f.watched == (filter == "watched")));
+    if (films.length == 0) return [];
+
+    let text = "**__Film suggestions:__**\n";
+    for (const f of films) {
+        text += "• ";
+        if (f.watched) text += "~~*" + f.name + "*~~";
+        else text += "***" + f.name + "***";
+        text += "\n";
+    }
+
+    const topFilms = allFilms
+        .filter((f) => (f.timesInVoting ?? 0) > 0)
+        .sort((a, b) => (b.timesInVoting ?? 0) - (a.timesInVoting ?? 0))
+        .slice(0, topMoviesCount);
+
+    if (topFilms.length > 0) {
+        text += "\n**__Top movies by times in voting:__**\n";
+        for (const f of topFilms) {
+            text += "• **" + f.name + "** - " + (f.timesInVoting ?? 0) + " times\n";
+        }
+    }
+
+    return Utilities.splitMessage(text);
 }
