@@ -151,6 +151,20 @@ export function limitString(str: string, n: number) {
     return (str.length > n) ? str.slice(0, n - 1) + '...' : str;
 };
 
+export function splitMessage(text: string, limit = 2000): string[] {
+    const chunks: string[] = [];
+    let remaining = text;
+    while (remaining.length > limit) {
+        let cut = remaining.lastIndexOf("\n", limit);
+        if (cut <= 0) cut = limit;
+        chunks.push(remaining.slice(0, cut));
+        remaining = remaining.slice(cut);
+        while (remaining.startsWith("\n")) remaining = remaining.slice(1);
+    }
+    if (remaining.length > 0 || chunks.length == 0) chunks.push(remaining);
+    return chunks;
+}
+
 export async function messageFromUid(uid: string): Promise<Discord.Message> {
     let ids = uid.split("/")
     return await fetchMessage(ids[0], ids[1]);

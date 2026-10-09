@@ -483,22 +483,23 @@ client.on("interactionCreate", async (interaction) => {
                     }
                     case "playlist": {
                         let filter = interaction.options.getString("filter") || "unwatched";
-                        let kinoFilms = await Kino.Film.dbFindAll<Kino.Film>({ watched: filter != "unwatched" });
-                        if (kinoFilms.length > 0) {
-                            let newMessage = "**__Film suggestions:__**\n";
-                            for (const f of kinoFilms) {
-                                newMessage += "• ";
-                                if (f.watched) {
-                                    newMessage += "~~*" + f.name + "*~~";
-                                } else {
-                                    newMessage += "***" + f.name + "***";
-                                }
-                                newMessage += "\n";
-                            }
-                            await interaction.reply(newMessage).catch((e) => console.error);
-                        } else {
-                            interaction.reply({ content: "The playlist is empty!", ephemeral: true });
+                        await interaction.deferReply({ ephemeral: true });
+                        let messages = await Kino.playlistMessages(filter);
+                        if (messages.length == 0) {
+                            interaction.editReply({ content: "The playlist is empty!" });
+                            break;
                         }
+                        const channel = interaction.channel;
+                        let thread: Discord.TextChannel | Discord.ThreadChannel;
+                        if (channel.isThread()) {
+                            thread = channel as Discord.ThreadChannel;
+                        } else {
+                            thread = await (channel as Discord.TextChannel).threads.create({ type: Discord.ChannelType.PublicThread, name: "Film suggestions" });
+                        }
+                        for (const message of messages) {
+                            await thread.send(message);
+                        }
+                        interaction.editReply({ content: `Playlist posted in <#${thread.id}>` });
                         break;
                     }
                     case "info": {
