@@ -1065,6 +1065,37 @@ client.on("interactionCreate", async (interaction) => {
 
                         break;
                     }
+                    case "kino-status": {
+                        let kino = Utilities.toTitleCase(interaction.options.getString("kino"));
+                        let action = interaction.options.getString("action");
+                        let film = await Kino.Film.get(kino);
+                        if (!film) {
+                            interaction.reply({ content: `No such kino ***${kino}***`, ephemeral: true });
+                            break;
+                        }
+                        switch (action) {
+                            case "watched": {
+                                film.watched = true;
+                                film.watchedAt = new Date();
+                                await film.dbUpdate();
+                                interaction.reply({ content: `Marked ***${kino}*** as watched.` });
+                                break;
+                            }
+                            case "unwatched": {
+                                film.watched = false;
+                                film.watchedAt = undefined;
+                                await film.dbUpdate();
+                                interaction.reply({ content: `Marked ***${kino}*** as unwatched.` });
+                                break;
+                            }
+                            case "remove": {
+                                await Kino.Film.dbDelete({ _id: film._id });
+                                interaction.reply({ content: `Removed ***${kino}*** from the playlist.` });
+                                break;
+                            }
+                        }
+                        break;
+                    }
                     default: {
                         switch (interaction.options.getSubcommandGroup()) {
                             case "policy": {
