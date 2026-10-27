@@ -7,6 +7,7 @@ import { EventEmitter } from "events";
 import { Event } from "./kino/kino";
 
 export type PollOptionFilter = (option: string) => Promise<string>;
+export type PollOptionAdded = (option: string) => Promise<void>;
 
 export class Poll extends DbObject {
     message: Discord.Message;
@@ -19,6 +20,7 @@ export class Poll extends DbObject {
     earlyVoters = new Set<string>();
 
     optionFilter: PollOptionFilter = async (option: string) => Utilities.escapeFormatting(option);
+    optionAdded?: PollOptionAdded;
 
     override serialisable() {
         const data = super.serialisable();
@@ -134,6 +136,7 @@ export class Poll extends DbObject {
         }
         this.dbUpdate();
         console.log(`Added option to poll "${this.name}" with name ${newName}`);
+        if (this.optionAdded) await this.optionAdded(newName);
         return newOption;
     }
 
@@ -214,7 +217,10 @@ export class Poll extends DbObject {
                 this.list.push(newPoll);
                 //@ts-ignore
                 const eventFilm = await Event.dbFind<Event>({ filmPoll: newPoll._id });
-                if (eventFilm) newPoll.optionFilter = Event.filmVoteOptionFilter;
+                if (eventFilm) {
+                    newPoll.optionFilter = Event.filmVoteOptionFilter;
+                    newPoll.optionAdded = Event.filmOptionAdded;
+                }
                 //@ts-ignore
                 const eventDate = await Event.dbFind<Event>({ datePoll: newPoll._id });
                 if (eventDate) newPoll.optionFilter = Event.dateVoteOptionFilter;
