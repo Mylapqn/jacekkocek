@@ -83,9 +83,13 @@ export class Event extends DbObject {
     static filmVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
         let film = await Film.get(Utilities.toTitleCase(name));
         if (film == undefined) throw new Error("Invalid option");
+        return Utilities.toTitleCase(name);
+    };
+    static filmOptionAdded: Polls.PollOptionAdded = async (name: string) => {
+        let film = await Film.get(Utilities.toTitleCase(name));
+        if (film == undefined) return;
         film.timesInVoting = (film.timesInVoting ?? 0) + 1;
         await film.dbUpdate();
-        return Utilities.toTitleCase(name);
     };
     static dateVoteOptionFilter: Polls.PollOptionFilter = async (name: string) => {
         let date = Utilities.dateFromKinoString(name);
@@ -110,6 +114,7 @@ export class Event extends DbObject {
         newActionRow.addComponents(new Discord.ButtonBuilder({ customId: "lockFilmVote", label: "Confirm film selection", style: Discord.ButtonStyle.Success }));
         this.lockMessageId = (await interaction.channel.send({ components: [newActionRow] })).id;
         this.filmPoll.optionFilter = Event.filmVoteOptionFilter;
+        this.filmPoll.optionAdded = Event.filmOptionAdded;
         this.dbUpdate();
     }
 
@@ -372,7 +377,7 @@ export async function playlistMessages(filter: string): Promise<string[]> {
         text += "\n";
     }
 
-    const topFilms = allFilms
+    const topFilms = films
         .filter((f) => (f.timesInVoting ?? 0) > 0)
         .sort((a, b) => (b.timesInVoting ?? 0) - (a.timesInVoting ?? 0))
         .slice(0, topMoviesCount);
@@ -380,7 +385,8 @@ export async function playlistMessages(filter: string): Promise<string[]> {
     if (topFilms.length > 0) {
         text += "\n**__Top movies by times in voting:__**\n";
         for (const f of topFilms) {
-            text += "• **" + f.name + "** - " + (f.timesInVoting ?? 0) + " times\n";
+            let topName = f.watched ? "~~*" + f.name + "*~~" : "**" + f.name + "**";
+            text += "• " + topName + " - " + (f.timesInVoting ?? 0) + " times\n";
         }
     }
 
